@@ -6,7 +6,7 @@ import {cbtConfig} from './cbtConfig';
 import './styles.css';
 
 const subjects=[
-{id:'math',name:'गणित',icon:'∑',desc:'संख्या, बीजगणित, ज्यामिति और तर्क',chapters:['संख्या पद्धति और बहुपद']},
+{id:'math',name:'गणित',icon:'∑',desc:'संख्या, बीजगणित, ज्यामिति और तर्क',chapters:['संख्या पद्धति','बहुपद']},
 {id:'science',name:'विज्ञान',icon:'⚗',desc:'भौतिकी, रसायन और जीव विज्ञान',chapters:['हमारे आसपास के पदार्थ']},
 {id:'hindi',name:'हिन्दी',icon:'अ',desc:'गद्य, पद्य, भाषा और लेखन',chapters:['कहानी के प्लॉट–1']},
 {id:'sst',name:'सामाजिक विज्ञान',icon:'◎',desc:'इतिहास, भूगोल, नागरिक शास्त्र और अर्थशास्त्र',chapters:['भौगोलिक खोजें–भाग 1']},
