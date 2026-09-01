@@ -6,13 +6,32 @@ import './engine.css';
 const TEST_SECONDS=600;
 const mistakeKey='class9-mistakes';
 const sessionKey='class9-sessions';
+
+const challengeBank={
+  'गणित':{
+    'संख्या पद्धति':[
+      {q:'यदि x = 0.272727… है, तो x का सरल भिन्न रूप क्या है?',options:['3/11','27/100','2/9','27/90'],answer:0,explain:'x = 27/99 = 3/11। पहले आवर्ती भाग को भिन्न में लिखें और फिर सरल करें।'},
+      {q:'3/√5 को हर से मूल हटाकर लिखने पर क्या मिलेगा?',options:['3√5/5','√5/3','3√5','5√3'],answer:0,explain:'अंश और हर को √5 से गुणा करें: 3√5/5।'},
+      {q:'2 और 3 के बीच कौन-सी संख्या अपरिमेय है?',options:['5/2','√5','8/3','2.75'],answer:1,explain:'√5 ≈ 2.236, इसलिए यह 2 और 3 के बीच है और अपरिमेय है।'},
+      {q:'यदि a = √2 और b = −√2, तो a+b का मान क्या है?',options:['2√2','−2√2','0','1'],answer:2,explain:'विपरीत राशियाँ एक-दूसरे को काट देती हैं: √2−√2=0। यह दिखाता है कि दो अपरिमेय संख्याओं का योग परिमेय हो सकता है।'},
+      {q:'किसी सरल भिन्न के हर का prime-factor form केवल 2 और 5 से बना है। इसका decimal expansion कैसा होगा?',options:['हमेशा अनंत आवर्ती','समाप्त','हमेशा अपरिमेय','हमेशा पूर्णांक'],answer:1,explain:'सरल रूप के denominator में केवल 2 और 5 हों तो decimal expansion terminating होता है।'},
+      {q:'यदि x परिमेय और y अपरिमेय है, तो x−y के बारे में क्या सही है?',options:['हमेशा परिमेय','हमेशा अपरिमेय','हमेशा पूर्णांक','कुछ भी कहा नहीं जा सकता'],answer:1,explain:'यदि x−y परिमेय होता, तो y = x−(x−y) भी परिमेय होता, जो विरोधाभास है। इसलिए परिणाम अपरिमेय है।'},
+      {q:'0.999… और 1 में सही संबंध क्या है?',options:['0.999…<1','0.999…>1','0.999…=1','तुलना नहीं कर सकते'],answer:2,explain:'0.999… = 1। क्योंकि 1/3 = 0.333… और दोनों पक्षों को 3 से गुणा करने पर 1 = 0.999… मिलता है।'},
+      {q:'यदि m/n सरल रूप में है और n में 2 तथा 5 के अलावा कोई अन्य prime factor भी है, तो decimal expansion क्या होगा?',options:['समाप्त','अनंत आवर्ती','अनंत अनावर्ती','हमेशा पूर्णांक'],answer:1,explain:'ऐसी rational संख्या का decimal समाप्त नहीं होता; वह अनंत लेकिन आवर्ती होता है।'},
+      {q:'संख्या रेखा पर कौन-सा क्रम सही है?',options:['−√3 < −1 < 0 < 1 < √3','−1 < −√3 < 0 < 1 < √3','−√3 < 0 < −1 < 1 < √3','−√3 < −1 < 1 < 0 < √3'],answer:0,explain:'√3≈1.732, इसलिए −√3≈−1.732 सबसे बाईं ओर होगा।'},
+      {q:'√2 के अपरिमेय होने के प्रमाण में मूल विचार क्या है?',options:['√2 को 1 से छोटा मानना','मान लेना कि √2=p/q है और विरोधाभास निकालना','दशमलव देखकर अनुमान लगाना','केवल calculator से जाँचना'],answer:1,explain:'विरोधाभास विधि में √2=p/q मानकर p और q को coprime लिया जाता है; फिर parity से विरोधाभास प्राप्त होता है।'}
+    ]
+  }
+};
+
 function loadMistakes(){try{return JSON.parse(localStorage.getItem(mistakeKey)||'[]')}catch{return[]}}
 function saveMistake(item,subject,chapter,selected){try{const old=loadMistakes();const rec={id:`${subject}|${chapter}|${item.q}`,subject,chapter,question:item.q,options:item.options,answer:item.answer,correct:item.options[item.answer],selected:item.options[selected],explain:item.explain,at:Date.now()};localStorage.setItem(mistakeKey,JSON.stringify([rec,...old.filter(x=>x.id!==rec.id)].slice(0,100)))}catch{}}
 function saveSession(data){try{const old=JSON.parse(localStorage.getItem(sessionKey)||'[]');localStorage.setItem(sessionKey,JSON.stringify([{...data,at:Date.now()},...old].slice(0,100)))}catch{}}
 
 export function StudyEngine({subject,chapter,mode,onBack,addXp}){
  const base=getPracticeQuestions(subject?.name,chapter);
- const questions=useMemo(()=>mode==='challenge'?[...base].reverse().map(q=>({...q,q:`🔥 चुनौती: ${q.q}`})):base,[base,mode]);
+ const challengeQuestions=challengeBank[subject?.name]?.[chapter];
+ const questions=useMemo(()=>mode==='challenge'?(challengeQuestions||base).map(q=>({...q,q:`🔥 चुनौती: ${q.q}`})):base,[base,mode,challengeQuestions,chapter,subject?.name]);
  const isTest=mode==='test';
  const stage=mode==='challenge'?'challenge':mode==='test'?'test':'practice';
  const[index,setIndex]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[mistakes,setMistakes]=useState([]),[earned,setEarned]=useState(0),[remaining,setRemaining]=useState(TEST_SECONDS),[showReview,setShowReview]=useState(false);
