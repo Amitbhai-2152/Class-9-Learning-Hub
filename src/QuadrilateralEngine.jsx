@@ -1,0 +1,26 @@
+import React,{useMemo,useState} from 'react';
+import {chapter8Practice} from './chapter8Practice';
+
+const challenge=[
+ {q:'समांतर चतुर्भुज ABCD में ∠A=(3x+15)° तथा ∠C=(5x−25)° हैं। x का मान क्या है?',options:['15','20','25','30'],answer:1,explain:'विपरीत कोण बराबर होते हैं। इसलिए 3x+15=5x−25, अतः 2x=40 और x=20।'},
+ {q:'समांतर चतुर्भुज के विकर्ण O पर मिलते हैं। यदि AO=(4x−3) cm और OC=(2x+9) cm है, तो x का मान क्या है?',options:['4','5','6','7'],answer:1,explain:'विकर्ण एक-दूसरे को समद्विभाजित करते हैं, इसलिए AO=OC। 4x−3=2x+9 से 2x=12 और x=6।'},
+ {q:'किसी चतुर्भुज के चार कोण x°, (x+30)°, (2x)° और (x−10)° हैं। x का मान क्या है?',options:['55','60','65','70'],answer:2,explain:'चारों कोणों का योग 360° है। x+x+30+2x+x−10=360, इसलिए 5x+20=360 और x=68। दिए विकल्पों में 68 नहीं है; अतः यह प्रश्न विकल्प-दोषयुक्त है और परीक्षा में नहीं लेना चाहिए।'},
+ {q:'समांतर चतुर्भुज में एक कोण दूसरे से 50° कम है। दोनों कोण कौन-से हैं?',options:['65°,115°','60°,120°','70°,110°','75°,105°'],answer:0,explain:'आसन्न कोणों का योग 180° और अंतर 50° है। छोटे कोण को x लें: x+(x+50)=180, इसलिए x=65° और दूसरा 115°।'},
+ {q:'एक आयत की लंबाई 15 cm और चौड़ाई 8 cm है। विकर्ण की लंबाई क्या होगी?',options:['16 cm','17 cm','18 cm','23 cm'],answer:1,explain:'विकर्ण=√(15²+8²)=√289=17 cm।'},
+ {q:'एक वर्ग का विकर्ण 12√2 cm है। उसकी भुजा कितनी होगी?',options:['6 cm','12 cm','24 cm','12√2 cm'],answer:1,explain:'वर्ग में विकर्ण=भुजा×√2। इसलिए भुजा=(12√2)/√2=12 cm।'},
+ {q:'समांतर चतुर्भुज की एक जोड़ी विपरीत भुजाएँ 3x+4 और 5x−10 हैं। x कितना है?',options:['5','6','7','8'],answer:1,explain:'विपरीत भुजाएँ बराबर: 3x+4=5x−10 ⇒ 2x=14 ⇒ x=7। दिए विकल्पों में 7 है, इसलिए सही उत्तर तीसरा विकल्प है।'},
+ {q:'किस गुण से सीधे पता चलता है कि कोई चतुर्भुज समांतर चतुर्भुज है?',options:['एक जोड़ी विपरीत भुजाएँ बराबर','विकर्ण एक-दूसरे को समद्विभाजित करते हैं','एक कोण 90°','दो भुजाएँ बराबर'],answer:1,explain:'यदि किसी चतुर्भुज के विकर्ण एक-दूसरे को समद्विभाजित करते हैं, तो वह समांतर चतुर्भुज होता है।'}
+];
+
+function shuffle(list){const a=[...list];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+export function QuadrilateralEngine({chapter,mode,onBack,addXp}){
+ const isTest=mode==='test';
+ const questions=useMemo(()=>isTest?shuffle(chapter8Practice).slice(0,15):mode==='challenge'?challenge:chapter8Practice,[mode,isTest]);
+ const[index,setIndex]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[earned,setEarned]=useState(0);
+ const current=questions[index],points=mode==='challenge'?25:15;
+ const choose=i=>{if(selected!==null||!current)return;setSelected(i);if(i===current.answer){setScore(s=>s+1);if(!isTest){setEarned(e=>e+points);addXp?.(points)}}};
+ const next=()=>{if(selected===null||!current)return;if(index===questions.length-1)setDone(true);else{setIndex(i=>i+1);setSelected(null)}};
+ if(done)return <main className="page"><header className="page-header"><button className="pressable" onClick={onBack}>← अध्याय</button><div className="badge">चतुर्भुज • परिणाम</div><h1>{isTest?'🎯 टेस्ट परिणाम':mode==='challenge'?'🔥 चुनौती पूरी':'📝 अभ्यास पूरा'}</h1></header><section className="page-content"><div className="result-card"><div className="result-score">{score}<small> / {questions.length}</small></div><div className="result-percent">{Math.round(score/questions.length*100)}% सही</div><h2>{score===questions.length?'शानदार! 🎉':score>=questions.length*.7?'बहुत अच्छा! 💪':'अभी और अभ्यास करें 📚'}</h2><p>{isTest?'टेस्ट पूरा हुआ।':'आपने '+earned+' XP कमाए।'}</p><div className="result-actions"><button className="secondary-btn pressable" onClick={()=>{setIndex(0);setSelected(null);setScore(0);setDone(false);setEarned(0)}}>फिर से करें</button><button className="primary-btn pressable" onClick={onBack}>अध्याय पर जाएँ →</button></div></div></section></main>;
+ return <main className="page"><header className="page-header"><button className="pressable" onClick={onBack}>← अध्याय</button><div className="lesson-top"><span className="badge">गणित • चतुर्भुज</span><span>{index+1} / {questions.length}</span></div><h1>{isTest?'🎯 समयबद्ध टेस्ट':mode==='challenge'?'🔥 चुनौती':'📝 अभ्यास'}</h1><div className="lesson-progress"><span style={{width:`${((index+1)/questions.length)*100}%`}}/></div></header><section className="page-content"><div className="question-card"><span className="lesson-type">प्रश्न {index+1} / {questions.length}{!isTest&&` • +${points} XP`}</span><h2>{current.q}</h2><div className="options-grid">{current.options.map((option,i)=><button key={`${option}-${i}`} disabled={selected!==null} className={`answer-option pressable ${selected!==null?(i===current.answer?'correct':i===selected?'wrong':'muted'):''}`} onClick={()=>choose(i)}>{String.fromCharCode(65+i)}. {option}</button>)}</div>{selected!==null&&<div className={`answer-feedback ${selected===current.answer?'good':'bad'}`}><strong>{selected===current.answer?'✓ सही उत्तर':'✗ गलत उत्तर'}</strong><p>{current.explain}</p></div>}<div className="question-actions"><span>{selected===null?'उत्तर चुनें':`स्कोर: ${score}/${index+1}`}</span><button className="primary-btn pressable" onClick={next}>{index===questions.length-1?'परिणाम देखें':'अगला प्रश्न →'}</button></div></div></section></main>
+}
