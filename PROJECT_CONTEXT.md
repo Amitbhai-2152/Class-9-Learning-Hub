@@ -34,7 +34,7 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
 - `LearningEngine` originally expected `data.lessons`.
 - Several chapter data files use `sections` instead of `lessons`; this caused Learn screens to show “अभी सामग्री उपलब्ध नहीं है”.
 - Current intended compatibility fix: support both `data.lessons` and `data.sections` in the learning layer OR normalize chapter data at the routing layer.
-- Chapter 6 and 7 blank Learn issue was traced to this `lessons` vs `sections` mismatch. Verify in the actual repository before making future claims.
+- Chapter 6 and 7 blank Learn issue was traced to this `lessons` vs `sections` mismatch. The project later added the needed routing/data handling; verify the actual current repository state before future claims.
 
 ## Work completed / chapter status
 ### Maths
@@ -63,7 +63,7 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
    - `src/chapter6Learning.js` contains substantial Hindi lesson content using `sections`.
    - Dedicated `LinesAnglesEngine.jsx` exists.
    - A blank Learn issue was traced to `LearningEngine` expecting `lessons` while chapter data used `sections`.
-   - Must verify the final fix actually exists on GitHub before proceeding.
+   - The App routing/data layer has since been updated to provide the expected lesson shape; verify the latest repository before future claims.
 
 7. **अध्याय 7 — त्रिभुज**
    - `src/chapter7Learning.js` contains substantial Hindi lesson content using `sections`.
@@ -74,22 +74,30 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
    - `src/chapter8Learning.js` exists with `lessons` and rich Hindi content.
    - `src/chapter8Practice.js` exists.
    - `src/QuadrilateralEngine.jsx` exists with practice/challenge/test.
-   - `App.jsx` had NOT been visibly wired to Chapter 8 in one verified snapshot; Chapter 8 was not in the Maths chapter array at that snapshot. Verify before claiming it is connected.
+   - The current verified App state now imports/routs Chapter 8 through `QuadrilateralEngine`; verify current branch before relying on this later.
    - An earlier challenge file had a defective question; it was later corrected in the verified content snapshot.
 
 9. **अध्याय 9 — समान्तर चतुर्भुजों और त्रिभुजों का क्षेत्रफल**
    - `src/chapter9Learning.js` and `src/chapter9Practice.js` exist.
-   - `src/AreaEngine.jsx` was created.
-   - A verified `App.jsx` snapshot still listed Maths chapters only through Chapter 7 and imports only through `chapter7Learning`, so Chapter 9 was NOT yet verified as wired into the visible menu in that snapshot.
-   - Do not claim Chapter 9 is connected until App wiring is verified.
+   - `src/AreaEngine.jsx` exists.
+   - The current verified App state now imports/routs Chapter 9 through `AreaEngine`; verify current branch before relying on this later.
+
+10. **अध्याय 10 — वृत्त**
+   - Added `src/chapter10Learning.js` with 18 structured learning steps in simple Hindi, including वृत्त की परिभाषा, केंद्र, त्रिज्या, व्यास, जीवा, चाप, केंद्र से जीवा की दूरी, जीवा के मध्यबिंदु/लंब संबंध, चित्र-पठन, प्रमाण रणनीति, and quick checks.
+   - Added `src/chapter10Practice.js` with 40 questions spanning basic → medium → hard reasoning, each with a correct-answer explanation.
+   - Added `src/CirclesEngine.jsx` for Practice / Challenge / Test modes with immediate explanations and XP.
+   - Updated `src/App.jsx` to add **वृत्त** as Maths Chapter 10, import its learning data and engine, and route Learn/Practice/Challenge/Test to the new content.
+   - The Chapter 10 title/order follows the Class 9 Maths chapter sequence where Chapter 10 is **वृत्त**. This matches current NCERT-related listings and the NCERT Hindi textbook ecosystem. citeturn977275search0turn977275search1
+   - Latest Chapter 10 App wiring commit: `420700cd62242c142d0d74c3efa9a1e59b2a4d29`.
+   - Chapter 10 learning-content commit: `32e7db7e3c77bea1c7d99a136ecd1b7f788f2191`.
+   - Chapter 10 practice commit: `c87f26fd4f244542470d4c2175c1e509246780b9`.
+   - Chapter 10 engine commit: `4a6aba5b689ebf64c9b8db3eeac680fc841725a3`.
 
 ## Important code snapshots / facts from repository verification
-- A verified `App.jsx` snapshot showed:
-  - Maths chapter array: `['संख्या पद्धति','बहुपद','निर्देशांक ज्यामिति','दो चरों वाले रैखिक समीकरण','यूक्लिड की ज्यामिति का परिचय','रेखाएँ और कोण','त्रिभुज']`
-  - Imports through `chapter7Learning` only.
-  - Routing handlers existed for polynomial, coordinate, linear equation, Euclid, lines/angles, triangles.
-  - Chapter mode UI labels included some English/Hinglish strings such as `सरल explanation + examples`, `Concept समझने...`, `self-assessment`. This is acceptable for system/UI, but chapter teaching content itself must stay Hindi.
-- `src/LearningEngine.jsx` in a verified snapshot still had `const lessons=data?.lessons||[];` before a failed replacement attempt. A later successful commit was made in another path, but the exact current file must be fetched/verified before relying on that state.
+- A current verified `App.jsx` snapshot contains imports for Chapter 8 and Chapter 9 and routes those chapters to `QuadrilateralEngine` and `AreaEngine` respectively.
+- A current verified `App.jsx` snapshot before Chapter 10 wiring listed Maths through Chapter 9; Chapter 10 was then added in commit `420700cd62242c142d0d74c3efa9a1e59b2a4d29`.
+- `src/QuadrilateralEngine.jsx` exists and exposes its challenge/test rendering; `src/AreaEngine.jsx` exists for Chapter 9.
+- `src/chapter8Learning.js` uses a `lessons` array, while `src/chapter6Learning.js` and `src/chapter7Learning.js` historically used `sections`.
 
 ## Known mistakes to avoid
 1. **Do not claim a GitHub change succeeded if the connector returned a conflict/error.**
