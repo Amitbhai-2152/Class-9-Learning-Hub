@@ -1,3 +1,10 @@
+import {chapter6Learning} from './chapter6Learning';
+import {chapter7Learning} from './chapter7Learning';
+
+// Keep the learning engine compatible with chapters that use `sections`.
+chapter6Learning.lessons = chapter6Learning.lessons || chapter6Learning.sections || [];
+chapter7Learning.lessons = chapter7Learning.lessons || chapter7Learning.sections || [];
+
 export const chapter1Engagement = {
   'संख्या पद्धति': [
     {
