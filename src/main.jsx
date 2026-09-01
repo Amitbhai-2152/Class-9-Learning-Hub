@@ -3,53 +3,35 @@ import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 const subjects = [
-  { id: 'math', hi: 'गणित', en: 'Mathematics', chapter: 'संख्या पद्धति और बहुपद' },
-  { id: 'science', hi: 'विज्ञान', en: 'Science', chapter: 'हमारे आसपास के पदार्थ' },
-  { id: 'hindi', hi: 'हिन्दी', en: 'Hindi', chapter: 'कहानी के प्लॉट–1' },
-  { id: 'sst', hi: 'सामाजिक विज्ञान', en: 'Social Science', chapter: 'भौगोलिक खोजें–भाग 1' },
-  { id: 'sanskrit', hi: 'संस्कृत', en: 'Sanskrit', chapter: 'ईशस्तुति' },
-  { id: 'english', hi: 'अंग्रेज़ी', en: 'English', chapter: 'व्याकरण, काल और शब्दावली' },
-  { id: 'reasoning', hi: 'तर्कशक्ति', en: 'Reasoning', chapter: 'उन्नत तर्कशक्ति' },
+  ['गणित', 'संख्या पद्धति और बहुपद'], ['विज्ञान', 'हमारे आसपास के पदार्थ'], ['हिन्दी', 'कहानी के प्लॉट–1'],
+  ['सामाजिक विज्ञान', 'भौगोलिक खोजें–भाग 1'], ['संस्कृत', 'ईशस्तुति'], ['अंग्रेज़ी', 'व्याकरण, काल और शब्दावली'], ['तर्कशक्ति', 'उन्नत तर्कशक्ति']
 ];
 
-const modes = [
-  ['learn', '📖', 'सीखें', 'अध्याय की अवधारणाएँ समझें'],
-  ['practice', '📝', 'अभ्यास', 'अभ्यास प्रश्न हल करें'],
-  ['challenge', '🔥', 'चुनौती', 'कठिन प्रश्नों से खुद को परखें'],
-  ['test', '🎯', 'टेस्ट', 'समयबद्ध परीक्षा दें'],
-];
+const tests = ['अध्याय टेस्ट', 'मासिक टेस्ट', 'मिश्रित अभ्यास टेस्ट', 'मॉडल टेस्ट'];
 
 function App() {
-  const [selected, setSelected] = useState(null);
-  if (selected) return <Chapter subject={selected} onBack={() => setSelected(null)} />;
-  return (
-    <main className="app-shell">
-      <header className="hero"><div className="hero-inner">
-        <div className="badge">कक्षा 9 • लर्निंग हब</div>
-        <h1>पढ़ें • अभ्यास करें • चुनौती लें • टेस्ट दें</h1>
-        <p>हर अध्याय के लिए सीखने से लेकर परीक्षा और पुनरावलोकन तक एक व्यवस्थित, हिन्दी-प्रथम अनुभव।</p>
-      </div></header>
-      <section className="dashboard">
-        <div className="section-heading"><div><span className="eyebrow">आपकी सीखने की यात्रा</span><h2>विषय चुनें</h2></div><div className="progress-card"><strong>0%</strong><span>कुल प्रगति</span></div></div>
-        <div className="subject-grid">{subjects.map((subject, i) => <article className="subject-card" key={subject.id}>
-          <div className="subject-number">{String(i + 1).padStart(2, '0')}</div><h3>{subject.hi}</h3><p className="subject-en">{subject.en}</p><p>{subject.chapter}</p>
-          <button type="button" onClick={() => setSelected(subject)}>अध्याय खोलें <span>→</span></button>
-        </article>)}</div>
-      </section>
-    </main>
-  );
+  const [page, setPage] = useState('home');
+  if (page === 'classes') return <SimplePage title="सभी कक्षाएँ" onBack={() => setPage('home')}><div className="class-list">{subjects.map(([name, chapter], i) => <button className="list-card" key={name} onClick={() => setPage('chapter')}><span>0{i + 1}</span><div><strong>{name}</strong><small>{chapter}</small></div><b>→</b></button>)}</div></SimplePage>;
+  if (page === 'tests') return <SimplePage title="सभी टेस्ट" onBack={() => setPage('home')}><div className="class-list">{tests.map((test, i) => <button className="list-card" key={test}><span>0{i + 1}</span><div><strong>{test}</strong><small>जल्द ही उपलब्ध</small></div><b>→</b></button>)}</div></SimplePage>;
+  if (page === 'meter') return <SimplePage title="तैयारी मीटर" onBack={() => setPage('home')}><div className="meter-box"><div className="meter-ring">0%</div><h2>अभी आपकी तैयारी शुरू नहीं हुई है</h2><p>अध्याय पढ़ने, अभ्यास और टेस्ट पूरा करने के साथ आपकी प्रगति यहाँ दिखाई जाएगी।</p></div></SimplePage>;
+  return <Home setPage={setPage} />;
 }
 
-function Chapter({ subject, onBack }) {
-  return <main className="chapter-page">
-    <header className="chapter-header"><button className="back-button" onClick={onBack}>← वापस विषयों पर</button><div className="badge">कक्षा 9 • {subject.hi}</div><h1>{subject.chapter}</h1><p>इस अध्याय को समझें, अभ्यास करें और फिर अपनी तैयारी जाँचें।</p></header>
-    <section className="chapter-content"><div className="chapter-intro"><span className="eyebrow">अध्याय अध्ययन</span><h2>आप क्या करना चाहते हैं?</h2><p>हर चरण आपकी तैयारी को अगले स्तर तक ले जाने के लिए बनाया गया है।</p></div>
-      <div className="mode-grid">{modes.map(([id, icon, title, desc]) => <button className="mode-card" key={id} type="button">
-        <span className="mode-icon">{icon}</span><strong>{title}</strong><span>{desc}</span><b>→</b>
-      </button>)}</div>
-      <div className="coming-soon"><strong>अगला चरण</strong><span>अब इसी ढाँचे में अध्याय की वास्तविक पाठ्य-सामग्री और प्रश्न जोड़े जाएँगे।</span></div>
+function Home({ setPage }) {
+  const cards = [
+    ['classes', '▣', 'सभी कक्षाएँ', 'सभी विषय और अध्याय देखें'],
+    ['tests', '✎', 'सभी टेस्ट', 'उपलब्ध परीक्षाएँ और अभ्यास टेस्ट'],
+    ['meter', '◔', 'तैयारी मीटर', 'अपनी तैयारी और प्रगति देखें']
+  ];
+  return <main className="app-shell">
+    <nav className="topbar"><strong>पढ़ाई</strong><span className="nav-class">कक्षा 9</span><span className="nav-dot">●</span></nav>
+    <header className="hero"><div className="hero-inner"><div className="badge">कक्षा 9</div><h1>आपकी पढ़ाई, एक जगह</h1><p>विषय पढ़ें, टेस्ट दें और अपनी तैयारी पर नज़र रखें।</p></div></header>
+    <section className="dashboard"><div className="section-heading"><div><span className="eyebrow">कक्षा 9</span><h2>अध्ययन सुविधाएँ</h2></div></div>
+      <div className="offering-grid">{cards.map(([id, icon, title, desc]) => <button className="offering-card" key={id} onClick={() => setPage(id)}><span className="offering-icon">{icon}</span><span className="offering-copy"><strong>{title}</strong><small>{desc}</small></span><b>›</b></button>)}</div>
     </section>
   </main>;
 }
+
+function SimplePage({ title, onBack, children }) { return <main className="page"><header className="page-header"><button onClick={onBack}>← वापस</button><div className="badge">कक्षा 9 • लर्निंग हब</div><h1>{title}</h1></header><section className="page-content">{children}</section></main>; }
 
 createRoot(document.getElementById('root')).render(<App />);
