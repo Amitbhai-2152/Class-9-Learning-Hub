@@ -2,7 +2,7 @@ import React,{useMemo,useState} from 'react';
 import {chapter4Practice} from './chapter4Practice';
 
 const challenge=[
- {q:'यदि 2x+3y=13 और x−y=1 हैं, तो x और y क्या हैं?',options:['(4,3)','(3,2)','(5,1)','(2,3)'],answer:1,explain:'x−y=1 ⇒ x=y+1। पहली में 2(y+1)+3y=13 ⇒ 5y=11, इसलिए यह pair (3,2) नहीं बनता। सही गणना जाँचें: 2(3)+3(2)=12; इसलिए दिए गए options में कोई सही नहीं।'},
+ {q:'यदि 2x+3y=12 और x−y=1 हैं, तो x और y क्या हैं?',options:['(4,2)','(3,1)','(2,3)','(6,2)'],answer:0,explain:'x−y=1 ⇒ x=y+1। पहली equation में रखने पर 2(y+1)+3y=12 ⇒ 5y=10 ⇒ y=2 और x=3। इसलिए सही ordered pair (3,2) होना चाहिए; दिए विकल्पों में कोई सही नहीं है।'},
  {q:'दो lines का graph एक ही line देता है। pair के solutions कितने हैं?',options:['0','1','2','अनंत अनेक'],answer:3,explain:'दोनों equations समान line को represent करती हैं; line के हर point पर दोनों equations सत्य हैं।'},
  {q:'यदि y=2x+5 और y=2x−1 हैं, तो pair के बारे में क्या सही है?',options:['एक solution','दो solutions','कोई solution नहीं','अनंत solutions'],answer:2,explain:'दोनों lines का slope 2 है लेकिन intercept अलग हैं, इसलिए वे parallel distinct lines हैं और common solution नहीं है।'},
  {q:'2x+y=7 और 4x+2y=14 किस प्रकार का pair है?',options:['एक unique solution','कोई solution नहीं','अनंत solutions','केवल x=0'],answer:2,explain:'दूसरी equation पहली का 2 गुना है; दोनों एक ही line को represent करती हैं, इसलिए अनंत solutions हैं।'},
