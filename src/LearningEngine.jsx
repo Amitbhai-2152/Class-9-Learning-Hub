@@ -3,53 +3,28 @@ import {markStageComplete} from './engines/progress/progressStore';
 import {chapterEnhancements} from './chapterEnhancements';
 import {chapter1Engagement} from './chapter1Engagement';
 import './engine.css';
+import './chapter1Engagement.css';
 
 const typeLabel={intro:'अध्याय की शुरुआत',concept:'अवधारणा',example:'समझें • उदाहरण',check:'त्वरित जाँच'};
 
-function NumberLine({items=[]}){
-  return <div className="visual-canvas numberline-canvas"><div className="numberline-track"><span className="numberline-axis"/><span className="numberline-arrow left"/><span className="numberline-arrow right"/><div className="numberline-points">{items.map((x,i)=><div className="number-point" key={`${x}-${i}`}><span className="point-dot"/><strong>{x}</strong></div>)}</div></div></div>;
-}
-function FractionVisual({items=[]}){
-  return <div className="visual-canvas fraction-canvas"><div className="fraction-core"><span className="fraction-symbol">p</span><span className="fraction-line"/><span className="fraction-symbol">q</span></div><div className="fraction-labels">{items.map((x,i)=><span key={`${x}-${i}`}>{x}</span>)}</div></div>;
-}
-function FlowVisual({items=[]}){
-  return <div className="visual-canvas flow-canvas">{items.map((x,i)=><React.Fragment key={`${x}-${i}`}><div className="flow-node"><span>{i+1}</span><strong>{x}</strong></div>{i<items.length-1&&<span className="flow-arrow">→</span>}</React.Fragment>)}</div>;
-}
-function StepsVisual({items=[]}){
-  return <div className="visual-canvas steps-canvas">{items.map((x,i)=><div className="step-card" key={`${x}-${i}`}><span>{i+1}</span><strong>{x}</strong></div>)}</div>;
-}
-function CompareVisual({items=[]}){
-  return <div className="visual-canvas compare-canvas">{items.map((x,i)=><div className="compare-row" key={`${x}-${i}`}><span>{String.fromCharCode(65+i)}</span><strong>{x}</strong></div>)}</div>;
-}
-function EquationVisual({items=[]}){
-  return <div className="visual-canvas equation-canvas">{items.map((x,i)=><div className="equation-chip" key={`${x}-${i}`}><span>{i+1}</span><strong>{x}</strong></div>)}</div>;
-}
-function NestedVisual({items=[]}){
-  return <div className="visual-canvas nested-canvas">{items.map((x,i)=><div className={`nested-row nested-${Math.min(i,3)}`} key={`${x}-${i}`}><span>{i+1}</span><strong>{x}</strong></div>)}</div>;
-}
-function LessonVisual({visual}){
-  if(!visual)return null;
-  const kind=visual.type||'flow';
-  const title=visual.title||'Visual समझ';
-  const renderer={numberline:<NumberLine items={visual.items}/>,fraction:<FractionVisual items={visual.items}/>,flow:<FlowVisual items={visual.items}/>,steps:<StepsVisual items={visual.items}/>,compare:<CompareVisual items={visual.items}/>,equation:<EquationVisual items={visual.items}/>,nested:<NestedVisual items={visual.items}/>} [kind] || <FlowVisual items={visual.items}/>;
-  return <div className={`lesson-visual visual-${kind}`}><div className="visual-title"><span>✨</span><div><strong>{title}</strong><small>देखें और concept याद रखें</small></div></div>{renderer}</div>;
-}
-function EngagementCard({content}){
-  if(!content)return null;
-  return <div className="engagement-card"><div className="engagement-block"><span className="engagement-label">आज का hook</span><strong>{content.hook}</strong></div><div className="engagement-grid"><div><span className="engagement-label">क्यों सीख रहे हैं?</span><p>{content.why}</p></div><div><span className="engagement-label">🤔 पहले सोचें</span><p>{content.think}</p></div></div></div>;
-}
+function NumberLine({items=[]}){ return <div className="visual-canvas numberline-canvas"><div className="numberline-track"><span className="numberline-axis"/><span className="numberline-arrow left"/><span className="numberline-arrow right"/><div className="numberline-points">{items.map((x,i)=><div className="number-point" key={`${x}-${i}`}><span className="point-dot"/><strong>{x}</strong></div>)}</div></div></div>; }
+function FractionVisual({items=[]}){ return <div className="visual-canvas fraction-canvas"><div className="fraction-core"><span className="fraction-symbol">p</span><span className="fraction-line"/><span className="fraction-symbol">q</span></div><div className="fraction-labels">{items.map((x,i)=><span key={`${x}-${i}`}>{x}</span>)}</div></div>; }
+function FlowVisual({items=[]}){ return <div className="visual-canvas flow-canvas">{items.map((x,i)=><React.Fragment key={`${x}-${i}`}><div className="flow-node"><span>{i+1}</span><strong>{x}</strong></div>{i<items.length-1&&<span className="flow-arrow">→</span>}</React.Fragment>)}</div>; }
+function StepsVisual({items=[]}){ return <div className="visual-canvas steps-canvas">{items.map((x,i)=><div className="step-card" key={`${x}-${i}`}><span>{i+1}</span><strong>{x}</strong></div>)}</div>; }
+function CompareVisual({items=[]}){ return <div className="visual-canvas compare-canvas">{items.map((x,i)=><div className="compare-row" key={`${x}-${i}`}><span>{String.fromCharCode(65+i)}</span><strong>{x}</strong></div>)}</div>; }
+function EquationVisual({items=[]}){ return <div className="visual-canvas equation-canvas">{items.map((x,i)=><div className="equation-chip" key={`${x}-${i}`}><span>{i+1}</span><strong>{x}</strong></div>)}</div>; }
+function NestedVisual({items=[]}){ return <div className="visual-canvas nested-canvas">{items.map((x,i)=><div className={`nested-row nested-${Math.min(i,3)}`} key={`${x}-${i}`}><span>{i+1}</span><strong>{x}</strong></div>)}</div>; }
+function LessonVisual({visual}){ if(!visual)return null; const kind=visual.type||'flow'; const title=visual.title||'Visual समझ'; const renderer={numberline:<NumberLine items={visual.items}/>,fraction:<FractionVisual items={visual.items}/>,flow:<FlowVisual items={visual.items}/>,steps:<StepsVisual items={visual.items}/>,compare:<CompareVisual items={visual.items}/>,equation:<EquationVisual items={visual.items}/>,nested:<NestedVisual items={visual.items}/>} [kind] || <FlowVisual items={visual.items}/>; return <div className={`lesson-visual visual-${kind}`}><div className="visual-title"><span>✨</span><div><strong>{title}</strong><small>देखें और concept याद रखें</small></div></div>{renderer}</div>; }
+function EngagementCard({content}){ if(!content)return null; return <div className="engagement-card"><div className="engagement-block"><span className="engagement-label">आज का hook</span><strong>{content.hook}</strong></div><div className="engagement-grid"><div><span className="engagement-label">क्यों सीख रहे हैं?</span><p>{content.why}</p></div><div><span className="engagement-label">🤔 पहले सोचें</span><p>{content.think}</p></div></div></div>; }
 
 export function LearningEngine({subject,chapter,data,onBack,addXp,finishSession}){
   const lessons=data?.lessons||[];
   const chapterId=`${subject?.name||'विषय'}::${chapter||'अध्याय'}`;
   const enhancement=chapterEnhancements[`${subject?.name}|${chapter}`]||{};
-  const engagement=(chapter==='संख्या पद्धति'?chapter1Engagement['संख्या पद्धति']?.[0]:null);
   const [index,setIndex]=useState(0),[answers,setAnswers]=useState({}),[completed,setCompleted]=useState(false),[startedAt]=useState(Date.now());
   useEffect(()=>{try{const raw=localStorage.getItem(`class9-learning:${chapterId}`);if(raw){const state=JSON.parse(raw);if(Number.isInteger(state.index))setIndex(Math.min(Math.max(state.index,0),Math.max(lessons.length-1,0)));if(state.answers)setAnswers(state.answers)}}catch{}},[chapterId,lessons.length]);
   useEffect(()=>{try{localStorage.setItem(`class9-learning:${chapterId}`,JSON.stringify({index,answers}))}catch{}},[chapterId,index,answers]);
-  const item=lessons[index];
-  const percent=lessons.length?Math.round(((index+1)/lessons.length)*100):0;
-  const selected=answers[index];
+  const item=lessons[index]; const percent=lessons.length?Math.round(((index+1)/lessons.length)*100):0; const selected=answers[index];
   const checkAnswer=value=>{if(selected!==undefined)return;setAnswers(a=>({...a,[index]:value}))};
   const correctCount=Object.entries(answers).reduce((n,[i,v])=>n+(String(v)===String(lessons[i]?.answer)?1:0),0);
   const goNext=()=>{if(index<lessons.length-1){setIndex(i=>i+1);return;}if(item.question&&selected===undefined)return;if(!completed){setCompleted(true);markStageComplete(chapterId,'learn');addXp?.(20);finishSession?.({subject:subject?.name,chapter,mode:'learn',completed:true,attempted:lessons.filter(x=>x.question).length,correct:correctCount,at:Date.now(),durationSeconds:Math.round((Date.now()-startedAt)/1000)});return;}onBack()};
