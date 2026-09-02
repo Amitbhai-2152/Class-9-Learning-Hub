@@ -1,0 +1,52 @@
+name: Integrate Science Chapter 7
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-science-chapter7.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch App integration
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('src/App.jsx')
+          s=p.read_text(encoding='utf-8')
+          replacements=[
+            ("import {ScienceChapter6Engine} from './ScienceChapter6Engine';", "import {ScienceChapter6Engine} from './ScienceChapter6Engine';\nimport {ScienceChapter7Engine} from './ScienceChapter7Engine';"),
+            ("import {scienceChapter6Learning} from './scienceChapter6Learning';", "import {scienceChapter6Learning} from './scienceChapter6Learning';\nimport {scienceChapter7Learning} from './scienceChapter7Learning';"),
+            ("chapters:['हमारे आसपास के पदार्थ','क्या हमारे आसपास के पदार्थ शुद्ध हैं?','परमाणु एवं अणु','परमाणु की संरचना','जीवन की मौलिक इकाई — कोशिका','ऊतक']", "chapters:['हमारे आसपास के पदार्थ','क्या हमारे आसपास के पदार्थ शुद्ध हैं?','परमाणु एवं अणु','परमाणु की संरचना','जीवन की मौलिक इकाई — कोशिका','ऊतक','गति']"),
+            ("  'ऊतक':scienceChapter6Learning\n }", "  'ऊतक':scienceChapter6Learning,\n  'गति':scienceChapter7Learning\n }"),
+            (" const isScienceChapter6=subject.name==='विज्ञान'&&chapter==='ऊतक';", " const isScienceChapter6=subject.name==='विज्ञान'&&chapter==='ऊतक';\n const isScienceChapter7=subject.name==='विज्ञान'&&chapter==='गति';"),
+            ("isScienceChapter6?scienceChapter6Learning:baseData;", "isScienceChapter6?scienceChapter6Learning:isScienceChapter7?scienceChapter7Learning:baseData;"),
+            (" if(isScienceChapter6)return <ScienceChapter6Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;", " if(isScienceChapter6)return <ScienceChapter6Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;\n if(isScienceChapter7)return <ScienceChapter7Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;"),
+          ]
+          for old,new in replacements:
+              if old not in s:
+                  raise SystemExit(f'Missing expected App pattern: {old[:100]}')
+              s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Commit integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/App.jsx
+          git commit -m 'Integrate Science Chapter 7' || exit 0
+          git push
+
+      - name: Remove one-time workflow
+        run: |
+          git rm .github/workflows/add-science-chapter7.yml
+          git commit -m 'Remove one-time chapter integration workflow'
+          git push
