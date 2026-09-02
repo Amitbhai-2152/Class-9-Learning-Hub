@@ -22,6 +22,7 @@ import {ScienceChapter3Engine} from './ScienceChapter3Engine';
 import {ScienceChapter4Engine} from './ScienceChapter4Engine';
 import {ScienceChapter5Engine} from './ScienceChapter5Engine';
 import {ScienceChapter6Engine} from './ScienceChapter6Engine';
+import {ScienceChapter7Engine} from './ScienceChapter7Engine';
 import {chapter2Learning} from './chapter2Learning';
 import {chapter3Learning} from './chapter3Learning';
 import {chapter4Learning} from './chapter4Learning';
@@ -42,6 +43,7 @@ import {scienceChapter3Learning} from './scienceChapter3Learning';
 import {scienceChapter4Learning} from './scienceChapter4Learning';
 import {scienceChapter5Learning} from './scienceChapter5Learning';
 import {scienceChapter6Learning} from './scienceChapter6Learning';
+import {scienceChapter7Learning} from './scienceChapter7Learning';
 import {MathSectionHero,MathChapterDecor} from './MathSectionVisuals';
 import {cbtConfig} from './cbtConfig';
 import './styles.css';
@@ -49,7 +51,7 @@ import './math-section.css';
 
 const subjects=[
 {id:'math',name:'गणित',icon:'∑',desc:'संख्या, बीजगणित, ज्यामिति और तर्क',chapters:['संख्या पद्धति','बहुपद','निर्देशांक ज्यामिति','दो चरों वाले रैखिक समीकरण','यूक्लिड की ज्यामिति का परिचय','रेखाएँ और कोण','त्रिभुज','चतुर्भुज','समान्तर चतुर्भुजों और त्रिभुजों का क्षेत्रफल','वृत्त','रचनाएँ','हीरोन का सूत्र','पृष्ठीय क्षेत्रफल एवं आयतन','सांख्यिकी','प्रायिकता']},
-{id:'science',name:'विज्ञान',icon:'⚗',desc:'भौतिकी, रसायन और जीव विज्ञान',chapters:['हमारे आसपास के पदार्थ','क्या हमारे आसपास के पदार्थ शुद्ध हैं?','परमाणु एवं अणु','परमाणु की संरचना','जीवन की मौलिक इकाई — कोशिका','ऊतक']},
+{id:'science',name:'विज्ञान',icon:'⚗',desc:'भौतिकी, रसायन और जीव विज्ञान',chapters:['हमारे आसपास के पदार्थ','क्या हमारे आसपास के पदार्थ शुद्ध हैं?','परमाणु एवं अणु','परमाणु की संरचना','जीवन की मौलिक इकाई — कोशिका','ऊतक','गति']},
 {id:'hindi',name:'हिन्दी',icon:'अ',desc:'गद्य, पद्य, भाषा और लेखन',chapters:['कहानी के प्लॉट–1']},
 {id:'sst',name:'सामाजिक विज्ञान',icon:'◎',desc:'इतिहास, भूगोल, नागरिक शास्त्र और अर्थशास्त्र',chapters:['भौगोलिक खोजें–भाग 1']},
 {id:'sanskrit',name:'संस्कृत',icon:'ॐ',desc:'पाठ, व्याकरण और संस्कृत अभ्यास',chapters:['ईशस्तुति']},
@@ -91,7 +93,8 @@ function SubjectPage({subject,back,open}){
   'परमाणु एवं अणु':scienceChapter3Learning,
   'परमाणु की संरचना':scienceChapter4Learning,
   'जीवन की मौलिक इकाई — कोशिका':scienceChapter5Learning,
-  'ऊतक':scienceChapter6Learning
+  'ऊतक':scienceChapter6Learning,
+  'गति':scienceChapter7Learning
  };
  return <Simple title={subject.name} back={back}>{isMath&&<MathSectionHero chapters={subject.chapters}/>}<div className={isMath?'math-section-wrap':'subject-section'}><p className="page-lead">{subject.desc}</p><div className="chapter-grid">{subject.chapters.map((c,i)=>{const data=getChapterContent(subject.name,c);const effectiveData=subject.id==='science'?(scienceData[c]||data):data;return <button className="chapter-card pressable" key={c} onClick={()=>open(c)}>{isMath&&<MathChapterDecor chapter={c} index={i}/>}<span className="chapter-no">अध्याय {i+1}</span><strong>{c}</strong><small>{effectiveData?.goal||'अध्याय अध्ययन सामग्री'}</small><div className="chapter-actions"><span>📖 सीखें</span><span>📝 अभ्यास</span><span>🔥 चुनौती</span><span>🎯 टेस्ट</span></div><b>खोलें →</b></button>})}</div></div></Simple>;
 }
@@ -104,6 +107,7 @@ function ChapterPage({subject,chapter,back,addXp,finishSession}){
  const isScienceChapter4=subject.name==='विज्ञान'&&chapter==='परमाणु की संरचना';
  const isScienceChapter5=subject.name==='विज्ञान'&&chapter==='जीवन की मौलिक इकाई — कोशिका';
  const isScienceChapter6=subject.name==='विज्ञान'&&chapter==='ऊतक';
+ const isScienceChapter7=subject.name==='विज्ञान'&&chapter==='गति';
  const isPolynomial=subject.name==='गणित'&&chapter==='बहुपद';
  const isCoordinate=subject.name==='गणित'&&chapter==='निर्देशांक ज्यामिति';
  const isLinear=subject.name==='गणित'&&chapter==='दो चरों वाले रैखिक समीकरण';
@@ -118,13 +122,14 @@ function ChapterPage({subject,chapter,back,addXp,finishSession}){
  const isSurfaceVolume=subject.name==='गणित'&&chapter==='पृष्ठीय क्षेत्रफल एवं आयतन';
  const isStatistics=subject.name==='गणित'&&chapter==='सांख्यिकी';
  const isProbability=subject.name==='गणित'&&chapter==='प्रायिकता';
- const data=isPolynomial?{goal:chapter2Learning.goal,lessons:chapter2Learning.sections}:isCoordinate?{goal:chapter3Learning.goal,lessons:chapter3Learning.lessons}:isLinear?chapter4Learning:isEuclid?chapter5Learning:isLinesAngles?chapter6Learning:isTriangles?chapter7Learning:isQuadrilateral?chapter8Learning:isArea?chapter9Learning:isCircles?chapter10Learning:isConstructions?chapter11Learning:isHeron?chapter12Learning:isSurfaceVolume?chapter13Learning:isStatistics?chapter14Learning:isProbability?chapter15Learning:isScienceChapter1?scienceChapter1Learning:isScienceChapter2?scienceChapter2Learning:isScienceChapter3?scienceChapter3Learning:isScienceChapter4?scienceChapter4Learning:isScienceChapter5?scienceChapter5Learning:isScienceChapter6?scienceChapter6Learning:baseData;
+ const data=isPolynomial?{goal:chapter2Learning.goal,lessons:chapter2Learning.sections}:isCoordinate?{goal:chapter3Learning.goal,lessons:chapter3Learning.lessons}:isLinear?chapter4Learning:isEuclid?chapter5Learning:isLinesAngles?chapter6Learning:isTriangles?chapter7Learning:isQuadrilateral?chapter8Learning:isArea?chapter9Learning:isCircles?chapter10Learning:isConstructions?chapter11Learning:isHeron?chapter12Learning:isSurfaceVolume?chapter13Learning:isStatistics?chapter14Learning:isProbability?chapter15Learning:isScienceChapter1?scienceChapter1Learning:isScienceChapter2?scienceChapter2Learning:isScienceChapter3?scienceChapter3Learning:isScienceChapter4?scienceChapter4Learning:isScienceChapter5?scienceChapter5Learning:isScienceChapter6?scienceChapter6Learning:isScienceChapter7?scienceChapter7Learning:baseData;
  if(isScienceChapter1)return <ScienceChapter1Engine2 chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;
  if(isScienceChapter2)return <ScienceChapter2Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;
  if(isScienceChapter3)return <ScienceChapter3Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;
  if(isScienceChapter4)return <ScienceChapter4Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;
  if(isScienceChapter5)return <ScienceChapter5Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;
  if(isScienceChapter6)return <ScienceChapter6Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;
+ if(isScienceChapter7)return <ScienceChapter7Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;
  if(mode==='learn')return <LearningEngine subject={subject} chapter={chapter} data={data} onBack={()=>setMode(null)} addXp={addXp} finishSession={finishSession}/>;
  if(['practice','challenge','test'].includes(mode)){
   if(isPolynomial)return <PolynomialEngine subject={subject} chapter={chapter} mode={mode} onBack={()=>setMode(null)} addXp={addXp}/>;
