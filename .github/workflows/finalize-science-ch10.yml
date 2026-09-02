@@ -1,0 +1,39 @@
+name: Finalize Science Chapter 10
+on:
+  push:
+    paths:
+      - '.github/workflows/finalize-science-ch10.yml'
+permissions:
+  contents: write
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Chapter 10 renderer and notation
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('src/ScienceNextChapterEngine.jsx')
+          s=p.read_text()
+          marker=" const type=visual?.type||'generic';\n"
+          block=""" if(type==='work'||type==='zeroWork') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden=\"true\"><div className=\"sc10-work-box\">▰</div><div className=\"sc10-floor\"/><span className=\"sc10-arrow force\">बल →</span><span className=\"sc10-arrow disp\">विस्थापन →</span>{type==='zeroWork'&&<strong className=\"sc10-zero\">विस्थापन = 0 ⇒ W = 0</strong>}</div>;\n if(type==='workFormula'||type==='workExample') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden=\"true\"><div className=\"sc10-formula\"><strong>{type==='workFormula'?'W = F × s':'10 N × 3 m = 30 J'}</strong><span>कार्य = बल × विस्थापन</span></div></div>;\n if(type==='energy'||type==='mechanical'||type==='energyConserve') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden=\"true\"><div className=\"sc10-energy-row\"><span>स्थितिज ऊर्जा</span><i>↕</i><span>गतिज ऊर्जा</span></div>{type==='mechanical'&&<strong>यांत्रिक ऊर्जा = K + U</strong>}{type==='energyConserve'&&<strong>कुल ऊर्जा संरक्षित</strong>}</div>;\n if(type==='kinetic'||type==='kineticExample') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden=\"true\"><div className=\"sc10-speed\"><div className=\"sc10-speed-row\"><span>v</span><div className=\"sc10-bar one\"><i/></div><strong>{type==='kinetic'?'K':'9 J'}</strong></div><div className=\"sc10-speed-row\"><span>2v</span><div className=\"sc10-bar two\"><i/></div><strong>{type==='kinetic'?'4K':'4×'}</strong></div></div></div>;\n if(type==='potential'||type==='potentialExample') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden=\"true\"><div className=\"sc10-ground\"/><span className=\"sc10-height-object\">●</span><div className=\"sc10-height-line\"/><span className=\"sc10-height-tag\">h</span><div className=\"sc10-formula\"><strong>{type==='potential'?'U = mgh':'U = 98 J'}</strong></div></div>;\n if(type==='swingEnergy') return <div className=\"sc3-motion-diagram sc3-swingEnergy\" aria-hidden=\"true\"><div className=\"sc10-swing-rope\"/><div className=\"sc10-swing-ball\">●</div><strong className=\"sc10-swing-label\">U ↔ K</strong></div>;\n if(type==='power'||type==='powerExample'||type==='watt') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden=\"true\"><div className=\"sc10-power\"><strong>{type==='power'?'P = W/t':type==='powerExample'?'20 W':'1 kW = 1000 W'}</strong><span>शक्ति = कार्य / समय</span></div></div>;\n if(type==='dailyPower'||type==='workEnergyPower') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden=\"true\"><div className=\"sc10-triad\"><span>कार्य</span><i>→</i><span>ऊर्जा</span><i>→</i><span>शक्ति</span></div></div>;\n if(type==='summaryWorkEnergy'||type==='challengePrep') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden=\"true\"><div className=\"sc10-summary\"><strong>W = F×s</strong><strong>K = ½mv²</strong><strong>U = mgh</strong><strong>P = W/t</strong></div></div>;\n"""
+          if marker not in s:
+              raise SystemExit('marker missing')
+          if "type==='work'||type==='zeroWork'" not in s:
+              s=s.replace(marker, marker+block, 1)
+          p.write_text(s)
+
+          p=Path('src/scienceChapter10Learning.js')
+          s=p.read_text()
+          for a,b in [('P = mgh','U = mgh'),('P = 98 J','U = 98 J'),('P अधिक','U अधिक'),('K + P','K + U'),('P ↔ K','U ↔ K')]:
+              s=s.replace(a,b)
+          p.write_text(s)
+          PY
+          rm .github/workflows/finalize-science-ch10.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/ScienceNextChapterEngine.jsx src/scienceChapter10Learning.js .github/workflows/finalize-science-ch10.yml
+          git commit -m 'fix: finalize chapter 10 visuals and energy notation'
+          git push
