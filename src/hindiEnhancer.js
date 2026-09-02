@@ -70,7 +70,8 @@ function enhanceChapter(){
   const header=document.querySelector('.page-header h1');if(header)header.textContent=selection.chapter;
   engineMount=document.createElement('div');engineMount.className='hindi-engine-mount';content.innerHTML='';content.appendChild(engineMount);
   const addXp=value=>localProgressUpdate('xp',value);const finishSession=value=>localProgressUpdate('session',value);
-  engineRoot=createRoot(engineMount);engineRoot.render(<HindiHubEngine chapter={selection.chapter} initialMode={selection.mode} onBack={()=>{cleanupEngine();document.querySelector('.page-header button')?.click()}} addXp={addXp} finishSession={finishSession}/>);
+  const handleBack=()=>{cleanupEngine();document.querySelector('.page-header button')?.click()};
+  engineRoot=createRoot(engineMount);engineRoot.render(React.createElement(HindiHubEngine,{chapter:selection.chapter,initialMode:selection.mode,onBack:handleBack,addXp,finishSession}));
   return true;
 }
 
