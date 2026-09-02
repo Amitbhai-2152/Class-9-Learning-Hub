@@ -86,6 +86,16 @@
 - [x] Final CI run #316 (`33634264854`) passed both Science content QA and the Vite application build.
 - [ ] Full browser/device interaction test is still not available in this environment.
 
+### Step 8 — Science mode action routing correction
+
+**Commits:** `06b135f` → `7659128`
+
+- [x] Found a separate interaction defect: the four labels `📖 सीखें`, `📝 अभ्यास`, `🔥 चुनौती`, and `🎯 टेस्ट` on Science chapter cards were only visual spans inside one parent chapter button.
+- [x] Clicking a visible mode label therefore triggered the parent chapter-open action instead of launching the selected mode.
+- [x] Added `scienceModeRouter.js` to capture Science chapter-card mode clicks, remember the selected mode, open the chapter normally, then launch the matching mode button after the chapter page mounts.
+- [x] Wired the router from `main2.jsx` without changing chapter content or assessment data.
+- [ ] Full browser/device interaction test is still not available in this environment.
+
 ### Status
 - [x] Quality-pass log created.
 - [x] Automated content/data-shape audit.
@@ -93,7 +103,9 @@
 - [x] CI QA + build verification.
 - [x] Science subject landing visual energy upgrade.
 - [x] Practice bank visibility correction implemented across Science 7–15.
-- [x] Final CI verification for the Practice fix.
+- [x] Science chapter-card mode routing correction implemented.
+- [x] Final CI verification for the Practice-bank changes.
+- [ ] Final CI verification for the mode-routing change is pending.
 - [ ] Deeper manual content-quality pass for every chapter.
 - [ ] Browser/device verification when an interactive browser environment is available.
 
