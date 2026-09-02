@@ -9,7 +9,7 @@ function CoreAssessment({mode,chapter,onBack,addXp,finishSession}){
   useEffect(()=>{
     const timer=setTimeout(()=>{
       const root=document.querySelector('[data-science-ch1-core]');
-      const labels={practice:'अभ्यास',challenge:'চ্যালেঞ্জ',test:'टेस्ट'};
+      const labels={practice:'अभ्यास',challenge:'चुनौती',test:'टेस्ट'};
       const button=root&&[...root.querySelectorAll('button')].find(node=>node.textContent.trim().includes(labels[mode]));
       if(button)button.click();
       setReady(true);
