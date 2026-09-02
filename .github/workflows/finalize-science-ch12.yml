@@ -1,4 +1,5 @@
 name: Finalize Science Chapter 12
+# trigger after workflow is present on main
 on:
   push:
     paths:
@@ -31,7 +32,6 @@ jobs:
           s=s.replace(":isScienceChapter10?scienceChapter10Learning:baseData;",":isScienceChapter10?scienceChapter10Learning:isScienceChapter12?scienceChapter12Learning:baseData;",1)
           s=s.replace("if(isScienceChapter10)return <ScienceChapter10Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;","if(isScienceChapter10)return <ScienceChapter10Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;if(subject.name==='विज्ञान'&&chapter==='ध्वनि')return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;if(isScienceChapter12)return <ScienceChapter12Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;",1)
           app.write_text(s,encoding='utf-8')
-
           p=Path('src/ScienceNextChapterEngine.jsx'); s=p.read_text(encoding='utf-8')
           marker=" const type=visual?.type||'generic';"
           visuals="""
