@@ -5,7 +5,7 @@ import './science-chapter-sidebar.css';
 const normalize=(value='')=>value.replace(/\s+/g,' ').trim();
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
-export function ScienceChapterShell({lessons=[],title='इस अध्याय में क्या पढ़ेंगे?',children}){
+export function ScienceChapterShell({lessons=[],title='अध्याय सूची',children}){
   const rootRef=useRef(null);
   const [activeIndex,setActiveIndex]=useState(0);
   const items=useMemo(()=>lessons.filter(Boolean),[lessons]);
@@ -13,7 +13,7 @@ export function ScienceChapterShell({lessons=[],title='इस अध्याय
   useEffect(()=>{
     const root=rootRef.current;
     if(!root||!items.length)return undefined;
-    const headings=[...root.querySelectorAll('.science-learn-page h1,.science-learn-page h2,.science-learn-page h3')];
+    const headings=[...root.querySelectorAll('.science-learn-page h1,.science-learn-page h2,.science-learn-page h3,.lesson-list h1,.lesson-list h2,.lesson-list h3')];
     const targets=items.map((lesson,index)=>{
       const wanted=normalize(lesson.title||`चरण ${index+1}`);
       const hit=headings.find(el=>normalize(el.textContent).includes(wanted)||wanted.includes(normalize(el.textContent)));
@@ -46,12 +46,12 @@ export function ScienceChapterShell({lessons=[],title='इस अध्याय
   };
 
   const enterLearnMode=async()=>{
-    if(rootRef.current?.querySelector('.science-learn-page'))return true;
+    if(rootRef.current?.querySelector('.science-learn-page,.lesson-list'))return true;
     const learn=findButton('सीखें');
     if(!learn)return false;
     learn.click();
     await wait(180);
-    return Boolean(rootRef.current?.querySelector('.science-learn-page'));
+    return Boolean(rootRef.current?.querySelector('.science-learn-page,.lesson-list'));
   };
 
   const jumpToLesson=async targetIndex=>{
@@ -74,7 +74,8 @@ export function ScienceChapterShell({lessons=[],title='इस अध्याय
 
   const selectLesson=async index=>{
     setActiveIndex(index);
-    const target=rootRef.current?.querySelector(`#science-lesson-${index+1}`);
+    const root=rootRef.current;
+    const target=root?.querySelector(`#science-lesson-${index+1}`);
     if(target){target.scrollIntoView({behavior:'smooth',block:'start'});return;}
     if(await jumpToLesson(index)){
       await wait(60);
@@ -83,7 +84,7 @@ export function ScienceChapterShell({lessons=[],title='इस अध्याय
   };
 
   return <div className="science-chapter-shell" ref={rootRef}>
-    <aside className="science-chapter-shell-sidebar" aria-label="अध्याय विषय सूची">
+    <aside className="science-chapter-shell-sidebar" aria-label="अध्याय सूची">
       <ChapterContents lessons={items} title={title} activeIndex={activeIndex} onSelect={selectLesson}/>
     </aside>
     <div className="science-chapter-shell-main">{children}</div>
