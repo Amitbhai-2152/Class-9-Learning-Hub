@@ -21,10 +21,12 @@ const modes=[
 
 function TopicCard({topic,index,open,kind}){
   const launch=mode=>open(topic.title,mode);
-  return <article className={`hindi-topic-card ${kind==='poetry'?'is-poetry':''}`}>
+  const isChapterOne=topic.id==='g1';
+  return <article className={`hindi-topic-card ${kind==='poetry'?'is-poetry':''} ${isChapterOne?'is-chapter-one':''}`}>
     <div className="hindi-topic-top">
       <span className="hindi-topic-number">{String(index+1).padStart(2,'0')}</span>
-      <span className="hindi-topic-type">{topic.type||'पाठ'}</span>
+      {isChapterOne&&<span className="hindi-start-badge">🚀 शुरुआत यहीं से</span>}
+      {!isChapterOne&&<span className="hindi-topic-type">{topic.type||'पाठ'}</span>}
     </div>
     <div className="hindi-topic-title-row">
       <h4>{topic.title}</h4>
@@ -81,6 +83,7 @@ export function HindiSubjectSection({open}){
       <div className="hindi-study-flow" aria-label="अध्ययन क्रम">
         <span><i>1</i> पढ़ें</span><em>→</em><span><i>2</i> समझें</span><em>→</em><span><i>3</i> अभ्यास</span><em>→</em><span><i>4</i> टेस्ट</span>
       </div>
+      <button type="button" className="hindi-start-chapter pressable" onClick={()=>open('कहानी का प्लॉट','learn')}>🚀 अध्याय 1 से शुरू करें <span>कहानी का प्लॉट →</span></button>
     </div>
 
     <div className="hindi-book-section-head">
