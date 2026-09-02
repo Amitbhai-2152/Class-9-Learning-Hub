@@ -132,6 +132,18 @@
 - [x] Latest application CI run #329 (`33658382058`) passed Science content QA and the Vite build for commit `681519b`.
 - [ ] Full browser/device interaction test is still not available in this environment.
 
+### Step 12 — Final Science mode/exit audit
+
+**Commit:** `6310e3c`
+
+- [x] Re-verified the Chapter 1 and Chapter 2 wrapper/core routing contracts.
+- [x] Confirmed the shared `ScienceNextChapterEngine` returns assessments directly to the chapter menu through its `onBack` contract; this covers the later shared-engine chapters using that component.
+- [x] Found the remaining Chapter 2-specific defect: the core `Quiz` was hardcoding assessment back navigation to `setMode('learn')`, which could send Practice/Challenge/Test users into the Learn page instead of the chapter menu.
+- [x] Replaced that hardcoded Learn fallback with the core `onBack` callback supplied by the Chapter 2 wrapper.
+- [x] Removed the temporary Chapter 2-specific router interception that had become unnecessary after the clean core fix.
+- [x] Verified the Chapter 2 subject launch still passes `initialMode` into the core, so direct `अभ्यास / चुनौती / टेस्ट` launch remains mode-specific.
+- [ ] Full browser/device interaction test is still not available in this environment.
+
 ### Status
 - [x] Quality-pass log created.
 - [x] Automated content/data-shape audit.
@@ -143,7 +155,7 @@
 - [x] Science chapter exit/completion navigation hardening implemented.
 - [x] Science navigation animation + responsive button structure implemented.
 - [x] Science subject action interaction hardening implemented.
-- [x] Final CI verification for the latest Science subject action hardening commit.
+- [x] Chapter 2 assessment exit routing corrected at the core component level.
 - [ ] Full browser/device verification when an interactive browser environment is available.
 - [ ] Deeper manual content-quality pass for every chapter.
 
