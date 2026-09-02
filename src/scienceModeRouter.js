@@ -20,7 +20,7 @@ function clearPendingLaunch(){
 
 function isScienceSubjectPage(){
   const header=document.querySelector('.page-header h1');
-  return header?.textContent?.trim()==='विज्ञान' && Boolean(document.querySelector('.subject-section .chapter-grid'));
+  return header?.textContent?.trim()==='विज्ञान'&&Boolean(document.querySelector('.subject-section .chapter-grid'));
 }
 
 function isScienceChapterLaunch(){
@@ -62,12 +62,42 @@ function scheduleRequestedModeLaunch(){
   },30);
 }
 
+function prepareScienceModeActions(){
+  if(!isScienceSubjectPage())return;
+  document.querySelectorAll('.subject-section .chapter-card .chapter-actions span').forEach((action,index)=>{
+    if(action.dataset.scienceActionPrepared==='1')return;
+    const raw=action.textContent.replace(/\s+/g,' ').trim();
+    const mode=MODE_KEYS[raw]||Object.entries(MODE_LABELS).find(([,label])=>raw.includes(label))?.[0];
+    if(!mode)return;
+    action.dataset.scienceActionPrepared='1';
+    action.dataset.scienceMode=mode;
+    action.setAttribute('role','button');
+    action.setAttribute('tabindex','0');
+    action.setAttribute('aria-label',`${MODE_LABELS[mode]} शुरू करें`);
+  });
+}
+
+function activateScienceModeAction(action){
+  if(!action)return;
+  const card=action.closest('.chapter-card');
+  if(!card||!isScienceSubjectPage())return;
+  const mode=action.dataset.scienceMode;
+  if(!mode)return;
+  clearPendingLaunch();
+  try{sessionStorage.setItem(STORAGE_KEY,mode)}catch{}
+  action.classList.remove('science-action-pressed');
+  void action.offsetWidth;
+  action.classList.add('science-action-pressed');
+  scheduleRequestedModeLaunch();
+  card.click();
+}
+
 document.addEventListener('click',event=>{
   const target=event.target?.closest?.('button');
   if(!target)return;
 
   const completedLearnAction=target.textContent.replace(/\s+/g,' ').trim();
-  if(completedLearnAction==='अभ्यास पर जाएँ →' && document.querySelector('.science-learn-page') && document.querySelector('.science-learn-page h1')?.textContent.includes('अध्याय पूरा हुआ')){
+  if(completedLearnAction==='अभ्यास पर जाएँ →'&&document.querySelector('.science-learn-page')&&document.querySelector('.science-learn-page h1')?.textContent.includes('अध्याय पूरा हुआ')){
     event.preventDefault();
     event.stopImmediatePropagation();
     const chapterButton=[...document.querySelectorAll('.science-learn-page button')]
@@ -76,17 +106,25 @@ document.addEventListener('click',event=>{
     return;
   }
 
+  prepareScienceModeActions();
   const action=event.target?.closest?.('.subject-section .chapter-card .chapter-actions span');
   if(action&&isScienceSubjectPage()){
-    const raw=action.textContent.replace(/\s+/g,' ').trim();
-    const mode=MODE_KEYS[raw]||Object.entries(MODE_LABELS).find(([,label])=>raw.includes(label))?.[0];
-    if(mode){
-      clearPendingLaunch();
-      try{sessionStorage.setItem(STORAGE_KEY,mode)}catch{}
-      scheduleRequestedModeLaunch();
-      return;
-    }
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    activateScienceModeAction(action);
+    return;
   }
 
-  if(!isScienceChapterLaunch() && !isScienceSubjectPage())clearPendingLaunch();
+  if(!isScienceChapterLaunch()&&!isScienceSubjectPage())clearPendingLaunch();
 },{capture:true});
+
+document.addEventListener('keydown',event=>{
+  if((event.key!=='Enter'&&event.key!==' ')||!isScienceSubjectPage())return;
+  const action=event.target?.closest?.('.subject-section .chapter-card .chapter-actions span');
+  if(!action||!action.dataset.scienceMode)return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  activateScienceModeAction(action);
+},{capture:true});
+
+new MutationObserver(()=>prepareScienceModeActions()).observe(document.body,{childList:true,subtree:true});
