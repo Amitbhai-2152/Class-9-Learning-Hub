@@ -17,7 +17,7 @@ export function ScienceChapterShell({lessons=[],title='इस अध्याय
     const targets=items.map((lesson,index)=>{
       const wanted=normalize(lesson.title||`चरण ${index+1}`);
       const hit=headings.find(el=>normalize(el.textContent).includes(wanted)||wanted.includes(normalize(el.textContent)));
-      if(hit)hit.id=`science-lesson-${index+1}`;
+      if(hit&&root.querySelector('.science-learn-page'))hit.id=`science-lesson-${index+1}`;
       return hit||null;
     });
     const observerTargets=targets.filter(Boolean);
@@ -34,6 +34,7 @@ export function ScienceChapterShell({lessons=[],title='इस अध्याय
 
   const getCurrentLessonIndex=()=>{
     const root=rootRef.current;
+    if(!root)return null;
     const nodes=[...root.querySelectorAll('.lesson-top,.lesson-top span,.science-learn-page .lesson-top')];
     for(const node of nodes){
       const match=normalize(node.textContent).match(/(\d+)\s*\/\s*(\d+)/);
@@ -42,32 +43,36 @@ export function ScienceChapterShell({lessons=[],title='इस अध्याय
     return null;
   };
 
-  const clickTextButton=(contains)=>{
+  const findButton=contains=>{
     const root=rootRef.current;
-    return [...root.querySelectorAll('button')].find(button=>normalize(button.textContent).includes(contains));
+    return root?[...root.querySelectorAll('button')].find(button=>normalize(button.textContent).includes(contains)):null;
   };
 
-  const jumpSingleLessonView=async targetIndex=>{
-    const root=rootRef.current;
+  const enterLearnMode=async()=>{
+    if(rootRef.current?.querySelector('.science-learn-page'))return true;
+    const learnButton=findButton('सीखें');
+    if(!learnButton)return false;
+    learnButton.click();
+    await wait(180);
+    return Boolean(rootRef.current?.querySelector('.science-learn-page'));
+  };
+
+  const jumpStepByStep=async targetIndex=>{
+    if(!(await enterLearnMode()))return false;
     let current=getCurrentLessonIndex();
     if(current===null)return false;
     if(current>targetIndex){
-      const backButton=clickTextButton('बाद में');
-      if(!backButton)return false;
-      backButton.click();
-      await wait(120);
-      const learnButton=clickTextButton('सीखें');
-      if(!learnButton)return false;
-      learnButton.click();
-      await wait(160);
+      const later=findButton('बाद में');
+      if(later){later.click();await wait(120);}
       current=getCurrentLessonIndex();
+      if(current===null)return false;
     }
     let guard=0;
-    while(current!==null&&current<targetIndex&&guard++<40){
-      const nextButton=clickTextButton('आगे बढ़ें');
-      if(!nextButton)return false;
+    while(current!==null&&current<targetIndex&&guard++<50){
+      const next=findButton('आगे बढ़ें');
+      if(!next)break;
       const before=current;
-      nextButton.click();
+      next.click();
       await wait(120);
       current=getCurrentLessonIndex();
       if(current===before)break;
@@ -80,12 +85,8 @@ export function ScienceChapterShell({lessons=[],title='इस अध्याय
     const root=rootRef.current;
     const target=root?.querySelector(`#science-lesson-${index+1}`);
     if(target){target.scrollIntoView({behavior:'smooth',block:'start'});return;}
-    if(!root?.querySelector('.science-learn-page'))return;
-    const moved=await jumpSingleLessonView(index);
-    if(moved){
-      await wait(80);
-      root.querySelector(`#science-lesson-${index+1}`)?.scrollIntoView({behavior:'smooth',block:'start'});
-    }
+    const moved=await jumpStepByStep(index);
+    if(moved){await wait(70);rootRef.current?.querySelector(`#science-lesson-${index+1}`)?.scrollIntoView({behavior:'smooth',block:'start'});}
   };
 
   if(!items.length)return <div className="science-chapter-shell-main">{children}</div>;
