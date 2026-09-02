@@ -48,15 +48,24 @@
 - [x] This verifies repository-level content sanity and compile/build integrity for the current Science 1–15 state.
 - [ ] Full browser/device interaction test is still not available in this environment.
 
-### External curriculum reference used for the audit
+### Step 5 — Science subject landing visual energy upgrade
 
-NCERT's current textbook portal lists Class IX Science textbook material separately from older/exemplar chapter lists. The official portal currently exposes 13 chapters for the rationalised Class IX Science book, while NCERT's exemplar page still contains the older 15-unit structure. Therefore this project’s 15-chapter Science sequence is treated as the project’s intended curriculum mapping rather than silently changing its chapter order during QA.
+**Committed:** `dcd6cf5`
+
+- [x] Added a dedicated Science visual treatment to the subject landing page through `subject-overrides.css`, which is already globally loaded by the project entry point.
+- [x] Upgraded the Science header with a deep science-inspired gradient, subtle particle field, glow, and exploration/mastery messaging.
+- [x] Added a focused animated energy rail above the chapter grid.
+- [x] Restyled Science chapter cards with a cohesive laboratory/environment palette, stronger depth, hover lift, accent variation, and clearer chapter hierarchy.
+- [x] Added lightweight staggered entry motion so the 15 chapters feel like an interactive learning journey rather than a plain list.
+- [x] Added mobile-specific sizing and `prefers-reduced-motion` protection.
+- [x] Existing chapter routing and lesson logic were left untouched by this visual-only pass.
 
 ### Status
 - [x] Quality-pass log created.
 - [x] Automated content/data-shape audit.
 - [x] Runtime render recovery added.
 - [x] CI QA + build verification.
+- [x] Science subject landing visual energy upgrade.
 - [ ] Deeper manual content-quality pass for every chapter.
 - [ ] Browser/device verification when an interactive browser environment is available.
 
