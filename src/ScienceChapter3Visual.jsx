@@ -1,5 +1,5 @@
 import React from 'react';
-import './science-chapter3-visual.css';
+import './science-engine.css';
 
 const scenes={
   परमाणु:{title:'परमाणु की रचना',content:<div className="sc3-atom" aria-hidden="true"><span className="sc3-ring ring-1"/><span className="sc3-ring ring-2"/><span className="sc3-nucleus">नाभिक</span><i className="sc3-electron e1">e⁻</i><i className="sc3-electron e2">e⁻</i></div>},
