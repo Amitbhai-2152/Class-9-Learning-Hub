@@ -14,6 +14,7 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
 - Every chapter should ultimately have Learn, Practice, Challenge, Test, explanations/review, responsive behavior, and syntax/build QA.
 - Practice should have meaningful difficulty progression (easy → medium → hard/HOTS), not merely more questions.
 - After a student answers a question, explain why the selected answer is right/wrong.
+- Every chapter should show a clear visible content list/outline before study begins.
 
 ## Development workflow
 - Repository: https://github.com/Amitbhai-2152/Class-9-Learning-Hub
@@ -54,6 +55,21 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
 14. अध्याय 14 — सांख्यिकी: learning, practice, StatisticsEngine; App wiring/QA should be verified.
 15. अध्याय 15 — प्रायिकता: learning, practice, ProbabilityEngine; answer-index QA was noted; App wiring has been added but verify current state.
 
+### Science
+1. अध्याय 1 — हमारे आसपास के पदार्थ: dedicated Hindi learning, concept visuals, practice/test engine, App wiring.
+2. अध्याय 2 — क्या हमारे आसपास के पदार्थ शुद्ध हैं?: dedicated Hindi learning, separation-technique visuals, practice/test engine, App wiring.
+3. अध्याय 3 — परमाणु एवं अणु: Hindi learning file, concept visual, dedicated practice/challenge/test engine; App wiring added in latest routing update. The question bank should still receive answer-index/content QA before freezing.
+4. अध्याय 4 — परमाणु की संरचना: 24 Hindi learning lessons, concept visual, visible content list, 29-question bank with Practice 15 / Challenge 12 / Test 20; App wiring added. Scoring was corrected so the final answered question is included in the stored session score. Stylesheet import was corrected to match existing `src/scienceChapter4.css`.
+
+## Science Chapter 3/4 routing milestone
+- `src/App.jsx` now imports Science Chapter 3 and 4 learning/engine modules.
+- Science subject chapter list now includes Chapters 1–4.
+- Subject chapter cards now use the dedicated Ch3/Ch4 learning goals.
+- ChapterPage routes Ch3 to `ScienceChapter3Engine` and Ch4 to `ScienceChapter4Engine`.
+- Latest App wiring commit: `e935f5ca70038774b75f9fe35e78a3849b827052`.
+- A temporary stylesheet-name mismatch in Ch4 was caught during verification. The original engine file was restored and its scoring finalized in commit `4298b93dd790cddb510e973975effea199b2e71b`.
+- GitHub Actions did not report a workflow run for the App wiring commit, so browser/build QA is not claimed. The repository tree was inspected to verify that `src/scienceChapter4.css` exists and the final Ch4 engine imports it.
+
 ## Maths visual/animation layer
 - Added `src/MathSectionVisuals.jsx` and `src/math-section.css` to make the Maths subject landing page visually distinctive and animated.
 - Added `src/MathChapterVisual.jsx` and `src/math-chapter-visual.css` for chapter-specific visual demonstrations inside the learning page.
@@ -84,6 +100,7 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
 8. Be careful with large `App.jsx` / `LearningEngine.jsx` updates because whole-file replacement is required and SHA conflicts can occur; fetch the latest blob/file SHA before replacing.
 9. Do not add animation just to make something move. Every animation must have an educational interpretation.
 10. Do not claim production/browser QA without actually running or observing it.
+11. When updating an existing file, never send a partial replacement. `update_file` replaces the whole file; fetch the current blob first and preserve all existing content unless intentionally changing it.
 
 ## User interaction pattern
 - User frequently says “ok next” and expects work to continue sequentially without long explanations each time.
