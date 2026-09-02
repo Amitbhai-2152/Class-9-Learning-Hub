@@ -18,5 +18,7 @@ jobs:
           node-version: 24
       - name: Install dependencies
         run: npm install
+      - name: Science content QA
+        run: npm run qa:science
       - name: Build application
         run: npm run build
