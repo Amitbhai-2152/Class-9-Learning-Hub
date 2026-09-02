@@ -2,7 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const SRC=path.resolve('src');
-const files=fs.readdirSync(SRC).filter(name=>/^scienceChapter\d+Learning\.js$/.test(name)).sort((a,b)=>Number(a.match(/\d+/)[0])-Number(b.match(/\d+/)[0]));
+const learningFiles=fs.readdirSync(SRC).filter(name=>/^scienceChapter\d+Learning\.js$/.test(name)).sort((a,b)=>Number(a.match(/\d+/)[0])-Number(b.match(/\d+/)[0]));
+const engineFiles=fs.readdirSync(SRC).filter(name=>/^ScienceChapter\d+Engine.*\.jsx$/.test(name));
 const failures=[];
 const report=[];
 
@@ -12,8 +13,7 @@ function extractQuestionObjects(source){
   while(true){
     const hit=source.indexOf('question:',cursor);
     if(hit<0)break;
-    let start=source.lastIndexOf('{',hit);
-    while(start>0&&source[start-1]==='\\')start--;
+    const start=source.lastIndexOf('{',hit);
     let depth=0,inString=false,quote='',escaped=false,end=-1;
     for(let i=start;i<source.length;i++){
       const ch=source[i];
@@ -25,7 +25,7 @@ function extractQuestionObjects(source){
       }
       if(ch==='"'||ch==="'"){inString=true;quote=ch;continue;}
       if(ch==='{')depth++;
-      if(ch==='}'){
+      else if(ch==='}'){
         depth--;
         if(depth===0){end=i+1;break;}
       }
@@ -50,29 +50,29 @@ function countArrayItems(text){
     if(ch==='"'||ch==="'"){inString=true;quote=ch;continue;}
     if(ch==='[')depth++;
     else if(ch===']')depth--;
-    else if(ch===','&&depth===0)items.push(text.slice(start,i).trim());
+    else if(ch===','&&depth===0){items.push(text.slice(start,i).trim());start=i+1;}
   }
-  if(text.trim())items.push(text.slice(start).trim());
+  if(text.slice(start).trim())items.push(text.slice(start).trim());
   return items.filter(Boolean);
 }
 
-for(const file of files){
+for(const file of learningFiles){
   const full=path.join(SRC,file);
   const source=fs.readFileSync(full,'utf8');
   const chapter=Number(file.match(/\d+/)[0]);
-  const lessonMatches=[...source.matchAll(/\{type:\s*['\"][^'\"]+['\"],title:\s*['\"][^'\"]+['\"]/g)];
-  const bodyCount=(source.match(/body:\s*['\"]/g)||[]).length;
+  const lessonMatches=[...source.matchAll(/\{\s*(?:type:\s*['\"][^'\"]+['\"],\s*)?title:\s*['\"]/g)];
+  const explanationCount=(source.match(/(?:body|explanation):\s*['\"]/g)||[]).length;
   const visuals=(source.match(/visual:\s*\{/g)||[]).length;
   if(!source.includes('lessons:['))failures.push(`${file}: missing lessons array`);
   if(lessonMatches.length<8)failures.push(`${file}: suspiciously few lesson objects (${lessonMatches.length})`);
-  if(bodyCount<8)failures.push(`${file}: suspiciously few lesson bodies (${bodyCount})`);
+  if(explanationCount<8)failures.push(`${file}: suspiciously few lesson explanations/bodies (${explanationCount})`);
 
   const questions=extractQuestionObjects(source);
   let badQuestions=0;
   for(const object of questions){
-    const optionMatch=object.match(/options:\s*\[((?:.|\n)*?)\]\s*,?\s*answer:\s*(-?\d+)/);
     const answerMatch=object.match(/answer:\s*(-?\d+)/);
     if(!answerMatch)continue;
+    const optionMatch=object.match(/options:\s*\[((?:.|\n)*?)\]\s*,?\s*answer:\s*(-?\d+)/);
     if(!optionMatch){badQuestions++;failures.push(`${file}: question object missing options before answer`);continue;}
     const options=countArrayItems(optionMatch[1]);
     const answer=Number(answerMatch[1]);
@@ -81,10 +81,31 @@ for(const file of files){
       failures.push(`${file}: invalid answer index ${answer} for ${options.length} options`);
     }
   }
-  report.push(`Ch${chapter}: lessons=${lessonMatches.length}, bodies=${bodyCount}, visuals=${visuals}, questionObjects=${questions.length}, badQuestions=${badQuestions}`);
+  report.push(`Ch${chapter}: lessons=${lessonMatches.length}, explanations=${explanationCount}, visuals=${visuals}, inlineQuestionObjects=${questions.length}, badInlineQuestions=${badQuestions}`);
 }
 
-if(files.length!==15)failures.push(`expected 15 science learning files, found ${files.length}`);
+let engineQuestionCount=0;
+let engineBadQuestionCount=0;
+for(const file of engineFiles){
+  const source=fs.readFileSync(path.join(SRC,file),'utf8');
+  const questions=extractQuestionObjects(source);
+  let bad=0;
+  for(const object of questions){
+    const answerMatch=object.match(/answer:\s*(-?\d+)/);
+    if(!answerMatch)continue;
+    const optionMatch=object.match(/options:\s*\[((?:.|\n)*?)\]\s*,?\s*answer:\s*(-?\d+)/);
+    if(!optionMatch){bad++;failures.push(`${file}: question object missing options before answer`);continue;}
+    const options=countArrayItems(optionMatch[1]);
+    const answer=Number(answerMatch[1]);
+    if(options.length<2||answer<0||answer>=options.length){bad++;failures.push(`${file}: invalid answer index ${answer} for ${options.length} options`);}
+  }
+  engineQuestionCount+=questions.length;
+  engineBadQuestionCount+=bad;
+}
+
+report.push(`Engine bank scan: files=${engineFiles.length}, questionObjects=${engineQuestionCount}, badQuestions=${engineBadQuestionCount}`);
+if(learningFiles.length!==15)failures.push(`expected 15 science learning files, found ${learningFiles.length}`);
+if(engineFiles.length<15)failures.push(`expected at least 15 science engine files, found ${engineFiles.length}`);
 
 console.log(report.join('\n'));
 if(failures.length){
