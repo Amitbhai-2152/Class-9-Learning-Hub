@@ -69,12 +69,31 @@
 - [x] Visual-only Science landing changes are compile/build verified.
 - [ ] Full browser/device interaction test is still not available in this environment.
 
+### Step 7 — Practice bank visibility correction
+
+**Commits:** `fd4d1c5` (Ch7), `a47fc7c` (shared Ch8–11 engine), `3581378` (Ch12), `8a56b43` (Ch13), `08a0a9c` (Ch14), `34a9075` (Ch15), followed by this log update.
+
+- [x] Audited the Science assessment engines instead of assuming the UI was the only problem.
+- [x] Found the real issue: later Science Practice mode was artificially capped at 15 questions even when the underlying bank contained more questions.
+- [x] Ch7 Practice now uses its full 23-question bank.
+- [x] Ch8–11 shared Practice engine now uses the full chapter question bank; Test remains capped at 20.
+- [x] Ch12 Practice now uses all 20 available questions.
+- [x] Ch13 Practice now uses all 20 available questions.
+- [x] Ch14 Practice now uses all 20 available questions.
+- [x] Ch15 Practice now uses all 20 available questions.
+- [x] Practice/Challenge/Test launch cards now show the real available counts instead of misleading fixed “15” labels where applicable.
+- [x] Test mode remains limited to 20 questions, while Challenge remains limited to 10.
+- [ ] Final CI verification of this batch is still pending.
+- [ ] Full browser/device interaction test is still not available in this environment.
+
 ### Status
 - [x] Quality-pass log created.
 - [x] Automated content/data-shape audit.
 - [x] Runtime render recovery added.
-- [x] CI QA + build verification.
+- [x] CI QA + build verification before the Practice fix.
 - [x] Science subject landing visual energy upgrade.
+- [x] Practice bank visibility correction implemented across Science 7–15.
+- [ ] Final CI verification of the current head.
 - [ ] Deeper manual content-quality pass for every chapter.
 - [ ] Browser/device verification when an interactive browser environment is available.
 
