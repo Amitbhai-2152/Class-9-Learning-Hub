@@ -24,19 +24,20 @@ jobs:
       - name: Build application
         run: npm run build
       # CH12_FINALIZER_START
-      - name: Finalize Science Chapter 12 once
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        shell: python
+      - name: Finalize Chapter 12 once
         run: |
+          if [ "$GITHUB_EVENT_NAME" != "push" ] || [ "$GITHUB_REF" != "refs/heads/main" ]; then exit 0; fi
+          python3 - <<'PY'
           from pathlib import Path
           app=Path('src/App.jsx'); s=app.read_text(encoding='utf-8')
           def add_after(old,new):
               global s
-              if new not in s: s=s.replace(old,old+'\n'+new,1)
+              if new not in s and old in s: s=s.replace(old,old+'\n'+new,1)
           add_after("import {ScienceChapter11Engine} from './ScienceChapter11Engine';","import {ScienceChapter12Engine} from './ScienceChapter12Engine';")
           add_after("import {scienceChapter11Learning} from './scienceChapter11Learning';","import {scienceChapter12Learning} from './scienceChapter12Learning';")
-          if "'खाद्य संसाधनों में सुधार'" not in s: s=s.replace("'ध्वनि']","'ध्वनि','खाद्य संसाधनों में सुधार']",1)
-          if "'खाद्य संसाधनों में सुधार':scienceChapter12Learning" not in s: s=s.replace("'ध्वनि':scienceChapter11Learning};","'ध्वनि':scienceChapter11Learning,'खाद्य संसाधनों में सुधार':scienceChapter12Learning};",1)
+          s=s.replace("'ध्वनि']","'ध्वनि','खाद्य संसाधनों में सुधार']",1)
+          if "'खाद्य संसाधनों में सुधार':scienceChapter12Learning" not in s:
+              s=s.replace("'ध्वनि':scienceChapter11Learning};","'ध्वनि':scienceChapter11Learning,'खाद्य संसाधनों में सुधार':scienceChapter12Learning};",1)
           s=s.replace("const isScienceChapter11=subject.name==='विज्ञान'&&chapter==='ध्वनि';","const isScienceChapter11=subject.name==='विज्ञान'&&chapter==='ध्वनि';const isScienceChapter12=subject.name==='विज्ञान'&&chapter==='खाद्य संसाधनों में सुधार';",1)
           s=s.replace(":isScienceChapter11?scienceChapter11Learning:baseData;",":isScienceChapter11?scienceChapter11Learning:isScienceChapter12?scienceChapter12Learning:baseData;",1)
           s=s.replace("if(isScienceChapter11)return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;","if(isScienceChapter11)return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;if(isScienceChapter12)return <ScienceChapter12Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;",1)
@@ -65,17 +66,11 @@ jobs:
           if 'sc12-summary' not in s: s=s.replace(marker,marker+visuals,1)
           p.write_text(s,encoding='utf-8')
           wf=Path('.github/workflows/build.yml'); w=wf.read_text(encoding='utf-8')
-          start=w.index('      # CH12_FINALIZER_START')
-          end=w.index('      # CH12_FINALIZER_END')+len('      # CH12_FINALIZER_END') if '# CH12_FINALIZER_END' in w else len(w)
-          if '# CH12_FINALIZER_END' not in w:
-              raise SystemExit('finalizer end marker missing')
-          w=w[:start]+w[end:]
-          wf.write_text(w,encoding='utf-8')
+          start=w.index('      # CH12_FINALIZER_START'); end=w.index('      # CH12_FINALIZER_END')+len('      # CH12_FINALIZER_END')
+          wf.write_text(w[:start]+w[end:],encoding='utf-8')
           temp=Path('.github/workflows/finalize-science-ch12.yml')
           if temp.exists(): temp.unlink()
-      - name: Commit finalized Chapter 12
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
+          PY
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add src/App.jsx src/ScienceNextChapterEngine.jsx .github/workflows/build.yml .github/workflows/finalize-science-ch12.yml
