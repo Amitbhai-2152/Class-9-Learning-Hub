@@ -50,7 +50,7 @@
 
 ### Step 5 — Science subject landing visual energy upgrade
 
-**Committed:** `dcd6cf5`
+**Committed:** `dcd6cf5` → log recorded in `14dc19d`
 
 - [x] Added a dedicated Science visual treatment to the subject landing page through `subject-overrides.css`, which is already globally loaded by the project entry point.
 - [x] Upgraded the Science header with a deep science-inspired gradient, subtle particle field, glow, and exploration/mastery messaging.
@@ -59,6 +59,15 @@
 - [x] Added lightweight staggered entry motion so the 15 chapters feel like an interactive learning journey rather than a plain list.
 - [x] Added mobile-specific sizing and `prefers-reduced-motion` protection.
 - [x] Existing chapter routing and lesson logic were left untouched by this visual-only pass.
+
+### Step 6 — Post-visual CI verification
+
+**Workflow run:** `33632684524` (run #307, commit `14dc19d`)
+
+- [x] Science QA passed.
+- [x] Vite application build passed.
+- [x] Visual-only Science landing changes are compile/build verified.
+- [ ] Full browser/device interaction test is still not available in this environment.
 
 ### Status
 - [x] Quality-pass log created.
