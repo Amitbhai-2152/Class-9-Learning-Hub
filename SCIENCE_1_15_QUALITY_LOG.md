@@ -118,6 +118,20 @@
 - [x] Added `prefers-reduced-motion` handling so decorative motion is disabled for users who request reduced motion.
 - [ ] Full browser/device interaction test is still not available in this environment.
 
+### Step 11 — Science subject action interaction hardening
+
+**Commits:** `c145b0e` → `f6d382e` → `681519b`
+
+- [x] Fixed the actual entry-point integration so `subject-overrides.css` is loaded from `main2.jsx`, the real application entry used by `index.html`.
+- [x] Kept the existing React DOM tree intact rather than performing unsupported runtime DOM replacement.
+- [x] Science chapter-card mode labels now receive `role="button"`, keyboard focus, and explicit mode accessibility labels at runtime.
+- [x] Click events on `📖 सीखें`, `📝 अभ्यास`, `🔥 चुनौती`, and `🎯 टेस्ट` are isolated from the parent chapter button so the selected mode is not accidentally replaced by a plain chapter open.
+- [x] Added Enter/Space keyboard activation for the mode controls.
+- [x] Added a small press-feedback animation while preserving reduced-motion behavior.
+- [x] Existing delayed mode-launch routing remains guarded and scoped to Science chapter mode controls.
+- [x] Latest application CI run #329 (`33658382058`) passed Science content QA and the Vite build for commit `681519b`.
+- [ ] Full browser/device interaction test is still not available in this environment.
+
 ### Status
 - [x] Quality-pass log created.
 - [x] Automated content/data-shape audit.
@@ -128,10 +142,10 @@
 - [x] Science chapter-card mode routing correction implemented.
 - [x] Science chapter exit/completion navigation hardening implemented.
 - [x] Science navigation animation + responsive button structure implemented.
-- [x] Final CI verification for the navigation-hardening commit.
-- [ ] CI verification for the latest navigation/button styling commit.
+- [x] Science subject action interaction hardening implemented.
+- [x] Final CI verification for the latest Science subject action hardening commit.
+- [ ] Full browser/device verification when an interactive browser environment is available.
 - [ ] Deeper manual content-quality pass for every chapter.
-- [ ] Browser/device verification when an interactive browser environment is available.
 
 ## Notes
 
