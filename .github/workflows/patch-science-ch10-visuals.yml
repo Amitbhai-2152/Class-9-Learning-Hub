@@ -1,0 +1,44 @@
+name: Patch Science Chapter 10 Visuals
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-science-ch10-visuals.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch renderer and stylesheet
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('src/ScienceNextChapterEngine.jsx')
+          s=p.read_text()
+          marker=' return null;\n}\n\nfunction SafeVisual'
+          block=''' if(type==='work'||type==='zeroWork') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden="true"><div className="sc3-work-box">▰</div><div className="sc3-work-arrow">बल →</div><div className="sc3-work-displacement">विस्थापन →</div>{type==='zeroWork'&&<div className="sc3-zero-work-label">विस्थापन = 0</div>}</div>;
+ if(type==='workFormula'||type==='workExample') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden="true"><div className="sc3-formula-stack"><strong>{type==='workFormula'?'W = F × s':'10 N × 3 m = 30 J'}</strong><span>कार्य = बल × विस्थापन</span></div></div>;
+ if(type==='energy'||type==='mechanical'||type==='energyConserve') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden="true"><div className="sc3-energy-flow"><span>स्थितिज</span><i>↕</i><strong>ऊर्जा</strong><i>↕</i><span>गतिज</span></div>{type==='energyConserve'&&<div className="sc3-energy-lock">कुल ऊर्जा = संरक्षित</div>}</div>;
+ if(type==='kinetic'||type==='kineticExample') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden="true"><div className="sc3-speed-bars"><span>v</span><i>→</i><span>2v</span><strong>{type==='kinetic'?'K ∝ v²':'K = 9 J'}</strong></div></div>;
+ if(type==='potential'||type==='potentialExample') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden="true"><div className="sc3-height-object">●</div><div className="sc3-height-line"><span>h</span></div><div className="sc3-potential-label">{type==='potential'?'U = mgh':'U = 98 J'}</div></div>;
+ if(type==='swingEnergy') return <div className="sc3-motion-diagram sc3-swingEnergy" aria-hidden="true"><div className="sc3-swing-rope"/><div className="sc3-swing-ball">●</div><div className="sc3-swing-label">U ↔ K</div></div>;
+ if(type==='power'||type==='powerExample'||type==='watt') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden="true"><div className="sc3-power-gauge"><strong>{type==='powerExample'?'20 W':type==='watt'?'W ↔ kW':'P = W/t'}</strong><span>कार्य ÷ समय</span></div></div>;
+ if(type==='dailyPower'||type==='workEnergyPower') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden="true"><div className="sc3-triad"><span>कार्य</span><i>→</i><span>ऊर्जा</span><i>→</i><span>शक्ति</span></div></div>;
+ if(type==='summaryWorkEnergy'||type==='challengePrep') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden="true"><div className="sc3-summary-formulas"><strong>W = F×s</strong><strong>K = ½mv²</strong><strong>P = W/t</strong></div></div>;
+'''
+          if marker not in s:
+              raise SystemExit('renderer marker missing')
+          if "type==='work'||type==='zeroWork'" not in s:
+              s=s.replace(marker,block+marker,1)
+          p.write_text(s)
+          p=Path('src/science3-learn.css')
+          css='''\n.sc3-work-box{width:42px;height:42px;border-radius:9px;background:#4c938a;display:grid;place-items:center;color:#fff;position:absolute;left:24%;bottom:38px;animation:sc3-work-slide 3s ease-in-out infinite}.sc3-work-arrow,.sc3-work-displacement{position:absolute;font-size:.72rem;font-weight:900;color:#44635f}.sc3-work-arrow{top:23%;left:16%}.sc3-work-displacement{bottom:13%;right:13%}.sc3-zero-work-label{font-size:.78rem;font-weight:900;color:#9a5656}.sc3-formula-stack,.sc3-power-gauge{display:grid;gap:8px;text-align:center}.sc3-formula-stack strong,.sc3-power-gauge strong{font-size:1.15rem;color:#285b57}.sc3-formula-stack span,.sc3-power-gauge span{font-size:.72rem;color:#637773}.sc3-energy-flow,.sc3-speed-bars,.sc3-triad,.sc3-summary-formulas{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-weight:900;color:#3d5f5a}.sc3-energy-flow span,.sc3-triad span,.sc3-speed-bars span{padding:8px 12px;border-radius:999px;background:#e7f5f2}.sc3-energy-flow i,.sc3-triad i{font-style:normal;color:#4e8d86}.sc3-energy-lock,.sc3-potential-label,.sc3-swing-label{font-size:.74rem;font-weight:900;color:#47645f}.sc3-speed-bars strong,.sc3-summary-formulas strong{padding:8px 10px;border-radius:10px;background:#fff;border:1px solid #d5e7e3}.sc3-height-object{position:absolute;top:18px;left:48%;font-size:2rem;animation:sc3-height-bob 2.5s ease-in-out infinite}.sc3-height-line{position:absolute;top:26px;bottom:22px;left:51%;border-left:2px dashed #82aaa4}.sc3-height-line span{position:absolute;left:7px;top:36%;font-size:.72rem;font-weight:900;color:#42756e}.sc3-swing-rope{width:2px;height:64px;background:#82a8a3;transform-origin:top;position:absolute;left:50%;top:18px;transform:rotate(22deg);animation:sc3-swing 2.8s ease-in-out infinite}.sc3-swing-ball{position:absolute;left:67%;top:67px;font-size:2rem}.sc3-swing-label{position:absolute;bottom:12px}.sc3-power-gauge{padding:13px 24px;border:1px solid #cfe5e1;border-radius:14px;background:#fff}.sc3-workEnergyPower .sc3-triad{gap:8px}.sc3-summary-formulas{max-width:620px}.sc3-summary-formulas strong{background:#f7fcfb}@keyframes sc3-work-slide{0%,100%{transform:translateX(0)}50%{transform:translateX(130%)}}@keyframes sc3-height-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}@keyframes sc3-swing{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(22deg)}}\n@media(max-width:560px){.sc3-work-box{left:17%}.sc3-formula-stack strong,.sc3-power-gauge strong{font-size:1rem}.sc3-energy-flow,.sc3-speed-bars,.sc3-triad,.sc3-summary-formulas{gap:7px;font-size:.7rem}.sc3-height-object{left:42%}.sc3-height-line{left:46%}.sc3-swing-ball{left:64%}}\n@media(prefers-reduced-motion:reduce){.sc3-work-box,.sc3-height-object,.sc3-swing-rope{animation:none!important}}\n'''
+          p.write_text(p.read_text()+css if '.sc3-work-box' not in p.read_text() else p.read_text())
+          PY
+          rm .github/workflows/patch-science-ch10-visuals.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/ScienceNextChapterEngine.jsx src/science3-learn.css .github/workflows/patch-science-ch10-visuals.yml
+          git commit -m 'feat: add work and energy concept visuals'
+          git push
