@@ -9,9 +9,10 @@ const challenge=[
  {q:'एक प्रयोग में 12 समान रूप से संभावित परिणाम हैं। घटना A के 5 और घटना B के 4 अनुकूल परिणाम हैं और दोनों घटनाओं में कोई परिणाम साझा नहीं है। A या B की प्रायिकता क्या होगी?',options:['5/12','1/3','3/4','9/12'],answer:2,explain:'कुल अनुकूल परिणाम 5+4=9 हैं। प्रायिकता 9/12=3/4।'}
 ];
 function shuffle(list){const a=[...list];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function normalizePractice(list){return list.map(q=>q._fix==='answer=2'?{...q,answer:2}:q)}
 export function ProbabilityEngine({chapter,mode,onBack,addXp}){
  const isTest=mode==='test';
- const questions=useMemo(()=>isTest?shuffle(chapter15Practice).slice(0,15):mode==='challenge'?challenge:chapter15Practice,[mode,isTest]);
+ const questions=useMemo(()=>{const practice=normalizePractice(chapter15Practice);return isTest?shuffle(practice).slice(0,15):mode==='challenge'?challenge:practice},[mode,isTest]);
  const [index,setIndex]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[earned,setEarned]=useState(0);
  const current=questions[index],points=mode==='challenge'?25:15;
  const choose=i=>{if(selected!==null||!current)return;setSelected(i);if(i===current.answer){setScore(s=>s+1);if(!isTest){setEarned(e=>e+points);addXp?.(points)}}};
