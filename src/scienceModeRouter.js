@@ -64,7 +64,7 @@ function scheduleRequestedModeLaunch(){
 
 function prepareScienceModeActions(){
   if(!isScienceSubjectPage())return;
-  document.querySelectorAll('.subject-section .chapter-card .chapter-actions span').forEach((action,index)=>{
+  document.querySelectorAll('.subject-section .chapter-card .chapter-actions span').forEach(action=>{
     if(action.dataset.scienceActionPrepared==='1')return;
     const raw=action.textContent.replace(/\s+/g,' ').trim();
     const mode=MODE_KEYS[raw]||Object.entries(MODE_LABELS).find(([,label])=>raw.includes(label))?.[0];
@@ -92,6 +92,20 @@ function activateScienceModeAction(action){
   card.click();
 }
 
+function isChapter2AssessmentPage(){
+  const root=document.querySelector('.sc3-core-assessment');
+  if(!root||root.querySelector('.lesson-page'))return false;
+  const heading=root.querySelector('.page-header h1')?.textContent?.trim()||'';
+  return heading.includes('📝')||heading.includes('🔥')||heading.includes('🎯')||Boolean(root.querySelector('.question-card'));
+}
+
+function returnChapter2AssessmentToMenu(){
+  window.setTimeout(()=>{
+    const learnBack=document.querySelector('.sc3-core-assessment .lesson-page .lesson-header button');
+    if(learnBack){learnBack.click();return;}
+  },0);
+}
+
 document.addEventListener('click',event=>{
   const target=event.target?.closest?.('button');
   if(!target)return;
@@ -103,6 +117,11 @@ document.addEventListener('click',event=>{
     const chapterButton=[...document.querySelectorAll('.science-learn-page button')]
       .find(button=>button.textContent.replace(/\s+/g,' ').trim()==='← अध्याय');
     chapterButton?.click();
+    return;
+  }
+
+  if(completedLearnAction==='← अध्याय'&&isChapter2AssessmentPage()){
+    returnChapter2AssessmentToMenu();
     return;
   }
 
