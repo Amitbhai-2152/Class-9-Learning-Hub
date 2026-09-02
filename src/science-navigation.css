@@ -1,62 +1,41 @@
-/* Science navigation + mode controls: responsive, tactile, and motion-safe. */
-.science-header{position:relative;overflow:hidden}
-.science-header:after{content:"";position:absolute;inset:auto -8% -56px auto;width:260px;height:130px;border:1px solid rgba(151,255,231,.16);border-radius:50%;transform:rotate(-14deg);pointer-events:none;animation:scienceNavOrbit 8s linear infinite}
-.science-header>button{position:relative;z-index:2;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:9px 14px;border:1px solid rgba(255,255,255,.2)!important;border-radius:13px!important;background:rgba(7,39,45,.26)!important;color:#f3fffc!important;box-shadow:0 7px 18px rgba(0,0,0,.12);backdrop-filter:blur(8px);transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease}
-.science-header>button:before{content:"⌁";font-size:1rem;line-height:1;opacity:.85}
-.science-header>button:hover{transform:translateY(-2px);background:rgba(255,255,255,.12)!important;border-color:rgba(168,255,236,.38)!important;box-shadow:0 11px 24px rgba(0,0,0,.18)}
-.science-header>button:active{transform:translateY(0) scale(.97)}
-.science-header>button:focus-visible{outline:3px solid rgba(173,255,238,.5);outline-offset:3px}
+:root{--science-ink:#143747;--science-muted:#5f7581;--science-mint:#63d7b7;--science-blue:#6caaf4;--science-purple:#8b7cf2}
 
-.science-mode-grid .mode-card{position:relative;min-height:150px;grid-template-columns:52px minmax(0,1fr) auto;grid-template-rows:auto auto 1fr;align-items:center;column-gap:12px;row-gap:3px;padding:17px 16px;border:1px solid #dce9e7;border-radius:19px;background:linear-gradient(145deg,#fff 0%,#fbfefd 72%,#f0faf7 100%);box-shadow:0 9px 24px rgba(24,57,54,.07);overflow:hidden;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease}
-.science-mode-grid .mode-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#4ea79c,#86d3c7);transform:scaleY(.45);transform-origin:center;transition:transform .2s ease}
-.science-mode-grid .mode-card:after{content:"";position:absolute;right:-24px;top:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(77,174,161,.12),transparent 66%);pointer-events:none}
-.science-mode-grid .mode-card>span{grid-column:1;grid-row:1 / span 3;width:52px;height:52px;display:grid;place-items:center;border-radius:15px;background:#eaf7f4;border:1px solid #d4ebe7;font-size:1.65rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.9);transition:transform .2s ease}
-.science-mode-grid .mode-card strong{grid-column:2;grid-row:1;color:#213c3a;font-size:1rem;line-height:1.25}
-.science-mode-grid .mode-card small{grid-column:2;grid-row:2;color:#70817e;font-size:.72rem;line-height:1.35}
-.science-mode-grid .mode-card b{grid-column:3;grid-row:1 / span 3;align-self:center;display:grid;place-items:center;width:36px;height:36px;margin:0;border-radius:11px;background:#e8f5f2;color:#2f786f;font-size:1rem;transition:transform .2s ease,background .2s ease}
-.science-mode-grid .mode-card:hover{transform:translateY(-5px);border-color:#b9dbd5;box-shadow:0 17px 34px rgba(26,78,73,.13);background:linear-gradient(145deg,#fff 0%,#fbfffe 62%,#e7f8f3 100%)}
-.science-mode-grid .mode-card:hover:before{transform:scaleY(1)}
-.science-mode-grid .mode-card:hover>span{transform:translateY(-2px) rotate(-3deg)}
-.science-mode-grid .mode-card:hover b{transform:translateX(3px);background:#d9f0eb}
-.science-mode-grid .mode-card:active{transform:translateY(-1px) scale(.985);box-shadow:0 8px 18px rgba(26,78,73,.11)}
-.science-mode-grid .mode-card:focus-visible{outline:3px solid rgba(61,145,135,.3);outline-offset:3px}
+/* Chapter-engine navigation */
+.science-header{position:relative;overflow:hidden;border-bottom:1px solid rgba(108,215,183,.16);background:linear-gradient(135deg,#102432 0%,#123d4b 52%,#142b40 100%);box-shadow:0 12px 30px rgba(15,43,54,.12)}
+.science-header:before{content:"";position:absolute;inset:-35% -8%;background:radial-gradient(circle at 18% 30%,rgba(99,215,183,.18),transparent 23%),radial-gradient(circle at 86% 20%,rgba(108,170,244,.18),transparent 24%);animation:scienceNavDrift 12s ease-in-out infinite alternate;pointer-events:none}
+.science-header>*{position:relative;z-index:1}
+.science-header button{border:1px solid rgba(182,255,235,.22);background:rgba(7,31,41,.6);color:#effffb;border-radius:13px;padding:9px 13px;font-weight:850;box-shadow:0 7px 18px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.1);transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease}
+.science-header button:hover{transform:translateY(-2px);background:rgba(22,79,87,.82);border-color:rgba(182,255,235,.45);box-shadow:0 11px 24px rgba(0,0,0,.2),0 0 18px rgba(99,215,183,.1)}
+.science-header button:active{transform:scale(.97)}
+.science-header button:focus-visible{outline:3px solid rgba(178,255,236,.48);outline-offset:3px}
+.science-mode-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.science-mode-grid .mode-card{min-height:124px;display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto 1fr;align-items:center;column-gap:10px;row-gap:4px;padding:14px 15px;border:1px solid #dfe8eb;border-radius:16px;background:linear-gradient(150deg,#fff 0%,#f8fcfb 100%);box-shadow:0 8px 22px rgba(16,55,68,.07);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.science-mode-grid .mode-card:hover{transform:translateY(-4px);border-color:#bcded6;box-shadow:0 14px 28px rgba(16,75,76,.13)}
+.science-mode-grid .mode-card:active{transform:translateY(0) scale(.985)}
+.science-mode-grid .mode-card:focus-visible{outline:3px solid rgba(99,215,183,.38);outline-offset:3px}
+.science-mode-grid .mode-card .mode-icon{grid-row:1 / span 2;width:44px;height:44px;margin:0;border-radius:12px;background:#edf9f5;color:#2b8d75;box-shadow:inset 0 0 0 1px rgba(99,215,183,.12)}
+.science-mode-grid .mode-card strong{align-self:end;font-size:.92rem;color:var(--science-ink)}
+.science-mode-grid .mode-card>span:not(.mode-icon){align-self:start;margin-top:0;color:var(--science-muted);font-size:.71rem;line-height:1.35}
+.science-mode-grid .mode-card em{grid-column:2;align-self:end;margin:0;padding:0;color:#27886e;font-size:.68rem}
+.science-mode-grid .mode-card b{position:static;grid-column:3;grid-row:1 / span 2;align-self:center;color:#73909a;font-size:22px;transition:transform .18s ease,color .18s ease}
+.science-mode-grid .mode-card:hover b{transform:translateX(3px);color:#27886e}
 
-/* Fixed learning navigation receives the same calm science motion language. */
-.sc3-learn-nav{position:fixed;overflow:hidden}
-.sc3-learn-nav:after{content:"";position:absolute;right:10%;bottom:-22px;width:150px;height:55px;border:1px solid rgba(61,130,124,.12);border-radius:50%;transform:rotate(-8deg);pointer-events:none;animation:scienceNavDrift 7s ease-in-out infinite}
-.sc3-learn-nav button{position:relative;z-index:1;min-height:38px;border-radius:12px!important;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
-.sc3-learn-nav button:hover{transform:translateY(-2px);box-shadow:0 7px 16px rgba(27,84,78,.1)}
-.sc3-learn-nav button:active{transform:scale(.97)}
-.sc3-learn-nav button:focus-visible{outline:3px solid rgba(61,145,135,.28);outline-offset:2px}
+/* Science learning navigation */
+.sc3-learn-nav{position:relative;overflow:hidden}
+.sc3-learn-nav:after{content:"";position:absolute;right:-20px;top:-36px;width:86px;height:86px;border-radius:50%;border:1px solid rgba(99,215,183,.18);box-shadow:0 0 0 10px rgba(99,215,183,.035),0 0 0 20px rgba(108,170,244,.025);animation:scienceOrbit 5.5s linear infinite;pointer-events:none}
+.c7-top{position:relative;overflow:hidden}
+.c7-top:after{content:"";position:absolute;right:-22px;bottom:-36px;width:88px;height:88px;border-radius:50%;border:1px solid rgba(108,170,244,.18);box-shadow:0 0 0 9px rgba(108,170,244,.035),0 0 0 18px rgba(139,124,242,.025);animation:scienceOrbit 6.5s linear infinite reverse;pointer-events:none}
 
-/* Ch. 7 has its own nav component; keep it visually consistent. */
-.c7-top{position:sticky;overflow:hidden}
-.c7-top:after{content:"";position:absolute;right:6%;top:-24px;width:180px;height:58px;border:1px solid rgba(58,129,120,.12);border-radius:50%;transform:rotate(-8deg);pointer-events:none;animation:scienceNavDrift 7s ease-in-out infinite}
-.c7-top>*{position:relative;z-index:1}
-.c7-top .c7-btn{transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
-.c7-top .c7-btn:hover{transform:translateY(-2px)}
-.c7-top .c7-btn:active{transform:scale(.97)}
+/* Science subject landing actions: existing markup is upgraded into real keyboard/click targets without mutating React's DOM tree. */
+.subject-section .chapter-card .chapter-actions span[role="button"]{cursor:pointer;user-select:none;position:relative;isolation:isolate;outline:none}
+.subject-section .chapter-card .chapter-actions span[role="button"]:before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(99,215,183,.12),rgba(108,170,244,.08));opacity:0;transform:scale(.94);transition:opacity .16s ease,transform .16s ease;z-index:-1}
+.subject-section .chapter-card .chapter-actions span[role="button"]:hover:before{opacity:1;transform:scale(1)}
+.subject-section .chapter-card .chapter-actions span[role="button"]:focus-visible{outline:3px solid rgba(99,215,183,.3);outline-offset:2px;box-shadow:0 0 0 1px rgba(99,215,183,.16)}
+.subject-section .chapter-card .chapter-actions span[role="button"].science-action-pressed{animation:scienceActionPress .28s ease}
+@keyframes scienceActionPress{0%{transform:scale(.97)}55%{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 16px rgba(28,100,91,.11)}100%{transform:scale(1)}}
+@keyframes scienceNavDrift{0%{transform:translate3d(-1%,0,0) scale(1)}100%{transform:translate3d(1.5%,2%,0) scale(1.03)}}
+@keyframes scienceOrbit{to{transform:rotate(360deg)}}
 
-@keyframes scienceNavOrbit{0%{transform:translateX(0) rotate(-14deg)}50%{transform:translateX(-34px) rotate(4deg)}100%{transform:translateX(0) rotate(-14deg)}}
-@keyframes scienceNavDrift{0%,100%{transform:translate3d(0,0,0) rotate(-8deg);opacity:.55}50%{transform:translate3d(-18px,3px,0) rotate(2deg);opacity:1}}
-
-@media(max-width:800px){
-  .science-mode-grid .mode-card{min-height:138px;padding:15px}
-  .science-mode-grid .mode-card>span{width:46px;height:46px;border-radius:13px;font-size:1.45rem}
-  .science-mode-grid .mode-card strong{font-size:.94rem}
-  .science-mode-grid .mode-card small{font-size:.68rem}
-}
-@media(max-width:560px){
-  .science-header>button{min-height:40px;padding:8px 12px;font-size:.78rem}
-  .science-header:after{width:170px;height:86px;right:-16%;bottom:-38px}
-  .science-mode-grid .mode-card{min-height:94px;grid-template-columns:44px minmax(0,1fr) 32px;grid-template-rows:auto 1fr;padding:13px 12px}
-  .science-mode-grid .mode-card>span{grid-row:1 / span 2;width:44px;height:44px;border-radius:12px;font-size:1.3rem}
-  .science-mode-grid .mode-card strong{font-size:.9rem}
-  .science-mode-grid .mode-card small{font-size:.64rem}
-  .science-mode-grid .mode-card b{grid-row:1 / span 2;width:32px;height:32px;border-radius:9px}
-  .sc3-learn-nav:after,.c7-top:after{display:none}
-}
-@media(prefers-reduced-motion:reduce){
-  .science-header:after,.sc3-learn-nav:after,.c7-top:after{animation:none!important}
-  .science-mode-grid .mode-card,.science-mode-grid .mode-card>span,.science-mode-grid .mode-card>b,.science-header>button,.sc3-learn-nav button,.c7-top .c7-btn{transition:none!important}
-}
+@media(max-width:900px){.science-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
+@media(max-width:560px){.science-header{box-shadow:0 8px 22px rgba(15,43,54,.1)}.science-header button{padding:8px 11px;border-radius:12px}.science-mode-grid{grid-template-columns:1fr;gap:9px}.science-mode-grid .mode-card{min-height:94px;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;padding:12px}.science-mode-grid .mode-card .mode-icon{width:40px;height:40px}.subject-section .chapter-card .chapter-actions span[role="button"]{min-height:34px}}
+@media(prefers-reduced-motion:reduce){.science-header:before,.sc3-learn-nav:after,.c7-top:after,.subject-section .chapter-card .chapter-actions span[role="button"].science-action-pressed{animation:none!important}.science-mode-grid .mode-card,.subject-section .chapter-card .chapter-actions span[role="button"]{transition:none!important}}
