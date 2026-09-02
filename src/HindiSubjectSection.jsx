@@ -2,8 +2,8 @@ import React from 'react';
 import {hindiAllTopics} from './hindiChapterData';
 
 const groups=[
-  ['गद्य खंड','गोधूली · गद्य'],
-  ['काव्य खंड','गोधूली · काव्य'],
+  ['गोधूली भाग 1 · गद्य','गोधूली · गद्य'],
+  ['गोधूली भाग 1 · काव्य','गोधूली · काव्य'],
   ['वर्णिका भाग 1','वर्णिका · पूरक'],
   ['व्याकरण एवं रचना','व्याकरण एवं रचना']
 ];
@@ -16,8 +16,8 @@ export function HindiSubjectSection({open}){
   return <div className="hindi-subject-section">
     <div className="hindi-section-intro">
       <span>कक्षा 9 • बिहार बोर्ड हिन्दी</span>
-      <h2>हिन्दी को समझें, सिर्फ याद न करें।</h2>
-      <p>गद्य, काव्य, वर्णिका और व्याकरण को एक ही study flow में पढ़ें। हर पाठ के लिए सीखें, अभ्यास करें, चुनौती लें और समयबद्ध टेस्ट दें।</p>
+      <h2>गोधूली भाग 1 — हिन्दी को समझें, सिर्फ याद न करें।</h2>
+      <p>गोधूली भाग 1 के गद्य और काव्य को एक ही study flow में पढ़ें। साथ में वर्णिका और व्याकरण-रचना के लिए अलग अभ्यास रखें। हर पाठ के लिए सीखें, अभ्यास करें, चुनौती लें और समयबद्ध टेस्ट दें।</p>
       <div className="hindi-section-stats"><b>{hindiAllTopics.filter(x=>x.book?.startsWith('गोधूली')).length} गोधूली पाठ</b><b>{hindiAllTopics.filter(x=>x.book==='वर्णिका · पूरक').length} वर्णिका पाठ</b><b>{hindiAllTopics.filter(x=>x.book==='व्याकरण एवं रचना').length} भाषा विषय</b></div>
     </div>
     {groups.map(([title,book])=>{
