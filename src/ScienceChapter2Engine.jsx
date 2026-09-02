@@ -1,22 +1,11 @@
-import React,{useEffect,useState} from 'react';
+import React,{useState} from 'react';
 import {ScienceChapter2Engine as ScienceChapter2Core} from './ScienceChapter2EngineCore';
 import {scienceChapter2Learning} from './scienceChapter2Learning';
 import {ScienceLearnView} from './ScienceLearnView';
 import './science-engine.css';
 
 function CoreAssessment({mode,chapter,onBack,addXp,finishSession}){
-  const [ready,setReady]=useState(false);
-  useEffect(()=>{
-    const timer=setTimeout(()=>{
-      const root=document.querySelector('[data-science-ch2-core]');
-      const labels={practice:'अभ्यास',challenge:'चुनौती',test:'टेस्ट'};
-      const button=root&&[...root.querySelectorAll('button')].find(node=>node.textContent.trim().includes(labels[mode]));
-      if(button)button.click();
-      setReady(true);
-    },40);
-    return()=>clearTimeout(timer);
-  },[mode]);
-  return <div className={`sc3-core-assessment ${ready?'is-ready':''}`} data-science-ch2-core><ScienceChapter2Core chapter={chapter} onBack={onBack} addXp={addXp} finishSession={finishSession}/></div>;
+  return <div className="sc3-core-assessment"><ScienceChapter2Core initialMode={mode} chapter={chapter} onBack={onBack} addXp={addXp} finishSession={finishSession}/></div>;
 }
 
 export function ScienceChapter2Engine({chapter='क्या हमारे आसपास के पदार्थ शुद्ध हैं?',onBack,addXp,finishSession}){
