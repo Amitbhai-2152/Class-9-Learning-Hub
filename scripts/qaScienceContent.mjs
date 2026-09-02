@@ -56,6 +56,25 @@ function countArrayItems(text){
   return items.filter(Boolean);
 }
 
+function validateQuestions(source,file){
+  let badQuestions=0;
+  for(const object of extractQuestionObjects(source)){
+    const answerMatch=object.match(/answer:\s*(-?\d+)/);
+    if(!answerMatch)continue;
+    const optionMatch=object.match(/options:\s*\[((?:.|\n)*?)\]\s*,?\s*answer:\s*(-?\d+)/);
+    if(!optionMatch){badQuestions++;failures.push(`${file}: question object missing options before answer`);continue;}
+    const options=countArrayItems(optionMatch[1]);
+    const answer=Number(answerMatch[1]);
+    // Some engines intentionally contain an empty fallback object for an unavailable bank.
+    if(options.length===0&&answer===-1)continue;
+    if(options.length<2||answer<0||answer>=options.length){
+      badQuestions++;
+      failures.push(`${file}: invalid answer index ${answer} for ${options.length} options`);
+    }
+  }
+  return badQuestions;
+}
+
 for(const file of learningFiles){
   const full=path.join(SRC,file);
   const source=fs.readFileSync(full,'utf8');
@@ -66,22 +85,8 @@ for(const file of learningFiles){
   if(!source.includes('lessons:['))failures.push(`${file}: missing lessons array`);
   if(lessonMatches.length<8)failures.push(`${file}: suspiciously few lesson objects (${lessonMatches.length})`);
   if(explanationCount<8)failures.push(`${file}: suspiciously few lesson explanations/bodies (${explanationCount})`);
-
-  const questions=extractQuestionObjects(source);
-  let badQuestions=0;
-  for(const object of questions){
-    const answerMatch=object.match(/answer:\s*(-?\d+)/);
-    if(!answerMatch)continue;
-    const optionMatch=object.match(/options:\s*\[((?:.|\n)*?)\]\s*,?\s*answer:\s*(-?\d+)/);
-    if(!optionMatch){badQuestions++;failures.push(`${file}: question object missing options before answer`);continue;}
-    const options=countArrayItems(optionMatch[1]);
-    const answer=Number(answerMatch[1]);
-    if(options.length<2||answer<0||answer>=options.length){
-      badQuestions++;
-      failures.push(`${file}: invalid answer index ${answer} for ${options.length} options`);
-    }
-  }
-  report.push(`Ch${chapter}: lessons=${lessonMatches.length}, explanations=${explanationCount}, visuals=${visuals}, inlineQuestionObjects=${questions.length}, badInlineQuestions=${badQuestions}`);
+  const badQuestions=validateQuestions(source,file);
+  report.push(`Ch${chapter}: lessons=${lessonMatches.length}, explanations=${explanationCount}, visuals=${visuals}, inlineQuestionObjects=${extractQuestionObjects(source).length}, badInlineQuestions=${badQuestions}`);
 }
 
 let engineQuestionCount=0;
@@ -89,18 +94,8 @@ let engineBadQuestionCount=0;
 for(const file of engineFiles){
   const source=fs.readFileSync(path.join(SRC,file),'utf8');
   const questions=extractQuestionObjects(source);
-  let bad=0;
-  for(const object of questions){
-    const answerMatch=object.match(/answer:\s*(-?\d+)/);
-    if(!answerMatch)continue;
-    const optionMatch=object.match(/options:\s*\[((?:.|\n)*?)\]\s*,?\s*answer:\s*(-?\d+)/);
-    if(!optionMatch){bad++;failures.push(`${file}: question object missing options before answer`);continue;}
-    const options=countArrayItems(optionMatch[1]);
-    const answer=Number(answerMatch[1]);
-    if(options.length<2||answer<0||answer>=options.length){bad++;failures.push(`${file}: invalid answer index ${answer} for ${options.length} options`);}
-  }
   engineQuestionCount+=questions.length;
-  engineBadQuestionCount+=bad;
+  engineBadQuestionCount+=validateQuestions(source,file);
 }
 
 report.push(`Engine bank scan: files=${engineFiles.length}, questionObjects=${engineQuestionCount}, badQuestions=${engineBadQuestionCount}`);
