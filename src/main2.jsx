@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import { AppErrorBoundary } from './AppErrorBoundary.jsx';
 import './scienceModeRouter.js';
+import './subject-overrides.css';
 import './science-navigation.css';
 
 createRoot(document.getElementById('root')).render(
