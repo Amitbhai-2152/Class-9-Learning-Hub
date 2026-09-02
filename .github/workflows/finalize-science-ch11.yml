@@ -1,5 +1,5 @@
 name: Finalize Science Chapter 11
-# trigger finalizer after workflow file is established on main
+# second trigger after main source routing commit
 on:
   push:
     paths:
@@ -15,8 +15,7 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          app=Path('src/App.jsx')
-          s=app.read_text(encoding='utf-8')
+          app=Path('src/App.jsx'); s=app.read_text(encoding='utf-8')
           s=s.replace("import {ScienceChapter10Engine} from './ScienceChapter10Engine';", "import {ScienceChapter10Engine} from './ScienceChapter10Engine';\nimport {ScienceChapter11Engine} from './ScienceChapter11Engine';")
           s=s.replace("import {scienceChapter10Learning} from './scienceChapter10Learning';", "import {scienceChapter10Learning} from './scienceChapter10Learning';\nimport {scienceChapter11Learning} from './scienceChapter11Learning';")
           s=s.replace("'कार्य तथा ऊर्जा']", "'कार्य तथा ऊर्जा','ध्वनि']", 1)
@@ -25,12 +24,10 @@ jobs:
           s=s.replace(":isScienceChapter10?scienceChapter10Learning:baseData;", ":isScienceChapter10?scienceChapter10Learning:isScienceChapter11?scienceChapter11Learning:baseData;", 1)
           s=s.replace("if(isScienceChapter10)return <ScienceChapter10Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;", "if(isScienceChapter10)return <ScienceChapter10Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;if(isScienceChapter11)return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;", 1)
           app.write_text(s,encoding='utf-8')
-          eng=Path('src/ScienceChapter11Engine.jsx')
-          s=eng.read_text(encoding='utf-8')
+          eng=Path('src/ScienceChapter11Engine.jsx'); s=eng.read_text(encoding='utf-8')
           s=s.replace("import {scienceChapter11Learning} from './scienceChapter11Learning';", "import {scienceChapter11Learning} from './scienceChapter11Learning';\nimport './science11.css';", 1)
           eng.write_text(s,encoding='utf-8')
-          p=Path('src/ScienceNextChapterEngine.jsx')
-          s=p.read_text(encoding='utf-8')
+          p=Path('src/ScienceNextChapterEngine.jsx'); s=p.read_text(encoding='utf-8')
           marker=" const type=visual?.type||'generic';"
           visuals="""
  if(type==='soundSource'||type==='medium'||type==='longitudinal'||type==='compressRare') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden="true"><div className="sc11-wave"><span className="sc11-source">◉</span><div className="sc11-particles">{Array.from({length:11},(_,i)=><span key={i}/>)}</div><span className="sc11-arrow">→</span></div></div>;
@@ -49,11 +46,14 @@ jobs:
  if(type==='dailySound') return <div className="sc3-motion-diagram sc3-dailySound" aria-hidden="true"><div className="sc11-stack"><div>🎵<b>संगीत</b></div><div>🩺<b>Ultrasound</b></div><div>⛴<b>SONAR</b></div></div></div>;
  if(type==='soundSummary') return <div className="sc3-motion-diagram sc3-soundSummary" aria-hidden="true"><div className="sc11-formulas"><strong>v = λν</strong><strong>T = 1/ν</strong><strong>d = vt/2</strong></div></div>;
 """
-          if "sc11-formulas" not in s:
-              s=s.replace(marker,marker+visuals,1)
+          if "sc11-formulas" not in s: s=s.replace(marker,marker+visuals,1)
           p.write_text(s,encoding='utf-8')
-          print('Chapter 11 integration patched')
-      - name: Remove temporary finalizer
+      - name: Verify source changes
+        run: |
+          grep -q "ScienceChapter11Engine" src/App.jsx
+          grep -q "sc11-formulas" src/ScienceNextChapterEngine.jsx
+          grep -q "science11.css" src/ScienceChapter11Engine.jsx
+      - name: Commit final changes and remove finalizer
         run: |
           rm .github/workflows/finalize-science-ch11.yml
           git config user.name github-actions[bot]
