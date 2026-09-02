@@ -58,7 +58,7 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
 ### Science
 1. अध्याय 1 — हमारे आसपास के पदार्थ: dedicated Hindi learning, concept visuals, practice/test engine, App wiring.
 2. अध्याय 2 — क्या हमारे आसपास के पदार्थ शुद्ध हैं?: dedicated Hindi learning, separation-technique visuals, practice/test engine, App wiring.
-3. अध्याय 3 — परमाणु एवं अणु: Hindi learning file, concept visual, dedicated practice/challenge/test engine; App wiring added in latest routing update. The question bank should still receive answer-index/content QA before freezing.
+3. अध्याय 3 — परमाणु एवं अणु: Hindi learning file, concept visual, dedicated assessment engine, App wiring; QA fixed an incorrect oxygen-valency answer index and corrected a challenge molecular-mass answer key. The QA-fixed engine now exposes a visible chapter content list plus Learn, Practice, Challenge, and Test flows with answer feedback and final-score/session recording.
 4. अध्याय 4 — परमाणु की संरचना: 24 Hindi learning lessons, concept visual, visible content list, 29-question bank with Practice 15 / Challenge 12 / Test 20; App wiring added. Scoring was corrected so the final answered question is included in the stored session score. Stylesheet import was corrected to match existing `src/scienceChapter4.css`.
 
 ## Science Chapter 3/4 routing milestone
@@ -67,8 +67,10 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
 - Subject chapter cards now use the dedicated Ch3/Ch4 learning goals.
 - ChapterPage routes Ch3 to `ScienceChapter3Engine` and Ch4 to `ScienceChapter4Engine`.
 - Latest App wiring commit: `e935f5ca70038774b75f9fe35e78a3849b827052`.
-- A temporary stylesheet-name mismatch in Ch4 was caught during verification. The original engine file was restored and its scoring finalized in commit `4298b93dd790cddb510e973975effea199b2e71b`.
-- GitHub Actions did not report a workflow run for the App wiring commit, so browser/build QA is not claimed. The repository tree was inspected to verify that `src/scienceChapter4.css` exists and the final Ch4 engine imports it.
+- A temporary stylesheet-name mismatch in Ch4 was caught during verification. The original engine was restored and its scoring finalized in commit `4298b93dd790cddb510e973975effea199b2e71b`.
+- Science Chapter 3 QA/fix commit: `3c9eb57330bdc9b3dd7b572b4f3612810dc0e1f6`, with the stable wrapper commit `fac0852d59b4cd34cada10166a1c4720ee67dbed` and fixed engine file `src/ScienceChapter3EngineFixed.jsx`.
+- The original `src/ScienceChapter3Engine.jsx` now re-exports the QA-fixed engine so existing App imports remain unchanged.
+- GitHub Actions/status checks did not report a workflow run for these direct main-branch commits, so browser/build QA is not claimed.
 
 ## Maths visual/animation layer
 - Added `src/MathSectionVisuals.jsx` and `src/math-section.css` to make the Maths subject landing page visually distinctive and animated.
