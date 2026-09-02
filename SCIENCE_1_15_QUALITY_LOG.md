@@ -106,6 +106,18 @@
 - [x] Hardened the Science mode router so delayed mode-launch observers are cancelled on navigation changes and only `.science-mode-grid`/known Science mode buttons can be targeted; chapter-card buttons can no longer be accidentally re-triggered by a stale pending mode request.
 - [ ] Full browser/device interaction test is still not available in this environment.
 
+### Step 10 — Science navigation animation + responsive button structure
+
+**Commits:** `f3b0844` → `1daf65a`
+
+- [x] Added a dedicated `science-navigation.css` layer so navigation/button improvements stay isolated from chapter-content engines.
+- [x] Added a restrained science-themed animated orbit treatment to Science chapter navigation and learning navigation.
+- [x] Added stronger hover, active, focus-visible and touch feedback to Science navigation buttons.
+- [x] Reworked the four Science mode cards into a clearer icon → title → count → action structure using the existing DOM, without introducing nested interactive controls.
+- [x] Added mobile-specific sizing so the mode controls remain compact and tappable on narrow screens.
+- [x] Added `prefers-reduced-motion` handling so decorative motion is disabled for users who request reduced motion.
+- [ ] Full browser/device interaction test is still not available in this environment.
+
 ### Status
 - [x] Quality-pass log created.
 - [x] Automated content/data-shape audit.
@@ -115,8 +127,9 @@
 - [x] Practice bank visibility correction implemented across Science 7–15.
 - [x] Science chapter-card mode routing correction implemented.
 - [x] Science chapter exit/completion navigation hardening implemented.
-- [x] Final CI verification for the Practice-bank changes.
-- [ ] CI verification for the latest navigation-hardening commit.
+- [x] Science navigation animation + responsive button structure implemented.
+- [x] Final CI verification for the navigation-hardening commit.
+- [ ] CI verification for the latest navigation/button styling commit.
 - [ ] Deeper manual content-quality pass for every chapter.
 - [ ] Browser/device verification when an interactive browser environment is available.
 
