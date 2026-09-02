@@ -1,65 +1,77 @@
 name: Finalize Science Chapter 12
-# third trigger
+
 on:
   push:
-    paths:
-      - '.github/workflows/finalize-science-ch12.yml'
+    branches: [main]
+
+permissions:
+  contents: write
+
 jobs:
   finalize:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Patch and verify
-        shell: python
-        run: |
-          from pathlib import Path
-          app=Path('src/App.jsx'); s=app.read_text(encoding='utf-8')
-          def add_after(old,new):
-              global s
-              if new not in s: s=s.replace(old,old+'\n'+new,1)
-          add_after("import {ScienceChapter11Engine} from './ScienceChapter11Engine';","import {ScienceChapter12Engine} from './ScienceChapter12Engine';")
-          add_after("import {scienceChapter11Learning} from './scienceChapter11Learning';","import {scienceChapter12Learning} from './scienceChapter12Learning';")
-          if "'खाद्य संसाधनों में सुधार'" not in s: s=s.replace("'ध्वनि']","'ध्वनि','खाद्य संसाधनों में सुधार']",1)
-          if "'खाद्य संसाधनों में सुधार':scienceChapter12Learning" not in s: s=s.replace("'ध्वनि':scienceChapter11Learning};","'ध्वनि':scienceChapter11Learning,'खाद्य संसाधनों में सुधार':scienceChapter12Learning};",1)
-          s=s.replace("const isScienceChapter11=subject.name==='विज्ञान'&&chapter==='ध्वनि';","const isScienceChapter11=subject.name==='विज्ञान'&&chapter==='ध्वनि';const isScienceChapter12=subject.name==='विज्ञान'&&chapter==='खाद्य संसाधनों में सुधार';",1)
-          s=s.replace(":isScienceChapter11?scienceChapter11Learning:baseData;",":isScienceChapter11?scienceChapter11Learning:isScienceChapter12?scienceChapter12Learning:baseData;",1)
-          s=s.replace("if(isScienceChapter11)return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;","if(isScienceChapter11)return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;if(isScienceChapter12)return <ScienceChapter12Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;",1)
-          app.write_text(s,encoding='utf-8')
-          p=Path('src/ScienceNextChapterEngine.jsx'); s=p.read_text(encoding='utf-8')
-          marker=" const type=visual?.type||'generic';"
-          visuals="""
- if(type==='foodFlow'||type==='balancedAgri'||type==='farmPlan') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden=\"true\"><div className=\"sc12-v\"><div className=\"sc12-cards\"><div className=\"sc12-card\">🌾<strong>फसल सुधार</strong><small>उपज + गुणवत्ता</small></div><div className=\"sc12-card\">🐄<strong>पशुपालन</strong><small>दूध • अंडे • मांस</small></div></div></div></div>;
- if(type==='cropSeasons') return <div className=\"sc3-motion-diagram sc3-cropSeasons\" aria-hidden=\"true\"><div className=\"sc12-cards\"><div className=\"sc12-card\"><strong>खरीफ</strong><small>धान • मक्का • सोयाबीन</small></div><div className=\"sc12-card\"><strong>रबी</strong><small>गेहूँ • चना • मटर</small></div></div></div>;
- if(type==='tillage') return <div className=\"sc3-motion-diagram sc3-tillage\" aria-hidden=\"true\"><div className=\"sc12-field\"><span className=\"sc12-label\">जुताई → मिट्टी ढीली</span><span className=\"sc12-plant\">🌱</span><span className=\"sc12-tillage\"/></div></div>;
- if(type==='seeding') return <div className=\"sc3-motion-diagram sc3-seeding\" aria-hidden=\"true\"><div className=\"sc12-seedrow\"><span>🌱</span><span>🌱</span><span>🌱</span></div></div>;
- if(type==='weeds') return <div className=\"sc3-motion-diagram sc3-weeds\" aria-hidden=\"true\"><div className=\"sc12-weedrow\"><span className=\"crop\">🌱</span><span className=\"weed\">🌿</span><span className=\"weed\">🌿</span></div></div>;
- if(type==='irrigation') return <div className=\"sc3-motion-diagram sc3-irrigation\" aria-hidden=\"true\"><div className=\"sc12-drops\">{Array.from({length:8},(_,i)=><span className=\"sc12-drop\" key={i}/>)}</div></div>;
- if(type==='nutrients') return <div className=\"sc3-motion-diagram sc3-nutrients\" aria-hidden=\"true\"><div className=\"sc12-nutrients\"><span className=\"sc12-n\">N<small>नाइट्रोजन</small></span><span className=\"sc12-n\">P<small>फॉस्फोरस</small></span><span className=\"sc12-n\">K<small>पोटैशियम</small></span></div></div>;
- if(type==='compost') return <div className=\"sc3-motion-diagram sc3-compost\" aria-hidden=\"true\"><div className=\"sc12-compost\"><span>🍂 जैविक अवशेष</span><b className=\"sc12-arrow\">→</b><span>🪱 अपघटन</span><b className=\"sc12-arrow\">→</b><span>🪴 कम्पोस्ट</span></div></div>;
- if(type==='cropImprovement') return <div className=\"sc3-motion-diagram sc3-cropImprovement\" aria-hidden=\"true\"><div className=\"sc12-bars\"><i className=\"sc12-bar one\"/><i className=\"sc12-bar two\"/></div></div>;
- if(type==='cropPattern') return <div className=\"sc3-motion-diagram sc3-cropPattern\" aria-hidden=\"true\"><div className=\"sc12-pattern\"><div>A</div><div>B</div><div>C</div></div></div>;
- if(type==='rhizobium') return <div className=\"sc3-motion-diagram sc3-rhizobium\" aria-hidden=\"true\"><div className=\"sc12-root\"><span className=\"sc12-stem\"><i className=\"sc12-nodules\"/></span><strong className=\"sc12-label\">जड़ गांठें → राइजोबियम</strong></div></div>;
- if(type==='pestControl') return <div className=\"sc3-motion-diagram sc3-pestControl\" aria-hidden=\"true\"><div className=\"sc12-pest\"><span>🌱</span><b>→</b><span className=\"sc12-shield\">🛡️ स्वस्थ फसल</span></div></div>;
- if(type==='storage') return <div className=\"sc3-motion-diagram sc3-storage\" aria-hidden=\"true\"><div className=\"sc12-storage\"><i className=\"sc12-grain\"/><i className=\"sc12-grain\"/><i className=\"sc12-grain\"/><i className=\"sc12-grain\"/></div></div>;
- if(type==='animalHusbandry'||type==='dairy'||type==='poultry') return <div className={`sc3-motion-diagram sc3-${type}`} aria-hidden=\"true\"><div className=\"sc12-animal\"><div className=\"sc12-animal-card\"><span>{type==='dairy'?'🐄':type==='poultry'?'🐔':'🍚'}</span>{type==='dairy'?'दूध':type==='poultry'?'पोल्ट्री':'पोषण'}</div><div className=\"sc12-animal-card\"><span>🩺</span>स्वास्थ्य</div><div className=\"sc12-animal-card\"><span>🏠</span>आवास</div></div></div>;
- if(type==='fishCulture') return <div className=\"sc3-motion-diagram sc3-fishCulture\" aria-hidden=\"true\"><div className=\"sc12-pond\"><span className=\"sc12-fish\">🐟</span><span className=\"sc12-fish f2\">🐟</span><span className=\"sc12-fish f3\">🐟</span></div></div>;
- if(type==='apiculture') return <div className=\"sc3-motion-diagram sc3-apiculture\" aria-hidden=\"true\"><div className=\"sc12-flowers\">🌼 🐝 → 🍯</div><div className=\"sc12-hive\">🐝 🐝 🐝</div></div>;
- if(type==='foodSummary') return <div className=\"sc3-motion-diagram sc3-foodSummary\" aria-hidden=\"true\"><div className=\"sc12-summary\"><div>किस्म</div><div>मिट्टी</div><div>जल</div><div>स्वास्थ्य</div><div>भंडारण</div></div></div>;
-"""
-          if 'sc12-summary' not in s: s=s.replace(marker,marker+visuals,1)
-          p.write_text(s,encoding='utf-8')
-      - name: Verify sources
-        run: |
-          grep -q "ScienceChapter12Engine" src/App.jsx
-          grep -q "sc12-summary" src/ScienceNextChapterEngine.jsx
-          grep -q "scienceChapter12Learning" src/App.jsx
-      - name: Commit final and remove workflow
-        run: |
-          rm .github/workflows/finalize-science-ch12.yml
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add src/App.jsx src/ScienceNextChapterEngine.jsx .github/workflows/finalize-science-ch12.yml
-          git commit -m "feat: finalize science chapter 12 food resources" || exit 0
-          git push
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            async function getFile(path) {
+              const r = await github.rest.repos.getContent({owner, repo, path, ref:'main'});
+              return {sha:r.data.sha, content:Buffer.from(r.data.content,'base64').toString('utf8')};
+            }
+            async function putFile(path, content, sha, message) {
+              await github.rest.repos.createOrUpdateFileContents({owner, repo, path, message, content:Buffer.from(content,'utf8').toString('base64'), sha, branch:'main'});
+            }
+            const app=await getFile('src/App.jsx');
+            let a=app.content;
+            const add=(old,nw)=>{if(!a.includes(nw)&&a.includes(old))a=a.replace(old,old+'\n'+nw);};
+            add("import {ScienceChapter11Engine} from './ScienceChapter11Engine';","import {ScienceChapter12Engine} from './ScienceChapter12Engine';");
+            add("import {scienceChapter11Learning} from './scienceChapter11Learning';","import {scienceChapter12Learning} from './scienceChapter12Learning';");
+            a=a.replace("'ध्वनि']","'ध्वनि','खाद्य संसाधनों में सुधार']");
+            a=a.replace("'ध्वनि':scienceChapter11Learning};","'ध्वनि':scienceChapter11Learning,'खाद्य संसाधनों में सुधार':scienceChapter12Learning};");
+            a=a.replace("const isScienceChapter11=subject.name==='विज्ञान'&&chapter==='ध्वनि';","const isScienceChapter11=subject.name==='विज्ञान'&&chapter==='ध्वनि';const isScienceChapter12=subject.name==='विज्ञान'&&chapter==='खाद्य संसाधनों में सुधार';");
+            a=a.replace(":isScienceChapter11?scienceChapter11Learning:baseData;",":isScienceChapter11?scienceChapter11Learning:isScienceChapter12?scienceChapter12Learning:baseData;");
+            a=a.replace("if(isScienceChapter11)return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;","if(isScienceChapter11)return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;if(isScienceChapter12)return <ScienceChapter12Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;");
+            const main=await getFile('.github/workflows/build.yml');
+            let b=main.content;
+            if(b.includes('# CH12_FINALIZER_START')) {
+              const start=b.indexOf('      # CH12_FINALIZER_START');
+              const end=b.indexOf('      # CH12_FINALIZER_END');
+              if(end<0) throw new Error('build finalizer end marker missing');
+              b=b.slice(0,start)+b.slice(end+'      # CH12_FINALIZER_END'.length);
+            }
+            const temp=await getFile('.github/workflows/finalize-science-ch12.yml');
+            const marker='CH12_FINALIZED';
+            await putFile('src/App.jsx',a,app.sha,'feat: finalize science chapter 12 routing');
+            const renderer=await getFile('src/ScienceNextChapterEngine.jsx');
+            let r=renderer.content;
+            if(!r.includes('sc12-summary')) {
+              const markerLine=" const type=visual?.type||'generic';";
+              const visuals=`
+ if(type==='foodFlow'||type==='balancedAgri'||type==='farmPlan') return <div className={\`sc3-motion-diagram sc3-\${type}\`} aria-hidden="true"><div className="sc12-v"><div className="sc12-cards"><div className="sc12-card">🌾<strong>फसल सुधार</strong><small>उपज + गुणवत्ता</small></div><div className="sc12-card">🐄<strong>पशुपालन</strong><small>दूध • अंडे • मांस</small></div></div></div></div>;
+ if(type==='cropSeasons') return <div className="sc3-motion-diagram sc3-cropSeasons" aria-hidden="true"><div className="sc12-cards"><div className="sc12-card"><strong>खरीफ</strong><small>धान • मक्का • सोयाबीन</small></div><div className="sc12-card"><strong>रबी</strong><small>गेहूँ • चना • मटर</small></div></div></div>;
+ if(type==='tillage') return <div className="sc3-motion-diagram sc3-tillage" aria-hidden="true"><div className="sc12-field"><span className="sc12-label">जुताई → मिट्टी ढीली</span><span className="sc12-plant">🌱</span><span className="sc12-tillage"/></div></div>;
+ if(type==='seeding') return <div className="sc3-motion-diagram sc3-seeding" aria-hidden="true"><div className="sc12-seedrow"><span>🌱</span><span>🌱</span><span>🌱</span></div></div>;
+ if(type==='weeds') return <div className="sc3-motion-diagram sc3-weeds" aria-hidden="true"><div className="sc12-weedrow"><span className="crop">🌱</span><span className="weed">🌿</span><span className="weed">🌿</span></div></div>;
+ if(type==='irrigation') return <div className="sc3-motion-diagram sc3-irrigation" aria-hidden="true"><div className="sc12-drops">{Array.from({length:8},(_,i)=><span className="sc12-drop" key={i}/>)}</div></div>;
+ if(type==='nutrients') return <div className="sc3-motion-diagram sc3-nutrients" aria-hidden="true"><div className="sc12-nutrients"><span className="sc12-n">N<small>नाइट्रोजन</small></span><span className="sc12-n">P<small>फॉस्फोरस</small></span><span className="sc12-n">K<small>पोटैशियम</small></span></div></div>;
+ if(type==='compost') return <div className="sc3-motion-diagram sc3-compost" aria-hidden="true"><div className="sc12-compost"><span>🍂 जैविक अवशेष</span><b>→</b><span>🪱 अपघटन</span><b>→</b><span>🪴 कम्पोस्ट</span></div></div>;
+ if(type==='cropImprovement') return <div className="sc3-motion-diagram sc3-cropImprovement" aria-hidden="true"><div className="sc12-bars"><i className="sc12-bar one"/><i className="sc12-bar two"/></div></div>;
+ if(type==='cropPattern') return <div className="sc3-motion-diagram sc3-cropPattern" aria-hidden="true"><div className="sc12-pattern"><div>A</div><div>B</div><div>C</div></div></div>;
+ if(type==='rhizobium') return <div className="sc3-motion-diagram sc3-rhizobium" aria-hidden="true"><div className="sc12-root"><span className="sc12-stem"><i className="sc12-nodules"/></span><strong className="sc12-label">जड़ गांठें → राइजोबियम</strong></div></div>;
+ if(type==='pestControl') return <div className="sc3-motion-diagram sc3-pestControl" aria-hidden="true"><div className="sc12-pest"><span>🌱</span><b>→</b><span className="sc12-shield">🛡️ स्वस्थ फसल</span></div></div>;
+ if(type==='storage') return <div className="sc3-motion-diagram sc3-storage" aria-hidden="true"><div className="sc12-storage"><i className="sc12-grain"/><i className="sc12-grain"/><i className="sc12-grain"/><i className="sc12-grain"/></div></div>;
+ if(type==='animalHusbandry'||type==='dairy'||type==='poultry') return <div className={\`sc3-motion-diagram sc3-\${type}\`} aria-hidden="true"><div className="sc12-animal"><div className="sc12-animal-card"><span>{type==='dairy'?'🐄':type==='poultry'?'🐔':'🍚'}</span>{type==='dairy'?'दूध':type==='poultry'?'पोल्ट्री':'पोषण'}</div><div className="sc12-animal-card"><span>🩺</span>स्वास्थ्य</div><div className="sc12-animal-card"><span>🏠</span>आवास</div></div></div>;
+ if(type==='fishCulture') return <div className="sc3-motion-diagram sc3-fishCulture" aria-hidden="true"><div className="sc12-pond"><span className="sc12-fish">🐟</span><span className="sc12-fish f2">🐟</span><span className="sc12-fish f3">🐟</span></div></div>;
+ if(type==='apiculture') return <div className="sc3-motion-diagram sc3-apiculture" aria-hidden="true"><div className="sc12-flowers">🌼 🐝 → 🍯</div><div className="sc12-hive">🐝 🐝 🐝</div></div>;
+ if(type==='foodSummary') return <div className="sc3-motion-diagram sc3-foodSummary" aria-hidden="true"><div className="sc12-summary"><div>किस्म</div><div>मिट्टी</div><div>जल</div><div>स्वास्थ्य</div><div>भंडारण</div></div></div>;
+`;
+              r=r.replace(markerLine,markerLine+visuals);
+            }
+            await putFile('src/ScienceNextChapterEngine.jsx',r,renderer.sha,'feat: add science chapter 12 visuals');
+            if(!b.includes('# CH12_FINALIZER_START')) {
+              const originalBuild=b;
+              await putFile('.github/workflows/build.yml',originalBuild,main.sha,'chore: restore normal build workflow');
+            }
+            await github.rest.repos.deleteFile({owner,repo,path:'.github/workflows/finalize-science-ch12.yml',message:'chore: remove chapter 12 finalizer',sha:temp.sha,branch:'main'}); 
