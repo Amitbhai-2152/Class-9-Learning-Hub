@@ -54,7 +54,7 @@ export function ScienceChapterShell({lessons=[],title='अध्याय सू
     return Boolean(rootRef.current?.querySelector('.science-learn-page,.lesson-list'));
   };
 
-  const jumpToLesson=async targetIndex=>{
+  const jumpToSingleLesson=async targetIndex=>{
     if(!(await enterLearnMode()))return false;
     let current=getCurrentLessonIndex();
     if(current===null)return false;
@@ -65,7 +65,7 @@ export function ScienceChapterShell({lessons=[],title='अध्याय सू
       if(!next)break;
       const before=current;
       next.click();
-      await wait(120);
+      await wait(80);
       current=getCurrentLessonIndex();
       if(current===before)break;
     }
@@ -75,15 +75,26 @@ export function ScienceChapterShell({lessons=[],title='अध्याय सू
   const selectLesson=async index=>{
     setActiveIndex(index);
     const root=rootRef.current;
-    const target=root?.querySelector(`#science-lesson-${index+1}`);
-    if(target){target.scrollIntoView({behavior:'smooth',block:'start'});return;}
-    if(await jumpToLesson(index)){
-      await wait(60);
-      rootRef.current?.querySelector(`#science-lesson-${index+1}`)?.scrollIntoView({behavior:'smooth',block:'start'});
+    const target=root?.querySelector(`#science-lesson-${index+1}`)||root?.querySelector(`.lesson-list .lesson-card:nth-child(${index+1})`);
+    if(target){
+      target.scrollIntoView({behavior:'auto',block:'start'});
+      return;
+    }
+    if(await jumpToSingleLesson(index)){
+      await wait(30);
+      const moved=rootRef.current?.querySelector(`#science-lesson-${index+1}`);
+      if(moved){
+        const top=Math.max(0,moved.getBoundingClientRect().top+window.scrollY-12);
+        window.scrollTo({top,behavior:'auto'});
+      }
     }
   };
 
+  if(!items.length)return <div className="science-chapter-shell-main">{children}</div>;
   return <div className="science-chapter-shell" ref={rootRef}>
+    <div className="science-learn-nav" aria-label="सीखने का नेविगेशन">
+      <strong>पढ़ाई</strong><span>कक्षा 9</span><span>विज्ञान</span><b>📖 सीखें</b>
+    </div>
     <aside className="science-chapter-shell-sidebar" aria-label="अध्याय सूची">
       <ChapterContents lessons={items} title={title} activeIndex={activeIndex} onSelect={selectLesson}/>
     </aside>
