@@ -1,5 +1,5 @@
 name: Finalize Science Chapter 12
-# trigger after workflow is present on main
+# second trigger
 on:
   push:
     paths:
@@ -11,7 +11,7 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Patch Chapter 12
+      - name: Patch and verify
         shell: python
         run: |
           from pathlib import Path
@@ -19,18 +19,13 @@ jobs:
           def add_after(old,new):
               global s
               if new not in s: s=s.replace(old,old+'\n'+new,1)
-          add_after("import {ScienceChapter10Engine} from './ScienceChapter10Engine';","import {ScienceChapter12Engine} from './ScienceChapter12Engine';")
-          add_after("import {scienceChapter10Learning} from './scienceChapter10Learning';","import {scienceChapter12Learning} from './scienceChapter12Learning';")
-          if "import {scienceChapter11Learning} from './scienceChapter11Learning';" not in s:
-              add_after("import {scienceChapter12Learning} from './scienceChapter12Learning';","import {scienceChapter11Learning} from './scienceChapter11Learning';")
-          s=s.replace("'कार्य तथा ऊर्जा']","'कार्य तथा ऊर्जा','ध्वनि','खाद्य संसाधनों में सुधार']",1)
-          if "'ध्वनि':scienceChapter11Learning" not in s:
-              s=s.replace("'कार्य तथा ऊर्जा':scienceChapter10Learning};","'कार्य तथा ऊर्जा':scienceChapter10Learning,'ध्वनि':scienceChapter11Learning,'खाद्य संसाधनों में सुधार':scienceChapter12Learning};",1)
-          else:
-              s=s.replace("'कार्य तथा ऊर्जा':scienceChapter10Learning};","'कार्य तथा ऊर्जा':scienceChapter10Learning,'खाद्य संसाधनों में सुधार':scienceChapter12Learning};",1)
-          s=s.replace("const isScienceChapter10=subject.name==='विज्ञान'&&chapter==='कार्य तथा ऊर्जा';","const isScienceChapter10=subject.name==='विज्ञान'&&chapter==='कार्य तथा ऊर्जा';const isScienceChapter12=subject.name==='विज्ञान'&&chapter==='खाद्य संसाधनों में सुधार';",1)
-          s=s.replace(":isScienceChapter10?scienceChapter10Learning:baseData;",":isScienceChapter10?scienceChapter10Learning:isScienceChapter12?scienceChapter12Learning:baseData;",1)
-          s=s.replace("if(isScienceChapter10)return <ScienceChapter10Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;","if(isScienceChapter10)return <ScienceChapter10Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;if(subject.name==='विज्ञान'&&chapter==='ध्वनि')return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;if(isScienceChapter12)return <ScienceChapter12Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;",1)
+          add_after("import {ScienceChapter11Engine} from './ScienceChapter11Engine';","import {ScienceChapter12Engine} from './ScienceChapter12Engine';")
+          add_after("import {scienceChapter11Learning} from './scienceChapter11Learning';","import {scienceChapter12Learning} from './scienceChapter12Learning';")
+          if "'खाद्य संसाधनों में सुधार'" not in s: s=s.replace("'ध्वनि']","'ध्वनि','खाद्य संसाधनों में सुधार']",1)
+          if "'खाद्य संसाधनों में सुधार':scienceChapter12Learning" not in s: s=s.replace("'ध्वनि':scienceChapter11Learning};","'ध्वनि':scienceChapter11Learning,'खाद्य संसाधनों में सुधार':scienceChapter12Learning};",1)
+          s=s.replace("const isScienceChapter11=subject.name==='विज्ञान'&&chapter==='ध्वनि';","const isScienceChapter11=subject.name==='विज्ञान'&&chapter==='ध्वनि';const isScienceChapter12=subject.name==='विज्ञान'&&chapter==='खाद्य संसाधनों में सुधार';",1)
+          s=s.replace(":isScienceChapter11?scienceChapter11Learning:baseData;",":isScienceChapter11?scienceChapter11Learning:isScienceChapter12?scienceChapter12Learning:baseData;",1)
+          s=s.replace("if(isScienceChapter11)return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;","if(isScienceChapter11)return <ScienceChapter11Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;if(isScienceChapter12)return <ScienceChapter12Engine chapter={chapter} onBack={back} addXp={addXp} finishSession={finishSession}/>;",1)
           app.write_text(s,encoding='utf-8')
           p=Path('src/ScienceNextChapterEngine.jsx'); s=p.read_text(encoding='utf-8')
           marker=" const type=visual?.type||'generic';"
@@ -55,12 +50,12 @@ jobs:
 """
           if 'sc12-summary' not in s: s=s.replace(marker,marker+visuals,1)
           p.write_text(s,encoding='utf-8')
-      - name: Verify
+      - name: Verify sources
         run: |
           grep -q "ScienceChapter12Engine" src/App.jsx
-          grep -q "scienceChapter12Learning" src/App.jsx
           grep -q "sc12-summary" src/ScienceNextChapterEngine.jsx
-      - name: Commit and remove
+          grep -q "scienceChapter12Learning" src/App.jsx
+      - name: Commit final changes and remove workflow
         run: |
           rm .github/workflows/finalize-science-ch12.yml
           git config user.name github-actions[bot]
