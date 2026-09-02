@@ -96,6 +96,16 @@
 - [x] Wired the router from `main2.jsx` without changing chapter content or assessment data.
 - [ ] Full browser/device interaction test is still not available in this environment.
 
+### Step 9 — Chapter exit/completion navigation hardening
+
+**Commit:** `66ee97a`
+
+- [x] Re-audited Science navigation across the chapter stack: chapter launch → mode → assessment/learning → chapter menu → subject chapter list.
+- [x] Found a real Chapter 1 defect: the completed `सीखें` screen wired its `अभ्यास पर जाएँ →` action to the outer chapter `onBack`, which incorrectly exited the chapter instead of returning to the chapter menu.
+- [x] Added a guarded interaction fix so that exact completion action returns to the Chapter 1 menu (`← अध्याय`) rather than jumping to the subject-level screen.
+- [x] Hardened the Science mode router so delayed mode-launch observers are cancelled on navigation changes and only `.science-mode-grid`/known Science mode buttons can be targeted; chapter-card buttons can no longer be accidentally re-triggered by a stale pending mode request.
+- [ ] Full browser/device interaction test is still not available in this environment.
+
 ### Status
 - [x] Quality-pass log created.
 - [x] Automated content/data-shape audit.
@@ -104,8 +114,9 @@
 - [x] Science subject landing visual energy upgrade.
 - [x] Practice bank visibility correction implemented across Science 7–15.
 - [x] Science chapter-card mode routing correction implemented.
+- [x] Science chapter exit/completion navigation hardening implemented.
 - [x] Final CI verification for the Practice-bank changes.
-- [ ] Final CI verification for the mode-routing change is pending.
+- [ ] CI verification for the latest navigation-hardening commit.
 - [ ] Deeper manual content-quality pass for every chapter.
 - [ ] Browser/device verification when an interactive browser environment is available.
 
