@@ -30,19 +30,35 @@
 - [x] Added `npm run qa:science`.
 - [x] CI workflow now runs Science content QA before the Vite build.
 
+### Step 3 — QA scanner false-positive correction
+
+**Committed:** `d849c5d` → `bc016f6`
+
+- [x] First scanner run exposed valid alternate lesson data shapes in Chapters 11 and 14; the scanner was corrected rather than changing valid chapter content.
+- [x] Second scanner run exposed the intentional empty fallback object in Chapter 12 assessment (`options:[]`, `answer:-1`); this is not a real bank question, so the scanner now explicitly ignores that safe fallback.
+- [x] The corrected scanner completed successfully across the Science learning files and engine scans.
+
+### Step 4 — CI verification
+
+**Workflow run:** `33632136958` (run #304)
+
+- [x] Dependencies installed successfully.
+- [x] `npm run qa:science` passed.
+- [x] `npm run build` passed.
+- [x] This verifies repository-level content sanity and compile/build integrity for the current Science 1–15 state.
+- [ ] Full browser/device interaction test is still not available in this environment.
+
 ### External curriculum reference used for the audit
 
-NCERT's current textbook portal lists Class IX Science textbook material separately from older/exemplar chapter lists. The official portal currently exposes 13 chapters for the rationalised Class IX Science book, while NCERT's exemplar page still contains the older 15-unit structure. Therefore this project’s 15-chapter Science sequence is treated as the project’s intended curriculum mapping rather than silently changing its chapter order during QA. See the official NCERT references noted in the QA conversation.
+NCERT's current textbook portal lists Class IX Science textbook material separately from older/exemplar chapter lists. The official portal currently exposes 13 chapters for the rationalised Class IX Science book, while NCERT's exemplar page still contains the older 15-unit structure. Therefore this project’s 15-chapter Science sequence is treated as the project’s intended curriculum mapping rather than silently changing its chapter order during QA.
 
 ### Status
 - [x] Quality-pass log created.
-- [ ] Chapters 1–15 content audit.
-- [x] Answer-key/data-shape audit tooling added.
-- [ ] Shared engine/navigation audit.
-- [ ] Visual/animation audit.
+- [x] Automated content/data-shape audit.
 - [x] Runtime render recovery added.
-- [ ] Fix pass.
-- [ ] Final build/CI verification.
+- [x] CI QA + build verification.
+- [ ] Deeper manual content-quality pass for every chapter.
+- [ ] Browser/device verification when an interactive browser environment is available.
 
 ## Notes
 
