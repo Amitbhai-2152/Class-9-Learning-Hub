@@ -1,5 +1,6 @@
 import React from 'react';
 import {hindiAllTopics} from './hindiChapterData';
+import './hindi-click-fix.css';
 
 const primaryGroups=[
   ['गद्य','गोधूली · गद्य','📚'],
@@ -19,6 +20,7 @@ const modes=[
 ];
 
 function TopicCard({topic,index,open,kind}){
+  const launch=mode=>open(topic.title,mode);
   return <article className={`hindi-topic-card ${kind==='poetry'?'is-poetry':''}`}>
     <div className="hindi-topic-top">
       <span className="hindi-topic-number">{String(index+1).padStart(2,'0')}</span>
@@ -26,16 +28,16 @@ function TopicCard({topic,index,open,kind}){
     </div>
     <div className="hindi-topic-title-row">
       <h4>{topic.title}</h4>
-      <span className="hindi-topic-arrow">↗</span>
+      <span className="hindi-topic-arrow" aria-hidden="true">↗</span>
     </div>
     {topic.author && <div className="hindi-topic-author">✦ {topic.author}</div>}
     <p>{topic.theme||topic.summary}</p>
     <div className="hindi-topic-tags">
       {(topic.focus||topic.skills||[]).slice(0,3).map(x=><span key={x}>{x}</span>)}
     </div>
-    <div className="hindi-topic-actions">
-      {modes.map(([mode,icon,label,help])=><button key={mode} type="button" className={`hindi-topic-action hindi-mode-${mode} pressable`} onClick={()=>open(topic.title,mode)} title={help}>
-        <span>{icon}</span><b>{label}</b>
+    <div className="hindi-topic-actions" aria-label={`${topic.title} अध्ययन विकल्प`}>
+      {modes.map(([mode,icon,label,help])=><button key={mode} type="button" aria-label={`${topic.title}: ${label}`} className={`hindi-topic-action hindi-mode-${mode} pressable`} onClick={()=>launch(mode)} title={help}>
+        <span aria-hidden="true">{icon}</span><b>{label}</b>
       </button>)}
     </div>
   </article>;
@@ -46,7 +48,7 @@ function TopicGroup({title,book,icon,open,indexOffset=0,support=false}){
   return <section className={`hindi-topic-group ${support?'hindi-support-group':''}`}>
     <div className="hindi-group-heading">
       <div className="hindi-group-title">
-        <span className="hindi-group-icon">{icon}</span>
+        <span className="hindi-group-icon" aria-hidden="true">{icon}</span>
         <div><span>{support?'अतिरिक्त अभ्यास':'गोधूली भाग 1'}</span><h3>{title}</h3></div>
       </div>
       <b>{items.length} {support?'विषय':'पाठ'}</b>
