@@ -14,7 +14,7 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
 - Every chapter should ultimately have Learn, Practice, Challenge, Test, explanations/review, responsive behavior, and syntax/build QA.
 - Practice should have meaningful difficulty progression (easy → medium → hard/HOTS), not merely more questions.
 - After a student answers a question, explain why the selected answer is right/wrong.
-- Every chapter should show a clear visible content list/outline before study begins.
+- **Every chapter must show a clear content list/outline beside the chapter content on desktop, and in a compact full-width form on mobile.** This is now a hard implementation standard, not an optional enhancement.
 
 ## Development workflow
 - Repository: https://github.com/Amitbhai-2152/Class-9-Learning-Hub
@@ -36,6 +36,7 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
 - Several older chapter data files used `sections` instead of `lessons`; this caused Learn screens to show “अभी सामग्री उपलब्ध नहीं है”.
 - Current intended approach is to normalize chapter data before it reaches LearningEngine or otherwise support both shapes.
 - Chapter 6 and 7 blank Learn issue was traced to this mismatch; current repository routing provides the expected lesson shape. Verify current branch before future claims.
+- `src/ChapterContents.jsx` + `src/chapter-contents.css` already provide a reusable chapter outline component. Future chapter engines should reuse it rather than reimplementing lists.
 
 ## Work completed / chapter status
 ### Maths
@@ -58,19 +59,32 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
 ### Science
 1. अध्याय 1 — हमारे आसपास के पदार्थ: dedicated Hindi learning, concept visuals, practice/test engine, App wiring.
 2. अध्याय 2 — क्या हमारे आसपास के पदार्थ शुद्ध हैं?: dedicated Hindi learning, separation-technique visuals, practice/test engine, App wiring.
-3. अध्याय 3 — परमाणु एवं अणु: Hindi learning file, concept visual, dedicated assessment engine, App wiring; QA fixed an incorrect oxygen-valency answer index and corrected a challenge molecular-mass answer key. The QA-fixed engine now exposes a visible chapter content list plus Learn, Practice, Challenge, and Test flows with answer feedback and final-score/session recording.
-4. अध्याय 4 — परमाणु की संरचना: 24 Hindi learning lessons, concept visual, visible content list, 29-question bank with Practice 15 / Challenge 12 / Test 20; App wiring added. Scoring was corrected so the final answered question is included in the stored session score. Stylesheet import was corrected to match existing `src/scienceChapter4.css`.
+3. अध्याय 3 — परमाणु एवं अणु: Hindi learning file, concept visual, dedicated assessment engine, App wiring; QA fixed oxygen-valency and challenge molecular-mass answer keys. A wrapper now places the chapter outline on the side on larger screens and above on mobile.
+4. अध्याय 4 — परमाणु की संरचना: 24 Hindi learning lessons, concept visual, visible content outline, 29-question bank with Practice 15 / Challenge 12 / Test 20; App wiring added. Final-answer scoring was corrected and stylesheet import was matched to the real `src/scienceChapter4.css`. The page now has a responsive side outline using the chapter's actual lesson titles.
 
 ## Science Chapter 3/4 routing milestone
-- `src/App.jsx` now imports Science Chapter 3 and 4 learning/engine modules.
-- Science subject chapter list now includes Chapters 1–4.
-- Subject chapter cards now use the dedicated Ch3/Ch4 learning goals.
+- `src/App.jsx` imports Science Chapter 3 and 4 learning/engine modules.
+- Science subject chapter list includes Chapters 1–4.
+- Subject chapter cards use dedicated Ch3/Ch4 learning goals.
 - ChapterPage routes Ch3 to `ScienceChapter3Engine` and Ch4 to `ScienceChapter4Engine`.
-- Latest App wiring commit: `e935f5ca70038774b75f9fe35e78a3849b827052`.
-- A temporary stylesheet-name mismatch in Ch4 was caught during verification. The original engine was restored and its scoring finalized in commit `4298b93dd790cddb510e973975effea199b2e71b`.
-- Science Chapter 3 QA/fix commit: `3c9eb57330bdc9b3dd7b572b4f3612810dc0e1f6`, with the stable wrapper commit `fac0852d59b4cd34cada10166a1c4720ee67dbed` and fixed engine file `src/ScienceChapter3EngineFixed.jsx`.
-- The original `src/ScienceChapter3Engine.jsx` now re-exports the QA-fixed engine so existing App imports remain unchanged.
-- GitHub Actions/status checks did not report a workflow run for these direct main-branch commits, so browser/build QA is not claimed.
+- Latest App wiring commit before the current layout work: `e935f5ca70038774b75f9fe35e78a3849b827052`.
+- Science Chapter 3 QA/fix commit: `3c9eb57330bdc9b3dd7b572b4f3612810dc0e1f6`.
+- Science Chapter 3 layout wrapper commit: `59ecb965901bf2344f676938dc0b5e1409eac5bf`.
+- Reusable Science sidebar styling commits: `98b3d1e9978d628acd70b36f36e046ece6d66225` and `073edf10b6663f3a9cf424894ee38cc291fa693e`.
+- Science Chapter 4 side-outline commits: `3ae491829b0388dc074bec66569cd936a4ba4906` and `c686ba5a3c14216a429d2bee65fbceb85778cc50`.
+- `src/ChapterContents.jsx` is the standard reusable outline component; the Science Chapter 3 wrapper now uses it.
+- Ch4 currently uses a responsive CSS-generated outline because its engine is self-contained; future refactoring should migrate it to `ChapterContents` rather than adding more one-off CSS content lists.
+- GitHub Actions/status checks did not report a workflow run for the direct main-branch updates, so browser/build QA is not claimed.
+
+## Recent Science bug lessons — IMPORTANT
+- Do not assume an engine is clean because it renders. Audit imports, stylesheet filenames, answer indices, score update timing, and layout containment.
+- Do not put the chapter content list inside the normal lesson column when the user asked for it on the side. Use a two-column layout on desktop and a stacked compact layout on mobile.
+- Do not create duplicate engine files without a clear compatibility reason. When a temporary `*Fixed.jsx` compatibility wrapper exists, document it and avoid branching logic between two competing engines.
+- For quiz score handling, remember React state updates are asynchronous: if the final answer increments `score`, do not immediately read the old `score` value when recording the final session. Use a derived next-score or functional calculation.
+- Verify every stylesheet import against the actual filename in the repository before committing.
+- Verify every answer index against the exact option array. A correct explanation with a wrong index is still a bug.
+- Keep Learn, Practice, Challenge, and Test flows visually and structurally consistent. Avoid adding a mode in one engine with a completely different information architecture unless intentional.
+- Before moving to the next Science chapter, inspect Chapters 1–4 for the same side-outline, responsive, import, answer-key, and score-timing patterns so the same class of bug is not repeated.
 
 ## Maths visual/animation layer
 - Added `src/MathSectionVisuals.jsx` and `src/math-section.css` to make the Maths subject landing page visually distinctive and animated.
@@ -103,12 +117,14 @@ Build a Class 9 BSEB/NCERT-oriented Learning Hub that is beautiful, responsive o
 9. Do not add animation just to make something move. Every animation must have an educational interpretation.
 10. Do not claim production/browser QA without actually running or observing it.
 11. When updating an existing file, never send a partial replacement. `update_file` replaces the whole file; fetch the current blob first and preserve all existing content unless intentionally changing it.
+12. **Do not make the user repeat the chapter content-list requirement.** It is a hard project standard and must be checked automatically on every new chapter.
+13. **Do not move forward after discovering a Science layout bug without checking whether the same pattern exists in earlier Science chapters.**
 
 ## User interaction pattern
 - User frequently says “ok next” and expects work to continue sequentially without long explanations each time.
 - User wants efficient progress and then movement to the next subject.
 - User cares strongly about content quality, quantity, interesting/simple explanations, visuals, animations, and practice questions.
-- User wants Hindi chapters based on Hindi NCERT wording/terminology, while UI/system can use English/Hinglish.
+- User wants Hindi chapters based on Hindi NCERT wording/terminology, while UI/system can be Hinglish/English.
 
 ## Future continuation protocol
 At the start of a new chat about this project:
@@ -116,9 +132,10 @@ At the start of a new chat about this project:
 2. Inspect the latest GitHub main branch and relevant current files before claiming status.
 3. Continue from the verified state, not from old chat claims.
 4. Keep all student-facing chapter content in Hindi.
-5. For each new chapter, build content → connect Learn → build Practice/Challenge/Test → verify data shape → verify App wiring → syntax/build QA → then move on.
-6. For visual work, build subject/chapter-specific concept demonstrations, not generic motion.
-7. Record major changes, commits, bugs discovered, and fixes back into this file as the project evolves.
+5. For each new chapter, build content → connect Learn → build Practice/Challenge/Test → verify data shape → verify App wiring → verify side content outline → verify responsive layout → syntax/build QA → then move on.
+6. Before starting a new Science chapter, compare it against the existing Science chapter UI pattern and reuse the established layout instead of inventing another structure.
+7. For visual work, build subject/chapter-specific concept demonstrations, not generic motion.
+8. Record major changes, commits, bugs discovered, and fixes back into this file as the project evolves.
 
 ## Current strategic target
-Finish the entire Class 9 book systematically, subject-by-subject and chapter-by-chapter, with simple Hindi explanations, strong examples, meaningful visuals/animations, large high-quality practice sets, and robust responsive behavior. Finish Maths visual QA before moving deeply into Science, but do not let decorative work block the larger curriculum build.
+Finish the entire Class 9 book systematically, subject-by-subject and chapter-by-chapter, with simple Hindi explanations, strong examples, meaningful visuals/animations, large high-quality practice sets, and robust responsive behavior. Science must now be treated as a standardized chapter system rather than four unrelated custom pages. Before Chapter 5, audit Chapters 1–4 for shared layout/QA issues so the same bug is not fixed repeatedly one chapter at a time.
