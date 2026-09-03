@@ -1,8 +1,21 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import {hindiAllTopics} from './hindiChapterData';
 import {isHindiChapterCompleted,isHindiModeCompleted} from './hindiChapterProgress';
-import {HindiPoetry8Learn} from './HindiPoetry8Learn';
 import {HindiChapter6Learn} from './HindiChapter6Learn';
+import {HindiChapter7Learn} from './HindiChapter7Learn';
+import {HindiChapter8Learn} from './HindiChapter8Learn';
+import {HindiChapter9Learn} from './HindiChapter9Learn';
+import {HindiChapter10Learn} from './HindiChapter10Learn';
+import {HindiChapter11Learn} from './HindiChapter11Learn';
+import {HindiChapter12Learn} from './HindiChapter12Learn';
+import {HindiPoetry1Learn} from './HindiPoetry1Learn';
+import {HindiPoetry2Learn} from './HindiPoetry2Learn';
+import {HindiPoetry3Learn} from './HindiPoetry3Learn';
+import {HindiPoetry4Learn} from './HindiPoetry4Learn';
+import {HindiPoetry5Learn} from './HindiPoetry5Learn';
+import {HindiPoetry6Learn} from './HindiPoetry6Learn';
+import {HindiPoetry7Learn} from './HindiPoetry7Learn';
+import {HindiPoetry8Learn} from './HindiPoetry8Learn';
 import './hindi-click-fix.css';
 
 const primaryGroups=[['गद्य','गोधूली · गद्य','📚'],['काव्य','गोधूली · काव्य','🎵']];
@@ -10,6 +23,24 @@ const supportGroups=[['वर्णिका भाग 1','वर्णिका
 const modes=[['learn','📖','सीखें','पाठ को समझें'],['practice','📝','अभ्यास','सीखी बात पक्की करें'],['challenge','🔥','चुनौती','अपनी तैयारी परखें'],['test','🎯','टेस्ट','समयबद्ध टेस्ट दें']];
 
 const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य'||x.book==='गोधूली · काव्य');
+
+const learnComponents={
+  g6:HindiChapter6Learn,
+  g7:HindiChapter7Learn,
+  g8:HindiChapter8Learn,
+  g9:HindiChapter9Learn,
+  g10:HindiChapter10Learn,
+  g11:HindiChapter11Learn,
+  g12:HindiChapter12Learn,
+  p1:HindiPoetry1Learn,
+  p2:HindiPoetry2Learn,
+  p3:HindiPoetry3Learn,
+  p4:HindiPoetry4Learn,
+  p5:HindiPoetry5Learn,
+  p6:HindiPoetry6Learn,
+  p7:HindiPoetry7Learn,
+  p8:HindiPoetry8Learn
+};
 
 function isTopicUnlocked(topic,previousTopic){
   if(topic?.id==='g1'||topic?.id==='g2'||topic?.id==='g3'||topic?.id==='g4'||topic?.id==='g5'||topic?.id==='g6'||topic?.id==='g7'||topic?.id==='g8'||topic?.id==='g9'||topic?.id==='g10'||topic?.id==='g11'||topic?.id==='g12'||topic?.id==='p1'||topic?.id==='p2'||topic?.id==='p3'||topic?.id==='p4'||topic?.id==='p5'||topic?.id==='p6'||topic?.id==='p7'||topic?.id==='p8'||!previousTopic)return true;
@@ -63,13 +94,18 @@ export function HindiSubjectSection({open}){
   const proseCount=hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य').length;
   const poetryCount=hindiAllTopics.filter(x=>x.book==='गोधूली · काव्य').length;
   const handleOpen=(title,mode)=>{
-    if(title==='मेरा ईश्वर'){setLocalChapter({title,mode});return;}
-    if(title==='अष्टावक्र'&&mode==='learn'){setLocalChapter({title,mode});return;}
+    const topic=hindiAllTopics.find(x=>x.title===title);
+    const Learner=topic&&mode==='learn'?learnComponents[topic.id]:null;
+    if(Learner){
+      setLocalChapter({topicId:topic.id,title,mode});
+      return;
+    }
     open(title,mode);
   };
   if(localChapter){
-    if(localChapter.title==='अष्टावक्र')return <HindiChapter6Learn onBack={()=>setLocalChapter(null)} onModeComplete={()=>{}}/>;
-    return <HindiPoetry8Learn onBack={()=>setLocalChapter(null)}/>;
+    const Learner=learnComponents[localChapter.topicId];
+    if(Learner)return <Learner onBack={()=>setLocalChapter(null)} onModeComplete={()=>{}}/>;
+    return null;
   }
   return <div className="hindi-subject-section">
     <div className="hindi-section-intro">
