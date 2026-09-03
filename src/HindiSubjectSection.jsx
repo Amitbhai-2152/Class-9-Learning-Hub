@@ -1,6 +1,8 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import {hindiAllTopics} from './hindiChapterData';
 import {isHindiChapterCompleted,isHindiModeCompleted} from './hindiChapterProgress';
+import {HindiLearnNavigator} from './HindiLearnNavigator';
+import {hindiLearnLessons} from './hindiLearnLessons';
 import {HindiChapter6Learn} from './HindiChapter6Learn';
 import {HindiChapter7Learn} from './HindiChapter7Learn';
 import {HindiChapter8Learn} from './HindiChapter8Learn';
@@ -43,8 +45,8 @@ const learnComponents={
 };
 
 function isTopicUnlocked(topic,previousTopic){
-  if(topic?.id==='g1'||topic?.id==='g2'||topic?.id==='g3'||topic?.id==='g4'||topic?.id==='g5'||topic?.id==='g6'||topic?.id==='g7'||topic?.id==='g8'||topic?.id==='g9'||topic?.id==='g10'||topic?.id==='g11'||topic?.id==='g12'||topic?.id==='p1'||topic?.id==='p2'||topic?.id==='p3'||topic?.id==='p4'||topic?.id==='p5'||topic?.id==='p6'||topic?.id==='p7'||topic?.id==='p8'||!previousTopic)return true;
-  return isHindiChapterCompleted(previousTopic.id)||(isHindiModeCompleted(previousTopic.id,'learn')&&isHindiModeCompleted(previousTopic.id,'test'));
+  if(!previousTopic)return true;
+  return isHindiChapterCompleted(previousTopic.id);
 }
 
 function TopicCard({topic,index,previousTopic,open,kind}){
@@ -104,7 +106,8 @@ export function HindiSubjectSection({open}){
   };
   if(localChapter){
     const Learner=learnComponents[localChapter.topicId];
-    if(Learner)return <Learner onBack={()=>setLocalChapter(null)} onModeComplete={()=>{}}/>;
+    const lesson=hindiLearnLessons[localChapter.topicId];
+    if(Learner)return <HindiLearnNavigator lesson={lesson}><Learner onBack={()=>setLocalChapter(null)} onModeComplete={()=>{}}/></HindiLearnNavigator>;
     return null;
   }
   return <div className="hindi-subject-section">
@@ -112,7 +115,7 @@ export function HindiSubjectSection({open}){
       <div className="hindi-intro-badge">कक्षा 9 • बिहार बोर्ड हिन्दी</div>
       <div className="hindi-intro-layout"><div className="hindi-intro-copy"><div className="hindi-book-kicker">📕 मुख्य पाठ्यपुस्तक</div><h2>गोधूली भाग 1</h2><p>एक अध्याय पूरा कीजिए, फिर अगला अध्याय unlock होगा। सीखें और अंतिम टेस्ट पूरा करने के बाद <b>अध्याय समाप्त करें</b> दबाएँ।</p></div><div className="hindi-intro-stats"><div><strong>{completedCount}</strong><span>पूरा</span></div><div><strong>{mainTopics.length}</strong><span>कुल पाठ</span></div><div><strong>{Math.max(mainTopics.length-completedCount,0)}</strong><span>बाकी</span></div></div></div>
       <div className="hindi-study-flow" aria-label="अध्ययन क्रम"><span><i>1</i> पढ़ें</span><em>→</em><span><i>2</i> अभ्यास</span><em>→</em><span><i>3</i> टेस्ट</span><em>→</em><span><i>4</i> अध्याय समाप्त</span></div>
-      <button type="button" className="hindi-start-chapter pressable" onClick={()=>handleOpen('कहानी का प्लॉट','learn')}>🚀 अध्याय 1 से शुरू करें <span>{nextTopic?.title||'सभी अध्याय पूरे हैं'}</span></button>
+      <button type="button" className="hindi-start-chapter pressable" disabled={!nextTopic} onClick={()=>nextTopic&&handleOpen(nextTopic.title,'learn')}>🚀 {nextTopic?'अगला अध्याय खोलें':'सभी अध्याय पूरे हैं'} <span>{nextTopic?.title||'✓'}</span></button>
     </div>
     <div className="hindi-book-section-head"><div><span>मुख्य पुस्तक</span><h3>गोधूली भाग 1 के पाठ</h3></div><p>{proseCount} गद्य + {poetryCount} काव्य • क्रम से पढ़ें</p></div>
     {primaryGroups.map(([title,book,icon],i)=><TopicGroup key={book} title={title} book={book} icon={icon} open={handleOpen} indexOffset={i?proseCount:0}/>)}
