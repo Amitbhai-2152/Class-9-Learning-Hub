@@ -1,6 +1,7 @@
 import React,{useState} from 'react';
 import {ChapterContents} from './ChapterContents';
 import {hindiChapter6Lesson} from './hindiChapter6Engine';
+import './hindi-chapter6.css';
 
 export function HindiChapter6Learn({onBack,onModeComplete}){
  const [activeIndex,setActiveIndex]=useState(0);
