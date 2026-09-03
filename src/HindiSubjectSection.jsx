@@ -26,7 +26,7 @@ const supportGroups=[['वर्णिका भाग 1','वर्णिका
 const modes=[['learn','📖','सीखें','पाठ को समझें'],['practice','📝','अभ्यास','सीखी बात पक्की करें'],['challenge','🔥','चुनौती','अपनी तैयारी परखें'],['test','🎯','टेस्ट','समयबद्ध टेस्ट दें']];
 
 const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य'||x.book==='गोधूली · काव्य');
-const navigatorMissing=new Set(['g1','g2','g3','g4','g5','g7','g8','g9','g10','g11','g12','p6','p7','p8']);
+const navigatorMissing=new Set(['g1','g2','g3','g4','g5','g7','g8','g9','g10','g11','g12','p6','p8']);
 
 const learnComponents={
   g1:HindiGenericLearn,g2:HindiGenericLearn,g3:HindiGenericLearn,g4:HindiGenericLearn,g5:HindiGenericLearn,
@@ -42,17 +42,18 @@ function isTopicUnlocked(topic,previousTopic){
 function TopicCard({topic,index,previousTopic,open,kind}){
   const completed=isHindiChapterCompleted(topic.id);
   const unlocked=isTopicUnlocked(topic,previousTopic);
-  const launch=mode=>{if(unlocked)open(topic.title,mode);};
+  const displayTitle=hindiLearnLessons[topic.id]?.title||topic.title;
+  const launch=mode=>{if(unlocked)open(displayTitle,mode);};
   const status=completed?'✓ अध्याय पूरा':unlocked?'अभी उपलब्ध':'🔒 पिछला अध्याय पूरा करें';
   return <article className={`hindi-topic-card ${kind==='poetry'?'is-poetry':''} ${topic.id==='g1'?'is-chapter-one':''} ${!unlocked?'is-locked':''}`} aria-disabled={!unlocked}>
     <div className="hindi-topic-top"><span className="hindi-topic-number">{String(index+1).padStart(2,'0')}</span>{topic.id==='g1'?<span className="hindi-start-badge">🚀 शुरुआत यहीं से</span>:<span className={completed?'hindi-start-badge':'hindi-topic-type'}>{status}</span>}</div>
-    <div className="hindi-topic-title-row"><h4>{topic.title}</h4><span className="hindi-topic-arrow" aria-hidden="true">↗</span></div>
+    <div className="hindi-topic-title-row"><h4>{displayTitle}</h4><span className="hindi-topic-arrow" aria-hidden="true">↗</span></div>
     {topic.author&&<div className="hindi-topic-author">✦ {topic.author}</div>}
     <p>{topic.theme||topic.summary}</p>
     <div className="hindi-topic-tags">{(topic.focus||topic.skills||[]).slice(0,3).map(x=><span key={x}>{x}</span>)}</div>
     <div className="hindi-topic-status-line"><span>{completed?'✅ पूरा हो चुका है':unlocked?'✅ आप इस अध्याय से शुरू कर सकते हैं':'🔐 यह अध्याय अभी lock है'}</span></div>
-    <div className="hindi-topic-actions" aria-label={`${topic.title} अध्ययन विकल्प`}>
-      {modes.map(([mode,icon,label,help])=><button key={mode} type="button" aria-label={`${topic.title}: ${label}`} disabled={!unlocked} className={`hindi-topic-action hindi-mode-${mode} pressable`} onClick={()=>launch(mode)} title={unlocked?help:'पहले पिछला अध्याय पूरा करें'}><span aria-hidden="true">{unlocked?icon:'🔒'}</span><b>{unlocked?label:'Locked'}</b></button>)}
+    <div className="hindi-topic-actions" aria-label={`${displayTitle} अध्ययन विकल्प`}>
+      {modes.map(([mode,icon,label,help])=><button key={mode} type="button" aria-label={`${displayTitle}: ${label}`} disabled={!unlocked} className={`hindi-topic-action hindi-mode-${mode} pressable`} onClick={()=>launch(mode)} title={unlocked?help:'पहले पिछला अध्याय पूरा करें'}><span aria-hidden="true">{unlocked?icon:'🔒'}</span><b>{unlocked?label:'Locked'}</b></button>)}
     </div>
   </article>;
 }
@@ -86,13 +87,13 @@ export function HindiSubjectSection({open}){
   const proseCount=hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य').length;
   const poetryCount=hindiAllTopics.filter(x=>x.book==='गोधूली · काव्य').length;
   const handleOpen=(title,mode)=>{
-    const topic=hindiAllTopics.find(x=>x.title===title);
+    const topic=hindiAllTopics.find(x=>x.title===title)||(title==='ग्राम-गीत का मर्म'?hindiAllTopics.find(x=>x.id==='g3'):null);
     const Learner=topic&&mode==='learn'?learnComponents[topic.id]:null;
     if(Learner){
-      setLocalChapter({topicId:topic.id,title,mode});
+      setLocalChapter({topicId:topic.id,title:topic.title,mode});
       return;
     }
-    open(title,mode);
+    open(topic?.title||title,mode);
   };
   if(localChapter){
     const Learner=learnComponents[localChapter.topicId];
