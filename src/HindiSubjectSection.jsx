@@ -1,6 +1,6 @@
-import React,{useMemo,useState} from 'react';
+import React,{useMemo} from 'react';
 import {hindiAllTopics} from './hindiChapterData';
-import {isHindiChapterCompleted} from './hindiChapterProgress';
+import {isHindiChapterCompleted,isHindiModeCompleted} from './hindiChapterProgress';
 import './hindi-click-fix.css';
 
 const primaryGroups=[['गद्य','गोधूली · गद्य','📚'],['काव्य','गोधूली · काव्य','🎵']];
@@ -9,9 +9,15 @@ const modes=[['learn','📖','सीखें','पाठ को समझें
 
 const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य'||x.book==='गोधूली · काव्य');
 
+function isTopicUnlocked(topic,previousTopic){
+  if(!previousTopic)return true;
+  if(isHindiChapterCompleted(previousTopic.id))return true;
+  return isHindiModeCompleted(previousTopic.id,'learn')&&isHindiModeCompleted(previousTopic.id,'test');
+}
+
 function TopicCard({topic,index,previousTopic,open,kind}){
   const completed=isHindiChapterCompleted(topic.id);
-  const unlocked=!previousTopic||isHindiChapterCompleted(previousTopic.id);
+  const unlocked=isTopicUnlocked(topic,previousTopic);
   const launch=mode=>{if(unlocked)open(topic.title,mode);};
   const status=completed?'✓ अध्याय पूरा':unlocked?'अभी उपलब्ध':'🔒 पिछला अध्याय पूरा करें';
   return <article className={`hindi-topic-card ${kind==='poetry'?'is-poetry':''} ${topic.id==='g1'?'is-chapter-one':''} ${!unlocked?'is-locked':''}`} aria-disabled={!unlocked}>
