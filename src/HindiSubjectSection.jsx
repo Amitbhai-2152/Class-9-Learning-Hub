@@ -2,6 +2,7 @@ import React,{useEffect,useMemo,useState} from 'react';
 import {hindiAllTopics} from './hindiChapterData';
 import {isHindiChapterCompleted,isHindiModeCompleted} from './hindiChapterProgress';
 import {HindiPoetry8Learn} from './HindiPoetry8Learn';
+import {HindiChapter6Learn} from './HindiChapter6Learn';
 import './hindi-click-fix.css';
 
 const primaryGroups=[['गद्य','गोधूली · गद्य','📚'],['काव्य','गोधूली · काव्य','🎵']];
@@ -11,8 +12,6 @@ const modes=[['learn','📖','सीखें','पाठ को समझें
 const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य'||x.book==='गोधूली · काव्य');
 
 function isTopicUnlocked(topic,previousTopic){
-  // Chapters currently being developed stay directly accessible.
-  // This keeps local progress state from blocking the active chapter.
   if(topic?.id==='g1'||topic?.id==='g2'||topic?.id==='g3'||topic?.id==='g4'||topic?.id==='g5'||topic?.id==='g6'||topic?.id==='g7'||topic?.id==='g8'||topic?.id==='g9'||topic?.id==='g10'||topic?.id==='g11'||topic?.id==='g12'||topic?.id==='p1'||topic?.id==='p2'||topic?.id==='p3'||topic?.id==='p4'||topic?.id==='p5'||topic?.id==='p6'||topic?.id==='p7'||topic?.id==='p8'||!previousTopic)return true;
   return isHindiChapterCompleted(previousTopic.id)||(isHindiModeCompleted(previousTopic.id,'learn')&&isHindiModeCompleted(previousTopic.id,'test'));
 }
@@ -63,8 +62,15 @@ export function HindiSubjectSection({open}){
   const nextTopic=mainTopics.find(x=>!isHindiChapterCompleted(x.id));
   const proseCount=hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य').length;
   const poetryCount=hindiAllTopics.filter(x=>x.book==='गोधूली · काव्य').length;
-  const handleOpen=(title,mode)=>{if(title==='मेरा ईश्वर'){setLocalChapter({title,mode});return;}open(title,mode);};
-  if(localChapter)return <HindiPoetry8Learn onBack={()=>setLocalChapter(null)}/>;
+  const handleOpen=(title,mode)=>{
+    if(title==='मेरा ईश्वर'){setLocalChapter({title,mode});return;}
+    if(title==='अष्टावक्र'&&mode==='learn'){setLocalChapter({title,mode});return;}
+    open(title,mode);
+  };
+  if(localChapter){
+    if(localChapter.title==='अष्टावक्र')return <HindiChapter6Learn onBack={()=>setLocalChapter(null)} onModeComplete={()=>{}}/>;
+    return <HindiPoetry8Learn onBack={()=>setLocalChapter(null)}/>;
+  }
   return <div className="hindi-subject-section">
     <div className="hindi-section-intro">
       <div className="hindi-intro-badge">कक्षा 9 • बिहार बोर्ड हिन्दी</div>
