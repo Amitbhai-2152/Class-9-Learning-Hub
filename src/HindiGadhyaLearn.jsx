@@ -17,6 +17,7 @@ export function HindiGadhyaLearn({lesson,onBack,onModeComplete}){
   const comparison=pairs(lesson.comparison);
   const authorNote=lesson.authorNote||'इस पाठ को लेखक की दृष्टि, पात्रों की भूमिका, सामाजिक संदर्भ और मुख्य संदेश के साथ पढ़ें।';
   const fallbackChecklist=['पाठ का केंद्रीय विचार अपने शब्दों में बताइए।','मुख्य पात्र/प्रसंग और उनके महत्व को जोड़कर उत्तर दीजिए।','उत्तर में कारण, प्रभाव और लेखक की दृष्टि स्पष्ट रखिए।','लंबे उत्तर के अंत में संक्षिप्त निष्कर्ष लिखिए।'];
+  const sectionCount=sections.length;
   return <div className="hindi-learn hindi-chapter1-learn hindi-gadhya-learn">
     <div className="hindi-learn-banner">
       <span>{lesson.eyebrow||'गोधूली भाग 1 · गद्य'}</span>
@@ -25,7 +26,16 @@ export function HindiGadhyaLearn({lesson,onBack,onModeComplete}){
       {lesson.author&&<div className="hindi-topic-author">✦ {lesson.author}</div>}
     </div>
 
-    <section className="hindi-ch1-callout"><strong>केंद्रीय बात</strong><p>{lesson.overview||'इस पाठ के मुख्य विचार, प्रसंग और संदेश को क्रम से समझें।'}</p></section>
+    <section className="hindi-gadhya-roadmap" aria-label="अध्याय सीखने का क्रम">
+      <article><b>01</b><strong>समझें</strong><span>केंद्रीय विचार और लेखक की दृष्टि</span></article>
+      <article><b>02</b><strong>{sectionCount||'—'} पड़ाव</strong><span>पाठ को क्रम से गहराई में पढ़ें</span></article>
+      <article><b>03</b><strong>तैयार हों</strong><span>शब्द, शैली और उत्तर-लेखन</span></article>
+    </section>
+
+    <section className="hindi-ch1-callout">
+      <strong>💡 केंद्रीय बात</strong>
+      <p>{lesson.overview||'इस पाठ के मुख्य विचार, प्रसंग और संदेश को क्रम से समझें।'}</p>
+    </section>
 
     <section className="hindi-ch1-panel">
       <div className="hindi-ch1-panel-head"><h3>👤 लेखक परिचय</h3><span>लेखक की दृष्टि समझें</span></div>
@@ -33,14 +43,17 @@ export function HindiGadhyaLearn({lesson,onBack,onModeComplete}){
     </section>
 
     <section className="hindi-ch1-panel hindi-gadhya-sections-panel">
-      <div className="hindi-ch1-panel-head"><h3>📖 पाठ को क्रम से समझें</h3><span>{sections.length} महत्वपूर्ण पड़ाव</span></div>
-      <div className="hindi-learn-grid">
-        {sections.map((item,index)=><section id={`hindi-gadhya-section-${index}`} key={`${item.title}-${index}`}>
-          <h3>{item.title}</h3>
-          <p>{item.body}</p>
-          {item.deep&&<div className="hindi-ch1-callout"><strong>🔎 गहराई</strong><p>{item.deep}</p></div>}
-          {item.example&&<div className="hindi-ch1-callout"><strong>🌍 उदाहरण</strong><p>{item.example}</p></div>}
-          {item.exam&&<div className="hindi-ch1-callout"><strong>🎯 परीक्षा संकेत</strong><p>{item.exam}</p></div>}
+      <div className="hindi-ch1-panel-head"><h3>📖 पाठ को क्रम से समझें</h3><span>{sectionCount} महत्वपूर्ण पड़ाव</span></div>
+      <div className="hindi-learn-grid hindi-gadhya-section-grid">
+        {sections.map((item,index)=><section id={`hindi-gadhya-section-${index}`} className="hindi-gadhya-learning-card" key={`${item.title}-${index}`}>
+          <div className="hindi-gadhya-card-number">{String(index+1).padStart(2,'0')}</div>
+          <div className="hindi-gadhya-card-body">
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+            {item.deep&&<div className="hindi-ch1-callout"><strong>🔎 गहराई</strong><p>{item.deep}</p></div>}
+            {item.example&&<div className="hindi-ch1-callout"><strong>🌍 उदाहरण</strong><p>{item.example}</p></div>}
+            {item.exam&&<div className="hindi-ch1-callout"><strong>🎯 परीक्षा संकेत</strong><p>{item.exam}</p></div>}
+          </div>
         </section>)}
       </div>
     </section>
