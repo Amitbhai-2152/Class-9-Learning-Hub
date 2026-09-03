@@ -1,11 +1,23 @@
+import {hindiChapters} from './hindiChapterData';
+
 const STORAGE_KEY='class9-hindi-chapter-progress-v1';
 const EMPTY={completed:{},modes:{}};
+
+function normalizeProgress(raw){
+  const completed=raw?.completed&&typeof raw.completed==='object'?{...raw.completed}:{ };
+  const modes=raw?.modes&&typeof raw.modes==='object'?{...raw.modes}:{ };
+  hindiChapters.forEach(topic=>{
+    if(topic.title&&completed[topic.title]&&!completed[topic.id])completed[topic.id]=completed[topic.title];
+    if(topic.title&&modes[topic.title]&&!modes[topic.id])modes[topic.id]={...modes[topic.title]};
+  });
+  return {completed,modes};
+}
 
 function read(){
   try{
     const raw=JSON.parse(localStorage.getItem(STORAGE_KEY));
     if(!raw||typeof raw!=='object')return {...EMPTY,completed:{},modes:{}};
-    return {completed:raw.completed&&typeof raw.completed==='object'?raw.completed:{},modes:raw.modes&&typeof raw.modes==='object'?raw.modes:{}};
+    return normalizeProgress(raw);
   }catch{return {...EMPTY,completed:{},modes:{}};}
 }
 
