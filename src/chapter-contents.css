@@ -4,11 +4,11 @@
 @media (max-width:700px){.chapter-contents-grid{grid-template-columns:1fr}.chapter-contents{padding:1rem}.chapter-contents-head h2{font-size:1.05rem}.chapter-contents-item{padding:.7rem}}
 
 /* Only interactive chapter navigators get their own fixed panel and inner scroll. */
-.chapter-contents.is-navigator{position:sticky;top:62px;align-self:start;display:flex;flex-direction:column;min-height:0;height:calc(100vh - 100px);max-height:calc(100vh - 100px);overflow:hidden}
+.chapter-contents.is-navigator{display:flex;flex-direction:column;min-height:0;height:calc(100vh - 100px);max-height:calc(100vh - 100px);overflow:hidden}
 .chapter-contents.is-navigator .chapter-contents-head{flex:0 0 auto}
 .chapter-contents.is-navigator .chapter-contents-grid{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:1fr;align-content:start;gap:.35rem;overflow-y:scroll;overflow-x:hidden;padding-right:4px;overscroll-behavior:contain;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
 .chapter-contents.is-navigator .chapter-contents-grid::-webkit-scrollbar{width:9px}
 .chapter-contents.is-navigator .chapter-contents-grid::-webkit-scrollbar-track{background:rgba(100,125,120,.12);border-radius:999px}
 .chapter-contents.is-navigator .chapter-contents-grid::-webkit-scrollbar-thumb{background:rgba(72,108,102,.62);border-radius:999px;border:2px solid transparent;background-clip:padding-box}
 .chapter-contents.is-navigator .chapter-contents-grid::-webkit-scrollbar-thumb:hover{background:rgba(55,92,86,.78);background-clip:padding-box}
-@media (max-width:760px){.chapter-contents.is-navigator{position:relative;top:auto;height:calc(100vh - 82px);max-height:calc(100vh - 82px)} }
+@media (max-width:760px){.chapter-contents.is-navigator{height:calc(100vh - 82px);max-height:calc(100vh - 82px)} }
