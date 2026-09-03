@@ -3,14 +3,7 @@ import {hindiAllTopics} from './hindiChapterData';
 import {isHindiChapterCompleted,isHindiModeCompleted,markHindiChapterCompleted,markHindiModeCompleted} from './hindiChapterProgress';
 import {HindiSupportChapterView} from './HindiSupportChapterView';
 import {HindiChapterStudyView} from './HindiChapterStudyView';
-import {HindiGenericLearn} from './HindiGenericLearn';
-import {HindiChapter6Learn} from './HindiChapter6Learn';
-import {HindiChapter7Learn} from './HindiChapter7Learn';
-import {HindiChapter8Learn} from './HindiChapter8Learn';
-import {HindiChapter9Learn} from './HindiChapter9Learn';
-import {HindiChapter10Learn} from './HindiChapter10Learn';
-import {HindiChapter11Learn} from './HindiChapter11Learn';
-import {HindiChapter12Learn} from './HindiChapter12Learn';
+import {HindiGadhyaLearn} from './HindiGadhyaLearn';
 import {HindiPoetry1Learn} from './HindiPoetry1Learn';
 import {HindiPoetry2Learn} from './HindiPoetry2Learn';
 import {HindiPoetry3Learn} from './HindiPoetry3Learn';
@@ -28,11 +21,10 @@ const supportGroups=[['वर्णिका भाग 1','वर्णिका
 const modes=[['learn','📖','सीखें','पाठ को समझें'],['practice','📝','अभ्यास','सीखी बात पक्की करें'],['challenge','🔥','चुनौती','सीखी बात को कठिन प्रश्नों में परखें'],['test','🎯','टेस्ट','समयबद्ध अंतिम जाँच दें']];
 const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य'||x.book==='गोधूली · काव्य');
 const learnComponents={
-  g1:HindiGenericLearn,g2:HindiGenericLearn,g3:HindiGenericLearn,g4:HindiGenericLearn,g5:HindiGenericLearn,
-  g6:HindiChapter6Learn,g7:HindiChapter7Learn,g8:HindiChapter8Learn,g9:HindiChapter9Learn,g10:HindiChapter10Learn,g11:HindiChapter11Learn,g12:HindiChapter12Learn,
+  g1:HindiGadhyaLearn,g2:HindiGadhyaLearn,g3:HindiGadhyaLearn,g4:HindiGadhyaLearn,g5:HindiGadhyaLearn,g6:HindiGadhyaLearn,g7:HindiGadhyaLearn,g8:HindiGadhyaLearn,g9:HindiGadhyaLearn,g10:HindiGadhyaLearn,g11:HindiGadhyaLearn,g12:HindiGadhyaLearn,
   p1:HindiPoetry1Learn,p2:HindiPoetry2Learn,p3:HindiPoetry3Learn,p4:HindiPoetry4Learn,p5:HindiPoetry5Learn,p6:HindiPoetry6Learn,p7:HindiPoetry7Learn,p8:HindiPoetry8Learn
 };
-const internalNavigatorTopics=new Set(['g6','p1','p2','p3','p4','p5','p7']);
+const internalNavigatorTopics=new Set(['p1','p2','p3','p4','p5','p7']);
 
 function isTopicUnlocked(topic,previousTopic){if(!previousTopic)return true;return isHindiChapterCompleted(previousTopic.id)}
 function TopicCard({topic,index,previousTopic,open,kind}){
@@ -72,7 +64,7 @@ export function HindiSubjectSection({open}){
     const topic=hindiAllTopics.find(x=>x.id===localChapter.topicId); const study=hindiStudyRegistry[localChapter.topicId]; const Learner=learnComponents[localChapter.topicId];
     const completeLocalMode=completedMode=>{markHindiModeCompleted(localChapter.topicId,completedMode);const modesDone=['learn','practice','challenge','test'].every(m=>isHindiModeCompleted(localChapter.topicId,m)||completedMode===m);if(modesDone)markHindiChapterCompleted(localChapter.topicId)};
     if(topic&&(topic.book==='वर्णिका · पूरक'||topic.book==='व्याकरण एवं रचना'))return <HindiSupportChapterView topic={topic} initialMode={localChapter.mode} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode}/>;
-    if(study)return <HindiChapterStudyView id={localChapter.topicId} lesson={study.lesson} practice={study.practice} challenge={study.challenge} test={study.test} initialMode={localChapter.mode} wrapLearnNavigator={!internalNavigatorTopics.has(localChapter.topicId)} learnComponent={Learner||HindiGenericLearn} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode}/>;
+    if(study)return <HindiChapterStudyView id={localChapter.topicId} lesson={study.lesson} practice={study.practice} challenge={study.challenge} test={study.test} initialMode={localChapter.mode} wrapLearnNavigator={!internalNavigatorTopics.has(localChapter.topicId)} learnComponent={Learner||HindiGadhyaLearn} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode}/>;
     return null;
   }
   return <div className="hindi-subject-section"><div className="hindi-section-intro"><div className="hindi-intro-badge">कक्षा 9 • बिहार बोर्ड हिन्दी</div><div className="hindi-intro-layout"><div className="hindi-intro-copy"><div className="hindi-book-kicker">📕 मुख्य पाठ्यपुस्तक</div><h2>गोधूली भाग 1</h2><p>एक अध्याय पूरा कीजिए, फिर अगला अध्याय unlock होगा। सीखें और अंतिम टेस्ट पूरा करने के बाद <b>अध्याय समाप्त करें</b> दबाएँ।</p></div><div className="hindi-intro-stats"><div><strong>{completedCount}</strong><span>पूरा</span></div><div><strong>{mainTopics.length}</strong><span>कुल पाठ</span></div><div><strong>{Math.max(mainTopics.length-completedCount,0)}</strong><span>बाकी</span></div></div></div><div className="hindi-study-flow" aria-label="अध्ययन क्रम"><span><i>1</i> पढ़ें</span><em>→</em><span><i>2</i> अभ्यास</span><em>→</em><span><i>3</i> टेस्ट</span><em>→</em><span><i>4</i> अध्याय समाप्त</span></div><button type="button" className="hindi-start-chapter pressable" disabled={!nextTopic} onClick={()=>nextTopic&&handleOpen(nextTopic.id,'learn')}>🚀 {nextTopic?'अगला अध्याय खोलें':'सभी अध्याय पूरे हैं'} <span>{nextTopic?.title||'✓'}</span></button></div><div className="hindi-book-section-head"><div><span>मुख्य पुस्तक</span><h3>गोधूली भाग 1 के पाठ</h3></div><p>{proseCount} गद्य + {poetryCount} काव्य • क्रम से पढ़ें</p></div>{primaryGroups.map(([title,book,icon],i)=><TopicGroup key={book} title={title} book={book} icon={icon} open={handleOpen} indexOffset={i?proseCount:0}/>)}<div className="hindi-support-divider"><div><span>सहायक तैयारी</span><h3>अतिरिक्त भाषा और पुनरावृत्ति</h3></div><p>ये विषय मुख्य अध्याय क्रम को प्रभावित नहीं करते।</p></div>{supportGroups.map(([title,book,icon])=><SupportGroup key={book} title={title} book={book} icon={icon} open={handleOpen}/>)}</div>;
