@@ -10,9 +10,9 @@ const modes=[['learn','📖','सीखें','पाठ को समझें
 const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य'||x.book==='गोधूली · काव्य');
 
 function isTopicUnlocked(topic,previousTopic){
-  // The active development chapters stay directly accessible.
-  // This prevents stale/local progress from blocking the chapter being built.
-  if(topic?.id==='g1'||topic?.id==='g2'||topic?.id==='g3'||topic?.id==='g4'||!previousTopic)return true;
+  // Chapters currently being developed stay directly accessible.
+  // This keeps local progress state from blocking the active chapter.
+  if(topic?.id==='g1'||topic?.id==='g2'||topic?.id==='g3'||topic?.id==='g4'||topic?.id==='g5'||!previousTopic)return true;
   return isHindiChapterCompleted(previousTopic.id)||(
     isHindiModeCompleted(previousTopic.id,'learn')&&isHindiModeCompleted(previousTopic.id,'test')
   );
