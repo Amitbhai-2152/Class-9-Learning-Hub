@@ -11,16 +11,22 @@ function read(){
 
 function write(value){
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(value));}catch{}
+  try{window.dispatchEvent(new CustomEvent('hindi-progress-updated'));}catch{}
   return value;
 }
 
 export function getHindiProgress(){return read();}
-export function isHindiChapterCompleted(id){return Boolean(id&&read().completed[id]);}
+export function isHindiChapterCompleted(id){
+  if(!id)return false;
+  const p=read();
+  return Boolean(p.completed[id]||(p.modes[id]?.learn&&p.modes[id]?.test));
+}
 export function isHindiModeCompleted(id,mode){return Boolean(id&&mode&&read().modes[id]?.[mode]);}
 export function markHindiModeCompleted(id,mode){
   if(!id||!mode)return read();
   const p=read();
   p.modes[id]={...(p.modes[id]||{}),[mode]:true};
+  if(p.modes[id].learn&&p.modes[id].test&&!p.completed[id])p.completed[id]=new Date().toISOString();
   return write(p);
 }
 export function markHindiChapterCompleted(id){
