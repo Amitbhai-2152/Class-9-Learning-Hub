@@ -1,7 +1,20 @@
-/* The chapter list in Science Learn is a content navigator, not a nested scroll pane. */
+/* Science Learn: keep the chapter navigator fixed while allowing its own list to scroll. */
 .sc3-contents{
-  position:relative !important;
-  top:auto !important;
-  max-height:none !important;
-  overflow:visible !important;
+  position:sticky !important;
+  top:calc(var(--sc3-nav-h) + 12px) !important;
+  max-height:calc(100vh - var(--sc3-nav-h) - 24px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+
+@media(max-width:800px){
+  .sc3-contents{
+    position:sticky !important;
+    top:calc(var(--sc3-nav-h) + 8px) !important;
+    max-height:calc(100vh - var(--sc3-nav-h) - 16px) !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+  }
 }
