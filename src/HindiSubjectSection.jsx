@@ -12,10 +12,8 @@ const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली ·
 function isTopicUnlocked(topic,previousTopic){
   // Chapters currently being developed stay directly accessible.
   // This keeps local progress state from blocking the active chapter.
-  if(topic?.id==='g1'||topic?.id==='g2'||topic?.id==='g3'||topic?.id==='g4'||topic?.id==='g5'||topic?.id==='g6'||topic?.id==='g7'||!previousTopic)return true;
-  return isHindiChapterCompleted(previousTopic.id)||(
-    isHindiModeCompleted(previousTopic.id,'learn')&&isHindiModeCompleted(previousTopic.id,'test')
-  );
+  if(topic?.id==='g1'||topic?.id==='g2'||topic?.id==='g3'||topic?.id==='g4'||topic?.id==='g5'||topic?.id==='g6'||topic?.id==='g7'||topic?.id==='g8'||!previousTopic)return true;
+  return isHindiChapterCompleted(previousTopic.id)||(isHindiModeCompleted(previousTopic.id,'learn')&&isHindiModeCompleted(previousTopic.id,'test'));
 }
 
 function TopicCard({topic,index,previousTopic,open,kind}){
@@ -24,10 +22,7 @@ function TopicCard({topic,index,previousTopic,open,kind}){
   const launch=mode=>{if(unlocked)open(topic.title,mode);};
   const status=completed?'✓ अध्याय पूरा':unlocked?'अभी उपलब्ध':'🔒 पिछला अध्याय पूरा करें';
   return <article className={`hindi-topic-card ${kind==='poetry'?'is-poetry':''} ${topic.id==='g1'?'is-chapter-one':''} ${!unlocked?'is-locked':''}`} aria-disabled={!unlocked}>
-    <div className="hindi-topic-top">
-      <span className="hindi-topic-number">{String(index+1).padStart(2,'0')}</span>
-      {topic.id==='g1'?<span className="hindi-start-badge">🚀 शुरुआत यहीं से</span>:<span className={completed?'hindi-start-badge':'hindi-topic-type'}>{status}</span>}
-    </div>
+    <div className="hindi-topic-top"><span className="hindi-topic-number">{String(index+1).padStart(2,'0')}</span>{topic.id==='g1'?<span className="hindi-start-badge">🚀 शुरुआत यहीं से</span>:<span className={completed?'hindi-start-badge':'hindi-topic-type'}>{status}</span>}</div>
     <div className="hindi-topic-title-row"><h4>{topic.title}</h4><span className="hindi-topic-arrow" aria-hidden="true">↗</span></div>
     {topic.author&&<div className="hindi-topic-author">✦ {topic.author}</div>}
     <p>{topic.theme||topic.summary}</p>
