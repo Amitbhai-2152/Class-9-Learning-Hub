@@ -31,7 +31,7 @@ const supportGroups=[['वर्णिका भाग 1','वर्णिका
 const modes=[['learn','📖','सीखें','पाठ को समझें'],['practice','📝','अभ्यास','सीखी बात पक्की करें'],['challenge','🔥','चुनौती','अपनी तैयारी परखें'],['test','🎯','टेस्ट','समयबद्ध टेस्ट दें']];
 
 const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य'||x.book==='गोधूली · काव्य');
-const navigatorMissing=new Set(['g1','g2','g3','g4','g5','g7','g8','g9','g10','g11','g12','p6','p8']);
+const navigatorMissing=new Set(['g1','g2','g3','g4','g5','g7','g8','g9','g10','g11','g12','p6','p7','p8']);
 
 const learnComponents={
   g1:HindiGenericLearn,g2:HindiGenericLearn,g3:HindiGenericLearn,g4:HindiGenericLearn,g5:HindiGenericLearn,
