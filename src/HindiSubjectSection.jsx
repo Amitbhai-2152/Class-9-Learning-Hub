@@ -4,6 +4,7 @@ import {isHindiChapterCompleted,isHindiModeCompleted,markHindiChapterCompleted,m
 import {HindiLearnNavigator} from './HindiLearnNavigator';
 import {HindiGenericLearn} from './HindiGenericLearn';
 import {HindiChapterStudyView} from './HindiChapterStudyView';
+import {HindiSupportChapterView} from './HindiSupportChapterView';
 import {hindiLearnLessons} from './hindiLearnLessons';
 import {hindiPoetry9Lesson,hindiPoetry9PracticeQuestions,hindiPoetry9Challenge,hindiPoetry9TestQuestions} from './hindiPoetry9Engine';
 import {hindiPoetry10Lesson,hindiPoetry10PracticeQuestions,hindiPoetry10Challenge,hindiPoetry10TestQuestions} from './hindiPoetry10Engine';
@@ -101,20 +102,16 @@ export function HindiSubjectSection({open}){
   const handleOpen=(title,mode)=>{
     const topic=hindiAllTopics.find(x=>x.title===title)||(title==='ग्राम-गीत का मर्म'?hindiAllTopics.find(x=>x.id==='g3'):null);
     const study=topic&&studyComponents[topic.id];
-    if(study){
-      setLocalChapter({topicId:topic.id,title:topic.title,mode});
-      return;
-    }
+    if(study){setLocalChapter({topicId:topic.id,title:topic.title,mode});return;}
     const Learner=topic&&mode==='learn'?learnComponents[topic.id]:null;
-    if(Learner){
-      setLocalChapter({topicId:topic.id,title:topic.title,mode});
-      return;
-    }
+    if(Learner){setLocalChapter({topicId:topic.id,title:topic.title,mode});return;}
+    if(topic){setLocalChapter({topicId:topic.id,title:topic.title,mode,kind:'support'});return;}
     open(topic?.title||title,mode);
   };
   if(localChapter){
     const study=studyComponents[localChapter.topicId];
     const Learner=learnComponents[localChapter.topicId];
+    const topic=hindiAllTopics.find(x=>x.id===localChapter.topicId);
     const lesson=hindiLearnLessons[localChapter.topicId];
     const completeLocalMode=completedMode=>{
       markHindiModeCompleted(localChapter.topicId,completedMode);
@@ -126,6 +123,7 @@ export function HindiSubjectSection({open}){
       const learner=<Learner lesson={lesson} onBack={()=>setLocalChapter(null)} onModeComplete={completeLocalMode}/>;
       return navigatorMissing.has(localChapter.topicId)?<HindiLearnNavigator lesson={lesson}>{learner}</HindiLearnNavigator>:learner;
     }
+    if(topic)return <HindiSupportChapterView topic={topic} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode}/>;
     return null;
   }
   return <div className="hindi-subject-section">
