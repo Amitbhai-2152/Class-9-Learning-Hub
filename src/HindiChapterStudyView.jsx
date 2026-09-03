@@ -2,6 +2,7 @@ import React,{useEffect,useMemo,useState} from 'react';
 import {HindiGenericLearn} from './HindiGenericLearn';
 import {HindiLearnNavigator} from './HindiLearnNavigator';
 import {markHindiModeCompleted} from './hindiChapterProgress';
+import './hindi-gadhya-study.css';
 
 const modeMeta={
   learn:{icon:'📖',label:'सीखें',hint:'पाठ को समझें, विचार पकड़ें और परीक्षा के लिए तैयार हों',xp:20},
