@@ -1,4 +1,4 @@
-import React,{useMemo} from 'react';
+import React,{useEffect,useMemo,useState} from 'react';
 import {hindiAllTopics} from './hindiChapterData';
 import {isHindiChapterCompleted,isHindiModeCompleted} from './hindiChapterProgress';
 import './hindi-click-fix.css';
@@ -48,6 +48,16 @@ function SupportGroup({title,book,icon,open}){
 }
 
 export function HindiSubjectSection({open}){
+  const [,setProgressVersion]=useState(0);
+  useEffect(()=>{
+    const refresh=()=>setProgressVersion(v=>v+1);
+    window.addEventListener('hindi-progress-updated',refresh);
+    window.addEventListener('storage',refresh);
+    return()=>{
+      window.removeEventListener('hindi-progress-updated',refresh);
+      window.removeEventListener('storage',refresh);
+    };
+  },[]);
   const mainTopics=useMemo(()=>getMainTopics(),[]);
   const completedCount=mainTopics.filter(x=>isHindiChapterCompleted(x.id)).length;
   const nextTopic=mainTopics.find(x=>!isHindiChapterCompleted(x.id));
