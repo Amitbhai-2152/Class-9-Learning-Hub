@@ -1,6 +1,7 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import {hindiAllTopics} from './hindiChapterData';
 import {isHindiChapterCompleted,isHindiModeCompleted} from './hindiChapterProgress';
+import {HindiPoetry8Learn} from './HindiPoetry8Learn';
 import './hindi-click-fix.css';
 
 const primaryGroups=[['गद्य','गोधूली · गद्य','📚'],['काव्य','गोधूली · काव्य','🎵']];
@@ -12,7 +13,7 @@ const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली ·
 function isTopicUnlocked(topic,previousTopic){
   // Chapters currently being developed stay directly accessible.
   // This keeps local progress state from blocking the active chapter.
-  if(topic?.id==='g1'||topic?.id==='g2'||topic?.id==='g3'||topic?.id==='g4'||topic?.id==='g5'||topic?.id==='g6'||topic?.id==='g7'||topic?.id==='g8'||topic?.id==='g9'||topic?.id==='g10'||topic?.id==='g11'||topic?.id==='g12'||topic?.id==='p1'||topic?.id==='p2'||topic?.id==='p3'||topic?.id==='p4'||topic?.id==='p5'||topic?.id==='p6'||!previousTopic)return true;
+  if(topic?.id==='g1'||topic?.id==='g2'||topic?.id==='g3'||topic?.id==='g4'||topic?.id==='g5'||topic?.id==='g6'||topic?.id==='g7'||topic?.id==='g8'||topic?.id==='g9'||topic?.id==='g10'||topic?.id==='g11'||topic?.id==='g12'||topic?.id==='p1'||topic?.id==='p2'||topic?.id==='p3'||topic?.id==='p4'||topic?.id==='p5'||topic?.id==='p6'||topic?.id==='p7'||topic?.id==='p8'||!previousTopic)return true;
   return isHindiChapterCompleted(previousTopic.id)||(isHindiModeCompleted(previousTopic.id,'learn')&&isHindiModeCompleted(previousTopic.id,'test'));
 }
 
@@ -47,6 +48,7 @@ function SupportGroup({title,book,icon,open}){
 
 export function HindiSubjectSection({open}){
   const [,setProgressVersion]=useState(0);
+  const [localChapter,setLocalChapter]=useState(null);
   useEffect(()=>{
     const refresh=()=>setProgressVersion(v=>v+1);
     window.addEventListener('hindi-progress-updated',refresh);
@@ -61,16 +63,18 @@ export function HindiSubjectSection({open}){
   const nextTopic=mainTopics.find(x=>!isHindiChapterCompleted(x.id));
   const proseCount=hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य').length;
   const poetryCount=hindiAllTopics.filter(x=>x.book==='गोधूली · काव्य').length;
+  const handleOpen=(title,mode)=>{if(title==='मेरा ईश्वर'){setLocalChapter({title,mode});return;}open(title,mode);};
+  if(localChapter)return <HindiPoetry8Learn onBack={()=>setLocalChapter(null)}/>;
   return <div className="hindi-subject-section">
     <div className="hindi-section-intro">
       <div className="hindi-intro-badge">कक्षा 9 • बिहार बोर्ड हिन्दी</div>
       <div className="hindi-intro-layout"><div className="hindi-intro-copy"><div className="hindi-book-kicker">📕 मुख्य पाठ्यपुस्तक</div><h2>गोधूली भाग 1</h2><p>एक अध्याय पूरा कीजिए, फिर अगला अध्याय unlock होगा। सीखें और अंतिम टेस्ट पूरा करने के बाद <b>अध्याय समाप्त करें</b> दबाएँ।</p></div><div className="hindi-intro-stats"><div><strong>{completedCount}</strong><span>पूरा</span></div><div><strong>{mainTopics.length}</strong><span>कुल पाठ</span></div><div><strong>{Math.max(mainTopics.length-completedCount,0)}</strong><span>बाकी</span></div></div></div>
       <div className="hindi-study-flow" aria-label="अध्ययन क्रम"><span><i>1</i> पढ़ें</span><em>→</em><span><i>2</i> अभ्यास</span><em>→</em><span><i>3</i> टेस्ट</span><em>→</em><span><i>4</i> अध्याय समाप्त</span></div>
-      <button type="button" className="hindi-start-chapter pressable" onClick={()=>open('कहानी का प्लॉट','learn')}>🚀 अध्याय 1 से शुरू करें <span>{nextTopic?.title||'सभी अध्याय पूरे हैं'}</span></button>
+      <button type="button" className="hindi-start-chapter pressable" onClick={()=>handleOpen('कहानी का प्लॉट','learn')}>🚀 अध्याय 1 से शुरू करें <span>{nextTopic?.title||'सभी अध्याय पूरे हैं'}</span></button>
     </div>
     <div className="hindi-book-section-head"><div><span>मुख्य पुस्तक</span><h3>गोधूली भाग 1 के पाठ</h3></div><p>{proseCount} गद्य + {poetryCount} काव्य • क्रम से पढ़ें</p></div>
-    {primaryGroups.map(([title,book,icon],i)=><TopicGroup key={book} title={title} book={book} icon={icon} open={open} indexOffset={i?proseCount:0}/>)}
+    {primaryGroups.map(([title,book,icon],i)=><TopicGroup key={book} title={title} book={book} icon={icon} open={handleOpen} indexOffset={i?proseCount:0}/>)}
     <div className="hindi-support-divider"><div><span>सहायक तैयारी</span><h3>अतिरिक्त भाषा और पुनरावृत्ति</h3></div><p>ये विषय मुख्य अध्याय क्रम को प्रभावित नहीं करते।</p></div>
-    {supportGroups.map(([title,book,icon])=><SupportGroup key={book} title={title} book={book} icon={icon} open={open}/>)}
+    {supportGroups.map(([title,book,icon])=><SupportGroup key={book} title={title} book={book} icon={icon} open={handleOpen}/>)}
   </div>;
 }
