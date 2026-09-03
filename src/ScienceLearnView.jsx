@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import './science3-learn.css';
+import './science-learn-navigator-scroll.css';
 
 const typeLabel={intro:'परिचय',concept:'अवधारणा',example:'उदाहरण',check:'त्वरित जाँच',compare:'तुलना'};
 
