@@ -3,7 +3,12 @@ import {hindiAllTopics} from './hindiChapterData';
 import {isHindiChapterCompleted,isHindiModeCompleted,markHindiChapterCompleted,markHindiModeCompleted} from './hindiChapterProgress';
 import {HindiLearnNavigator} from './HindiLearnNavigator';
 import {HindiGenericLearn} from './HindiGenericLearn';
+import {HindiChapterStudyView} from './HindiChapterStudyView';
 import {hindiLearnLessons} from './hindiLearnLessons';
+import {hindiPoetry9Lesson,hindiPoetry9PracticeQuestions,hindiPoetry9Challenge,hindiPoetry9TestQuestions} from './hindiPoetry9Engine';
+import {hindiPoetry10Lesson,hindiPoetry10PracticeQuestions,hindiPoetry10Challenge,hindiPoetry10TestQuestions} from './hindiPoetry10Engine';
+import {hindiPoetry11Lesson,hindiPoetry11PracticeQuestions,hindiPoetry11Challenge,hindiPoetry11TestQuestions} from './hindiPoetry11Engine';
+import {hindiPoetry12Lesson,hindiPoetry12PracticeQuestions,hindiPoetry12Challenge,hindiPoetry12TestQuestions} from './hindiPoetry12Engine';
 import {HindiChapter6Learn} from './HindiChapter6Learn';
 import {HindiChapter7Learn} from './HindiChapter7Learn';
 import {HindiChapter8Learn} from './HindiChapter8Learn';
@@ -32,6 +37,13 @@ const learnComponents={
   g1:HindiGenericLearn,g2:HindiGenericLearn,g3:HindiGenericLearn,g4:HindiGenericLearn,g5:HindiGenericLearn,
   g6:HindiChapter6Learn,g7:HindiChapter7Learn,g8:HindiChapter8Learn,g9:HindiChapter9Learn,g10:HindiChapter10Learn,g11:HindiChapter11Learn,g12:HindiChapter12Learn,
   p1:HindiPoetry1Learn,p2:HindiPoetry2Learn,p3:HindiPoetry3Learn,p4:HindiPoetry4Learn,p5:HindiPoetry5Learn,p6:HindiPoetry6Learn,p7:HindiPoetry7Learn,p8:HindiPoetry8Learn
+};
+
+const studyComponents={
+  p9:{lesson:hindiPoetry9Lesson,practice:hindiPoetry9PracticeQuestions,challenge:hindiPoetry9Challenge,test:hindiPoetry9TestQuestions},
+  p10:{lesson:hindiPoetry10Lesson,practice:hindiPoetry10PracticeQuestions,challenge:hindiPoetry10Challenge,test:hindiPoetry10TestQuestions},
+  p11:{lesson:hindiPoetry11Lesson,practice:hindiPoetry11PracticeQuestions,challenge:hindiPoetry11Challenge,test:hindiPoetry11TestQuestions},
+  p12:{lesson:hindiPoetry12Lesson,practice:hindiPoetry12PracticeQuestions,challenge:hindiPoetry12Challenge,test:hindiPoetry12TestQuestions}
 };
 
 function isTopicUnlocked(topic,previousTopic){
@@ -88,6 +100,11 @@ export function HindiSubjectSection({open}){
   const poetryCount=hindiAllTopics.filter(x=>x.book==='गोधूली · काव्य').length;
   const handleOpen=(title,mode)=>{
     const topic=hindiAllTopics.find(x=>x.title===title)||(title==='ग्राम-गीत का मर्म'?hindiAllTopics.find(x=>x.id==='g3'):null);
+    const study=topic&&studyComponents[topic.id];
+    if(study){
+      setLocalChapter({topicId:topic.id,title:topic.title,mode});
+      return;
+    }
     const Learner=topic&&mode==='learn'?learnComponents[topic.id]:null;
     if(Learner){
       setLocalChapter({topicId:topic.id,title:topic.title,mode});
@@ -96,6 +113,7 @@ export function HindiSubjectSection({open}){
     open(topic?.title||title,mode);
   };
   if(localChapter){
+    const study=studyComponents[localChapter.topicId];
     const Learner=learnComponents[localChapter.topicId];
     const lesson=hindiLearnLessons[localChapter.topicId];
     const completeLocalMode=completedMode=>{
@@ -103,6 +121,7 @@ export function HindiSubjectSection({open}){
       const modesDone=['learn','practice','challenge','test'].every(m=>isHindiModeCompleted(localChapter.topicId,m)||completedMode===m);
       if(modesDone)markHindiChapterCompleted(localChapter.topicId);
     };
+    if(study)return <HindiChapterStudyView id={localChapter.topicId} lesson={study.lesson} practice={study.practice} challenge={study.challenge} test={study.test} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode}/>;
     if(Learner){
       const learner=<Learner lesson={lesson} onBack={()=>setLocalChapter(null)} onModeComplete={completeLocalMode}/>;
       return navigatorMissing.has(localChapter.topicId)?<HindiLearnNavigator lesson={lesson}>{learner}</HindiLearnNavigator>:learner;
