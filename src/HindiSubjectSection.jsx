@@ -1,6 +1,6 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import {hindiAllTopics} from './hindiChapterData';
-import {isHindiChapterCompleted,isHindiModeCompleted} from './hindiChapterProgress';
+import {isHindiChapterCompleted,isHindiModeCompleted,markHindiChapterCompleted,markHindiModeCompleted} from './hindiChapterProgress';
 import {HindiLearnNavigator} from './HindiLearnNavigator';
 import {hindiLearnLessons} from './hindiLearnLessons';
 import {HindiChapter6Learn} from './HindiChapter6Learn';
@@ -107,7 +107,12 @@ export function HindiSubjectSection({open}){
   if(localChapter){
     const Learner=learnComponents[localChapter.topicId];
     const lesson=hindiLearnLessons[localChapter.topicId];
-    if(Learner)return <HindiLearnNavigator lesson={lesson}><Learner onBack={()=>setLocalChapter(null)} onModeComplete={()=>{}}/></HindiLearnNavigator>;
+    const completeLocalMode=completedMode=>{
+      markHindiModeCompleted(localChapter.topicId,completedMode);
+      const modesDone=['learn','practice','challenge','test'].every(m=>isHindiModeCompleted(localChapter.topicId,m)||completedMode===m);
+      if(modesDone)markHindiChapterCompleted(localChapter.topicId);
+    };
+    if(Learner)return <HindiLearnNavigator lesson={lesson}><Learner onBack={()=>setLocalChapter(null)} onModeComplete={completeLocalMode}/></HindiLearnNavigator>;
     return null;
   }
   return <div className="hindi-subject-section">
