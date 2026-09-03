@@ -8,7 +8,7 @@ export function ChapterContents({lessons=[],title='अध्याय सूच�
  const items=useMemo(()=>lessons.filter(Boolean).map((lesson,index)=>({index,title:lesson.title||`चरण ${index+1}`,type:typeLabel[lesson.type]||'पाठ'})),[lessons]);
  if(!items.length)return null;
  const clickable=typeof onSelect==='function';
- return <section className={`chapter-contents ${compact?'is-compact':''}`} aria-label="अध्याय सूची">
+ return <section className={`chapter-contents ${compact?'is-compact':''} ${clickable?'is-navigator':''}`} aria-label="अध्याय सूची">
    <div className="chapter-contents-head">
      <div><span className="chapter-contents-kicker">अध्याय सूची</span><h2>{title}</h2><p>{items.length} सीखने के चरण</p></div>
      {compact&&<button type="button" className="pressable chapter-contents-toggle" onClick={()=>setOpen(v=>!v)} aria-expanded={open}>{open?'छिपाएँ':'दिखाएँ'} ↓</button>}
