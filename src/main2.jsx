@@ -5,6 +5,7 @@ import { AppErrorBoundary } from './AppErrorBoundary.jsx';
 import './scienceModeRouter.js';
 import './subject-overrides.css';
 import './science-navigation.css';
+import './science-learn-navigator-fix.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
