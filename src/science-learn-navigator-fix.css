@@ -1,21 +1,44 @@
-/* Science Learn: keep the navigator fixed while only its chapter list scrolls. */
+/* Science Learn: fixed navigator card; only the chapter list is independently scrollable. */
 .sc3-contents{
   position:sticky !important;
   top:calc(var(--sc3-nav-h) + 12px) !important;
   height:calc(100vh - var(--sc3-nav-h) - 24px) !important;
   max-height:calc(100vh - var(--sc3-nav-h) - 24px) !important;
   min-height:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
   overflow:hidden !important;
   overscroll-behavior:contain;
 }
 
 .sc3-contents-list{
+  flex:1 1 auto !important;
   min-height:0 !important;
-  overflow-y:auto !important;
+  height:auto !important;
+  overflow-y:scroll !important;
   overflow-x:hidden !important;
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
-  scrollbar-width:auto;
+  scrollbar-width:thin;
+}
+
+.sc3-contents-list::-webkit-scrollbar{
+  width:10px;
+}
+
+.sc3-contents-list::-webkit-scrollbar-track{
+  background:#edf3f2;
+  border-radius:999px;
+}
+
+.sc3-contents-list::-webkit-scrollbar-thumb{
+  background:#7aa8a2;
+  border-radius:999px;
+  border:2px solid #edf3f2;
+}
+
+.sc3-contents-list::-webkit-scrollbar-thumb:hover{
+  background:#4f817b;
 }
 
 @media(max-width:800px){
@@ -25,12 +48,14 @@
     height:calc(100vh - var(--sc3-nav-h) - 16px) !important;
     max-height:calc(100vh - var(--sc3-nav-h) - 16px) !important;
     min-height:0 !important;
-    overflow:hidden !important;
   }
 }
 
 @media(max-width:560px){
   .sc3-contents{
     border-radius:15px;
+  }
+  .sc3-contents-list::-webkit-scrollbar{
+    width:9px;
   }
 }
