@@ -10,9 +10,9 @@ const modes=[['learn','📖','सीखें','पाठ को समझें
 const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य'||x.book==='गोधूली · काव्य');
 
 function isTopicUnlocked(topic,previousTopic){
-  // Chapter 1 is the starting point, and Chapter 2 is always accessible
-  // so a stale/local progress record can never trap the learner at the start.
-  if(topic?.id==='g1'||topic?.id==='g2'||!previousTopic)return true;
+  // Chapters currently being developed must always stay directly accessible.
+  // This prevents local progress/lock state from blocking the chapter we are working on.
+  if(topic?.id==='g1'||topic?.id==='g2'||topic?.id==='g3'||!previousTopic)return true;
   return isHindiChapterCompleted(previousTopic.id)||(
     isHindiModeCompleted(previousTopic.id,'learn')&&isHindiModeCompleted(previousTopic.id,'test')
   );
