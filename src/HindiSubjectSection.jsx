@@ -2,6 +2,7 @@ import React,{useEffect,useMemo,useState} from 'react';
 import {hindiAllTopics} from './hindiChapterData';
 import {isHindiChapterCompleted,isHindiModeCompleted,markHindiChapterCompleted,markHindiModeCompleted} from './hindiChapterProgress';
 import {HindiLearnNavigator} from './HindiLearnNavigator';
+import {HindiGenericLearn} from './HindiGenericLearn';
 import {hindiLearnLessons} from './hindiLearnLessons';
 import {HindiChapter6Learn} from './HindiChapter6Learn';
 import {HindiChapter7Learn} from './HindiChapter7Learn';
@@ -25,9 +26,10 @@ const supportGroups=[['वर्णिका भाग 1','वर्णिका
 const modes=[['learn','📖','सीखें','पाठ को समझें'],['practice','📝','अभ्यास','सीखी बात पक्की करें'],['challenge','🔥','चुनौती','अपनी तैयारी परखें'],['test','🎯','टेस्ट','समयबद्ध टेस्ट दें']];
 
 const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य'||x.book==='गोधूली · काव्य');
-const navigatorMissing=new Set(['g7','g8','g9','g10','g11','g12','p6','p7','p8']);
+const navigatorMissing=new Set(['g1','g2','g3','g4','g5','g7','g8','g9','g10','g11','g12','p6','p7','p8']);
 
 const learnComponents={
+  g1:HindiGenericLearn,g2:HindiGenericLearn,g3:HindiGenericLearn,g4:HindiGenericLearn,g5:HindiGenericLearn,
   g6:HindiChapter6Learn,g7:HindiChapter7Learn,g8:HindiChapter8Learn,g9:HindiChapter9Learn,g10:HindiChapter10Learn,g11:HindiChapter11Learn,g12:HindiChapter12Learn,
   p1:HindiPoetry1Learn,p2:HindiPoetry2Learn,p3:HindiPoetry3Learn,p4:HindiPoetry4Learn,p5:HindiPoetry5Learn,p6:HindiPoetry6Learn,p7:HindiPoetry7Learn,p8:HindiPoetry8Learn
 };
@@ -101,7 +103,7 @@ export function HindiSubjectSection({open}){
       if(modesDone)markHindiChapterCompleted(localChapter.topicId);
     };
     if(Learner){
-      const learner=<Learner onBack={()=>setLocalChapter(null)} onModeComplete={completeLocalMode}/>;
+      const learner=<Learner lesson={lesson} onBack={()=>setLocalChapter(null)} onModeComplete={completeLocalMode}/>;
       return navigatorMissing.has(localChapter.topicId)?<HindiLearnNavigator lesson={lesson}>{learner}</HindiLearnNavigator>:learner;
     }
     return null;
