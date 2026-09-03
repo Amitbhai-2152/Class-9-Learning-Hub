@@ -1,0 +1,7 @@
+/* The chapter list in Science Learn is a content navigator, not a nested scroll pane. */
+.sc3-contents{
+  position:relative !important;
+  top:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
