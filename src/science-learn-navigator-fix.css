@@ -1,20 +1,36 @@
-/* Science Learn: keep the chapter navigator fixed while allowing its own list to scroll. */
+/* Science Learn: keep the navigator fixed while only its chapter list scrolls. */
 .sc3-contents{
   position:sticky !important;
   top:calc(var(--sc3-nav-h) + 12px) !important;
+  height:calc(100vh - var(--sc3-nav-h) - 24px) !important;
   max-height:calc(100vh - var(--sc3-nav-h) - 24px) !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  overscroll-behavior:contain;
+}
+
+.sc3-contents-list{
+  min-height:0 !important;
   overflow-y:auto !important;
   overflow-x:hidden !important;
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
+  scrollbar-width:auto;
 }
 
 @media(max-width:800px){
   .sc3-contents{
     position:sticky !important;
     top:calc(var(--sc3-nav-h) + 8px) !important;
+    height:calc(100vh - var(--sc3-nav-h) - 16px) !important;
     max-height:calc(100vh - var(--sc3-nav-h) - 16px) !important;
-    overflow-y:auto !important;
-    overflow-x:hidden !important;
+    min-height:0 !important;
+    overflow:hidden !important;
+  }
+}
+
+@media(max-width:560px){
+  .sc3-contents{
+    border-radius:15px;
   }
 }
