@@ -1,4 +1,5 @@
 import React from 'react';
+import './hindi-gadhya-layout-v3.css';
 
 const list=value=>Array.isArray(value)?value.filter(Boolean):[];
 const pairs=value=>list(value).filter(item=>Array.isArray(item)&&item.length>=2);
