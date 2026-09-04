@@ -1,3 +1,4 @@
+@import './hindi-gadhya-mode-text.css';
 /* Hindi gadhya final readability/layout overrides */
 .hindi-gadhya-study .hindi-gadhya-roadmap-wide{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;}
 .hindi-gadhya-study .hindi-gadhya-roadmap-wide article{display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;align-items:start!important;min-width:0!important;min-height:88px!important;padding:14px!important;overflow:visible!important;}
