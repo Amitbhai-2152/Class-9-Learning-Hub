@@ -8,6 +8,8 @@ export function HindiLearnNavigator({lesson,children}){
   const items=useMemo(()=>Array.isArray(lesson?.sections)?lesson.sections.filter(Boolean):[],[lesson]);
   const [activeIndex,setActiveIndex]=useState(0);
   const [readCount,setReadCount]=useState(0);
+  const isPoetry=lesson?.book==='गोधूली · काव्य';
+  const sectionLabel=isPoetry?'काव्य खंड':'गद्य खंड';
 
   useEffect(()=>{
     const root=document.querySelector('.hindi-learn-shell-content');
@@ -51,9 +53,9 @@ export function HindiLearnNavigator({lesson,children}){
     });
   };
 
-  return <div className="hindi-learn-shell">
+  return <div className={`hindi-learn-shell ${isPoetry?'hindi-learn-shell-poetry':''}`}>
     <aside className="hindi-learn-shell-nav">
-      <div className="hindi-gadhya-nav-head"><div><span>गद्य खंड • LEARN</span><strong>अध्याय मार्ग</strong><small>{readCount}/{items.length} पड़ाव देखे</small></div><b>{activeIndex+1}/{items.length}</b></div>
+      <div className="hindi-gadhya-nav-head"><div><span>{sectionLabel} • LEARN</span><strong>अध्याय मार्ग</strong><small>{readCount}/{items.length} पड़ाव देखे</small></div><b>{activeIndex+1}/{items.length}</b></div>
       <div className="hindi-gadhya-nav-progress"><span style={{width:`${items.length?Math.round((readCount/items.length)*100):0}%`}}/></div>
       <ChapterContents lessons={items} title={lesson?.title||'अध्याय सूची'} activeIndex={activeIndex} onSelect={selectSection}/>
     </aside>
