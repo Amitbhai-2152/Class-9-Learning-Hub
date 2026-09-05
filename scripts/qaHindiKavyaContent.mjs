@@ -5,6 +5,12 @@ const root=process.cwd();
 const ids=Array.from({length:12},(_,i)=>i+1);
 const failures=[];
 
+function countQuestionArrays(source){
+  // Current Kavya engines use array-based question records rather than q(...)
+  // helper calls. Count records shaped as [question, options, answer, ...].
+  return (source.match(/\[\s*['"`][^\n]+['"`]\s*,\s*\[/g)||[]).length;
+}
+
 for(const n of ids){
   const file=path.join(root,'src',`hindiPoetry${n}Engine.js`);
   if(!fs.existsSync(file)){
@@ -20,7 +26,7 @@ for(const n of ids){
   ];
   for(const name of required)if(!source.includes(`export const ${name}`))failures.push(`p${n}: missing export ${name}`);
   const sectionCount=(source.match(/\{title:/g)||[]).length;
-  const questionCount=(source.match(/q\(/g)||[]).length;
+  const questionCount=countQuestionArrays(source);
   if(sectionCount<8)failures.push(`p${n}: only ${sectionCount} lesson sections found`);
   if(questionCount<20)failures.push(`p${n}: only ${questionCount} question definitions found`);
 }
