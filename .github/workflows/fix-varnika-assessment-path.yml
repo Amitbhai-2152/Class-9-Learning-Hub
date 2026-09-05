@@ -1,0 +1,24 @@
+name: Prepare Varnika assessment component
+on:
+  push:
+    branches: [fix/hindi-varnika-assessment-final3]
+permissions:
+  contents: write
+jobs:
+  fix-path:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rename assessment and preserve Learn component
+        run: |
+          set -e
+          mv src/HindiVarnikaChapter12View.jsx src/HindiVarnikaChapter12LearnLegacy.jsx
+          mv src/HindiVarnikaChapter12View.js src/HindiVarnikaChapter12View.jsx
+          sed -i "s#./HindiVarnikaChapter12View.jsx#./HindiVarnikaChapter12LearnLegacy.jsx#" src/HindiVarnikaChapter12View.jsx
+          rm -f .github/workflows/fix-varnika-assessment-path.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/HindiVarnikaChapter12View.jsx src/HindiVarnikaChapter12LearnLegacy.jsx .github/workflows/fix-varnika-assessment-path.yml
+          git commit -m 'fix: route Varnika chapters 1-2 to dedicated assessments' || exit 0
+          git push origin HEAD:fix/hindi-varnika-assessment-final3
