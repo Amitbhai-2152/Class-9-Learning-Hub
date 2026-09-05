@@ -9,6 +9,7 @@
     "qa:science": "node scripts/qaScienceContent.mjs",
     "qa:hindi:gadhya": "node scripts/qaHindiGadhyaContent.mjs",
     "qa:hindi:kavya": "node scripts/qaHindiKavyaContent.mjs",
+    "qa:hindi:varnika": "node scripts/qaHindiVarnikaContent.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
