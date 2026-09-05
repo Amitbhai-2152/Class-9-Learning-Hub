@@ -2,6 +2,7 @@ import React,{useEffect,useMemo,useState} from 'react';
 import {HindiGenericLearn} from './HindiGenericLearn';
 import {HindiLearnNavigator} from './HindiLearnNavigator';
 import {markHindiModeCompleted} from './hindiChapterProgress';
+import {HINDI_MODE_TIMING} from './hindi-mode-timing';
 import './hindi-gadhya-study.css';
 import './hindi-kavya-responsive.css';
 import './hindi-mode-switch-fix.css';
@@ -29,10 +30,12 @@ function QuestionPalette({list,index,answers,onSelect,mode}){
 
 function AssessmentHeader({mode,index,total,answered,seconds}){
   const meta=modeMeta[mode];
+  const timing=HINDI_MODE_TIMING[mode];
+  const isTimed=Boolean(timing);
   return <>
     <div className={`hindi-assessment-header hindi-assessment-header-${mode}`}>
       <div className="hindi-assessment-identity"><span className="hindi-assessment-icon">{meta.icon}</span><div><span className="hindi-assessment-kicker">{meta.kicker}</span><strong>{meta.label}</strong><small>{meta.hint}</small></div></div>
-      <div className="hindi-assessment-metrics"><span><b>{index+1}</b> / {total}<small>प्रश्न</small></span><span><b>{answered}</b> / {total}<small>हल</small></span>{mode==='test'&&<span className="hindi-exam-clock">⏱ <b>{Math.floor(seconds/60)}:{String(seconds%60).padStart(2,'0')}</b><small>समय बाकी</small></span>}</div>
+      <div className="hindi-assessment-metrics"><span><b>{index+1}</b> / {total}<small>प्रश्न</small></span><span><b>{answered}</b> / {total}<small>हल</small></span>{isTimed&&<span className="hindi-exam-clock">⏱ <b>{Math.floor(seconds/60)}:{String(seconds%60).padStart(2,'0')}</b><small>समय बाकी</small></span>}</div>
     </div>
     <div className="hindi-q-progress"><span style={{width:`${Math.round(((index+1)/total)*100)}%`}}/></div>
   </>;
@@ -40,9 +43,11 @@ function AssessmentHeader({mode,index,total,answered,seconds}){
 
 function AssessmentIntro({mode,total}){
   const meta=modeMeta[mode];
-  if(mode==='practice')return <div className="hindi-assessment-brief"><span>{meta.icon}</span><div><strong>अभ्यास रणनीति</strong><p>{total} प्रश्न हैं। प्रश्न-पैलेट से आगे-पीछे जा सकते हैं; उत्तर बदलकर दोबारा सोच सकते हैं।</p></div></div>;
-  if(mode==='challenge')return <div className="hindi-assessment-brief hindi-assessment-brief-challenge"><span>{meta.icon}</span><div><strong>चुनौती नियम</strong><p>केवल याद करने के बजाय कारण, पात्र, प्रसंग और लेखक की दृष्टि जोड़कर उत्तर चुनें। पहले सोचें, फिर विकल्प देखें।</p></div></div>;
-  return <div className="hindi-assessment-brief hindi-assessment-brief-test"><span>{meta.icon}</span><div><strong>टेस्ट निर्देश</strong><p>20 प्रश्न · 5 मिनट। जरूरत हो तो बिना उत्तर दिए प्रश्न छोड़कर आगे बढ़ें; अंत में प्रश्न मानचित्र से वापस आ सकते हैं।</p></div></div>;
+  const timing=HINDI_MODE_TIMING[mode];
+  const timeText=timing?` · ${timing.label}`:'';
+  if(mode==='practice')return <div className="hindi-assessment-brief"><span>{meta.icon}</span><div><strong>अभ्यास रणनीति</strong><p>{total} प्रश्न{timeText} हैं। प्रश्न-पैलेट से आगे-पीछे जा सकते हैं; उत्तर बदलकर दोबारा सोच सकते हैं।</p></div></div>;
+  if(mode==='challenge')return <div className="hindi-assessment-brief hindi-assessment-brief-challenge"><span>{meta.icon}</span><div><strong>चुनौती नियम</strong><p>{total} प्रश्न{timeText} हैं। केवल याद करने के बजाय कारण, पात्र, प्रसंग और लेखक की दृष्टि जोड़कर उत्तर चुनें। पहले सोचें, फिर विकल्प देखें।</p></div></div>;
+  return <div className="hindi-assessment-brief hindi-assessment-brief-test"><span>{meta.icon}</span><div><strong>टेस्ट निर्देश</strong><p>{total} प्रश्न{timeText} हैं। जरूरत हो तो बिना उत्तर दिए प्रश्न छोड़कर आगे बढ़ें; अंत में प्रश्न मानचित्र से वापस आ सकते हैं।</p></div></div>;
 }
 
 function ResultSummary({score,attempted,total,mode}){
@@ -52,14 +57,16 @@ function ResultSummary({score,attempted,total,mode}){
 
 function Assessment({id,questions,mode,onBack,onComplete}){
   const list=useMemo(()=>normalizeQuestions(questions,mode),[questions,mode]);
+  const timing=HINDI_MODE_TIMING[mode];
+  const durationSeconds=timing?timing.minutes*60:null;
   const [index,setIndex]=useState(0);
   const [answers,setAnswers]=useState({});
   const [submitted,setSubmitted]=useState(false);
   const [confirmSubmit,setConfirmSubmit]=useState(false);
-  const [seconds,setSeconds]=useState(mode==='test'?300:null);
-  useEffect(()=>{setIndex(0);setAnswers({});setSubmitted(false);setConfirmSubmit(false);setSeconds(mode==='test'?300:null)},[mode,questions]);
-  useEffect(()=>{if(mode!=='test'||submitted)return;const timer=setInterval(()=>setSeconds(v=>Math.max(0,v-1)),1000);return()=>clearInterval(timer)},[mode,submitted]);
-  useEffect(()=>{if(mode==='test'&&seconds===0&&!submitted)setSubmitted(true)},[seconds,mode,submitted]);
+  const [seconds,setSeconds]=useState(durationSeconds);
+  useEffect(()=>{setIndex(0);setAnswers({});setSubmitted(false);setConfirmSubmit(false);setSeconds(durationSeconds)},[mode,questions,durationSeconds]);
+  useEffect(()=>{if(!timing||submitted)return;const timer=setInterval(()=>setSeconds(v=>Math.max(0,v-1)),1000);return()=>clearInterval(timer)},[timing,submitted]);
+  useEffect(()=>{if(timing&&seconds===0&&!submitted)setSubmitted(true)},[seconds,timing,submitted]);
   useEffect(()=>{if(submitted&&id){markHindiModeCompleted(id,mode);onComplete?.(mode)}},[submitted,id,mode,onComplete]);
   if(!list.length)return <div className="hindi-empty"><h3>इस मोड में सामग्री उपलब्ध नहीं है।</h3><button type="button" className="primary-btn pressable" onClick={onBack}>← वापस</button></div>;
   const q=list[index];
@@ -69,14 +76,14 @@ function Assessment({id,questions,mode,onBack,onComplete}){
     <div className="hindi-result-hero"><span>{modeMeta[mode].icon}</span><div><small>{modeMeta[mode].label} पूरा</small><strong>{score}/{list.length}</strong><p>{mode==='test'?'यह आपका अंतिम टेस्ट परिणाम है। नीचे हर प्रश्न की समीक्षा और समझ देखें।':mode==='challenge'?'चुनौती पूरी हुई। गलतियों से पहचानिए कि कहाँ तर्क मजबूत करना है।':'अभ्यास पूरा हुआ। गलत प्रश्नों के कारण को देखकर दोहराएँ।'}</p></div></div>
     <ResultSummary score={score} attempted={attempted} total={list.length} mode={mode}/>
     <div className="hindi-review"><div className="hindi-review-head"><div><span className="hindi-palette-kicker">विस्तृत समीक्षा</span><h3>हर प्रश्न की समीक्षा</h3></div><span>{attempted}/{list.length} प्रश्न किए</span></div>{list.map((item,i)=><article className={`hindi-review-item ${answers[i]===item.answer?'ok':'wrong'}`} key={`${item.q}-${i}`}><div className="hindi-review-num">{i+1}</div><div><strong>{item.q}</strong><p><b>आपका उत्तर:</b> {answers[i]!=null?item.options[answers[i]]:'उत्तर नहीं दिया'}</p><p><b>सही उत्तर:</b> {item.options[item.answer]}</p><span>{item.explain||'सही उत्तर पाठ की मुख्य अवधारणा से जुड़ा है।'}</span></div></article>)}</div>
-    <div className="hindi-actions"><button type="button" className="secondary-btn pressable" onClick={()=>{setSubmitted(false);setConfirmSubmit(false);setIndex(0);setAnswers({});if(mode==='test')setSeconds(300)}}>↻ फिर से दें</button><button type="button" className="primary-btn pressable" onClick={onBack}>← अध्याय पर लौटें</button></div>
+    <div className="hindi-actions"><button type="button" className="secondary-btn pressable" onClick={()=>{setSubmitted(false);setConfirmSubmit(false);setIndex(0);setAnswers({});setSeconds(durationSeconds)}}>↻ फिर से दें</button><button type="button" className="primary-btn pressable" onClick={onBack}>← अध्याय पर लौटें</button></div>
   </div>;
   const canSubmit=mode==='test'||attempted>0;
   return <div className={`hindi-assessment hindi-assessment-${mode}`}>
     <AssessmentHeader mode={mode} index={index} total={list.length} answered={attempted} seconds={seconds}/>
     <AssessmentIntro mode={mode} total={list.length}/>
     <QuestionPalette list={list} index={index} answers={answers} onSelect={setIndex} mode={mode}/>
-    <div className="hindi-question-meta"><small>वर्तमान · प्रश्न {index+1} / {list.length}</small><span>{mode==='practice'?'अभ्यास · 15 प्रश्न':mode==='challenge'?'चुनौती · 12 प्रश्न':'अंतिम टेस्ट · 20 प्रश्न'}</span></div>
+    <div className="hindi-question-meta"><small>वर्तमान · प्रश्न {index+1} / {list.length}</small><span>{mode==='practice'?'अभ्यास · 15 प्रश्न · 20 मिनट':mode==='challenge'?'चुनौती · 12 प्रश्न · 25 मिनट':'अंतिम टेस्ट · 20 प्रश्न · 30 मिनट'}</span></div>
     <section className="hindi-question">
       <div className="hindi-question-label"><span>{mode==='practice'?'अभ्यास प्रश्न':mode==='challenge'?'चुनौती प्रश्न':'परीक्षा प्रश्न'}</span><b>Q{String(index+1).padStart(2,'0')}</b></div>
       <h2>{q.q}</h2>
