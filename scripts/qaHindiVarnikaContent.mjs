@@ -18,7 +18,7 @@ const required=[
   '[all[0],...all.slice(1,20)]',
   'current[0]',
   'current[1].map',
-  'answers[idx]===x[2]',
+  'answers[i]===x[2]',
   'x[1][x[2]]',
   'markHindiModeCompleted(topic.id,mode)',
   'setSubmitted(true)',
