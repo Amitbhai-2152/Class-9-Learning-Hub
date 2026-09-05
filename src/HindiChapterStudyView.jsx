@@ -4,6 +4,7 @@ import {HindiLearnNavigator} from './HindiLearnNavigator';
 import {markHindiModeCompleted} from './hindiChapterProgress';
 import './hindi-gadhya-study.css';
 import './hindi-kavya-responsive.css';
+import './hindi-mode-switch-fix.css';
 
 const modeMeta={
   learn:{icon:'📖',label:'सीखें',kicker:'पाठ को समझें',hint:'विचार, प्रसंग और भाषा को क्रम से समझें'},
