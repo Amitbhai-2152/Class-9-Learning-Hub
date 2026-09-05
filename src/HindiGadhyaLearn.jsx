@@ -1,5 +1,6 @@
 import React from 'react';
 import {enrichGadhyaLesson} from './hindi-gadhya-richness';
+import {HindiPoetryGenericLearn} from './HindiPoetryGenericLearn';
 
 const list=value=>Array.isArray(value)?value.filter(Boolean):[];
 const pairs=value=>list(value).filter(item=>Array.isArray(item)&&item.length>=2);
@@ -7,6 +8,7 @@ const peopleOf=lesson=>list(lesson.characters||lesson.people);
 
 export function HindiGadhyaLearn({lesson,onBack,onModeComplete}){
   if(!lesson)return null;
+  if(lesson.book==='गोधूली · काव्य')return <HindiPoetryGenericLearn lesson={lesson} onBack={onBack} onModeComplete={onModeComplete}/>;
   const studyLesson=enrichGadhyaLesson(lesson);
   const sections=list(studyLesson.sections);
   const themes=list(studyLesson.themes);
