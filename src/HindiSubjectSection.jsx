@@ -2,6 +2,7 @@ import React,{useEffect,useMemo,useState} from 'react';
 import {hindiAllTopics} from './hindiChapterData';
 import {isHindiChapterCompleted,isHindiModeCompleted,markHindiChapterCompleted,markHindiModeCompleted} from './hindiChapterProgress';
 import {HindiSupportChapterView} from './HindiSupportChapterView';
+import {HindiVarnikaChapter3View} from './HindiVarnikaChapter3View';
 import {HindiChapterStudyView} from './HindiChapterStudyView';
 import {HindiGadhyaLearn} from './HindiGadhyaLearn';
 import {HindiPoetry1Learn} from './HindiPoetry1Learn';
@@ -66,6 +67,7 @@ export function HindiSubjectSection({open}){
   if(localChapter){
     const topic=hindiAllTopics.find(x=>x.id===localChapter.topicId); const study=hindiStudyRegistry[localChapter.topicId]; const Learner=learnComponents[localChapter.topicId];
     const completeLocalMode=completedMode=>{markHindiModeCompleted(localChapter.topicId,completedMode);const modesDone=['learn','practice','challenge','test'].every(m=>isHindiModeCompleted(localChapter.topicId,m)||completedMode===m);if(modesDone)markHindiChapterCompleted(localChapter.topicId)};
+    if(topic&&topic.book==='वर्णिका · पूरक'&&topic.title==='बिहार में नृत्यकला')return <HindiVarnikaChapter3View topic={topic} initialMode={localChapter.mode} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode} onNavigate={handleSupportNavigate}/>;
     if(topic&&(topic.book==='वर्णिका · पूरक'||topic.book==='व्याकरण एवं रचना'))return <HindiSupportChapterView topic={topic} initialMode={localChapter.mode} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode} onNavigate={handleSupportNavigate}/>;
     if(study)return <HindiChapterStudyView id={localChapter.topicId} lesson={study.lesson} practice={study.practice} challenge={study.challenge} test={study.test} initialMode={localChapter.mode} wrapLearnNavigator={!internalNavigatorTopics.has(localChapter.topicId)} learnComponent={Learner||HindiGadhyaLearn} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode}/>;
     return null;
