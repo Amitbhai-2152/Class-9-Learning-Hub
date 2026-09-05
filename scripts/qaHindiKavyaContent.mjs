@@ -1,15 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {pathToFileURL} from 'node:url';
 
 const root=process.cwd();
 const ids=Array.from({length:12},(_,i)=>i+1);
 const failures=[];
-
-function countQuestionArrays(source){
-  // Current Kavya engines use array-based question records rather than q(...)
-  // helper calls. Count records shaped as [question, options, answer, ...].
-  return (source.match(/\[\s*['"`][^\n]+['"`]\s*,\s*\[/g)||[]).length;
-}
 
 for(const n of ids){
   const file=path.join(root,'src',`hindiPoetry${n}Engine.js`);
@@ -25,10 +20,36 @@ for(const n of ids){
     n===8?'hindiPoetry8ChallengeQuestions':`hindiPoetry${n}Challenge`
   ];
   for(const name of required)if(!source.includes(`export const ${name}`))failures.push(`p${n}: missing export ${name}`);
+
   const sectionCount=(source.match(/\{title:/g)||[]).length;
-  const questionCount=countQuestionArrays(source);
   if(sectionCount<8)failures.push(`p${n}: only ${sectionCount} lesson sections found`);
-  if(questionCount<20)failures.push(`p${n}: only ${questionCount} question definitions found`);
+
+  try{
+    const mod=await import(`${pathToFileURL(file).href}?qa=${n}`);
+    const bankNames=[
+      `hindiPoetry${n}PracticeQuestions`,
+      n===8?'hindiPoetry8ChallengeQuestions':`hindiPoetry${n}Challenge`,
+      `hindiPoetry${n}TestQuestions`
+    ];
+    for(const name of bankNames){
+      const bank=mod[name];
+      if(!Array.isArray(bank)){
+        failures.push(`p${n}: ${name} is not an array`);
+        continue;
+      }
+      if(bank.length<20)failures.push(`p${n}: ${name} has only ${bank.length} questions`);
+      bank.forEach((item,index)=>{
+        const q=Array.isArray(item)?item[0]:item?.q;
+        const options=Array.isArray(item)?item[1]:item?.options;
+        const answer=Array.isArray(item)?item[2]:item?.answer;
+        if(typeof q!=='string'||!q.trim())failures.push(`p${n}: ${name}[${index}] has invalid question text`);
+        if(!Array.isArray(options)||options.length<2)failures.push(`p${n}: ${name}[${index}] has invalid options`);
+        if(!Number.isInteger(answer)||answer<0||answer>=options.length)failures.push(`p${n}: ${name}[${index}] has invalid answer index`);
+      });
+    }
+  }catch(error){
+    failures.push(`p${n}: engine import failed: ${error?.message||error}`);
+  }
 }
 
 const registry=fs.readFileSync(path.join(root,'src','hindiStudyRegistry.js'),'utf8');
@@ -46,4 +67,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Kavya QA passed: p1–p12 have engine files, lesson exports, assessment exports, registry wiring, and learner mappings.');
+console.log('Kavya QA passed: p1–p12 have valid lesson sections, runtime-valid Practice/Challenge/Test banks, registry wiring, and learner mappings.');
