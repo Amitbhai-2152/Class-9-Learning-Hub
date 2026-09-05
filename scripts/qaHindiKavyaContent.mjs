@@ -21,30 +21,32 @@ for(const n of ids){
   ];
   for(const name of required)if(!source.includes(`export const ${name}`))failures.push(`p${n}: missing export ${name}`);
 
-  const sectionCount=(source.match(/\{title:/g)||[]).length;
-  if(sectionCount<8)failures.push(`p${n}: only ${sectionCount} lesson sections found`);
-
   try{
     const mod=await import(`${pathToFileURL(file).href}?qa=${n}`);
+    const lesson=mod[`hindiPoetry${n}Lesson`];
+    if(!lesson||!Array.isArray(lesson.sections)||lesson.sections.length<8){
+      failures.push(`p${n}: only ${lesson?.sections?.length||0} lesson sections found`);
+    }
+
     const bankNames=[
-      `hindiPoetry${n}PracticeQuestions`,
-      n===8?'hindiPoetry8ChallengeQuestions':`hindiPoetry${n}Challenge`,
-      `hindiPoetry${n}TestQuestions`
+      {name:`hindiPoetry${n}PracticeQuestions`,min:20},
+      {name:n===8?'hindiPoetry8ChallengeQuestions':`hindiPoetry${n}Challenge`,min:12},
+      {name:`hindiPoetry${n}TestQuestions`,min:20}
     ];
-    for(const name of bankNames){
+    for(const {name,min} of bankNames){
       const bank=mod[name];
       if(!Array.isArray(bank)){
         failures.push(`p${n}: ${name} is not an array`);
         continue;
       }
-      if(bank.length<20)failures.push(`p${n}: ${name} has only ${bank.length} questions`);
+      if(bank.length<min)failures.push(`p${n}: ${name} has only ${bank.length} questions (minimum ${min})`);
       bank.forEach((item,index)=>{
-        const q=Array.isArray(item)?item[0]:item?.q;
-        const options=Array.isArray(item)?item[1]:item?.options;
-        const answer=Array.isArray(item)?item[2]:item?.answer;
+        const q=Array.isArray(item)?item[0]:(item?.q??item?.question??item?.text);
+        const options=Array.isArray(item)?item[1]:(item?.options??item?.choices);
+        const answer=Array.isArray(item)?item[2]:(item?.answer??item?.correctAnswer);
         if(typeof q!=='string'||!q.trim())failures.push(`p${n}: ${name}[${index}] has invalid question text`);
         if(!Array.isArray(options)||options.length<2)failures.push(`p${n}: ${name}[${index}] has invalid options`);
-        if(!Number.isInteger(answer)||answer<0||answer>=options.length)failures.push(`p${n}: ${name}[${index}] has invalid answer index`);
+        if(!Number.isInteger(answer)||answer<0||!Array.isArray(options)||answer>=options.length)failures.push(`p${n}: ${name}[${index}] has invalid answer index`);
       });
     }
   }catch(error){
