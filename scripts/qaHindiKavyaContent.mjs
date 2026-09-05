@@ -23,6 +23,19 @@ for(const n of ids){
   const questionCount=(source.match(/q\(/g)||[]).length;
   if(sectionCount<8)failures.push(`p${n}: only ${sectionCount} lesson sections found`);
   if(questionCount<20)failures.push(`p${n}: only ${questionCount} question definitions found`);
+
+  if(n===9){
+    const semanticAnchors=[
+      ['सड़क पार करने से पहले','road-crossing opening is missing'],
+      ['तेज रफ्तार से जाती गाड़ियाँ','fast-traffic context is missing'],
+      ['न्याय व्यवस्था','judiciary theme is missing'],
+      ['पुलिस अफसर','police theme is missing'],
+      ['मंत्री की कार','ministerial-car theme is missing'],
+      ['साइरन','siren detail is missing'],
+      ['भारत के भविष्य','children-as-future message is missing']
+    ];
+    for(const [anchor,message] of semanticAnchors)if(!source.includes(anchor))failures.push(`p9: ${message}`);
+  }
 }
 
 const registry=fs.readFileSync(path.join(root,'src','hindiStudyRegistry.js'),'utf8');
@@ -40,4 +53,4 @@ if(failures.length){
   process.exit(1);
 }
 
-console.log('Kavya QA passed: p1–p12 have engine files, lesson exports, assessment exports, registry wiring, and learner mappings.');
+console.log('Kavya QA passed: p1–p12 have engine files, lesson exports, assessment exports, registry wiring, learner mappings, and p9 semantic anchors.');
