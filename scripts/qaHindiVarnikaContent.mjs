@@ -22,7 +22,7 @@ if(!section.includes("import {HindiVarnikaChapter4View} from './HindiVarnikaChap
 for(const marker of ['जट-जटिन','झिझिया','करिया-झूमर','डोमकच','पँवरिया','गुँडिया','हरि उप्पल','नगेन्द्र मोहिनी','भिखारी ठाकुर','ज्योतिरीश्वर ठाकुर'])if(!chapter3.includes(marker))failures.push(`chapter 3 content marker missing: ${marker}`);
 for(const marker of ['पटना कलम','राधामोहन बाबू','उपेन्द्र महारथी','श्याम शर्मा','वेणुशिल्प','डब्ल्यू. जी. आर्चर','ईश्वरी प्रसाद वर्मा'])if(!chapter4.includes(marker))failures.push(`chapter 4 content marker missing: ${marker}`);
 const questionMatches3=chapter3.match(/^ \['/gm)||[];
-const questionMatches4=chapter4.match(/^\s*q\(/gm)||[];
+const questionMatches4=chapter4.match(/^\s*\{q:/gm)||[];
 if(questionMatches3.length<20)failures.push(`chapter 3 must contain at least 20 questions; found ${questionMatches3.length}`);
 if(questionMatches4.length<30)failures.push(`chapter 4 must contain at least 30 question definitions; found ${questionMatches4.length}`);
 if(failures.length){console.error('Varnika QA failed:');for(const failure of failures)console.error(`- ${failure}`);process.exit(1);}
