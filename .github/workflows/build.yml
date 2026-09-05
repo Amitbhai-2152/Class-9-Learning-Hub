@@ -20,5 +20,7 @@ jobs:
         run: npm install
       - name: Science content QA
         run: npm run qa:science
+      - name: Hindi gadhya content QA
+        run: npm run qa:hindi:gadhya
       - name: Build application
         run: npm run build

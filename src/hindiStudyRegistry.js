@@ -1,35 +1,38 @@
-import {hindiChapter1Lesson,hindiChapter1PracticeQuestions,hindiChapter1TestQuestions,hindiChapter1Challenge} from './hindiChapter1Engine';
-import {hindiChapter2Lesson,hindiChapter2PracticeQuestions,hindiChapter2TestQuestions,hindiChapter2Challenge} from './hindiChapter2Engine';
-import {hindiChapter3Lesson,hindiChapter3PracticeQuestions,hindiChapter3TestQuestions,hindiChapter3Challenge} from './hindiChapter3Engine';
-import {hindiChapter4Lesson,hindiChapter4PracticeQuestions,hindiChapter4TestQuestions,hindiChapter4Challenge} from './hindiChapter4Engine';
-import {hindiChapter5Lesson,hindiChapter5PracticeQuestions,hindiChapter5TestQuestions,hindiChapter5Challenge} from './hindiChapter5Engine';
-import {hindiChapter6Lesson,hindiChapter6PracticeQuestions,hindiChapter6TestQuestions,hindiChapter6Challenge} from './hindiChapter6Engine';
-import {hindiChapter7Lesson,hindiChapter7PracticeQuestions,hindiChapter7TestQuestions,hindiChapter7Challenge} from './hindiChapter7Engine';
-import {hindiChapter8Lesson,hindiChapter8PracticeQuestions,hindiChapter8TestQuestions,hindiChapter8Challenge} from './hindiChapter8Engine';
-import {hindiChapter9Lesson,hindiChapter9PracticeQuestions,hindiChapter9TestQuestions,hindiChapter9Challenge} from './hindiChapter9Engine';
-import {hindiChapter10Lesson,hindiChapter10PracticeQuestions,hindiChapter10TestQuestions,hindiChapter10Challenge} from './hindiChapter10Engine';
-import {hindiChapter11Lesson,hindiChapter11PracticeQuestions,hindiChapter11TestQuestions,hindiChapter11Challenge} from './hindiChapter11Engine';
-import {hindiChapter12Lesson,hindiChapter12PracticeQuestions,hindiChapter12TestQuestions,hindiChapter12Challenge} from './hindiChapter12Engine';
-import {hindiPoetry1Lesson,hindiPoetry1PracticeQuestions,hindiPoetry1TestQuestions,hindiPoetry1Challenge} from './hindiPoetry1Engine';
-import {hindiPoetry2Lesson,hindiPoetry2PracticeQuestions,hindiPoetry2TestQuestions,hindiPoetry2Challenge} from './hindiPoetry2Engine';
-import {hindiPoetry3Lesson,hindiPoetry3PracticeQuestions,hindiPoetry3TestQuestions,hindiPoetry3Challenge} from './hindiPoetry3Engine';
-import {hindiPoetry4Lesson,hindiPoetry4PracticeQuestions,hindiPoetry4TestQuestions,hindiPoetry4Challenge} from './hindiPoetry4Engine';
-import {hindiPoetry5Lesson,hindiPoetry5PracticeQuestions,hindiPoetry5TestQuestions,hindiPoetry5Challenge} from './hindiPoetry5Engine';
-import {hindiPoetry6Lesson,hindiPoetry6PracticeQuestions,hindiPoetry6TestQuestions,hindiPoetry6Challenge} from './hindiPoetry6Engine';
-import {hindiPoetry7Lesson,hindiPoetry7PracticeQuestions,hindiPoetry7TestQuestions,hindiPoetry7Challenge} from './hindiPoetry7Engine';
-import {hindiPoetry8Lesson,hindiPoetry8PracticeQuestions,hindiPoetry8TestQuestions,hindiPoetry8ChallengeQuestions} from './hindiPoetry8Engine';
-import {hindiPoetry9Lesson,hindiPoetry9PracticeQuestions,hindiPoetry9Challenge,hindiPoetry9TestQuestions} from './hindiPoetry9Engine';
-import {hindiPoetry10Lesson,hindiPoetry10PracticeQuestions,hindiPoetry10Challenge,hindiPoetry10TestQuestions} from './hindiPoetry10Engine';
-import {hindiPoetry11Lesson,hindiPoetry11PracticeQuestions,hindiPoetry11Challenge,hindiPoetry11TestQuestions} from './hindiPoetry11Engine';
-import {hindiPoetry12Lesson,hindiPoetry12PracticeQuestions,hindiPoetry12Challenge,hindiPoetry12TestQuestions} from './hindiPoetry12Engine';
+import {hindiChapter1Lesson,hindiChapter1PracticeQuestions,hindiChapter1TestQuestions,hindiChapter1Challenge} from './hindiChapter1Engine.js';
+import {hindiChapter2Lesson,hindiChapter2PracticeQuestions,hindiChapter2TestQuestions,hindiChapter2Challenge} from './hindiChapter2Engine.js';
+import {hindiChapter3Lesson,hindiChapter3PracticeQuestions,hindiChapter3TestQuestions,hindiChapter3Challenge} from './hindiChapter3Engine.js';
+import {hindiChapter4Lesson,hindiChapter4PracticeQuestions,hindiChapter4TestQuestions,hindiChapter4Challenge} from './hindiChapter4Engine.js';
+import {hindiChapter5Lesson,hindiChapter5PracticeQuestions,hindiChapter5TestQuestions,hindiChapter5Challenge} from './hindiChapter5Engine.js';
+import {hindiChapter6Lesson,hindiChapter6PracticeQuestions,hindiChapter6TestQuestions,hindiChapter6Challenge} from './hindiChapter6Engine.js';
+import {hindiChapter7Lesson,hindiChapter7PracticeQuestions,hindiChapter7TestQuestions,hindiChapter7Challenge} from './hindiChapter7Engine.js';
+import {hindiChapter8Lesson,hindiChapter8PracticeQuestions,hindiChapter8TestQuestions,hindiChapter8Challenge} from './hindiChapter8Engine.js';
+import {hindiChapter9Lesson,hindiChapter9PracticeQuestions,hindiChapter9TestQuestions,hindiChapter9Challenge} from './hindiChapter9Engine.js';
+import {hindiChapter10Lesson,hindiChapter10PracticeQuestions,hindiChapter10TestQuestions,hindiChapter10Challenge} from './hindiChapter10Engine.js';
+import {hindiChapter11Lesson,hindiChapter11PracticeQuestions,hindiChapter11TestQuestions,hindiChapter11Challenge} from './hindiChapter11Engine.js';
+import {hindiChapter12Lesson,hindiChapter12PracticeQuestions,hindiChapter12TestQuestions,hindiChapter12Challenge} from './hindiChapter12Engine.js';
+import {hindiPoetry1Lesson,hindiPoetry1PracticeQuestions,hindiPoetry1TestQuestions,hindiPoetry1Challenge} from './hindiPoetry1Engine.js';
+import {hindiPoetry2Lesson,hindiPoetry2PracticeQuestions,hindiPoetry2TestQuestions,hindiPoetry2Challenge} from './hindiPoetry2Engine.js';
+import {hindiPoetry3Lesson,hindiPoetry3PracticeQuestions,hindiPoetry3TestQuestions,hindiPoetry3Challenge} from './hindiPoetry3Engine.js';
+import {hindiPoetry4Lesson,hindiPoetry4PracticeQuestions,hindiPoetry4TestQuestions,hindiPoetry4Challenge} from './hindiPoetry4Engine.js';
+import {hindiPoetry5Lesson,hindiPoetry5PracticeQuestions,hindiPoetry5TestQuestions,hindiPoetry5Challenge} from './hindiPoetry5Engine.js';
+import {hindiPoetry6Lesson,hindiPoetry6PracticeQuestions,hindiPoetry6TestQuestions,hindiPoetry6Challenge} from './hindiPoetry6Engine.js';
+import {hindiPoetry7Lesson,hindiPoetry7PracticeQuestions,hindiPoetry7TestQuestions,hindiPoetry7Challenge} from './hindiPoetry7Engine.js';
+import {hindiPoetry8Lesson,hindiPoetry8PracticeQuestions,hindiPoetry8TestQuestions,hindiPoetry8ChallengeQuestions} from './hindiPoetry8Engine.js';
+import {hindiPoetry9Lesson,hindiPoetry9PracticeQuestions,hindiPoetry9Challenge,hindiPoetry9TestQuestions} from './hindiPoetry9Engine.js';
+import {hindiPoetry10Lesson,hindiPoetry10PracticeQuestions,hindiPoetry10Challenge,hindiPoetry10TestQuestions} from './hindiPoetry10Engine.js';
+import {hindiPoetry11Lesson,hindiPoetry11PracticeQuestions,hindiPoetry11Challenge,hindiPoetry11TestQuestions} from './hindiPoetry11Engine.js';
+import {hindiPoetry12Lesson,hindiPoetry12PracticeQuestions,hindiPoetry12Challenge,hindiPoetry12TestQuestions} from './hindiPoetry12Engine.js';
+import {hindiChapter1PracticeAdditions,hindiChapter1ChallengeAdditions,hindiChapter1TestAdditions} from './hindiGadhyaQaAdditions.js';
+
+const addG6TestExplanation=(questions)=>questions.map((question,index)=>index===1?{...question,explain:'यह प्रश्न अष्टावक्र के जीवन-संघर्ष और सामाजिक उपेक्षा को समझने के लिए है; उत्तर में उसके आत्मसम्मान और परिस्थितियों का संबंध स्पष्ट करें।'}:question);
 
 export const hindiStudyRegistry={
-  g1:{lesson:hindiChapter1Lesson,practice:hindiChapter1PracticeQuestions,challenge:hindiChapter1Challenge,test:hindiChapter1TestQuestions},
+  g1:{lesson:hindiChapter1Lesson,practice:[...hindiChapter1PracticeQuestions,...hindiChapter1PracticeAdditions],challenge:[...hindiChapter1Challenge,...hindiChapter1ChallengeAdditions],test:[...hindiChapter1TestQuestions,...hindiChapter1TestAdditions]},
   g2:{lesson:hindiChapter2Lesson,practice:hindiChapter2PracticeQuestions,challenge:hindiChapter2Challenge,test:hindiChapter2TestQuestions},
   g3:{lesson:hindiChapter3Lesson,practice:hindiChapter3PracticeQuestions,challenge:hindiChapter3Challenge,test:hindiChapter3TestQuestions},
   g4:{lesson:hindiChapter4Lesson,practice:hindiChapter4PracticeQuestions,challenge:hindiChapter4Challenge,test:hindiChapter4TestQuestions},
   g5:{lesson:hindiChapter5Lesson,practice:hindiChapter5PracticeQuestions,challenge:hindiChapter5Challenge,test:hindiChapter5TestQuestions},
-  g6:{lesson:hindiChapter6Lesson,practice:hindiChapter6PracticeQuestions,challenge:hindiChapter6Challenge,test:hindiChapter6TestQuestions},
+  g6:{lesson:hindiChapter6Lesson,practice:hindiChapter6PracticeQuestions,challenge:hindiChapter6Challenge,test:addG6TestExplanation(hindiChapter6TestQuestions)},
   g7:{lesson:hindiChapter7Lesson,practice:hindiChapter7PracticeQuestions,challenge:hindiChapter7Challenge,test:hindiChapter7TestQuestions},
   g8:{lesson:hindiChapter8Lesson,practice:hindiChapter8PracticeQuestions,challenge:hindiChapter8Challenge,test:hindiChapter8TestQuestions},
   g9:{lesson:hindiChapter9Lesson,practice:hindiChapter9PracticeQuestions,challenge:hindiChapter9Challenge,test:hindiChapter9TestQuestions},
