@@ -1,5 +1,5 @@
 import React from 'react';
-import './hindi-gadhya-layout-v3.css';
+import {enrichGadhyaLesson} from './hindi-gadhya-richness';
 
 const list=value=>Array.isArray(value)?value.filter(Boolean):[];
 const pairs=value=>list(value).filter(item=>Array.isArray(item)&&item.length>=2);
@@ -7,24 +7,25 @@ const peopleOf=lesson=>list(lesson.characters||lesson.people);
 
 export function HindiGadhyaLearn({lesson,onBack,onModeComplete}){
   if(!lesson)return null;
-  const sections=list(lesson.sections);
-  const themes=list(lesson.themes);
-  const literaryTools=pairs(lesson.literaryTools);
-  const glossary=pairs(lesson.glossary);
-  const frameworks=pairs(lesson.answerFrameworks);
-  const checklist=list(lesson.examChecklist);
-  const people=peopleOf(lesson);
-  const mapPairs=pairs(lesson.timeline||lesson.storyMap||lesson.waterWisdom||lesson.thesis);
-  const comparison=pairs(lesson.comparison);
-  const authorNote=lesson.authorNote||'इस पाठ को लेखक की दृष्टि, पात्रों की भूमिका, सामाजिक संदर्भ और मुख्य संदेश के साथ पढ़ें।';
+  const studyLesson=enrichGadhyaLesson(lesson);
+  const sections=list(studyLesson.sections);
+  const themes=list(studyLesson.themes);
+  const literaryTools=pairs(studyLesson.literaryTools);
+  const glossary=pairs(studyLesson.glossary);
+  const frameworks=pairs(studyLesson.answerFrameworks);
+  const checklist=list(studyLesson.examChecklist);
+  const people=peopleOf(studyLesson);
+  const mapPairs=pairs(studyLesson.timeline||studyLesson.storyMap||studyLesson.waterWisdom||studyLesson.thesis);
+  const comparison=pairs(studyLesson.comparison);
+  const authorNote=studyLesson.authorNote||'इस पाठ को लेखक की दृष्टि, पात्रों की भूमिका, सामाजिक संदर्भ और मुख्य संदेश के साथ पढ़ें।';
   const fallbackChecklist=['पाठ का केंद्रीय विचार अपने शब्दों में बताइए।','मुख्य पात्र या प्रसंग और उसके महत्व को जोड़कर उत्तर दीजिए।','कारण, प्रभाव और लेखक की दृष्टि स्पष्ट रखिए।','लंबे उत्तर के अंत में संक्षिप्त निष्कर्ष लिखिए।'];
   const sectionCount=sections.length;
   return <div className="hindi-learn hindi-chapter1-learn hindi-gadhya-learn">
     <div className="hindi-learn-banner">
-      <span>{lesson.eyebrow||'गोधूली भाग 1 · गद्य'}</span>
-      <h2>{lesson.title}</h2>
-      <p>{lesson.intro||lesson.overview}</p>
-      {lesson.author&&<div className="hindi-topic-author">✦ {lesson.author}</div>}
+      <span>{studyLesson.eyebrow||'गोधूली भाग 1 · गद्य'}</span>
+      <h2>{studyLesson.title}</h2>
+      <p>{studyLesson.intro||studyLesson.overview}</p>
+      {studyLesson.author&&<div className="hindi-topic-author">✦ {studyLesson.author}</div>}
     </div>
 
     <section className="hindi-gadhya-roadmap hindi-gadhya-roadmap-wide" aria-label="अध्याय सीखने का क्रम">
@@ -41,7 +42,7 @@ export function HindiGadhyaLearn({lesson,onBack,onModeComplete}){
 
     <section className="hindi-ch1-callout hindi-gadhya-primary-callout">
       <strong>💡 केंद्रीय बात</strong>
-      <p>{lesson.overview||'इस पाठ के मुख्य विचार, प्रसंग और संदेश को क्रम से समझें।'}</p>
+      <p>{studyLesson.overview||'इस पाठ के मुख्य विचार, प्रसंग और संदेश को क्रम से समझें।'}</p>
     </section>
 
     <section className="hindi-ch1-panel hindi-gadhya-author-panel">
@@ -59,7 +60,7 @@ export function HindiGadhyaLearn({lesson,onBack,onModeComplete}){
             <h3>{item.title}</h3>
             <p>{item.body}</p>
             {item.deep&&<div className="hindi-ch1-callout"><strong>🔎 गहराई</strong><p>{item.deep}</p></div>}
-            {item.example&&<div className="hindi-ch1-callout"><strong>🌍 उदाहरण</strong><p>{item.example}</p></div>}
+            {item.example&&<div className="hindi-ch1-callout"><strong>🧩 लागू करके देखें</strong><p>{item.example}</p></div>}
             {item.exam&&<div className="hindi-ch1-callout"><strong>🎯 परीक्षा संकेत</strong><p>{item.exam}</p></div>}
           </div>
         </section>)}
