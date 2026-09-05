@@ -12,6 +12,7 @@ import {HindiPoetry5Learn} from './HindiPoetry5Learn';
 import {HindiPoetry6Learn} from './HindiPoetry6Learn';
 import {HindiPoetry7Learn} from './HindiPoetry7Learn';
 import {HindiPoetry8Learn} from './HindiPoetry8Learn';
+import {HindiPoetryLearn} from './HindiPoetryLearn';
 import {hindiStudyRegistry} from './hindiStudyRegistry';
 import './hindi-chapter1.css';
 import './hindi-click-fix.css';
@@ -22,7 +23,8 @@ const modes=[['learn','📖','सीखें','पाठ को समझें
 const getMainTopics=()=>hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य'||x.book==='गोधूली · काव्य');
 const learnComponents={
   g1:HindiGadhyaLearn,g2:HindiGadhyaLearn,g3:HindiGadhyaLearn,g4:HindiGadhyaLearn,g5:HindiGadhyaLearn,g6:HindiGadhyaLearn,g7:HindiGadhyaLearn,g8:HindiGadhyaLearn,g9:HindiGadhyaLearn,g10:HindiGadhyaLearn,g11:HindiGadhyaLearn,g12:HindiGadhyaLearn,
-  p1:HindiPoetry1Learn,p2:HindiPoetry2Learn,p3:HindiPoetry3Learn,p4:HindiPoetry4Learn,p5:HindiPoetry5Learn,p6:HindiPoetry6Learn,p7:HindiPoetry7Learn,p8:HindiPoetry8Learn
+  p1:HindiPoetry1Learn,p2:HindiPoetry2Learn,p3:HindiPoetry3Learn,p4:HindiPoetry4Learn,p5:HindiPoetry5Learn,p6:HindiPoetry6Learn,p7:HindiPoetry7Learn,p8:HindiPoetry8Learn,
+  p9:HindiPoetryLearn,p10:HindiPoetryLearn,p11:HindiPoetryLearn,p12:HindiPoetryLearn
 };
 const internalNavigatorTopics=new Set(['p1','p2','p3','p4','p5','p6','p7','p8']);
 
