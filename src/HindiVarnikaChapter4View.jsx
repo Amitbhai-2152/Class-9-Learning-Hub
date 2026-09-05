@@ -1,12 +1,13 @@
-import React,{useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useState} from 'react';
+import {markHindiModeCompleted} from './hindiChapterProgress';
 import {HINDI_MODE_TIMING} from './hindi-mode-timing';
 
 const TITLE='बिहार की चित्रकला';
 const CHAPTER_NO=4;
 const MODES={practice:{label:'अभ्यास',count:15},challenge:{label:'चुनौती',count:12},test:{label:'अंतिम टेस्ट',count:20}};
+const VARNIKA_ORDER=['बिहार का लोकगायन','बिहार की संगीत साधना','बिहार में नृत्यकला','बिहार की चित्रकला','मधुबनी की चित्रकला','बिहार में नाट्यकला','बिहार का सिनेमा संसार'];
 
 const SUMMARY='यह पाठ बिहार की चित्रकला की ऐतिहासिक परंपरा, पटना कलम, राधामोहन बाबू, उपेन्द्र महारथी, छापा चित्रकारी, पटना कला एवं शिल्प महाविद्यालय, वेणुशिल्प तथा डब्ल्यू. जी. आर्चर की भूमिका को समझाता है। साथ ही यह चित्रकला को सामाजिक और सांस्कृतिक जीवन से जोड़कर देखने की दृष्टि देता है।';
-
 const POINTS=[
  ['बिहार की प्राचीन चित्रपरंपरा','पाठ बिहार की चित्रकला की जड़ों को प्राचीन सांस्कृतिक इतिहास और बौद्ध परंपरा से जोड़ता है।'],
  ['बौद्ध प्रभाव','बौद्ध उपदेशों और बुद्ध के जीवन-प्रसंगों को भित्तियों और स्तूपों पर चित्रित करने से चित्रकला की परंपरा को बल मिला।'],
@@ -19,24 +20,24 @@ const POINTS=[
  ['राधामोहन बाबू','राधामोहन प्रसाद को पटना चित्रशैली के अंतिम महत्त्वपूर्ण कलाकारों में याद किया जाता है और उनके काम ने कलात्मक पुनर्जागरण को बल दिया।'],
  ['राधामोहन का संस्थागत योगदान','राधामोहन बाबू ने पटना में कला और शिल्प महाविद्यालय की स्थापना से कला-शिक्षा और संस्थागत विकास को मजबूत किया।'],
  ['अंतिमता का सूक्ष्म बिंदु','पाठीय प्रश्नोत्तर में यह भी स्पष्ट किया गया है कि ईश्वरी प्रसाद वर्मा को कुछ विद्वान अंतिम चित्रकार मानते हैं, जबकि राधामोहन और दामोदर प्रसाद अम्बष्ट ने परंपरा को आगे बढ़ाया।'],
- ['उपेन्द्र महारथी का आगमन','पटना कला एवं शिल्प महाविद्यालय की स्थापना के बाद बिहार के कलात्मक पुनर्जागरण में उपेन्द्र महारथी का महत्त्वपूर्ण योगदान सामने आता है।'],
- ['शिक्षा और राष्ट्रीय चेतना','उपेन्द्र महारथी ने कलकत्ता में चित्रकला की शिक्षा पाई और भारतीय कला को राष्ट्रीय चेतना तथा देशी सांस्कृतिक मूल्यों से जोड़ने पर जोर दिया।'],
- ['लोककलाओं का अध्ययन','दरभंगा प्रवास के दौरान उन्होंने मिथिला की चित्रमूर्तियों और लोककलाओं का अध्ययन किया तथा बिहार-बंगाल के ग्रामीण क्षेत्रों में शोध-यात्राएँ कीं।'],
- ['उद्योग विभाग में योगदान','स्वतंत्रता के बाद उपेन्द्र महारथी को बिहार सरकार के उद्योग विभाग में डिजाइनर के रूप में कार्य करने का अवसर मिला।'],
- ['स्थापत्य-कला','उपेन्द्र महारथी ने चित्रकला और शिल्प के साथ स्थापत्य-कला में भी काम किया; राजगीर तथा नालंदा-धौली के शांति स्तूपों से जुड़े डिजाइन उनके योगदान का उदाहरण हैं।'],
- ['वेणुशिल्प','वेणुशिल्प का अर्थ बाँस कला है। उपेन्द्र महारथी ने इस कला में विशेषज्ञता हासिल की और इसे आधुनिक तथा व्यापक पहचान दिलाने में योगदान दिया।'],
+ ['उपेन्द्र महारथी का योगदान','उपेन्द्र महारथी ने भारतीय कला, राष्ट्रीय चेतना और बिहार की लोककलाओं के अध्ययन को अपने काम से जोड़ा तथा बिहार को व्यापक कला-परिचय दिलाने में योगदान किया।'],
+ ['चित्रकला की शिक्षा','उपेन्द्र महारथी ने कलकत्ता में चित्रकला की शिक्षा पाई और कला को भारतीय सांस्कृतिक मूल्यों से जोड़ने की दृष्टि विकसित की।'],
+ ['मिथिला की लोककला का अध्ययन','दरभंगा प्रवास के दौरान उन्होंने मिथिला की चित्रमूर्तियों और लोककलाओं का अध्ययन किया तथा बिहार-बंगाल के ग्रामीण क्षेत्रों में शोध-यात्राएँ कीं।'],
+ ['उद्योग विभाग में भूमिका','स्वतंत्रता के बाद उपेन्द्र महारथी बिहार सरकार के उद्योग विभाग में डिजाइनर के रूप में कार्यरत रहे।'],
+ ['स्थापत्य-कला','चित्रकला और शिल्प के साथ उपेन्द्र महारथी ने स्थापत्य-कला में भी योगदान दिया; राजगीर तथा नालंदा-धौली के शांति स्तूपों से जुड़े डिजाइन इसका उदाहरण हैं।'],
+ ['वेणुशिल्प','वेणुशिल्प अर्थात बाँस कला है। उपेन्द्र महारथी ने इस कला में विशेषज्ञता प्राप्त कर इसे आधुनिक और व्यापक पहचान दिलाने में योगदान किया।'],
  ['राष्ट्रपति भवन का कक्ष','वेणुशिल्प में विशेषज्ञता के बाद उपेन्द्र महारथी को राष्ट्रपति भवन के एक कक्ष को बाँस-कला से सजाने के लिए दिल्ली बुलाया गया था।'],
  ['उपेन्द्र महारथी का बहुआयामी व्यक्तित्व','चित्रकला, शिल्पकर्म, अध्ययन और शोध उनकी प्रमुख विशेषताओं में बताए गए हैं; उन्होंने कला-विषयक लेखन भी किया।'],
  ['छापा चित्रकारी','छापा चित्रकारी में छाप या प्रिंट की सहायता से रूप और आकृतियाँ तैयार की जाती हैं। बिहार में इस कला के विशेषज्ञ शिक्षक के रूप में श्याम शर्मा का महत्त्वपूर्ण उल्लेख है।'],
  ['श्याम शर्मा','श्याम शर्मा ने लखनऊ के कला-शिल्प महाविद्यालय में छापा चित्रकारी में विशेषज्ञता प्राप्त की और बाद में पटना में विशेषज्ञ शिक्षक के रूप में कार्य किया।'],
  ['पटना कला एवं शिल्प महाविद्यालय','यह संस्थान बिहार की कला-शिक्षा और कलाकारों, शिल्पकारों तथा मूर्तिकारों के प्रशिक्षण का महत्त्वपूर्ण केंद्र बना।'],
- ['लोकशिल्प और ग्रामीण महिलाएँ','बिहार के ग्रामीण क्षेत्रों में महिलाएँ मूँज, कुश और गेहूँ के डंठलों से दौरी, डाली, मऊनी, मोढ़ा आदि वस्तुएँ बनाती हैं; यह लोकशिल्प की जीवित परंपरा का उदाहरण है।'],
+ ['लोकशिल्प और ग्रामीण महिलाएँ','बिहार के ग्रामीण क्षेत्रों में महिलाएँ मूँज, कुश और गेहूँ के डंठलों से दौरी, दौरा, डाली, मऊनी, मोढ़ा आदि वस्तुएँ बनाती हैं; यह लोकशिल्प की जीवित परंपरा का उदाहरण है।'],
  ['डब्ल्यू. जी. आर्चर','तत्कालीन जिलाधिकारी डब्ल्यू. जी. आर्चर ने मधुबनी चित्रकला को व्यापक अंतरराष्ट्रीय पहचान दिलाने में महत्त्वपूर्ण भूमिका निभाई।'],
  ['ईश्वरी प्रसाद वर्मा और आर्चर','पाठ-संबंधी सामग्री में आर्चर द्वारा ईश्वरी प्रसाद वर्मा के लगभग 300 चित्र खरीदने और उन्हें व्यापक स्तर पर परिचित कराने का उल्लेख है।'],
  ['चित्रकला और समाज','चित्रकला सामाजिक जीवन का दर्पण बन सकती है और मांगलिक अवसरों, ज्ञानार्जन, मनोरंजन तथा सांस्कृतिक स्मृति में भूमिका निभाती है।'],
  ['चित्रकला और विरासत','चित्रकला के माध्यम से समाज अपनी सांस्कृतिक और ऐतिहासिक विरासत को सुरक्षित रखता है।'],
  ['चित्रकला और आजीविका','चित्रकला केवल सौंदर्य-अभिव्यक्ति नहीं; कुशल कलाकारों और शिल्पकारों के लिए यह आजीविका का साधन भी बन सकती है।'],
- ['पाठ का समग्र निष्कर्ष','बिहार की चित्रकला परंपरा इतिहास, लोकजीवन, शिक्षा, शोध, शिल्प और संस्थागत प्रयासों के मेल से विकसित हुई है।']
+ ['समग्र निष्कर्ष','बिहार की चित्रकला परंपरा इतिहास, लोकजीवन, शिक्षा, शोध, शिल्प और संस्थागत प्रयासों के मेल से विकसित हुई है।']
 ];
 
 const QUESTIONS=[
@@ -52,8 +53,8 @@ const QUESTIONS=[
  {q:'उपेन्द्र महारथी ने कला को किससे जोड़ने पर जोर दिया?',options:['राष्ट्रीय चेतना और भारतीय सांस्कृतिक मूल्यों से','केवल विदेशी बाजार से','केवल राजदरबार से','केवल विज्ञापन से'],answer:0,explain:'उनकी कला में भारतीय धर्म, दर्शन और राष्ट्रीयता का प्रभाव बताया गया है।'},
  {q:'उपेन्द्र महारथी ने किस क्षेत्र की लोककलाओं का गहरा अध्ययन किया?',options:['मिथिला','केवल पंजाब','केवल राजस्थान','केवल दक्षिण भारत'],answer:0,explain:'दरभंगा प्रवास के दौरान उन्होंने मिथिला की लोककलाओं का गहरा अध्ययन किया।'},
  {q:'स्वतंत्रता के बाद उपेन्द्र महारथी किस विभाग में डिजाइनर बने?',options:['उद्योग विभाग','रेल विभाग','शिक्षा विभाग','डाक विभाग'],answer:0,explain:'बिहार सरकार के उद्योग विभाग में उन्हें डिजाइनर नियुक्त किया गया था।'},
- {q:'उपेन्द्र महारथी की बहुआयामी रुचियों में क्या शामिल था?',options:['चित्रकला, शिल्प, अध्ययन और शोध','केवल अभिनय','केवल कृषि','केवल व्यापार'],answer:0,explain:'पाठ में चित्रकारी, शिल्पकर्म, अध्ययन और शोध को उनके व्यक्तित्व की प्रमुख विशेषताएँ बताया गया है।'},
- {q:'वेणुशिल्प का अर्थ क्या है?',options:['बाँस कला','पत्थर कला','धातु कला','कागज कला'],answer:0,explain:'वेणुशिल्प अर्थात् बाँस कला।'},
+ {q:'उपेन्द्र महारथी की बहुआयामी रुचियों में क्या शामिल था?',options:['चित्रकला, शिल्प, अध्ययन और शोध','केवल अभिनय','केवल कृषि','केवल व्यापार'],answer:0,explain:'पाठ में चित्रकला, शिल्पकर्म, अध्ययन और शोध को उनके व्यक्तित्व की प्रमुख विशेषताएँ बताया गया है।'},
+ {q:'वेणुशिल्प का अर्थ क्या है?',options:['बाँस कला','पत्थर कला','धातु कला','कागज कला'],answer:0,explain:'वेणुशिल्प अर्थात बाँस कला।'},
  {q:'वेणुशिल्प में विशेषज्ञता के बाद उपेन्द्र महारथी को कहाँ सजावट के लिए बुलाया गया था?',options:['राष्ट्रपति भवन','पटना संग्रहालय','नालंदा विश्वविद्यालय','राजगीर किला'],answer:0,explain:'पाठ में राष्ट्रपति भवन के एक कक्ष को वेणुशिल्प से सजाने का उल्लेख है।'},
  {q:'छापा चित्रकारी में किस प्रकार की तकनीक का उपयोग होता है?',options:['छाप/प्रिंट से आकृति बनाना','केवल मौखिक वर्णन','केवल मूर्तिकला','केवल फोटोग्राफी'],answer:0,explain:'छापा चित्रकारी में छाप या प्रिंट की सहायता से रूप बनाए जाते हैं।'},
  {q:'छापा चित्रकारी के विशेषज्ञ शिक्षक के रूप में किसका नाम प्रमुखता से आता है?',options:['श्याम शर्मा','राधामोहन प्रसाद','उपेन्द्र महारथी','ईश्वरी प्रसाद वर्मा'],answer:0,explain:'श्याम शर्मा ने छापा चित्रकारी में विशेषज्ञता प्राप्त कर पटना में विशेषज्ञ शिक्षक के रूप में कार्य किया।'},
@@ -72,23 +73,18 @@ const QUESTIONS=[
  {q:'बिहार की चित्रकला का अध्ययन हमें क्या समझने में मदद करता है?',options:['समाज, संस्कृति और इतिहास के संबंध को','केवल रंगों के नाम','केवल चित्र बेचने की प्रक्रिया','केवल परीक्षा की तैयारी'],answer:0,explain:'चित्रकला के माध्यम से सामाजिक जीवन, सांस्कृतिक स्मृति और इतिहास को देखा जा सकता है।'}
 ];
 
-function getQuestions(mode){const count=MODES[mode]?.count||20;const pool=QUESTIONS.map((item,index)=>({...item,key:`v4-${mode}-${index}`}));return pool.slice(0,count);}
+function getQuestions(mode){const count=MODES[mode]?.count||20;return QUESTIONS.slice(0,count).map((item,index)=>({...item,key:`v4-${mode}-${index}`}));}
 
 export function HindiVarnikaChapter4View({topic,initialMode='learn',onBack,onComplete,onNavigate}){
  const [mode,setMode]=useState(initialMode);const [index,setIndex]=useState(0);const [answers,setAnswers]=useState({});const [submitted,setSubmitted]=useState(false);const [seconds,setSeconds]=useState(null);
  const questions=useMemo(()=>getQuestions(mode),[mode]);const timing=HINDI_MODE_TIMING[mode];const duration=timing?.minutes*60||null;
- useMemo(()=>questions.length,[questions]);
- React.useEffect(()=>{setIndex(0);setAnswers({});setSubmitted(false);setSeconds(duration)},[topic?.id,mode,duration]);
- React.useEffect(()=>{if(!timing||submitted)return;const timer=setInterval(()=>setSeconds(v=>Math.max(0,v-1)),1000);return()=>clearInterval(timer)},[timing,submitted]);
- React.useEffect(()=>{if(timing&&seconds===0&&!submitted)setSubmitted(true)},[timing,seconds,submitted]);
- React.useEffect(()=>{if(submitted&&topic?.id){markHindiModeCompleted(topic.id,mode);onComplete?.(mode)}},[submitted,topic?.id,mode,onComplete]);
+ useEffect(()=>{setIndex(0);setAnswers({});setSubmitted(false);setSeconds(duration)},[topic?.id,mode,duration]);
+ useEffect(()=>{if(!timing||submitted)return;const timer=setInterval(()=>setSeconds(v=>Math.max(0,v-1)),1000);return()=>clearInterval(timer)},[timing,submitted]);
+ useEffect(()=>{if(timing&&seconds===0&&!submitted)setSubmitted(true)},[timing,seconds,submitted]);
+ useEffect(()=>{if(submitted&&topic?.id){markHindiModeCompleted(topic.id,mode);onComplete?.(mode)}},[submitted,topic?.id,mode,onComplete]);
  const changeMode=next=>{setMode(next);setIndex(0);setAnswers({});setSubmitted(false);setSeconds(HINDI_MODE_TIMING[next]?.minutes*60||null)};
  if(!topic)return null;
  if(mode==='learn')return <div className="hindi-learn hindi-chapter1-learn hindi-varnika-learn"><div className="hindi-learn-banner"><span>हिन्दी • वर्णिका भाग 1 • पाठ {CHAPTER_NO}</span><h2>{TITLE}</h2><p>{SUMMARY}</p></div><section className="hindi-ch1-panel"><div className="hindi-ch1-panel-head"><h3>📖 पाठ को गहराई से समझें</h3><span>{POINTS.length} मुख्य बिंदु</span></div><div className="hindi-learn-grid">{POINTS.map(([title,text],i)=><section key={title}><h3>{i+1}. {title}</h3><p>{text}</p></section>)}</div></section><div className="hindi-ch1-callout"><strong>बोर्ड परीक्षा फोकस</strong><p>पटना कलम की परिभाषा, 1760–1947 ई. का काल, राधामोहन बाबू, उपेन्द्र महारथी, वेणुशिल्प, छापा चित्रकारी, श्याम शर्मा और डब्ल्यू. जी. आर्चर से जुड़े तथ्य अलग से दोहराएँ। बड़े उत्तरों में कारण, योगदान और सामाजिक महत्व को बिंदुवार लिखें।</p></div><div className="hindi-actions"><button type="button" className="secondary-btn pressable" onClick={onBack}>← वर्णिका सूची</button><div><button type="button" className="secondary-btn pressable" onClick={()=>changeMode('practice')}>📝 अभ्यास शुरू करें</button><button type="button" className="primary-btn pressable" onClick={()=>{markHindiModeCompleted(topic.id,'learn');onComplete?.('learn')}}>✓ सीखना पूरा करें</button></div></div></div>;
  if(submitted){const score=questions.reduce((s,q,i)=>s+(answers[i]===q.answer?1:0),0);const prev=VARNIKA_ORDER[Math.max(0,VARNIKA_ORDER.indexOf(topic.title)-1)];const next=VARNIKA_ORDER[VARNIKA_ORDER.indexOf(topic.title)+1];return <div className="hindi-learn hindi-chapter1-learn hindi-varnika-learn"><div className="hindi-ch1-panel"><div className="hindi-score"><span>🎯</span><strong>{score}/{questions.length}</strong><small>सही उत्तर</small><p>{score>=Math.ceil(questions.length*.7)?'अच्छी तैयारी है।':'गलतियों की समीक्षा करके फिर प्रयास करें।'}</p></div><div className="hindi-review"><div className="hindi-review-head"><h3>हर प्रश्न की समीक्षा</h3><span>{MODES[mode].label}</span></div>{questions.map((q,i)=><article className={`hindi-review-item ${answers[i]===q.answer?'ok':'wrong'}`} key={q.key}><div className="hindi-review-num">{i+1}</div><div><strong>{q.q}</strong><p><b>आपका उत्तर:</b> {answers[i]!=null?q.options[answers[i]]:'उत्तर नहीं दिया'}</p><p><b>सही उत्तर:</b> {q.options[q.answer]}</p><span>{q.explain}</span></div></article>)}</div><div className="hindi-actions"><button type="button" className="secondary-btn pressable" onClick={()=>{setSubmitted(false);setIndex(0);setAnswers({});setSeconds(duration)}}>↻ फिर से दें</button>{prev&&<button type="button" className="secondary-btn pressable" onClick={()=>onNavigate?.(prev)}>← पिछला पाठ</button>}{next&&<button type="button" className="primary-btn pressable" onClick={()=>onNavigate?.(next)}>अगला पाठ →</button>}<button type="button" className="secondary-btn pressable" onClick={onBack}>वर्णिका सूची</button></div></div></div>}
  const q=questions[index];return <div className="hindi-learn hindi-chapter1-learn hindi-varnika-learn"><div className="hindi-learn-banner"><span>वर्णिका भाग 1 • {MODES[mode].label}</span><h2>{TITLE}</h2><p>{MODES[mode].count} प्रश्न · {timing?.label||''} · हर उत्तर के बाद आगे बढ़ें और अंत में समीक्षा देखें।</p></div><div className="hindi-mode-switch"><button type="button" className={mode==='practice'?'active':''} onClick={()=>changeMode('practice')}>📝 अभ्यास</button><button type="button" className={mode==='challenge'?'active':''} onClick={()=>changeMode('challenge')}>🔥 चुनौती</button><button type="button" className={mode==='test'?'active':''} onClick={()=>changeMode('test')}>🎯 टेस्ट</button></div><section className="hindi-assessment"><div className="hindi-assessment-header"><div><span>{MODES[mode].label}</span><strong>{index+1} / {questions.length}</strong></div><div className="hindi-exam-clock">⏱ {Math.floor((seconds||0)/60)}:{String((seconds||0)%60).padStart(2,'0')}</div></div><div className="hindi-q-progress"><span style={{width:`${Math.round(((index+1)/questions.length)*100)}%`}}/></div><div className="hindi-question"><small>प्रश्न {index+1}</small><h2>{q.q}</h2><div className="hindi-options">{q.options.map((option,i)=><button type="button" key={`${option}-${i}`} className={`hindi-option pressable ${answers[index]===i?'selected':''}`} onClick={()=>setAnswers(a=>({...a,[index]:i}))}><b>{String.fromCharCode(65+i)}</b><span>{option}</span></button>)}</div><div className="hindi-question-actions"><button type="button" className="secondary-btn pressable" disabled={index===0} onClick={()=>setIndex(v=>Math.max(0,v-1))}>← पिछला</button>{index<questions.length-1?<button type="button" className="primary-btn pressable" disabled={answers[index]==null} onClick={()=>setIndex(v=>v+1)}>अगला →</button>:<button type="button" className="primary-btn pressable" disabled={answers[index]==null} onClick={()=>setSubmitted(true)}>जमा करें ✓</button>}</div></div></section><div className="hindi-support-chapter-nav"><button type="button" onClick={()=>onNavigate?.('बिहार में नृत्यकला')}>← बिहार में नृत्यकला</button><button type="button" onClick={()=>onNavigate?.('मधुबनी की चित्रकला')}>मधुबनी की चित्रकला →</button></div></div>;
 }
-
-const VARNIKA_ORDER=['बिहार का लोकगायन','बिहार की संगीत साधना','बिहार में नृत्यकला','बिहार की चित्रकला','मधुबनी की चित्रकला','बिहार में नाट्यकला','बिहार का सिनेमा संसार'];
-
-function markHindiModeCompleted(topicId,mode){if(typeof window==='undefined')return;try{window.dispatchEvent(new CustomEvent('hindi-progress-updated',{detail:{topicId,mode}}))}catch{}}
