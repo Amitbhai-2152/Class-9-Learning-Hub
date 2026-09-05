@@ -62,10 +62,11 @@ export function HindiSubjectSection({open}){
   const mainTopics=useMemo(()=>getMainTopics(),[]); const completedCount=mainTopics.filter(x=>isHindiChapterCompleted(x.id)).length; const nextTopic=mainTopics.find(x=>!isHindiChapterCompleted(x.id));
   const proseCount=hindiAllTopics.filter(x=>x.book==='गोधूली · गद्य').length; const poetryCount=hindiAllTopics.filter(x=>x.book==='गोधूली · काव्य').length;
   const handleOpen=(id,mode)=>{const topic=hindiAllTopics.find(x=>x.id===id)||hindiAllTopics.find(x=>x.title===id)||(id==='ग्राम-गीत का मर्म'?hindiAllTopics.find(x=>x.id==='g3'):null);if(topic&&((topic.book==='गोधूली · गद्य'||topic.book==='गोधूली · काव्य')||topic.book==='वर्णिका · पूरक'||topic.book==='व्याकरण एवं रचना'))setLocalChapter({topicId:topic.id,mode});else if(topic)open(topic.title,mode);};
+  const handleSupportNavigate=id=>handleOpen(id,'learn');
   if(localChapter){
     const topic=hindiAllTopics.find(x=>x.id===localChapter.topicId); const study=hindiStudyRegistry[localChapter.topicId]; const Learner=learnComponents[localChapter.topicId];
     const completeLocalMode=completedMode=>{markHindiModeCompleted(localChapter.topicId,completedMode);const modesDone=['learn','practice','challenge','test'].every(m=>isHindiModeCompleted(localChapter.topicId,m)||completedMode===m);if(modesDone)markHindiChapterCompleted(localChapter.topicId)};
-    if(topic&&(topic.book==='वर्णिका · पूरक'||topic.book==='व्याकरण एवं रचना'))return <HindiSupportChapterView topic={topic} initialMode={localChapter.mode} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode}/>;
+    if(topic&&(topic.book==='वर्णिका · पूरक'||topic.book==='व्याकरण एवं रचना'))return <HindiSupportChapterView topic={topic} initialMode={localChapter.mode} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode} onNavigate={handleSupportNavigate}/>;
     if(study)return <HindiChapterStudyView id={localChapter.topicId} lesson={study.lesson} practice={study.practice} challenge={study.challenge} test={study.test} initialMode={localChapter.mode} wrapLearnNavigator={!internalNavigatorTopics.has(localChapter.topicId)} learnComponent={Learner||HindiGadhyaLearn} onBack={()=>setLocalChapter(null)} onComplete={completeLocalMode}/>;
     return null;
   }
