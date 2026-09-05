@@ -1,1 +1,0 @@
-Kavya Khand completion milestone.
