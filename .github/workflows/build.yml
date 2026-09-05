@@ -24,5 +24,7 @@ jobs:
         run: npm run qa:hindi:gadhya
       - name: Hindi kavya content QA
         run: npm run qa:hindi:kavya
+      - name: Hindi Varnika content QA
+        run: npm run qa:hindi:varnika
       - name: Build application
         run: npm run build
