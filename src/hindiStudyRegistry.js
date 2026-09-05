@@ -22,14 +22,17 @@ import {hindiPoetry9Lesson,hindiPoetry9PracticeQuestions,hindiPoetry9Challenge,h
 import {hindiPoetry10Lesson,hindiPoetry10PracticeQuestions,hindiPoetry10Challenge,hindiPoetry10TestQuestions} from './hindiPoetry10Engine.js';
 import {hindiPoetry11Lesson,hindiPoetry11PracticeQuestions,hindiPoetry11Challenge,hindiPoetry11TestQuestions} from './hindiPoetry11Engine.js';
 import {hindiPoetry12Lesson,hindiPoetry12PracticeQuestions,hindiPoetry12Challenge,hindiPoetry12TestQuestions} from './hindiPoetry12Engine.js';
+import {hindiChapter1PracticeAdditions,hindiChapter1ChallengeAdditions,hindiChapter1TestAdditions} from './hindiGadhyaQaAdditions.js';
+
+const addG6TestExplanation=(questions)=>questions.map((question,index)=>index===1?{...question,explain:'यह प्रश्न अष्टावक्र के जीवन-संघर्ष और सामाजिक उपेक्षा को समझने के लिए है; उत्तर में उसके आत्मसम्मान और परिस्थितियों का संबंध स्पष्ट करें।'}:question);
 
 export const hindiStudyRegistry={
-  g1:{lesson:hindiChapter1Lesson,practice:hindiChapter1PracticeQuestions,challenge:hindiChapter1Challenge,test:hindiChapter1TestQuestions},
+  g1:{lesson:hindiChapter1Lesson,practice:[...hindiChapter1PracticeQuestions,...hindiChapter1PracticeAdditions],challenge:[...hindiChapter1Challenge,...hindiChapter1ChallengeAdditions],test:[...hindiChapter1TestQuestions,...hindiChapter1TestAdditions]},
   g2:{lesson:hindiChapter2Lesson,practice:hindiChapter2PracticeQuestions,challenge:hindiChapter2Challenge,test:hindiChapter2TestQuestions},
   g3:{lesson:hindiChapter3Lesson,practice:hindiChapter3PracticeQuestions,challenge:hindiChapter3Challenge,test:hindiChapter3TestQuestions},
   g4:{lesson:hindiChapter4Lesson,practice:hindiChapter4PracticeQuestions,challenge:hindiChapter4Challenge,test:hindiChapter4TestQuestions},
   g5:{lesson:hindiChapter5Lesson,practice:hindiChapter5PracticeQuestions,challenge:hindiChapter5Challenge,test:hindiChapter5TestQuestions},
-  g6:{lesson:hindiChapter6Lesson,practice:hindiChapter6PracticeQuestions,challenge:hindiChapter6Challenge,test:hindiChapter6TestQuestions},
+  g6:{lesson:hindiChapter6Lesson,practice:hindiChapter6PracticeQuestions,challenge:hindiChapter6Challenge,test:addG6TestExplanation(hindiChapter6TestQuestions)},
   g7:{lesson:hindiChapter7Lesson,practice:hindiChapter7PracticeQuestions,challenge:hindiChapter7Challenge,test:hindiChapter7TestQuestions},
   g8:{lesson:hindiChapter8Lesson,practice:hindiChapter8PracticeQuestions,challenge:hindiChapter8Challenge,test:hindiChapter8TestQuestions},
   g9:{lesson:hindiChapter9Lesson,practice:hindiChapter9PracticeQuestions,challenge:hindiChapter9Challenge,test:hindiChapter9TestQuestions},
