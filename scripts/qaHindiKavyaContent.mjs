@@ -6,6 +6,23 @@ const root=process.cwd();
 const ids=Array.from({length:12},(_,i)=>i+1);
 const failures=[];
 
+function readQuestion(item){
+  if(Array.isArray(item))return {q:item[0],options:item[1],answer:item[2]};
+  if(item&&typeof item==='object'){
+    const preferredQ=['q','question','questionText','text'];
+    const preferredOptions=['options','choices'];
+    const preferredAnswer=['answer','correctAnswer'];
+    const q=preferredQ.map(key=>item[key]).find(value=>typeof value==='string'&&value.trim())
+      ??Object.values(item).find(value=>typeof value==='string'&&value.trim());
+    const options=preferredOptions.map(key=>item[key]).find(Array.isArray)
+      ??Object.values(item).find(value=>Array.isArray(value));
+    const answer=preferredAnswer.map(key=>item[key]).find(Number.isInteger)
+      ??Object.values(item).find(value=>Number.isInteger(value));
+    return {q,options,answer};
+  }
+  return {q:null,options:null,answer:null};
+}
+
 for(const n of ids){
   const file=path.join(root,'src',`hindiPoetry${n}Engine.js`);
   if(!fs.existsSync(file)){
@@ -41,9 +58,7 @@ for(const n of ids){
       }
       if(bank.length<min)failures.push(`p${n}: ${name} has only ${bank.length} questions (minimum ${min})`);
       bank.forEach((item,index)=>{
-        const q=Array.isArray(item)?item[0]:(item?.q??item?.question??item?.text);
-        const options=Array.isArray(item)?item[1]:(item?.options??item?.choices);
-        const answer=Array.isArray(item)?item[2]:(item?.answer??item?.correctAnswer);
+        const {q,options,answer}=readQuestion(item);
         if(typeof q!=='string'||!q.trim())failures.push(`p${n}: ${name}[${index}] has invalid question text`);
         if(!Array.isArray(options)||options.length<2)failures.push(`p${n}: ${name}[${index}] has invalid options`);
         if(!Number.isInteger(answer)||answer<0||!Array.isArray(options)||answer>=options.length)failures.push(`p${n}: ${name}[${index}] has invalid answer index`);
