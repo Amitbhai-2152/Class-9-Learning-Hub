@@ -43,7 +43,9 @@ if(!grammarView.includes('HindiIdiomsOneWordTopicPage')) throw new Error('gr13 d
 const read=file=>fs.readFileSync(path.join(src,file),'utf8');
 
 // Count entries between a named array declaration and its own closing ];.
-// Supports both nested array/object entries and plain quoted-string entries.
+// Keep this parser deliberately simple: the source arrays are formatted with
+// one top-level entry per line, so line-based counting is more robust than a
+// regex that must survive JS quoting/escaping.
 const arrayBody=(text,name)=>{
  const declaration=new RegExp(`(?:const|let|var)\\s+${name}\\s*=\\s*\\[`);
  const match=declaration.exec(text);
@@ -70,17 +72,14 @@ const arrayBody=(text,name)=>{
  return null;
 };
 
-const countNestedArrayEntries=(text,name)=>{
- const body=arrayBody(text,name);
- if(body===null) return -1;
- return (body.match(/(?:^|\\n)\\s*\\['/g)||[]).length;
+const lines=body=>body===null?null:body.split(/\r?\n/);
+const topLevelLines=(body,predicate)=>{
+ const list=lines(body);
+ if(list===null) return -1;
+ return list.filter(line=>predicate(line.trim())).length;
 };
-
-const countStringEntries=(text,name)=>{
- const body=arrayBody(text,name);
- if(body===null) return -1;
- return (body.match(/(?:^|\\n)\\s*['"]/g)||[]).length;
-};
+const countNestedArrayEntries=(text,name)=>topLevelLines(arrayBody(text,name),line=>line.startsWith('['));
+const countStringEntries=(text,name)=>topLevelLines(arrayBody(text,name),line=>line.startsWith("'")||line.startsWith('"')||line.startsWith('`'));
 
 const wordPage=read('HindiSynonymAntonymTopicPage.jsx');
 const syn=countNestedArrayEntries(wordPage,'SYNONYM_EXAMPLES');
