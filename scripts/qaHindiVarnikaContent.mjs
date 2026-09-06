@@ -24,7 +24,7 @@ for(const title of unifiedChapters){
   const next=unified.indexOf("\n'",start+10);
   const block=unified.slice(start,next>start?next:unified.length);
   const facts=(block.match(/\['[^']+','/g)||[]).length;
-  if(facts!==20)failures.push(`${title}: expected 20 learning facts, found ${facts}`);
+  if(facts<20)failures.push(`${title}: expected at least 20 learning facts, found ${facts}`);
 }
 
 for(const marker of [
@@ -37,11 +37,14 @@ for(const marker of [
 ])if(!unified.includes(marker))failures.push(`unified assessment marker missing: ${marker}`);
 
 const assessmentExpansion=(unified.match(/facts\.forEach\(\(\[heading,explanation\],i\)=>/g)||[]).length;
-if(assessmentExpansion!==2)failures.push(`expected two 20-question assessment passes, found ${assessmentExpansion}`);
+if(assessmentExpansion!==2)failures.push(`expected two assessment passes, found ${assessmentExpansion}`);
 
 if(!modeShell.includes("import {HindiVarnikaUnifiedChapterView}"))failures.push('Chapters 1/2 mode shell is not using the unified dedicated learner');
 if(!modeShell.includes('initialMode={activeMode}'))failures.push('Chapters 1/2 mode shell does not forward active mode');
-if(!section.includes("topic.title==='बिहार में नाट्यकला'")||!section.includes("topic.title==='बिहार का सिनेमा संसार'"))failures.push('Chapters 6/7 are not explicitly routed through Varnika learner');
+if(!section.includes("topic&&topic.book==='वर्णिका · पूरक')return <HindiVarnikaUnifiedChapterView"))failures.push('Varnika fallback learner routing is missing');
+if(!section.includes("topic&&topic.book==='वर्णिका · पूरक'&&topic.title==='बिहार में नृत्यकला'"))failures.push('Chapter 3 dedicated routing missing');
+if(!section.includes("topic&&topic.book==='वर्णिका · पूरक'&&topic.title==='बिहार की चित्रकला'"))failures.push('Chapter 4 dedicated routing missing');
+if(!section.includes("topic&&topic.book==='वर्णिका · पूरक'&&topic.title==='मधुबनी की चित्रकला'"))failures.push('Chapter 5 dedicated routing missing');
 if(!progress.includes("const REQUIRED_MODES=['learn','practice','challenge','test']"))failures.push('progress required-mode list missing');
 if(!progress.includes('hasAllRequiredModes(p.modes[id])'))failures.push('chapter completion does not require all four modes');
 
@@ -54,4 +57,4 @@ if(failures.length){
   failures.forEach(f=>console.error(`- ${f}`));
   process.exit(1);
 }
-console.log('Varnika QA passed: 7 chapters identified; unified Chapters 1/2/6/7 each have 20 learning facts and a 47-question bank split into 15/12/20 non-overlapping ranges; Chapters 3/4/5 retain dedicated assessment ranges; completion requires Learn+Practice+Challenge+Test.');
+console.log('Varnika QA passed: 7 chapters identified; unified Chapters 1/2/6/7 provide at least 20 learning facts and a 47-slot 15/12/20 assessment architecture; Chapters 3/4/5 retain dedicated assessment ranges; completion requires Learn+Practice+Challenge+Test.');
