@@ -42,9 +42,8 @@ if(!grammarView.includes('HindiIdiomsOneWordTopicPage')) throw new Error('gr13 d
 
 const read=file=>fs.readFileSync(path.join(src,file),'utf8');
 
-// Count top-level array entries without parsing the surrounding JSX/JS as a module.
-// This deliberately avoids fragile string-literal parsing and uses character codes
-// for quote detection so apostrophes cannot create syntax errors in this QA script.
+// Count top-level array entries while respecting quoted strings and nested JS values.
+// The arrays in the dedicated pages contain both nested arrays/objects and plain strings.
 const countArrayEntries=(text,name)=>{
  const declaration=new RegExp(`(?:const|let|var)\\s+${name}\\s*=\\s*\\[`);
  const match=declaration.exec(text);
@@ -53,36 +52,44 @@ const countArrayEntries=(text,name)=>{
  let depth=0;
  let quote=null;
  let escaped=false;
- let count=0;
- let sawEntry=false;
+ let commas=0;
+ let hasContent=false;
  for(let i=start;i<text.length;i++){
   const ch=text[i];
   if(quote!==null){
-   if(escaped){ escaped=false; continue; }
-   if(ch.charCodeAt(0)===92){ escaped=true; continue; }
+   if(escaped){escaped=false;continue;}
+   if(ch.charCodeAt(0)===92){escaped=true;continue;}
    if(ch===quote) quote=null;
    continue;
   }
   if(ch.charCodeAt(0)===39 || ch==='"' || ch==='`'){
    quote=ch;
+   hasContent=true;
    continue;
   }
   if(ch==='[' || ch==='{' || ch==='('){
-   if(depth===1 && (ch==='[' || ch==='{')) sawEntry=true;
    depth++;
+   hasContent=true;
    continue;
   }
   if(ch===']' || ch==='}' || ch===')'){
-   depth--;
    if(ch===']' && depth===0) break;
+   depth--;
    continue;
   }
-  if(ch===',' && depth===1){
-   if(sawEntry){ count++; sawEntry=false; }
-  }
+  if(depth===1 && ch===',') commas++;
+  if(depth===1 && !/\\s/.test(ch)) hasContent=true;
  }
- if(sawEntry) count++;
- return count;
+ if(!hasContent) return 0;
+ // A trailing comma does not add an entry.
+ const endStart=start+1;
+ let close=text.length;
+ for(let i=endStart;i<text.length;i++){
+  if(text[i]===']'){close=i;break;}
+ }
+ const body=text.slice(endStart,close).trim();
+ if(!body) return 0;
+ return commas + (body.endsWith(',') ? 0 : 1);
 };
 
 const wordPage=read('HindiSynonymAntonymTopicPage.jsx');
