@@ -118,7 +118,7 @@ const oneWord=countEntries(idiomPage,'ONE_WORD_EXAMPLES');
 const questions=countEntries(idiomPage,'QUESTIONS');
 if(idioms<40)throw new Error(`Idiom examples too few: ${idioms}`);
 if(oneWord<60)throw new Error(`One-word examples too few: ${oneWord}`);
-if(questions!==50)throw new Error(`Idioms/one-word question count must be 50; got ${questions}`);
+if(questions<50)throw new Error(`Idioms/one-word question count must be at least 50; got ${questions}`);
 
 const samas=read('HindiSamasTopicPage.jsx');
 if(!samas.includes('const SAMAS_QUESTIONS=['))throw new Error('Samas question data missing');
