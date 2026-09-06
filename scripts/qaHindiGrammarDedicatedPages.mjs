@@ -41,6 +41,10 @@ if(!grammarView.includes('HindiGrammarTopicPage')) throw new Error('Shared gramm
 if(!grammarView.includes('HindiIdiomsOneWordTopicPage')) throw new Error('gr13 dedicated page import/route missing');
 
 const read=file=>fs.readFileSync(path.join(src,file),'utf8');
+
+// Count top-level array entries without parsing the surrounding JSX/JS as a module.
+// This deliberately avoids fragile string-literal parsing and uses character codes
+// for quote detection so apostrophes cannot create syntax errors in this QA script.
 const countArrayEntries=(text,name)=>{
  const declaration=new RegExp(`(?:const|let|var)\\s+${name}\\s*=\\s*\\[`);
  const match=declaration.exec(text);
@@ -53,25 +57,28 @@ const countArrayEntries=(text,name)=>{
  let sawEntry=false;
  for(let i=start;i<text.length;i++){
   const ch=text[i];
-  if(quote){
-   if(escaped){escaped=false;continue;}
-   if(ch==='\\\\'){escaped=true;continue;}
+  if(quote!==null){
+   if(escaped){ escaped=false; continue; }
+   if(ch.charCodeAt(0)===92){ escaped=true; continue; }
    if(ch===quote) quote=null;
    continue;
   }
-  if(ch==='\\''||ch==='"'||ch==='`'){quote=ch;continue;}
-  if(ch==='['||ch==='{'||ch==='('){
-   if(depth===1 && (ch==='['||ch==='{')) sawEntry=true;
+  if(ch.charCodeAt(0)===39 || ch==='"' || ch==='`'){
+   quote=ch;
+   continue;
+  }
+  if(ch==='[' || ch==='{' || ch==='('){
+   if(depth===1 && (ch==='[' || ch==='{')) sawEntry=true;
    depth++;
    continue;
   }
-  if(ch===']'||ch==='}'||ch===')'){
+  if(ch===']' || ch==='}' || ch===')'){
    depth--;
-   if(ch===']'&&depth===0) break;
+   if(ch===']' && depth===0) break;
    continue;
   }
-  if(ch===','&&depth===1){
-   if(sawEntry){count++;sawEntry=false;}
+  if(ch===',' && depth===1){
+   if(sawEntry){ count++; sawEntry=false; }
   }
  }
  if(sawEntry) count++;
