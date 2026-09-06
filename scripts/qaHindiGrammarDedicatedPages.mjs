@@ -26,14 +26,15 @@ for(const file of mustExist){
 const grammarView=fs.readFileSync(path.join(src,'HindiGrammarChapterView.jsx'),'utf8');
 const chapterData=fs.readFileSync(path.join(src,'hindiChapterData.js'),'utf8');
 
-// gr1–gr4 intentionally use the shared HindiGrammarTopicPage; gr5–gr13
-// have explicit dedicated-page branches. Validate each topic against the
-// architecture actually used by the application rather than requiring the
-// raw id string to appear in the view for generic routes.
+// hindiChapterData stores source ids as gr1–gr13 and prefixes them to
+// grammar-gr1–grammar-gr13 in hindiAllTopics. The view only needs literal
+// route branches for the dedicated pages (gr5–gr13); gr1–gr4 use the shared
+// HindiGrammarTopicPage fallback.
 for(let i=1;i<=13;i++){
- const id=`grammar-gr${i}`;
- if(!chapterData.includes(id)) throw new Error(`Missing grammar topic registry entry: ${id}`);
- if(i>=5 && !grammarView.includes(id)) throw new Error(`Missing dedicated grammar route: ${id}`);
+ const sourceId=`id:'gr${i}'`;
+ const publicId=`grammar-gr${i}`;
+ if(!chapterData.includes(sourceId)) throw new Error(`Missing grammar source topic: ${publicId}`);
+ if(i>=5 && !grammarView.includes(publicId)) throw new Error(`Missing dedicated grammar route: ${publicId}`);
 }
 if(!grammarView.includes('HindiGrammarTopicPage')) throw new Error('Shared grammar topic page route missing');
 if(!grammarView.includes('HindiIdiomsOneWordTopicPage')) throw new Error('gr13 dedicated page import/route missing');
@@ -77,4 +78,4 @@ if(!css.includes('.hindi-question-list{display:grid;gap:15px}')) throw new Error
 if(!css.includes('@media(max-width:560px)')) throw new Error('Mobile grammar styling missing');
 
 const routes=mustExist.filter(f=>f.endsWith('TopicPage.jsx')).length;
-console.log(`Hindi grammar dedicated QA passed: ${routes} page files, generic routes 1–4, dedicated routes 5–13, synonyms ${syn}, antonyms ${ant}, shrutisam ${shr}, idioms ${idioms}, one-word ${oneWord}, questions gr12 ${mixed}, questions gr13 ${questions}.`);
+console.log(`Hindi grammar dedicated QA passed: ${routes} page files, generic fallback routes 1–4, dedicated routes 5–13, synonyms ${syn}, antonyms ${ant}, shrutisam ${shr}, idioms ${idioms}, one-word ${oneWord}, questions gr12 ${mixed}, questions gr13 ${questions}.`);
