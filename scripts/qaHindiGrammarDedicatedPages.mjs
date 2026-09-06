@@ -25,6 +25,7 @@ for(const file of mustExist){
 
 const grammarView=fs.readFileSync(path.join(src,'HindiGrammarChapterView.jsx'),'utf8');
 const chapterData=fs.readFileSync(path.join(src,'hindiChapterData.js'),'utf8');
+const subjectSection=fs.readFileSync(path.join(src,'HindiSubjectSection.jsx'),'utf8');
 
 // hindiChapterData stores source ids as gr1–gr13 and prefixes them to
 // grammar-gr1–grammar-gr13 in hindiAllTopics. The view only needs literal
@@ -46,7 +47,6 @@ const countArrayEntries=(text,name)=>{
  const end=text.indexOf('];',start);
  if(end<0) return -1;
  const body=text.slice(start,end);
- // Entries are written as top-level array literals beginning with ['...'].
  return (body.match(/\[['"]/g)||[]).length;
 };
 
@@ -73,6 +73,11 @@ if(!samas.includes('const SAMAS_QUESTIONS=[')) throw new Error('Samas question d
 if(!samas.includes('60 प्रश्न')) throw new Error('Samas page no longer advertises 60 questions');
 const sandhi=read('HindiSandhiTopicPage.jsx');
 if(!sandhi.includes('const SANDHI_FORMAT=[')) throw new Error('Sandhi study structure missing');
+
+// Back navigation must return to the correct support section.
+if(!subjectSection.includes("book==='वर्णिका · पूरक'?'hindi-varnika-section':book==='व्याकरण एवं रचना'?'hindi-grammar-section'")) throw new Error('Support section anchors missing or incorrect');
+if(!subjectSection.includes("const returnToVarnikaList=()=>scrollToList('hindi-varnika-section');const returnToGrammarList=()=>scrollToList('hindi-grammar-section')")) throw new Error('Support back-navigation handlers missing');
+if(!subjectSection.includes("topic.book==='व्याकरण एवं रचना')return <HindiSupportChapterView topic={topic} initialMode={localChapter.mode} onBack={returnToGrammarList}")) throw new Error('Grammar topic still points back to Varnika section');
 
 const css=read('hindi-grammar-topic.css');
 if(!css.includes('.hindi-question-list{display:grid;gap:15px}')) throw new Error('Dedicated question spacing rule missing');
