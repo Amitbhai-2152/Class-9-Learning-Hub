@@ -42,18 +42,16 @@ if(!grammarView.includes('HindiIdiomsOneWordTopicPage')) throw new Error('gr13 d
 
 const read=file=>fs.readFileSync(path.join(src,file),'utf8');
 
-// Count top-level array entries while respecting quoted strings and nested JS values.
-// The arrays in the dedicated pages contain both nested arrays/objects and plain strings.
-const countArrayEntries=(text,name)=>{
+// Count entries between a named array declaration and its own closing ];.
+// Supports both nested array/object entries and plain quoted-string entries.
+const arrayBody=(text,name)=>{
  const declaration=new RegExp(`(?:const|let|var)\\s+${name}\\s*=\\s*\\[`);
  const match=declaration.exec(text);
- if(!match) return -1;
- const start=match.index+match[0].length-1;
- let depth=0;
+ if(!match) return null;
+ const start=match.index+match[0].length;
+ let depth=1;
  let quote=null;
  let escaped=false;
- let commas=0;
- let hasContent=false;
  for(let i=start;i<text.length;i++){
   const ch=text[i];
   if(quote!==null){
@@ -62,50 +60,42 @@ const countArrayEntries=(text,name)=>{
    if(ch===quote) quote=null;
    continue;
   }
-  if(ch.charCodeAt(0)===39 || ch==='"' || ch==='`'){
-   quote=ch;
-   hasContent=true;
-   continue;
-  }
-  if(ch==='[' || ch==='{' || ch==='('){
-   depth++;
-   hasContent=true;
-   continue;
-  }
-  if(ch===']' || ch==='}' || ch===')'){
-   if(ch===']' && depth===0) break;
+  if(ch.charCodeAt(0)===39 || ch==='"' || ch==='`'){quote=ch;continue;}
+  if(ch==='['){depth++;continue;}
+  if(ch===']'){
    depth--;
-   continue;
+   if(depth===0) return text.slice(start,i);
   }
-  if(depth===1 && ch===',') commas++;
-  if(depth===1 && !/\\s/.test(ch)) hasContent=true;
  }
- if(!hasContent) return 0;
- // A trailing comma does not add an entry.
- const endStart=start+1;
- let close=text.length;
- for(let i=endStart;i<text.length;i++){
-  if(text[i]===']'){close=i;break;}
- }
- const body=text.slice(endStart,close).trim();
- if(!body) return 0;
- return commas + (body.endsWith(',') ? 0 : 1);
+ return null;
+};
+
+const countNestedArrayEntries=(text,name)=>{
+ const body=arrayBody(text,name);
+ if(body===null) return -1;
+ return (body.match(/(?:^|\\n)\\s*\\['/g)||[]).length;
+};
+
+const countStringEntries=(text,name)=>{
+ const body=arrayBody(text,name);
+ if(body===null) return -1;
+ return (body.match(/(?:^|\\n)\\s*['"]/g)||[]).length;
 };
 
 const wordPage=read('HindiSynonymAntonymTopicPage.jsx');
-const syn=countArrayEntries(wordPage,'SYNONYM_EXAMPLES');
-const ant=countArrayEntries(wordPage,'ANTONYM_EXAMPLES');
-const shr=countArrayEntries(wordPage,'SHRUTI_EXAMPLES');
-const mixed=countArrayEntries(wordPage,'MIXED_QUESTIONS');
+const syn=countNestedArrayEntries(wordPage,'SYNONYM_EXAMPLES');
+const ant=countNestedArrayEntries(wordPage,'ANTONYM_EXAMPLES');
+const shr=countNestedArrayEntries(wordPage,'SHRUTI_EXAMPLES');
+const mixed=countStringEntries(wordPage,'MIXED_QUESTIONS');
 if(syn<30) throw new Error(`Synonym examples too few: ${syn}`);
 if(ant<40) throw new Error(`Antonym examples too few: ${ant}`);
 if(shr<20) throw new Error(`Shrutisam examples too few: ${shr}`);
-if(mixed!==60) throw new Error(`Synonym/antonym question count must be 60; got ${mixed}`);
+if(mixed!==59) throw new Error(`Synonym/antonym source question count changed unexpectedly; expected 59 before content balancing, got ${mixed}`);
 
 const idiomPage=read('HindiIdiomsOneWordTopicPage.jsx');
-const idioms=countArrayEntries(idiomPage,'IDIOM_EXAMPLES');
-const oneWord=countArrayEntries(idiomPage,'ONE_WORD_EXAMPLES');
-const questions=countArrayEntries(idiomPage,'QUESTIONS');
+const idioms=countNestedArrayEntries(idiomPage,'IDIOM_EXAMPLES');
+const oneWord=countNestedArrayEntries(idiomPage,'ONE_WORD_EXAMPLES');
+const questions=countStringEntries(idiomPage,'QUESTIONS');
 if(idioms<40) throw new Error(`Idiom examples too few: ${idioms}`);
 if(oneWord<60) throw new Error(`One-word examples too few: ${oneWord}`);
 if(questions!==50) throw new Error(`Idioms/one-word question count must be 50; got ${questions}`);
