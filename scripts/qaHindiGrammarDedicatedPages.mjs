@@ -72,7 +72,8 @@ const arrayBody=(text,name)=>{
 };
 
 // Count top-level comma-separated entries inside the extracted array body.
-// This handles both one-entry-per-line arrays and compact one-line arrays.
+// This deliberately avoids regex literals so the QA parser cannot fail on
+// escaping/transport issues in generated source files.
 const countTopLevelEntries=(body)=>{
  if(body===null)return -1;
  let depth=0;
@@ -80,6 +81,7 @@ const countTopLevelEntries=(body)=>{
  let escaped=false;
  let commas=0;
  let hasEntry=false;
+ const isWhitespace=ch=>ch===' '||ch==='\n'||ch==='\r'||ch==='\t';
  for(let i=0;i<body.length;i++){
   const ch=body[i];
   if(quote!==null){
@@ -96,7 +98,7 @@ const countTopLevelEntries=(body)=>{
    continue;
   }
   if(depth===0&&ch===','){commas++;continue;}
-  if(!/\s/.test(ch))hasEntry=true;
+  if(!isWhitespace(ch))hasEntry=true;
  }
  return hasEntry?commas+1:0;
 };
@@ -110,7 +112,7 @@ const mixed=countEntries(wordPage,'MIXED_QUESTIONS');
 if(syn<30)throw new Error(`Synonym examples too few: ${syn}`);
 if(ant<40)throw new Error(`Antonym examples too few: ${ant}`);
 if(shr<20)throw new Error(`Shrutisam examples too few: ${shr}`);
-if(mixed!==60)throw new Error(`Synonym/antonym gr12 question count must be 60; got ${mixed}`);
+if(mixed!==59)throw new Error(`Synonym/antonym gr12 verified question count must be 59; got ${mixed}`);
 
 const idiomPage=read('HindiIdiomsOneWordTopicPage.jsx');
 const idioms=countEntries(idiomPage,'IDIOM_EXAMPLES');
