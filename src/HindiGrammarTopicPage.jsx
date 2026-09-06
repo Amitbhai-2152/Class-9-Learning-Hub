@@ -36,10 +36,9 @@ const ESSAY_QUESTIONS=[
 ];
 
 function EssaySection(){
- const [drafts,setDrafts]=useState({});
  return <>
   <section className="hgt-panel"><div className="hgt-section-label">MODEL ESSAYS</div><h2>2 उदाहरण — अच्छे निबंध की बनावट समझें</h2><p className="hgt-muted">उदाहरण याद करने के लिए नहीं, बल्कि भूमिका, विचार-विस्तार, उदाहरण और उपसंहार की संरचना समझने के लिए हैं।</p><div className="hgt-example-grid">{ESSAY_EXAMPLES.map(example=><article key={example.title}><span>{example.title}</span><p><b>रूपरेखा:</b> {example.outline}</p><p>{example.essay}</p></article>)}</div></section>
-  <section className="hgt-panel"><div className="hgt-section-label">SUBJECTIVE PRACTICE</div><h2>10 निबंध-लेखन अभ्यास प्रश्न</h2><p className="hgt-muted">हर प्रश्न में अपना उत्तर स्वयं लिखें। पहले 2–3 मिनट में रूपरेखा बनाइए, फिर अनुच्छेदों को क्रम से विकसित करें।</p><div className="hgt-essay-question-list">{ESSAY_QUESTIONS.map((q,i)=><article className="hgt-essay-question" key={q}><div className="hgt-question-head"><span>प्रश्न {i+1}</span><b>{q}</b></div><textarea value={drafts[i]||''} onChange={e=>setDrafts(s=>({...s,[i]:e.target.value}))} placeholder="यहाँ अपना निबंध लिखें…" rows={8} /><div className="hgt-question-foot">शब्द-संख्या, वर्तनी, अनुच्छेद-विन्यास और उपसंहार की जाँच करें।</div></article>)}</div></section>
+  <section className="hgt-panel"><div className="hgt-section-label">SUBJECTIVE PRACTICE</div><h2>10 निबंध-लेखन अभ्यास प्रश्न</h2><p className="hgt-muted">हर प्रश्न को कॉपी/उत्तर-पुस्तिका में स्वयं लिखकर अभ्यास करें। पहले 2–3 मिनट में रूपरेखा बनाइए, फिर अनुच्छेदों को क्रम से विकसित करें।</p><div className="hgt-essay-question-list">{ESSAY_QUESTIONS.map((q,i)=><article className="hgt-essay-question" key={q}><div className="hgt-question-head"><span>प्रश्न {i+1}</span><b>{q}</b></div><div className="hgt-question-foot">अभ्यास करते समय भूमिका, विचार-विस्तार, उदाहरण, भाषा और उपसंहार की जाँच करें।</div></article>)}</div></section>
  </>;
 }
 
