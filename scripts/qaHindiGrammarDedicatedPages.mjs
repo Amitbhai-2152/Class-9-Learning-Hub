@@ -46,7 +46,8 @@ const countArrayEntries=(text,name)=>{
  const end=text.indexOf('];',start);
  if(end<0) return -1;
  const body=text.slice(start,end);
- return (body.match(/^\s*\[/gm)||[]).length;
+ // Entries are written as top-level array literals beginning with ['...'].
+ return (body.match(/\[['"]/g)||[]).length;
 };
 
 const wordPage=read('HindiSynonymAntonymTopicPage.jsx');
