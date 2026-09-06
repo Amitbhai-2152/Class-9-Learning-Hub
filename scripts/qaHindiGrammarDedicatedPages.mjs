@@ -90,7 +90,7 @@ const mixed=countStringEntries(wordPage,'MIXED_QUESTIONS');
 if(syn<30) throw new Error(`Synonym examples too few: ${syn}`);
 if(ant<40) throw new Error(`Antonym examples too few: ${ant}`);
 if(shr<20) throw new Error(`Shrutisam examples too few: ${shr}`);
-if(mixed!==59) throw new Error(`Synonym/antonym source question count changed unexpectedly; expected 59 before content balancing, got ${mixed}`);
+if(mixed!==59) throw new Error(`Synonym/antonym gr12 question count changed unexpectedly; expected 59, got ${mixed}`);
 
 const idiomPage=read('HindiIdiomsOneWordTopicPage.jsx');
 const idioms=countNestedArrayEntries(idiomPage,'IDIOM_EXAMPLES');
