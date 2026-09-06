@@ -17,7 +17,13 @@ if(!section.includes('onNavigate={handleSupportNavigate}'))failures.push('previo
 if(!section.includes('onBack={returnToVarnikaList}'))failures.push('Varnika exit does not return to the Varnika list');
 if(!section.includes("topic.title==='बिहार में नृत्यकला'"))failures.push('chapter 3 route missing');
 if(!section.includes("topic.title==='बिहार की चित्रकला'"))failures.push('chapter 4 route missing');
-for(const marker of ["practice:{label:'अभ्यास',count:15}","challenge:{label:'चुनौती',count:12}","test:{label:'अंतिम टेस्ट',count:20}"])if(!chapter3.includes(marker)||!chapter4.includes(marker))failures.push(`dedicated Varnika mode counts missing: ${marker}`);
+for(const marker of ["practice:{label:'अभ्यास',count:15}","challenge:{label:'चुनौती',count:12}","test:{label:'अंतिम टेस्ट',count:20}"])if(!chapter3.includes(marker))failures.push(`Chapter 3 mode count marker missing: ${marker}`);
+for(const marker of ["practice:{label:'अभ्यास',count:15,start:0,end:15}","challenge:{label:'चुनौती',count:12,start:15,end:27}","test:{label:'अंतिम टेस्ट',count:20,start:27,end:47}"])if(!chapter4.includes(marker))failures.push(`Chapter 4 dedicated mode range missing: ${marker}`);
+const chapter4QuestionCount=(chapter4.match(/\{q:'[^']+',options:/g)||[]).length;
+const chapter4PointCount=(chapter4.match(/\['[^']+','[^']*'\]/g)||[]).length;
+if(chapter4QuestionCount<47)failures.push(`Chapter 4 needs 47 assessment questions; found ${chapter4QuestionCount}`);
+if(chapter4PointCount<30)failures.push(`Chapter 4 needs at least 30 learning points; found ${chapter4PointCount}`);
+if(!chapter4.includes('QUESTIONS.slice(cfg.start,Math.min(cfg.end,QUESTIONS.length))'))failures.push('Chapter 4 assessment bank is not sliced by dedicated ranges');
 for(const marker of ['जट-जटिन','झिझिया','करिया-झूमर','डोमकच','पँवरिया','गुँडिया','हरि उप्पल','नगेन्द्र मोहिनी','भिखारी ठाकुर','ज्योतिरीश्वर ठाकुर'])if(!chapter3.includes(marker))failures.push(`chapter 3 content marker missing: ${marker}`);
 for(const marker of ['पटना कलम','राधामोहन बाबू','उपेन्द्र महारथी','श्याम शर्मा','वेणुशिल्प','डब्ल्यू. जी. आर्चर','ईश्वरी प्रसाद वर्मा'])if(!chapter4.includes(marker))failures.push(`chapter 4 content marker missing: ${marker}`);
 for(const title of redesigned){if(!unified.includes(`'${title}':{`))failures.push(`redesigned chapter missing from unified learner: ${title}`)}
@@ -28,4 +34,4 @@ if(!unified.includes('for(let i=0;i<10;i++)'))failures.push('10 additional asses
 if(!unified.includes('return [...direct,...pair]'))failures.push('30-question bank assembly missing');
 if(legacy.includes('const correct=item[1]'))failures.push('old generic item[1] generator still present');
 if(failures.length){console.error('Varnika QA failed:');for(const failure of failures)console.error(`- ${failure}`);process.exit(1)}
-console.log('Varnika QA passed: all 7 chapters are routed inside Varnika, redesigned chapters have 20 learning points, 30-question banks are assembled, mode sizes remain 15/12/20, and exits stay on the Varnika list.');
+console.log(`Varnika QA passed: all 7 chapters are routed inside Varnika; Chapter 4 has ${chapter4PointCount} learning points and ${chapter4QuestionCount} dedicated assessment questions; mode ranges remain 15/12/20; timing/progress/navigation checks pass.`);
