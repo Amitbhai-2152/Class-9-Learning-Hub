@@ -2,7 +2,7 @@ import fs from 'node:fs';
 
 const source=fs.readFileSync(new URL('../src/hindiGrammarContent.js',import.meta.url),'utf8');
 const normalized=source.replace(/^export\s+/gm,'');
-const moduleUrl=`data:text/javascript;charset=utf-8,${encodeURIComponent(normalized)}`;
+const moduleUrl=`data:text/javascript;charset=utf-8,${encodeURIComponent(`${normalized}\nexport {HINDI_GRAMMAR_CONTENT,HINDI_GRAMMAR_MODES};`)}`;
 const loaded=await import(moduleUrl);
 const {HINDI_GRAMMAR_CONTENT:content,HINDI_GRAMMAR_MODES:modes}=loaded;
 
