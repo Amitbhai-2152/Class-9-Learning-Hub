@@ -1,0 +1,71 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root=process.cwd();
+const src=path.join(root,'src');
+
+const mustExist=[
+ 'HindiGrammarTopicPage.jsx',
+ 'HindiParagraphTopicPage.jsx',
+ 'HindiGenderTopicPage.jsx',
+ 'HindiNumberTopicPage.jsx',
+ 'HindiTenseTopicPage.jsx',
+ 'HindiVoiceTopicPage.jsx',
+ 'HindiSandhiTopicPage.jsx',
+ 'HindiSamasTopicPage.jsx',
+ 'HindiSynonymAntonymTopicPage.jsx',
+ 'HindiIdiomsOneWordTopicPage.jsx',
+ 'hindi-grammar-topic.css',
+];
+
+for(const file of mustExist){
+ const p=path.join(src,file);
+ if(!fs.existsSync(p)) throw new Error(`Missing required grammar file: ${file}`);
+}
+
+const grammarView=fs.readFileSync(path.join(src,'HindiGrammarChapterView.jsx'),'utf8');
+for(let i=1;i<=13;i++){
+ const id=`grammar-gr${i}`;
+ if(!grammarView.includes(id)) throw new Error(`Missing grammar route: ${id}`);
+}
+
+const read=file=>fs.readFileSync(path.join(src,file),'utf8');
+const countArrayEntries=(text,name)=>{
+ const start=text.indexOf(`const ${name}=[`);
+ if(start<0) return -1;
+ const end=text.indexOf('];',start);
+ if(end<0) return -1;
+ const body=text.slice(start,end);
+ return (body.match(/^\s*\[/gm)||[]).length;
+};
+
+const wordPage=read('HindiSynonymAntonymTopicPage.jsx');
+const syn=countArrayEntries(wordPage,'SYNONYM_EXAMPLES');
+const ant=countArrayEntries(wordPage,'ANTONYM_EXAMPLES');
+const shr=countArrayEntries(wordPage,'SHRUTI_EXAMPLES');
+const mixed=countArrayEntries(wordPage,'MIXED_QUESTIONS');
+if(syn<30) throw new Error(`Synonym examples too few: ${syn}`);
+if(ant<40) throw new Error(`Antonym examples too few: ${ant}`);
+if(shr<20) throw new Error(`Shrutisam examples too few: ${shr}`);
+if(mixed!==60) throw new Error(`Synonym/antonym question count must be 60; got ${mixed}`);
+
+const idiomPage=read('HindiIdiomsOneWordTopicPage.jsx');
+const idioms=countArrayEntries(idiomPage,'IDIOM_EXAMPLES');
+const oneWord=countArrayEntries(idiomPage,'ONE_WORD_EXAMPLES');
+const questions=countArrayEntries(idiomPage,'QUESTIONS');
+if(idioms<40) throw new Error(`Idiom examples too few: ${idioms}`);
+if(oneWord<60) throw new Error(`One-word examples too few: ${oneWord}`);
+if(questions!==50) throw new Error(`Idioms/one-word question count must be 50; got ${questions}`);
+
+const samas=read('HindiSamasTopicPage.jsx');
+if(!samas.includes('const SAMAS_QUESTIONS=[')) throw new Error('Samas question data missing');
+if(!samas.includes('60 प्रश्न')) throw new Error('Samas page no longer advertises 60 questions');
+const sandhi=read('HindiSandhiTopicPage.jsx');
+if(!sandhi.includes('const SANDHI_FORMAT=[')) throw new Error('Sandhi study structure missing');
+
+const css=read('hindi-grammar-topic.css');
+if(!css.includes('.hindi-question-list{display:grid;gap:15px}')) throw new Error('Dedicated question spacing rule missing');
+if(!css.includes('@media(max-width:560px)')) throw new Error('Mobile grammar styling missing');
+
+const routes=mustExist.filter(f=>f.endsWith('TopicPage.jsx')).length;
+console.log(`Hindi grammar dedicated QA passed: ${routes} page files, routes 1–13, synonyms ${syn}, antonyms ${ant}, shrutisam ${shr}, idioms ${idioms}, one-word ${oneWord}, questions gr12 ${mixed}, questions gr13 ${questions}.`);
