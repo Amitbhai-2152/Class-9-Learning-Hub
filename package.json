@@ -11,6 +11,7 @@
     "qa:hindi:kavya": "node scripts/qaHindiKavyaContent.mjs",
     "qa:hindi:varnika": "node scripts/qaHindiVarnikaContent.mjs",
     "qa:hindi:grammar": "node scripts/qaHindiGrammarContent.mjs",
+    "qa:hindi:unseen": "node scripts/qaHindiUnseenPassages.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
