@@ -41,6 +41,9 @@ jobs:
       - name: Hindi Varnika content QA
         run: npm run qa:hindi:varnika
 
+      - name: Hindi grammar content QA
+        run: npm run qa:hindi:grammar
+
       - name: Build application
         run: npm run build
 
