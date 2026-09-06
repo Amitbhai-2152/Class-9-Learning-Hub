@@ -29,7 +29,7 @@ assert(has(unified,'भोजपुरी','छठगीत','श्रम ग�
 assert(has(unified,'संगीत मार्तण्ड','वीणा','वाणभट्ट','चाणक्य','बिस्मिल्ला खाँ'),'Chapter 2 core historical/person facts missing');
 assert(has(unified,'केशवराम भट्ट','बिहार बंधु','1876 ई.','पटना नाटक मंडली','भिखारी ठाकुर','बिदेसिया'),'Chapter 6 theatre-history facts missing');
 assert(has(unified,'छउमेला','पुनर्जन्म','आलम आरा','रतन टॉकीज','गंगा मईया तोहे पियरी चढ़इबो','शत्रुघ्न सिन्हा'),'Chapter 7 cinema-history facts missing');
-assert(has(chapter3,'जट-जटिन','झिझिया','करिया-झूमर','हरि उप्पल','नगेन्द्र मोहिनी','गुड़िया नृत्य','भिखारी ठाकुर'),'Chapter 3 key textbook topics are missing');
+assert(has(chapter3,'जट-जटिन','झिझिया','करिया-झूमर','हरि उप्पल','नगेन्द्र मोहिनी','गुँडिया','भिखारी ठाकुर'),'Chapter 3 key textbook topics are missing');
 assert(has(chapter4,'पटना कलम','उपेन्द्र महारथी','वेणुशिल्प','श्याम शर्मा','डब्ल्यू. जी. आर्चर'),'Chapter 4 canonical facts are missing');
 assert(!chapter4.includes('1760 ई. से 1947 ई.'),'Chapter 4 contains the outdated 1947 Patna Kalam end date');
 assert(chapter4.includes('1760 ई. से 1986 ई.'),'Chapter 4 must state the reviewed Patna Kalam date 1760–1986');
@@ -37,9 +37,11 @@ assert(has(chapter5,'मधुबनी चित्रकला','भूमि 
 
 const rangePattern=/practice:\{label:'अभ्यास',count:15,start:0,end:15\}[\s\S]*challenge:\{label:'चुनौती',count:12,start:15,end:27\}[\s\S]*test:\{label:'अंतिम टेस्ट',count:20,start:27,end:47\}/;
 assert(rangePattern.test(unified),'Unified learner must expose non-overlapping 15/12/20 ranges');
-assert(/questions\.slice\(cfg\.start\s*,\s*cfg\.end\)/.test(unified),'Unified learner must use the configured non-overlapping slices');
-assert(unified.includes('facts.forEach(([heading,explanation],i)=>'),'Unified learner must derive assessment questions from reviewed facts');
-assert(unified.includes('for(let i=0;i<7;i++)'),'Unified learner must include the additional pair-question layer');
+assert(/questions\.slice\(\s*MODES\[mode\]\.start\s*,\s*MODES\[mode\]\.end\s*\)/.test(unified),'Unified learner must use the configured non-overlapping slices');
+assert(/facts\.forEach\(\(\[h,e\],i\)=>/.test(unified),'Unified learner must derive direct assessment questions from reviewed facts');
+assert(/facts\.slice\(0,20\)\.forEach\(\(\[h,e\],i\)=>/.test(unified),'Unified learner must derive identification assessment questions from reviewed facts');
+assert(/for\(let i=0;i<7;i\+\+\)/.test(unified),'Unified learner must include the additional pair-question layer');
+assert(/return questions\}/.test(unified),'Unified learner must return the generated question bank');
 assert(/QUESTIONS\.slice\(cfg\.start\s*,\s*Math\.min\(cfg\.end,QUESTIONS\.length\)\)/.test(chapter5),'Chapter 5 must use bounded mode slicing');
 
 const duplicateHeadings=(source,title)=>{const re=new RegExp(`'${titleEsc(title)}':\\{`);const m=re.exec(source);if(!m)return [];const rest=source.slice(m.index+m[0].length);const next=rest.search(/\n'/);const block=rest.slice(0,next>=0?next:rest.length);const hs=[...block.matchAll(/\['([^']+)','/g)].map(x=>x[1]);return hs.filter((h,i)=>hs.indexOf(h)!==i)};
