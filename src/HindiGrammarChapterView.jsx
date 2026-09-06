@@ -5,6 +5,7 @@ import {HINDI_GRAMMAR_CONTENT,HINDI_GRAMMAR_MODES} from './hindiGrammarContent';
 import {HINDI_GRAMMAR_ENRICHMENT} from './hindiGrammarEnrichment';
 import {HINDI_GRAMMAR_LESSON_POINTS} from './hindiGrammarLessonPoints';
 import {HindiGrammarTopicPage} from './HindiGrammarTopicPage';
+import {HindiParagraphTopicPage} from './HindiParagraphTopicPage';
 
 const MODES=['practice','challenge','test'];
 const grammarTopics=hindiAllTopics.filter(x=>x.book==='व्याकरण एवं रचना');
@@ -44,7 +45,7 @@ export function HindiGrammarChapterView({topic,initialMode='learn',onBack,onComp
   const nextTopic=topicIndex>=0&&topicIndex<grammarTopics.length-1?grammarTopics[topicIndex+1]:null;
 
   if(!topic||!data)return null;
-  if(showTopicPage)return <HindiGrammarTopicPage topic={topic} onBack={()=>setShowTopicPage(false)}/>;
+  if(showTopicPage)return topic?.id==='grammar-gr5'?<HindiParagraphTopicPage onBack={()=>setShowTopicPage(false)}/>:<HindiGrammarTopicPage topic={topic} onBack={()=>setShowTopicPage(false)}/>;
   if(mode==='learn')return <div className="hindi-learn hindi-chapter1-learn hindi-varnika-learn"><div className="hindi-learn-banner"><span>हिन्दी • व्याकरण एवं रचना • विषय {Math.max(topicIndex+1,1)}</span><h2>{data.title}</h2><p>{data.summary}</p></div><section className="hindi-ch1-panel"><div className="hindi-ch1-panel-head"><h3>📖 विषय को समझें</h3><span>{lessonPoints.length} मुख्य बिंदु</span></div><div className="hindi-learn-grid">{lessonPoints.map(([title,body],i)=><section key={`${title}-${i}`}><h3>{i+1}. {title}</h3><p>{body}</p></section>)}</div></section><section className="hindi-ch1-panel hindi-grammar-detail-panel"><div className="hindi-ch1-panel-head"><h3>💡 उदाहरणों से समझें</h3><span>{enrichment?.examples?.length||0} उदाहरण</span></div><div className="hindi-learn-grid">{(enrichment?.examples||[]).map(([title,body],i)=><section key={`${title}-${i}`}><h3>{i+1}. {title}</h3><p>{body}</p></section>)}</div></section><section className="hindi-ch1-panel hindi-grammar-detail-panel"><div className="hindi-ch1-panel-head"><h3>⚠️ सामान्य गलतियाँ</h3><span>इनसे बचें</span></div><div className="hindi-learn-grid">{(enrichment?.mistakes||[]).map((item,i)=><section key={`${item}-${i}`}><h3>{i+1}. गलती</h3><p>{item}</p></section>)}</div></section><section className="hindi-ch1-panel hindi-grammar-detail-panel"><div className="hindi-ch1-panel-head"><h3>🎯 परीक्षा रणनीति</h3><span>Quick checklist</span></div><div className="hindi-learn-grid">{(enrichment?.tips||[]).map((item,i)=><section key={`${item}-${i}`}><h3>{i+1}. ध्यान रखें</h3><p>{item}</p></section>)}</div></section><div className="hindi-ch1-callout"><strong>📝 परीक्षा फोकस</strong><p>परिभाषा केवल याद न करें—नियम, उदाहरण और सही प्रयोग को साथ समझें। अभ्यास में पहचान, प्रयोग और भ्रमित करने वाले विकल्पों पर विशेष ध्यान दें।</p></div><div className="hindi-actions"><button type="button" className="secondary-btn pressable" onClick={onBack}>← व्याकरण सूची</button><div><button type="button" className="secondary-btn pressable" onClick={()=>setShowTopicPage(true)}>📘 विस्तृत विषय पेज</button><button type="button" className="secondary-btn pressable" onClick={()=>setMode('practice')}>📝 अभ्यास शुरू करें</button><button type="button" className="primary-btn pressable" onClick={()=>onComplete?.('learn')}>✓ सीखना पूरा करें</button></div></div></div>;
 
   if(submitted){
