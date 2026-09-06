@@ -1,13 +1,10 @@
 import fs from 'node:fs';
-import vm from 'node:vm';
 
 const source=fs.readFileSync(new URL('../src/hindiGrammarContent.js',import.meta.url),'utf8');
 const normalized=source.replace(/^export\s+/gm,'');
-const context={};
-vm.createContext(context);
-vm.runInContext(`${normalized}\nthis.__content=HINDI_GRAMMAR_CONTENT; this.__modes=HINDI_GRAMMAR_MODES;`,context);
-const content=context.__content;
-const modes=context.__modes;
+const moduleUrl=`data:text/javascript;charset=utf-8,${encodeURIComponent(normalized)}`;
+const loaded=await import(moduleUrl);
+const {HINDI_GRAMMAR_CONTENT:content,HINDI_GRAMMAR_MODES:modes}=loaded;
 
 const expected=[
  ['grammar-gr1','अपठित गद्यांश'],['grammar-gr2','निबंध लेखन'],['grammar-gr3','पत्र लेखन'],['grammar-gr4','संवाद लेखन'],['grammar-gr5','अनुच्छेद लेखन'],
