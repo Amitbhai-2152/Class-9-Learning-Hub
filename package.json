@@ -10,6 +10,7 @@
     "qa:hindi:gadhya": "node scripts/qaHindiGadhyaContent.mjs",
     "qa:hindi:kavya": "node scripts/qaHindiKavyaContent.mjs",
     "qa:hindi:varnika": "node scripts/qaHindiVarnikaContent.mjs",
+    "qa:hindi:grammar": "node scripts/qaHindiGrammarContent.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
