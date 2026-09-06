@@ -42,12 +42,40 @@ if(!grammarView.includes('HindiIdiomsOneWordTopicPage')) throw new Error('gr13 d
 
 const read=file=>fs.readFileSync(path.join(src,file),'utf8');
 const countArrayEntries=(text,name)=>{
- const start=text.indexOf(`const ${name}=[`);
- if(start<0) return -1;
- const end=text.indexOf('];',start);
- if(end<0) return -1;
- const body=text.slice(start,end);
- return (body.match(/\[['"]/g)||[]).length;
+ const declaration=new RegExp(`(?:const|let|var)\\s+${name}\\s*=\\s*\\[`);
+ const match=declaration.exec(text);
+ if(!match) return -1;
+ const start=match.index+match[0].length-1;
+ let depth=0;
+ let quote=null;
+ let escaped=false;
+ let count=0;
+ let sawEntry=false;
+ for(let i=start;i<text.length;i++){
+  const ch=text[i];
+  if(quote){
+   if(escaped){escaped=false;continue;}
+   if(ch==='\\\\'){escaped=true;continue;}
+   if(ch===quote) quote=null;
+   continue;
+  }
+  if(ch==='\\''||ch==='"'||ch==='`'){quote=ch;continue;}
+  if(ch==='['||ch==='{'||ch==='('){
+   if(depth===1 && (ch==='['||ch==='{')) sawEntry=true;
+   depth++;
+   continue;
+  }
+  if(ch===']'||ch==='}'||ch===')'){
+   depth--;
+   if(ch===']'&&depth===0) break;
+   continue;
+  }
+  if(ch===','&&depth===1){
+   if(sawEntry){count++;sawEntry=false;}
+  }
+ }
+ if(sawEntry) count++;
+ return count;
 };
 
 const wordPage=read('HindiSynonymAntonymTopicPage.jsx');
