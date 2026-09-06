@@ -27,10 +27,6 @@ const grammarView=fs.readFileSync(path.join(src,'HindiGrammarChapterView.jsx'),'
 const chapterData=fs.readFileSync(path.join(src,'hindiChapterData.js'),'utf8');
 const subjectSection=fs.readFileSync(path.join(src,'HindiSubjectSection.jsx'),'utf8');
 
-// hindiChapterData stores source ids as gr1–gr13 and prefixes them to
-// grammar-gr1–grammar-gr13 in hindiAllTopics. The view only needs literal
-// route branches for the dedicated pages (gr5–gr13); gr1–gr4 use the shared
-// HindiGrammarTopicPage fallback.
 for(let i=1;i<=13;i++){
  const sourceId=`id:'gr${i}'`;
  const publicId=`grammar-gr${i}`;
@@ -42,19 +38,23 @@ if(!grammarView.includes('HindiIdiomsOneWordTopicPage')) throw new Error('gr13 d
 
 const read=file=>fs.readFileSync(path.join(src,file),'utf8');
 
-// Count entries between a named array declaration and its own closing ];.
-// Keep this parser deliberately simple: the source arrays are formatted with
-// one top-level entry per line, so line-based counting is more robust than a
-// regex that must survive JS quoting/escaping.
+// These source arrays are intentionally formatted one top-level entry per line.
+// Use plain string operations so the QA script itself does not depend on fragile regex escaping.
 const arrayBody=(text,name)=>{
- const declaration=new RegExp(`(?:const|let|var)\\s+${name}\\s*=\\s*\\[`);
- const match=declaration.exec(text);
- if(!match) return null;
- const start=match.index+match[0].length;
+ const openToken=`const ${name}=[`;
+ let open=text.indexOf(openToken);
+ if(open===-1){
+  const spacedToken=`const ${name} = [`;
+  open=text.indexOf(spacedToken);
+  if(open===-1) return null;
+  open+=spacedToken.length;
+ }else{
+  open+=openToken.length;
+ }
  let depth=1;
  let quote=null;
  let escaped=false;
- for(let i=start;i<text.length;i++){
+ for(let i=open;i<text.length;i++){
   const ch=text[i];
   if(quote!==null){
    if(escaped){escaped=false;continue;}
@@ -62,21 +62,19 @@ const arrayBody=(text,name)=>{
    if(ch===quote) quote=null;
    continue;
   }
-  if(ch.charCodeAt(0)===39 || ch==='"' || ch==='`'){quote=ch;continue;}
+  if(ch==='\'' || ch==='"' || ch==='`'){quote=ch;continue;}
   if(ch==='['){depth++;continue;}
   if(ch===']'){
    depth--;
-   if(depth===0) return text.slice(start,i);
+   if(depth===0) return text.slice(open,i);
   }
  }
  return null;
 };
 
-const lines=body=>body===null?null:body.split(/\r?\n/);
 const topLevelLines=(body,predicate)=>{
- const list=lines(body);
- if(list===null) return -1;
- return list.filter(line=>predicate(line.trim())).length;
+ if(body===null) return -1;
+ return body.split(/\r?\n/).filter(line=>predicate(line.trim())).length;
 };
 const countNestedArrayEntries=(text,name)=>topLevelLines(arrayBody(text,name),line=>line.startsWith('['));
 const countStringEntries=(text,name)=>topLevelLines(arrayBody(text,name),line=>line.startsWith("'")||line.startsWith('"')||line.startsWith('`'));
@@ -105,7 +103,6 @@ if(!samas.includes('60 प्रश्न')) throw new Error('Samas page no long
 const sandhi=read('HindiSandhiTopicPage.jsx');
 if(!sandhi.includes('const SANDHI_FORMAT=[')) throw new Error('Sandhi study structure missing');
 
-// Back navigation must return to the correct support section.
 if(!subjectSection.includes("book==='वर्णिका · पूरक'?'hindi-varnika-section':book==='व्याकरण एवं रचना'?'hindi-grammar-section'")) throw new Error('Support section anchors missing or incorrect');
 if(!subjectSection.includes("const returnToVarnikaList=()=>scrollToList('hindi-varnika-section');const returnToGrammarList=()=>scrollToList('hindi-grammar-section')")) throw new Error('Support back-navigation handlers missing');
 if(!subjectSection.includes("topic.book==='व्याकरण एवं रचना')return <HindiSupportChapterView topic={topic} initialMode={localChapter.mode} onBack={returnToGrammarList}")) throw new Error('Grammar topic still points back to Varnika section');
