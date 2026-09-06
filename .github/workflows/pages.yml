@@ -44,6 +44,9 @@ jobs:
       - name: Hindi grammar content QA
         run: npm run qa:hindi:grammar
 
+      - name: Hindi grammar dedicated-page QA
+        run: npm run qa:hindi:grammar:dedicated
+
       - name: Hindi unseen passage QA
         run: npm run qa:hindi:unseen
 
