@@ -62,7 +62,7 @@ try{
      if(bad)failures.push(`Supplementary Ch${number}: ${label} has ${bad} invalid MCQ objects`);
      const distribution=items.reduce((acc,item)=>{acc[item.answer]=(acc[item.answer]||0)+1;return acc},[0,0,0,0]);
      if(distribution.some(c=>c===0))failures.push(`Supplementary Ch${number}: ${label} answer positions are not balanced: ${distribution.join('/')}`);
-     const relevantTokens=[expectedTitle,chapter.intro,...chapter.vocabulary,chapter.grammarFocus].filter(Boolean);
+     const relevantTokens=[expectedTitle,chapter.theme,chapter.focus,chapter.intro,chapter.grammarFocus,...chapter.vocabulary,...(chapter.concepts||[]).flat(),...(chapter.lessons||[]).flatMap(lesson=>lesson?.points||[]),...(Array.isArray(chapter.points)?chapter.points:[])].filter(Boolean);
      const relevant=items.filter(item=>relevantTokens.some(token=>item.q.includes(token))).length;
      const required=label==='practice'?8:label==='challenge'?6:10;
      if(relevant<required)failures.push(`Supplementary Ch${number}: ${label} is not sufficiently chapter-specific (${relevant}/${required} relevant prompts)`);
