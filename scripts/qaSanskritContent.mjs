@@ -24,7 +24,7 @@ if(!runtimeSource.includes('SANSKRIT_SUPPLEMENTARY_RUNTIME_CONTENT'))failures.pu
 if(!runtimeSource.includes('getSanskritSupplementaryContent'))failures.push('Supplementary getter missing');
 if(!runtimeSource.includes('balanceQuestions'))failures.push('Balanced answer-key runtime missing');
 if(!runtimeSource.includes('lessons:chapter.concepts.map'))failures.push('Supplementary lesson enrichment missing');
-if(!/getSanskritSupplementaryContent\}?\s+from\s+'\.\/sanskritSupplementaryRuntime(?:\.js)?'/.test(hub))failures.push('Supplementary runtime not wired to engine');
+if(!/getSanskritSupplementaryContent\}?\s+from\s+['"]\.\/sanskritSupplementaryRuntime(?:\.js)?['"]/.test(hub))failures.push('Supplementary runtime not wired to engine');
 if(!hub.includes('book="supplementary"'))failures.push('Supplementary chapter route missing');
 if(!engine.includes('SanskritSubjectSection'))failures.push('Subject section symbol missing');
 if(!engine.includes('SanskritChapterEngine'))failures.push('Chapter engine symbol missing');
@@ -37,7 +37,7 @@ try{
  const mod=await import('../src/sanskrit/sanskritSupplementaryRuntime.js');
  const chapters=mod.SANSKRIT_SUPPLEMENTARY_RUNTIME_CONTENT;
  if(!chapters||typeof chapters!=='object')failures.push('Supplementary runtime content object missing');
- const keys=Object.keys(chapters).sort((a,b)=>Number(a)-Number(b);
+ const keys=Object.keys(chapters).sort((a,b)=>Number(a)-Number(b));
  if(keys.length!==21||keys.some((key,index)=>Number(key)!==index+1))failures.push(`Supplementary runtime chapter count/keys invalid: ${keys.join(',')}`);
  for(let number=1;number<=21;number++){
    const chapter=chapters[number];
