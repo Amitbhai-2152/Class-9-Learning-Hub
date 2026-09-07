@@ -1,0 +1,1 @@
+SST audit gates enabled in Verify and Pages workflows.
