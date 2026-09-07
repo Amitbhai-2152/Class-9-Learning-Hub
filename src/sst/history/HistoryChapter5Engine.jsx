@@ -1,5 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
-import {HISTORY_CHAPTER_5} from './historyChapter5Data';
+import {HISTORY_CHAPTER_5_CONTENT as HISTORY_CHAPTER_5} from './historyChapter5Content';
 import {SubjectiveQuestionsCard} from './SubjectiveQuestionsCard';
 import './historyChapter.css';
 const storageKey='sst-history-ch5-progress';
