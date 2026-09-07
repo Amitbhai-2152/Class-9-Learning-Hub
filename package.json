@@ -13,6 +13,7 @@
     "qa:hindi:grammar": "node scripts/qaHindiGrammarContent.mjs",
     "qa:hindi:grammar:dedicated": "node scripts/qaHindiGrammarDedicatedPages.mjs",
     "qa:hindi:unseen": "node scripts/qaHindiUnseenPassages.mjs",
+    "qa:civics": "node scripts/qaCivicsContent.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
