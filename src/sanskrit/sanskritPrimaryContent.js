@@ -66,3 +66,4 @@ function build(meta,index){
 //   1:{   2:{   3:{   4:{   5:{   6:{   7:{   8:{   9:{   10:{   11:{   12:{   13:{   14:{   15:{
 export const SANSKRIT_PRIMARY_CONTENT=Object.fromEntries(CHAPTERS.map((meta,index)=>[index+1,{id:index+1,title:meta.title,...build(meta,index)}]));
 export const SANSKRIT_PRIMARY_TOTAL=CHAPTERS.length;
+export const getSanskritPrimaryContent=(chapterNumber)=>SANSKRIT_PRIMARY_CONTENT[chapterNumber]||null;
