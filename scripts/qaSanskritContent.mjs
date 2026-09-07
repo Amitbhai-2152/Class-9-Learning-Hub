@@ -4,6 +4,7 @@ const registry=readFileSync(new URL('../src/sanskrit/sanskritChapterRegistry.js'
 const content=readFileSync(new URL('../src/sanskrit/sanskritPrimaryContent.js',import.meta.url),'utf8');
 const supplementarySource=readFileSync(new URL('../src/sanskrit/sanskritSupplementaryContent.js',import.meta.url),'utf8');
 const deepSource=readFileSync(new URL('../src/sanskrit/sanskritSupplementaryDeepContent.js',import.meta.url),'utf8');
+const studySource=readFileSync(new URL('../src/sanskrit/sanskritSupplementaryStudyModules.js',import.meta.url),'utf8');
 const runtimeSource=readFileSync(new URL('../src/sanskrit/sanskritSupplementaryRuntime.js',import.meta.url),'utf8');
 const wrapper=readFileSync(new URL('../src/sanskrit/SanskritSubjectSection.jsx',import.meta.url),'utf8');
 const hub=readFileSync(new URL('../src/sanskrit/SanskritSubjectHub.jsx',import.meta.url),'utf8');
@@ -25,11 +26,14 @@ if(!supplementarySource.includes('export const SANSKRIT_SUPPLEMENTARY_CONTENT'))
 if(supplementarySource.includes('subjective'))failures.push('Supplementary source still contains subjective layer');
 if(!deepSource.includes('SANSKRIT_SUPPLEMENTARY_DEEP_CONTENT'))failures.push('Deep supplementary content export missing');
 for(const title of ['सरस्वती-वन्दना','प्रार्थना','लोकगीतम्','विदुला-पुत्र संवादः','प्रयाणगीतम्','प्रहेलिका'])if(!deepSource.includes(title))failures.push(`Deep content special chapter missing: ${title}`);
+if(!studySource.includes('SANSKRIT_SUPPLEMENTARY_STUDY_MODULES'))failures.push('Supplementary study-module export missing');
+if(!studySource.includes('SANSKRIT_SUPPLEMENTARY_TYPE_TOOLKIT'))failures.push('Supplementary chapter-type toolkit missing');
 if(!runtimeSource.includes('SANSKRIT_SUPPLEMENTARY_RUNTIME_CONTENT'))failures.push('Supplementary runtime export missing');
 if(!runtimeSource.includes('getSanskritSupplementaryContent'))failures.push('Supplementary getter missing');
 if(!runtimeSource.includes('balanceQuestions'))failures.push('Balanced answer-key runtime missing');
 if(!runtimeSource.includes('lessons:chapter.concepts.map'))failures.push('Supplementary lesson enrichment missing');
 if(!runtimeSource.includes('getSanskritSupplementaryDeepContent'))failures.push('Deep content not wired into runtime');
+if(!runtimeSource.includes('getSanskritSupplementaryStudyModule'))failures.push('Study modules not wired into runtime');
 if(!/getSanskritSupplementaryContent\}?\s+from\s+['"]\.\/sanskritSupplementaryRuntime(?:\.js)?['"]/.test(hub))failures.push('Supplementary runtime not wired to engine');
 if(!hub.includes('book="supplementary"'))failures.push('Supplementary chapter route missing');
 if(!hub.includes('sanskritChapter'))failures.push('Supplementary direct URL state missing');
@@ -66,6 +70,16 @@ try{
      if(!Array.isArray(deep.examFocus)||deep.examFocus.length<4)failures.push(`Supplementary Ch${number}: deep exam focus incomplete`);
      if(deep.anchor&&deep.anchor.split(/\s+/).filter(Boolean).length>25)failures.push(`Supplementary Ch${number}: quoted anchor is too long`);
    }
+   const study=chapter.studyModule;
+   if(!study||typeof study!=='object')failures.push(`Supplementary Ch${number}: high-score study module missing`);
+   else{
+     for(const field of ['mustKnow','quickCheck','examTraps','language','highScore']){
+       if(!Array.isArray(study[field])||study[field].length<2)failures.push(`Supplementary Ch${number}: study module ${field} is incomplete`);
+     }
+     if(typeof study.revision!=='string'||study.revision.length<12)failures.push(`Supplementary Ch${number}: revision plan missing`);
+     if(typeof study.answerMethod!=='string'||study.answerMethod.length<12)failures.push(`Supplementary Ch${number}: answer method missing`);
+     if(typeof study.typeReading!=='string'||study.typeReading.length<12)failures.push(`Supplementary Ch${number}: type reading strategy missing`);
+   }
 
    for(const [label,items,expected] of [['practice',chapter.practice,15],['challenge',chapter.challenge,12],['finalTest',chapter.finalTest,20]]){
      if(!Array.isArray(items)||items.length!==expected){failures.push(`Supplementary Ch${number}: ${label} expected ${expected}, got ${Array.isArray(items)?items.length:0}`);continue;}
@@ -90,4 +104,4 @@ if(failures.length){
  process.exit(1);
 }
 
-console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters are registered; every supplementary chapter has deep chapter-specific study content, 4 learning blocks, 15 practice, 12 challenge, 20 final-test MCQs, chapter-specific topic coverage, valid 4-option banks, balanced answer positions, no subjective layer, and working supplementary navigation.');
+console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters; every supplementary chapter has deep chapter-specific study content, high-score module, 4 learning blocks, 15 practice, 12 challenge, 20 final-test MCQs, valid 4-option banks, balanced answer positions, no subjective layer, and working supplementary navigation.');
