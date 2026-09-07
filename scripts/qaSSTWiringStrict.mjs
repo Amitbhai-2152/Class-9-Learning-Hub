@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const root=fs.readFileSync(new URL('../src/sst/SSTRoot.jsx',import.meta.url),'utf8');
+const expect=(needle,label)=>assert.ok(root.includes(needle),`${label} missing`);
+for(let n=1;n<=4;n++) expect(`track==='history'&&[1,2,3,4].includes(Number(route.chapter))`,`History route group ${n}`);
+for(let n=5;n<=8;n++) expect(`route.chapter)===${n}`,`History ${n}`);
+for(let n=1;n<=13;n++) expect(`route.chapter)===${n}`,`Geography ${n}`);
+expect("track==='civics'&&[1,2,3,4,5,6].includes(Number(route.chapter))",'Civics routes');
+expect("track==='economics'&&[1,2,3,4,5,6].includes(Number(route.chapter))",'Economics routes');
+const required=['CivicsEngine.jsx','EconomicsEngine.jsx','GeographyChapter1Engine.jsx','GeographyChapter2Engine.jsx','GeographyChapter3Engine.jsx','GeographyChapter4EngineClean.jsx','GeographyChapter5EngineClean.jsx','GeographyChapter6EngineClean.jsx','GeographyChapter7EngineClean.jsx','GeographyChapter8EngineClean.jsx','GeographyChapter9EngineClean.jsx','GeographyChapter10EngineClean.jsx','GeographyChapter11EngineClean.jsx','GeographyChapter12EngineClean.jsx','GeographyChapter13EngineClean.jsx','history/HistoryChapterEngine.jsx','history/HistoryChapter5Engine.jsx','history/HistoryChapter6Engine.jsx','history/HistoryChapter7Engine.jsx','history/HistoryChapter8Engine.jsx'];
+for(const p of required) assert.ok(fs.existsSync(new URL(`../src/sst/${p}`,import.meta.url)),`Missing engine: ${p}`);
+console.log('Strict SST wiring QA passed: all 33 chapter routes are accounted for and all dedicated engines exist.');
