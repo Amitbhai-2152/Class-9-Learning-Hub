@@ -1,1 +1,1 @@
-import { SanskritGrammarLab } from './SanskritGrammarLab';
+export {SanskritSubjectSection,SanskritChapterEngine} from './SanskritSubjectHub';
