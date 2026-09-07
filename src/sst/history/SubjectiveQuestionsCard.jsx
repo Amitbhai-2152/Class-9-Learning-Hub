@@ -8,8 +8,8 @@ const LEVELS=[
   {id:'challenger',label:'Challenger',hindi:'चैलेंजर',icon:'🏆',desc:'आलोचनात्मक सोच और तर्क आधारित प्रश्न'}
 ];
 
-export function SubjectiveQuestionsCard({chapterNumber}){
-  const data=HISTORY_SUBJECTIVE[chapterNumber];
+export function SubjectiveQuestionsCard({chapterNumber,data:providedData}){
+  const data=providedData||HISTORY_SUBJECTIVE[chapterNumber];
   const [open,setOpen]=useState(true);
   if(!data)return null;
   const total=LEVELS.reduce((sum,l)=>sum+(data.questions[l.id]?.length||0),0);
@@ -24,10 +24,10 @@ export function SubjectiveQuestionsCard({chapterNumber}){
     </div>
     {open&&<div className="sst-subjective-levels">
       {LEVELS.map(level=><div className={`sst-subjective-level level-${level.id}`} key={level.id}>
-        <div className="sst-subjective-level-head"><div><span>{level.icon} {level.label}</span><strong>{level.hindi}</strong></div><small>{data.questions[level.id].length} प्रश्न</small></div>
+        <div className="sst-subjective-level-head"><div><span>{level.icon} {level.label}</span><strong>{level.hindi}</strong></div><small>{data.questions[level.id]?.length||0} प्रश्न</small></div>
         <p className="sst-subjective-desc">{level.desc}</p>
         <div className="sst-subjective-list">
-          {data.questions[level.id].map((item,index)=><article className="sst-subjective-item" key={`${level.id}-${index}`}>
+          {(data.questions[level.id]||[]).map((item,index)=><article className="sst-subjective-item" key={`${level.id}-${index}`}>
             <div className="sst-subjective-number">{String(index+1).padStart(2,'0')}</div>
             <div className="sst-subjective-question"><p>{item.q}</p><span>{item.marks} अंक</span></div>
           </article>)}
