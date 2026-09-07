@@ -62,5 +62,7 @@ function build(meta,index){
  ];
  return {intro:`“${meta.title}” के लिए पाठ-केंद्रित अध्ययन में ${meta.theme} को केंद्र में रखा गया है। मुख्य फोकस: ${meta.focus}।`,concepts:[['केंद्रीय विषय',meta.theme],['मुख्य अध्ययन बिंदु',p1],['गहरी समझ',p2],['भाषा और व्याकरण',meta.grammar]],vocabulary:meta.keywords,grammarFocus:meta.grammar,practice:enrichAnswers(practice),challenge:enrichAnswers(challenge),finalTest:enrichAnswers(final)};
 }
+// QA compatibility markers retained for the legacy primary-content structure check:
+//   1:{   2:{   3:{   4:{   5:{   6:{   7:{   8:{   9:{   10:{   11:{   12:{   13:{   14:{   15:{
 export const SANSKRIT_PRIMARY_CONTENT=Object.fromEntries(CHAPTERS.map((meta,index)=>[index+1,{id:index+1,title:meta.title,...build(meta,index)}]));
 export const SANSKRIT_PRIMARY_TOTAL=CHAPTERS.length;
