@@ -13,18 +13,30 @@ export const getCivicsChapter=chapterNumber=>{
   if(!base)return null;
   const lessons=[...base.lessons],practice=[...base.practice],finalTest=[...base.finalTest];
   const supplement=chapterNumber===3?CIVICS_CHAPTER_3_SUPPLEMENT:makeSynthesisSupplement(base);
-  while(lessons.length<15)lessons.push(supplement.lesson);
-  while(practice.length<15)practice.push(supplement.practice);
-  while(finalTest.length<20)finalTest.push(supplement.finalTest);
+  while(lessons.length<15)lessons.push({...supplement.lesson});
+  while(practice.length<15)practice.push({...supplement.practice});
+  while(finalTest.length<20)finalTest.push({...supplement.finalTest});
   return {...base,lessons,practice,finalTest};
+};
+
+const cloneQuestion=x=>({q:String(x?.q||'').trim(),marks:Number(x?.marks)||2,answer:String(x?.answer||'').trim()});
+const makeSubjectiveLevel=(source,fallback,count=5)=>{
+  const items=Array.isArray(source)?source.map(cloneQuestion).filter(x=>x.q):[];
+  const out=items.slice(0,count);
+  for(let i=out.length;i<count;i++)out.push(cloneQuestion(fallback));
+  return out;
 };
 
 export const getCivicsSubjective=chapterNumber=>{
   const base=CIVICS_SUBJECTIVE_CHAPTERS[chapterNumber];
   if(!base)return null;
-  const questions={...base.questions};
   const chapter=getCivicsChapter(chapterNumber);
   const supplement=chapterNumber===3?CIVICS_CHAPTER_3_SUPPLEMENT:makeSynthesisSupplement(chapter);
-  while(Object.values(questions).reduce((n,items)=>n+items.length,0)<15)questions.challenger=[...(questions.challenger||[]),supplement.subjective];
+  const source=base.questions||{};
+  const questions={
+    easy:makeSubjectiveLevel(source.easy,supplement.subjective,5),
+    hard:makeSubjectiveLevel(source.hard,supplement.subjective,5),
+    challenger:makeSubjectiveLevel(source.challenger,supplement.subjective,5)
+  };
   return {...base,questions};
 };
