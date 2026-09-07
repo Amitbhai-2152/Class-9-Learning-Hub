@@ -20,7 +20,7 @@
     "qa:sst:engines": "node scripts/qaSSTChapterBanks.mjs",
     "qa:sst:wiring": "node scripts/qaSSTWiringStrict3.mjs",
     "qa:sst": "node scripts/qaSSTCheck.mjs",
-    "qa:sanskrit": "node scripts/qaSanskritStructure.mjs",
+    "qa:sanskrit": "node scripts/qaSanskritContent.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
