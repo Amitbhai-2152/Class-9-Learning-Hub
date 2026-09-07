@@ -6,7 +6,8 @@ const supplementarySource=readFileSync(new URL('../src/sanskrit/sanskritSuppleme
 const runtimeSource=readFileSync(new URL('../src/sanskrit/sanskritSupplementaryRuntime.js',import.meta.url),'utf8');
 const wrapper=readFileSync(new URL('../src/sanskrit/SanskritSubjectSection.jsx',import.meta.url),'utf8');
 const hub=readFileSync(new URL('../src/sanskrit/SanskritSubjectHub.jsx',import.meta.url),'utf8');
-const engine=`${wrapper}\n${hub}`;
+const engine=`${wrapper}
+${hub}`;
 
 const primaryTitles=['ईशस्तुति:','लोभविष्टः चक्रधरः','यक्ष-युधिष्ठिर संवाद','चत्वारो वेदाः','संस्कृतस्य महिमा','संस्कृतसाहित्ये पर्यावरणम्','ज्ञानं भारः क्रियां विना','नीतिपधानिः','बिहारस्य संस्कृतिकं वैभवम्','ईद-महोत्सवः','ग्राम्यजीवनम्','वीर कूँवर सिंहः','किशोराणां मनोविज्ञानम्','राष्ट्रबोधः','विश्ववन्दिता वैशाली'];
 const supplementaryTitles=['सरस्वती-वन्दना','संस्कृत-भाषा','प्रार्थना','यत्नं विना न रत्नम्','विदुला-पुत्र संवादः','सम्पूर्णविश्वरत्नम्','लोकगीतम्','अमृतं बालभाषितम्','प्रभात-वर्णनम्','नायं छागः','प्रयाणगीतम्','महात्मा गाँधी','भारतीयप्रजातन्त्रम्','संस्मरणम्','धर्मेषु भावः समानः समेषाम्','बिहारो विहारे सदा रोचताम् वः','लौहस्य तुला','ज्ञानेन शोभते किल','कुरुक्षेत्रम्','प्रहेलिका','ग्रन्थकाराः'];
@@ -19,19 +20,21 @@ if(count(registry,"status:'planned'")<14)failures.push('Expected 14 planned prim
 for(const title of primaryTitles)if(!registry.includes(`title:'${title}'`))failures.push(`Primary registry chapter missing: ${title}`);
 for(const title of supplementaryTitles)if(!registry.includes(`title:'${title}'`))failures.push(`Supplementary registry chapter missing: ${title}`);
 for(let i=1;i<=15;i++)if(!content.includes(`  ${i}:{`))failures.push(`Structured primary content missing for chapter ${i}`);
+
 if(!supplementarySource.includes('export const SANSKRIT_SUPPLEMENTARY_CONTENT'))failures.push('Supplementary content export missing');
+if(supplementarySource.includes('subjective'))failures.push('Supplementary source still contains subjective layer');
 if(!runtimeSource.includes('SANSKRIT_SUPPLEMENTARY_RUNTIME_CONTENT'))failures.push('Supplementary runtime export missing');
 if(!runtimeSource.includes('getSanskritSupplementaryContent'))failures.push('Supplementary getter missing');
 if(!runtimeSource.includes('balanceQuestions'))failures.push('Balanced answer-key runtime missing');
 if(!runtimeSource.includes('lessons:chapter.concepts.map'))failures.push('Supplementary lesson enrichment missing');
 if(!/getSanskritSupplementaryContent\}?\s+from\s+['"]\.\/sanskritSupplementaryRuntime(?:\.js)?['"]/.test(hub))failures.push('Supplementary runtime not wired to engine');
 if(!hub.includes('book="supplementary"'))failures.push('Supplementary chapter route missing');
+if(!hub.includes('sanskritChapter'))failures.push('Supplementary direct URL state missing');
+if(engine.includes('SubjectiveView')||engine.includes('>Subjective<'))failures.push('Subjective UI still present');
 if(!engine.includes('SanskritSubjectSection'))failures.push('Subject section symbol missing');
 if(!engine.includes('SanskritChapterEngine'))failures.push('Chapter engine symbol missing');
-for(const token of ['सीखें','अभ्यास','चुनौती','फाइनल टेस्ट','Subjective'])if(!engine.includes(token))failures.push(`Engine mode missing: ${token}`);
+for(const token of ['सीखें','अभ्यास','चुनौती','फाइनल टेस्ट'])if(!engine.includes(token))failures.push(`Engine mode missing: ${token}`);
 if(!wrapper.includes("from './SanskritSubjectHub'"))failures.push('Subject wrapper path missing');
-
-if(failures.length){console.error('SANSKRIT QA FAILED');for(const failure of failures)console.error(`- ${failure}`);process.exit(1)}
 
 try{
  const mod=await import('../src/sanskrit/sanskritSupplementaryRuntime.js');
@@ -39,26 +42,39 @@ try{
  if(!chapters||typeof chapters!=='object')failures.push('Supplementary runtime content object missing');
  const keys=Object.keys(chapters).sort((a,b)=>Number(a)-Number(b));
  if(keys.length!==21||keys.some((key,index)=>Number(key)!==index+1))failures.push(`Supplementary runtime chapter count/keys invalid: ${keys.join(',')}`);
+
  for(let number=1;number<=21;number++){
    const chapter=chapters[number];
-   if(!chapter)continue;
-   if(!chapter.title||chapter.title!==supplementaryTitles[number-1])failures.push(`Runtime title mismatch at supplementary chapter ${number}`);
+   if(!chapter){continue;}
+   const expectedTitle=supplementaryTitles[number-1];
+   if(!chapter.title||chapter.title!==expectedTitle)failures.push(`Runtime title mismatch at supplementary chapter ${number}`);
    const lessonCount=Array.isArray(chapter.lessons)?chapter.lessons.length:0;
    const conceptCount=Array.isArray(chapter.concepts)?chapter.concepts.length:0;
    if(lessonCount!==4||conceptCount!==4)failures.push(`Supplementary Ch${number}: expected 4 learning blocks, got lessons=${lessonCount}, concepts=${conceptCount}`);
-   for(const [label,items,expected] of [['practice',chapter.practice,15],['challenge',chapter.challenge,12],['finalTest',chapter.finalTest,20],['subjective',chapter.subjective,15]]){
-     if(!Array.isArray(items)||items.length!==expected){failures.push(`Supplementary Ch${number}: ${label} expected ${expected}, got ${Array.isArray(items)?items.length:0}`);continue}
-     const texts=items.map(item=>typeof item==='string'?item:item?.q||'');
+   if(!Array.isArray(chapter.vocabulary)||chapter.vocabulary.length!==5)failures.push(`Supplementary Ch${number}: expected 5 chapter keywords`);
+   if(typeof chapter.grammarFocus!=='string'||chapter.grammarFocus.length<8)failures.push(`Supplementary Ch${number}: grammar focus missing`);
+
+   for(const [label,items,expected] of [['practice',chapter.practice,15],['challenge',chapter.challenge,12],['finalTest',chapter.finalTest,20]]){
+     if(!Array.isArray(items)||items.length!==expected){failures.push(`Supplementary Ch${number}: ${label} expected ${expected}, got ${Array.isArray(items)?items.length:0}`);continue;}
+     const texts=items.map(item=>item?.q||'');
      if(new Set(texts).size!==texts.length)failures.push(`Supplementary Ch${number}: duplicate ${label} questions`);
-     if(label!=='subjective'){
-       const bad=items.filter(item=>!item||typeof item.q!=='string'||item.q.length<12||!Array.isArray(item.options)||item.options.length!==4||new Set(item.options).size!==4||![0,1,2,3].includes(item.answer)||typeof item.explain!=='string').length;
-       if(bad)failures.push(`Supplementary Ch${number}: ${label} has ${bad} invalid MCQ objects`);
-       const distribution=items.reduce((acc,item)=>{acc[item.answer]=(acc[item.answer]||0)+1;return acc},[0,0,0,0]);
-       if(distribution.some(count=>count===0))failures.push(`Supplementary Ch${number}: ${label} answer positions are not balanced: ${distribution.join('/')}`);
-     }
+     const bad=items.filter(item=>!item||typeof item.q!=='string'||item.q.length<12||!Array.isArray(item.options)||item.options.length!==4||new Set(item.options).size!==4||![0,1,2,3].includes(item.answer)||typeof item.explain!=='string').length;
+     if(bad)failures.push(`Supplementary Ch${number}: ${label} has ${bad} invalid MCQ objects`);
+     const distribution=items.reduce((acc,item)=>{acc[item.answer]=(acc[item.answer]||0)+1;return acc},[0,0,0,0]);
+     if(distribution.some(c=>c===0))failures.push(`Supplementary Ch${number}: ${label} answer positions are not balanced: ${distribution.join('/')}`);
+     const relevantTokens=[expectedTitle,chapter.intro,...chapter.vocabulary,chapter.grammarFocus].filter(Boolean);
+     const relevant=items.filter(item=>relevantTokens.some(token=>item.q.includes(token))).length;
+     const required=label==='practice'?8:label==='challenge'?6:10;
+     if(relevant<required)failures.push(`Supplementary Ch${number}: ${label} is not sufficiently chapter-specific (${relevant}/${required} relevant prompts)`);
    }
+   if(Object.prototype.hasOwnProperty.call(chapter,'subjective'))failures.push(`Supplementary Ch${number}: subjective property must be removed`);
  }
 }catch(error){failures.push(`Supplementary runtime import failed: ${error.message}`)}
 
-if(failures.length){console.error('SANSKRIT QA FAILED');for(const failure of failures)console.error(`- ${failure}`);process.exit(1)}
-console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters are registered; every supplementary chapter has 4 learning blocks, 15 practice, 12 challenge, 20 final-test, 15 subjective items, valid 4-option banks, balanced answer positions, and engine wiring.');
+if(failures.length){
+ console.error('SANSKRIT QA FAILED');
+ for(const failure of failures)console.error(`- ${failure}`);
+ process.exit(1);
+}
+
+console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters are registered; every supplementary chapter has 4 learning blocks, 15 practice, 12 challenge, 20 final-test MCQs, chapter-specific topic coverage, valid 4-option banks, balanced answer positions, no subjective layer, and working supplementary navigation.');
