@@ -26,9 +26,9 @@ for(const n of Object.keys(EXPECTED).map(Number)){
  }
  const lessonTitles=d.lessons.map(x=>x.title);assert(new Set(lessonTitles).size===15,`Ch${n}: duplicate lesson titles`);
  d.lessons.forEach((x,i)=>assert(x.summary&&x.summary.length>45,`Ch${n} lesson ${i+1}: summary too short`));
- d.lessons.forEach((x,i)=>assert(Array.isArray(x.points)&&x.points.length===3,`Ch${n} lesson ${i+1}: points!=3`));
- for(const k of ['easy','hard','challenger'])d.subjective[k].forEach((x,i)=>assert(x.q&&x.answer&&x.q.length>35,`Ch${n} ${k}[${i+1}]: weak subjective entry`));
+ d.lessons.forEach((x,i)=>assert(Array.isArray(x.points)&&x.points.length>=3,`Ch${n} lesson ${i+1}: points<3`));
+ for(const k of ['easy','hard','challenger'])d.subjective[k].forEach((x,i)=>assert(x.q&&x.answer&&x.q.length>35&&x.answer.length>50,`Ch${n} ${k}[${i+1}]: weak subjective entry`));
 }
 if(fail.length){console.error(fail.join('\n'));process.exit(1)}
 console.log('Economics content QA passed: 6 chapters; each has 15 lessons, 15 practice, 12 challenge, 20 final-test, and 15 subjective questions (5/5/5).');
-console.log('Checks passed: chapter scope, unique lesson titles, 4-option banks, valid answer keys, explanation depth, and substantive subjective guidance.');
+console.log('Checks passed: chapter scope, unique lesson titles, minimum 3 study points per lesson, 4-option banks, valid answer keys, explanation depth, and substantive subjective guidance.');
