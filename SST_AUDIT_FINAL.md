@@ -1,0 +1,1 @@
+SST audit gates are active: structure, data, engine, wiring, Civics, Economics, then build.
