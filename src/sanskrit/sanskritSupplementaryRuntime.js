@@ -1,4 +1,4 @@
-import {SANSKRIT_SUPPLEMENTARY_CONTENT} from './sanskritSupplementaryContent';
+import {SANSKRIT_SUPPLEMENTARY_CONTENT} from './sanskritSupplementaryContent.js';
 
 const balanceQuestions=(items,offset=0)=>items.map((item,index)=>{const shift=(index+offset)%4;const options=item.options.map((_,i)=>item.options[(i+4-shift)%4]);return {...item,options,answer:(item.answer+shift)%4}});
 
