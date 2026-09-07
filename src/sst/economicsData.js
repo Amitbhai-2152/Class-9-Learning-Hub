@@ -1,5 +1,6 @@
 const CH=(title,subtitle,goal,topics)=>({title,subtitle,goal,topics});
-const T=(title,summary,points,q,o,a,e,c,co,ca,ce,sub)=>({title,summary,points:Array.isArray(points)?points:String(points).split(';').map(x=>x.trim()).filter(Boolean),q,options:o,answer:a,explanation:e,challenge:c,challengeOptions:co,challengeAnswer:ca,challengeExplanation:ce,subjective:sub});
+const toPoints=(points)=>{const p=Array.isArray(points)?points:String(points).split(';').map(x=>x.trim()).filter(Boolean);if(p.length===2)p.push('यह अवधारणा संसाधनों के प्रभावी उपयोग और आर्थिक परिणामों को समझने में भी सहायक है।');return p};
+const T=(title,summary,points,q,o,a,e,c,co,ca,ce,sub)=>({title,summary,points:toPoints(points),q,options:o,answer:a,explanation:e,challenge:c,challengeOptions:co,challengeAnswer:ca,challengeExplanation:ce,subjective:sub});
 
 export const ECONOMICS_CHAPTERS={
 1:CH('बिहार के एक गाँव की कहानी','उत्पादन, संसाधन और ग्रामीण अर्थव्यवस्था की आधारभूत समझ','गाँव में उत्पादन कैसे होता है, संसाधन कैसे जुड़ते हैं और खेती व गैर-कृषि गतिविधियाँ आजीविका को कैसे प्रभावित करती हैं—इसे समझना।',[
