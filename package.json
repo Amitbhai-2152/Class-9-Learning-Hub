@@ -19,7 +19,7 @@
     "qa:sst:data": "node scripts/qaSSTDataQuality.mjs",
     "qa:sst:engines": "node scripts/qaSSTChapterBanks.mjs",
     "qa:sst:wiring": "node scripts/qaSSTWiringStrict3.mjs",
-    "qa:sst": "node scripts/qaSSTIntegration.mjs",
+    "qa:sst": "node scripts/qaSSTCheck.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
