@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">भारत के प्रमुख भौतिक विभाग</title>
+<desc id="desc">कक्षा 9 के लिए भारत के हिमालय, उत्तर के मैदान, प्रायद्वीपीय पठार, तटीय मैदान, भारतीय मरुस्थल और द्वीप समूह का अध्ययन-आरेख।</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5fbff"/><stop offset="1" stop-color="#eef7f2"/></linearGradient>
+ <linearGradient id="land" x1="0" y1="0" x2="0.8" y2="1"><stop offset="0" stop-color="#e8dfbf"/><stop offset="0.55" stop-color="#d8d4aa"/><stop offset="1" stop-color="#c9d7b0"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-opacity=".14"/></filter>
+ <style>
+  .t{font-family:Arial,'Noto Sans Devanagari',sans-serif;fill:#26343a}.title{font-size:34px;font-weight:900}.sub{font-size:18px;fill:#607078}.lab{font-size:20px;font-weight:800}.small{font-size:16px}.tiny{font-size:14px}.water{fill:#dff2fb;stroke:#add3e6;stroke-width:2}.mount{fill:#d8dde4;stroke:#8999a8;stroke-width:2}.plain{fill:#e8efbe;stroke:#aeb97c;stroke-width:2}.plateau{fill:url(#land);stroke:#87925f;stroke-width:2}.desert{fill:#ead09b;stroke:#caa05d;stroke-width:2}.coast{fill:#c8e6c0;stroke:#7da37b;stroke-width:2}.island{fill:#e7bd78;stroke:#b78643;stroke-width:2}.river{fill:none;stroke:#5d9dc0;stroke-width:4;opacity:.9}.boundary{fill:none;stroke:#6d7b82;stroke-width:2;stroke-dasharray:7 6}.call{fill:#fff;stroke:#c9d5da;stroke-width:2}
+ </style>
+</defs>
+<rect width="1200" height="760" rx="28" fill="url(#bg)"/>
+<text x="42" y="48" class="t title">भारत : प्रमुख भौतिक विभाग</text>
+<text x="42" y="78" class="t sub">कक्षा 9 • भौतिक स्वरूप : संरचना एवं उच्चावच • स्थान-पहचान और तुलना के लिए अध्ययन-आरेख</text>
+<rect x="28" y="105" width="1144" height="610" rx="22" class="water" filter="url(#shadow)"/>
+
+<!-- simplified India study silhouette -->
+<path d="M420 175 L365 158 L320 175 L295 208 L250 223 L226 256 L245 281 L275 299 L297 333 L326 353 L346 389 L365 430 L395 474 L420 522 L447 568 L470 616 L496 664 L521 629 L541 585 L563 550 L582 505 L610 467 L635 430 L661 389 L682 350 L699 311 L684 276 L705 244 L678 211 L645 198 L609 185 L560 175 L510 168 Z" fill="url(#land)" stroke="#6f7d68" stroke-width="4"/>
+
+<!-- six physical divisions as colored bands/regions -->
+<path d="M420 175 L365 158 L320 175 L295 208 L250 223 L226 256 L245 281 L275 299 L297 333 L326 353 L346 389 L365 430 L375 390 L365 344 L385 305 L404 274 L431 248 L458 223 Z" class="mount"/>
+<path d="M458 223 L431 248 L404 274 L385 305 L365 344 L375 390 L401 410 L439 420 L484 422 L528 413 L568 399 L607 381 L642 356 L661 322 L651 292 L629 267 L600 243 L560 225 L510 215 Z" class="plain"/>
+<path d="M401 410 L439 420 L484 422 L528 413 L568 399 L607 381 L642 356 L661 389 L635 430 L610 467 L582 505 L563 550 L541 585 L521 629 L496 664 L470 616 L447 568 L420 522 L395 474 L365 430 Z" class="plateau"/>
+<path d="M245 281 L275 299 L297 333 L326 353 L346 389 L365 430 L344 407 L317 389 L288 365 L259 337 L235 313 Z" class="desert"/>
+<path d="M365 430 L395 474 L420 522 L447 568 L470 616 L496 664 L473 648 L450 616 L428 586 L405 554 L382 519 L363 480 L344 442 Z" class="coast"/>
+<path d="M642 356 L661 389 L635 430 L610 467 L582 505 L563 550 L541 585 L521 629 L496 664 L516 642 L538 607 L560 574 L586 543 L611 505 L639 470 L666 429 L688 391 L700 349 L682 350 Z" class="coast"/>
+
+<!-- major rivers for spatial cue -->
+<path d="M342 389 C430 395 490 398 561 389 C612 382 648 365 681 340" class="river"/>
+<path d="M492 330 C492 372 501 416 520 463 C530 492 536 525 541 556" class="river"/>
+<path d="M375 426 C392 451 404 472 420 501" class="river"/>
+
+<!-- region labels -->
+<g>
+ <rect x="386" y="185" width="170" height="48" class="call" rx="12"/>
+ <text x="471" y="216" text-anchor="middle" class="t lab">हिमालय पर्वत</text>
+ <rect x="425" y="300" width="230" height="52" class="call" rx="12"/>
+ <text x="540" y="333" text-anchor="middle" class="t lab">उत्तर का विशाल मैदान</text>
+ <rect x="435" y="485" width="195" height="52" class="call" rx="12"/>
+ <text x="532" y="518" text-anchor="middle" class="t lab">प्रायद्वीपीय पठार</text>
+ <rect x="253" y="344" width="140" height="48" class="call" rx="12"/>
+ <text x="323" y="374" text-anchor="middle" class="t lab">भारतीय मरुस्थल</text>
+ <rect x="360" y="592" width="145" height="47" class="call" rx="12"/>
+ <text x="433" y="622" text-anchor="middle" class="t small">पश्चिमी तटीय मैदान</text>
+ <rect x="612" y="470" width="145" height="47" class="call" rx="12"/>
+ <text x="684" y="500" text-anchor="middle" class="t small">पूर्वी तटीय मैदान</text>
+</g>
+
+<!-- mountain sublabels -->
+<rect x="66" y="156" width="220" height="150" class="call" rx="14"/>
+<text x="84" y="184" class="t lab">हिमालय की श्रेणियाँ</text>
+<text x="84" y="211" class="t small">• महान हिमालय / हिमाद्रि</text>
+<text x="84" y="236" class="t small">• मध्य हिमालय</text>
+<text x="84" y="261" class="t small">• शिवालिक</text>
+<text x="84" y="286" class="t small">• पूर्व में पूर्वांचल</text>
+
+<!-- plateau callout -->
+<rect x="760" y="170" width="310" height="130" class="call" rx="14"/>
+<text x="780" y="199" class="t lab">प्रायद्वीपीय पठार</text>
+<text x="780" y="226" class="t small">मध्य उच्चभूमि • मालवा • बुंदेलखंड</text>
+<text x="780" y="250" class="t small">दक्कन पठार • पश्चिमी/पूर्वी घाट</text>
+<text x="780" y="274" class="t small">नर्मदा–ताप्ती की भ्रंशित घाटियाँ</text>
+
+<!-- coast/ocean labels -->
+<text x="84" y="470" class="t lab" fill="#387b99">अरब सागर</text>
+<text x="770" y="382" class="t lab" fill="#387b99">बंगाल की खाड़ी</text>
+<text x="472" y="700" class="t lab" fill="#387b99">हिन्द महासागर</text>
+
+<!-- desert callout -->
+<rect x="84" y="420" width="220" height="108" class="call" rx="14"/>
+<text x="104" y="449" class="t lab">भारतीय मरुस्थल</text>
+<text x="104" y="476" class="t small">राजस्थान के पश्चिम में</text>
+<text x="104" y="501" class="t small">लूनी प्रमुख नदी</text>
+
+<!-- islands -->
+<ellipse cx="885" cy="548" rx="12" ry="38" class="island" transform="rotate(18 885 548)"/>
+<ellipse cx="911" cy="575" rx="10" ry="28" class="island" transform="rotate(24 911 575)"/>
+<ellipse cx="958" cy="590" rx="12" ry="24" class="island" transform="rotate(16 958 590)"/>
+<text x="830" y="625" class="t small">अंडमान-निकोबार</text>
+<ellipse cx="285" cy="555" rx="8" ry="22" class="island"/>
+<ellipse cx="303" cy="573" rx="7" ry="18" class="island"/>
+<text x="230" y="615" class="t small">लक्षद्वीप</text>
+
+<!-- legend -->
+<rect x="784" y="332" width="336" height="105" class="call" rx="14"/>
+<text x="804" y="360" class="t lab">मानचित्र संकेत</text>
+<rect x="804" y="374" width="18" height="18" class="mount"/><text x="832" y="389" class="t tiny">पर्वतीय क्षेत्र</text>
+<rect x="940" y="374" width="18" height="18" class="plain"/><text x="968" y="389" class="t tiny">मैदान</text>
+<rect x="804" y="400" width="18" height="18" class="plateau"/><text x="832" y="415" class="t tiny">पठार</text>
+<rect x="940" y="400" width="18" height="18" class="desert"/><text x="968" y="415" class="t tiny">मरुस्थल</text>
+
+<!-- north arrow -->
+<g transform="translate(1080 600)"><path d="M0 60 L0 0" stroke="#34444a" stroke-width="4"/><path d="M0 0 L-10 18 L10 18 Z" fill="#34444a"/><text x="-8" y="84" class="t lab">उ.</text></g>
+
+<text x="32" y="744" class="t tiny" fill="#6b7b81">सांकेतिक अध्ययन-आरेख • प्रशासनिक सीमाएँ नहीं • उद्देश्य: भौतिक विभागों की स्थिति और आपसी तुलना समझना</text>
+</svg>
