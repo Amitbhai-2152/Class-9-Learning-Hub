@@ -1,122 +1,29 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {GEOGRAPHY_CHAPTER_9} from './geographyChapter9Data';
 import {GEOGRAPHY_CHAPTER_9_SUBJECTIVE} from './geographyChapter9SubjectiveData';
+import './geographyChapter1.css';
 
+const progressKey='sst-geography-ch9-progress';
+const completedKey='sst-completed-chapters';
 const QUIZ_TIMES={practice:15*60,challenge:20*60,test:30*60};
-const MODE_LABEL={practice:'Practice',challenge:'Challenge',test:'Final Test'};
-const shuffleForQuestion=(options,index)=>{const n=options.length;if(!n)return [];const shift=index%n;return options.map((_,i)=>options[(i+shift)%n]);};
-const displayQuestion=(item,index)=>{const order=[...Array(item.o.length).keys()];const shift=index%order.length;const rotated=[...order.slice(shift),...order.slice(0,shift)];return {options:rotated.map(i=>item.o[i]),correct:rotated.indexOf(item.a)};};
-const formatTime=(seconds)=>{const s=Math.max(0,seconds);return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;};
+const MODES=[
+ ['learn','📘','Learn','क्षेत्रीय अध्ययन की अवधारणा, कार्य-विधि और प्रमुख कौशल समझें।'],
+ ['practice','📝','Practice','परिभाषा, आँकड़े, सर्वेक्षण और अध्ययन-विधि पर अभ्यास।'],
+ ['challenge','🔥','Challenge','स्थानीय आँकड़ों, गणना और समस्या-विश्लेषण पर अनुप्रयोग।'],
+ ['test','🎯','Final Test','पूरे अध्याय का समयबद्ध अंतिम मूल्यांकन।'],
+ ['subjective','✍️','Subjective','आसान, कठिन और चैलेंजर लिखित प्रश्नों का अभ्यास।']
+];
+const modeTimeLabel=m=>m==='practice'?'15 मिनट कुल':m==='challenge'?'20 मिनट कुल':m==='test'?'30 मिनट कुल':'';
+const formatTime=s=>`${String(Math.floor(Math.max(0,s)/60)).padStart(2,'0')}:${String(Math.max(0,s)%60).padStart(2,'0')}`;
+const readProgress=()=>{try{return JSON.parse(localStorage.getItem(progressKey)||'{}')||{}}catch{return {}}};
+const saveProgress=value=>{try{localStorage.setItem(progressKey,JSON.stringify(value));window.dispatchEvent(new Event('sst-progress-updated'))}catch{}};
+const markComplete=()=>{try{const ids=JSON.parse(localStorage.getItem(completedKey)||'[]')||[];if(!ids.includes('geography-ch-9'))localStorage.setItem(completedKey,JSON.stringify([...ids,'geography-ch-9']));window.dispatchEvent(new Event('sst-progress-updated'))}catch{}};
+const visibleQuestion=(item,index)=>{const options=item.o||[];const n=options.length;if(!n)return {question:item.q,options:[],correct:0,explanation:item.e||''};const original=Number.isInteger(item.a)?item.a:0;const desired=index%n;const shift=((original-desired)%n+n)%n;const rotated=options.map((_,i)=>options[(i+shift)%n]);return {question:item.q,options:rotated,correct:desired,explanation:item.e||''};};
 
-function QuizBlock({items,mode,onExit}){
- const [index,setIndex]=useState(0);
- const [answers,setAnswers]=useState(()=>Array(items.length).fill(null));
- const [done,setDone]=useState(false);
- const [remaining,setRemaining]=useState(QUIZ_TIMES[mode]);
- const completedRef=useRef(false);
- const current=items[index];
- const rendered=useMemo(()=>displayQuestion(current,index),[current,index]);
- const score=useMemo(()=>items.reduce((sum,item,i)=>{const a=answers[i];if(a===null)return sum;const d=displayQuestion(item,i);return sum+(a===d.correct?1:0);},0),[items,answers]);
- useEffect(()=>{
-   const id=window.setInterval(()=>setRemaining(v=>v>0?v-1:0),1000);
-   return()=>window.clearInterval(id);
- },[]);
- useEffect(()=>{
-   if(remaining!==0||completedRef.current)return;
-   completedRef.current=true;
-   setDone(true);
- },[remaining]);
- const choose=(choice)=>{if(done)return;setAnswers(prev=>{const next=[...prev];next[index]=choice;return next;});};
- const finish=()=>{completedRef.current=true;setDone(true);};
- const next=()=>{if(index<items.length-1)setIndex(v=>v+1);else finish();};
- const prev=()=>{if(index>0)setIndex(v=>v-1);};
- if(done)return <section className="sst-card" style={{marginTop:20}}>
-   <div style={{display:'flex',justifyContent:'space-between',gap:12,alignItems:'center',flexWrap:'wrap'}}>
-    <div><span className="sst-kicker">{MODE_LABEL[mode]}</span><h2 style={{margin:'6px 0'}}>अंतिम समीक्षा</h2><p style={{margin:0}}>कुल अंक: <strong>{score}/{items.length}</strong> • अनुत्तरित: <strong>{answers.filter(v=>v===null).length}</strong></p></div>
-    <button className="sst-btn secondary" type="button" onClick={onExit}>अध्याय पर लौटें</button>
-   </div>
-   <div style={{display:'grid',gap:14,marginTop:18}}>
-    {items.map((item,i)=>{const d=displayQuestion(item,i);const ua=answers[i];return <article key={i} style={{border:'1px solid rgba(120,120,120,.22)',borderRadius:16,padding:16}}>
-      <div style={{fontWeight:800,marginBottom:8}}>प्रश्न {i+1}. {item.q}</div>
-      <div style={{fontSize:14,marginBottom:6}}>आपका उत्तर: <strong>{ua===null?'अनुत्तरित':d.options[ua]}</strong></div>
-      <div style={{fontSize:14,marginBottom:6}}>सही उत्तर: <strong>{d.options[d.correct]}</strong></div>
-      <div style={{fontSize:14,marginBottom:8}}>अंक: <strong>{ua===d.correct?1:0}/1</strong></div>
-      <div style={{fontSize:14,opacity:.9}}>व्याख्या: {item.e}</div>
-    </article>;})}
-   </div>
- </section>;
- return <section className="sst-card" style={{marginTop:20}}>
-   <div style={{display:'flex',justifyContent:'space-between',gap:14,alignItems:'center',flexWrap:'wrap'}}>
-    <div><span className="sst-kicker">{MODE_LABEL[mode]}</span><h2 style={{margin:'6px 0'}}>प्रश्न {index+1} / {items.length}</h2><p style={{margin:0}}>हर प्रश्न का उत्तर रिकॉर्ड होगा और अंत में सभी प्रश्नों की समीक्षा होगी।</p></div>
-    <div style={{fontVariantNumeric:'tabular-nums',fontWeight:900,fontSize:22}} aria-label="remaining time">⏱ {formatTime(remaining)}</div>
-   </div>
-   <div style={{height:8,borderRadius:99,background:'rgba(120,120,120,.16)',overflow:'hidden',marginTop:16}}><div style={{height:'100%',width:`${((index+1)/items.length)*100}%`,background:'currentColor',transition:'width .2s'}} /></div>
-   <article style={{marginTop:22}}>
-    <h3 style={{fontSize:20,lineHeight:1.45,marginBottom:16}}>{current.q}</h3>
-    <div style={{display:'grid',gap:10}}>
-      {rendered.options.map((option,i)=>{const selected=answers[index]===i;return <button key={i} type="button" onClick={()=>choose(i)} aria-pressed={selected} style={{textAlign:'left',padding:'14px 16px',borderRadius:14,border:selected?'2px solid currentColor':'1px solid rgba(120,120,120,.24)',background:selected?'rgba(120,120,120,.10)':'transparent',cursor:'pointer',fontWeight:selected?800:600}}>{String.fromCharCode(65+i)}. {option}</button>;})}
-    </div>
-   </article>
-   <div style={{display:'flex',justifyContent:'space-between',gap:10,marginTop:20,flexWrap:'wrap'}}>
-    <button className="sst-btn secondary" type="button" onClick={prev} disabled={index===0}>← पिछला</button>
-    <button className="sst-btn" type="button" onClick={next}>{index===items.length-1?'समीक्षा देखें':'अगला →'}</button>
-   </div>
- </section>;
-}
+function Learn({complete}){const d=GEOGRAPHY_CHAPTER_9,[i,setI]=useState(0),[terms,setTerms]=useState(false),c=d.lessons[i];return <div className="geo-learn"><div className="geo-lesson-nav">{d.lessons.map((x,n)=><button type="button" key={x.title} className={n===i?'is-active':''} onClick={()=>setI(n)}>{String(n+1).padStart(2,'0')}<span>{x.title}</span></button>)}</div><article className="geo-lesson-card"><div className="geo-kicker">LESSON {i+1} / {d.lessons.length}</div><h2>{c.title}</h2><p className="geo-summary">{c.summary}</p><div className="geo-point-grid">{c.points.map(p=><div className="geo-point" key={p}><span>✓</span><p>{p}</p></div>)}</div><div className="geo-progress"><span style={{width:((i+1)/d.lessons.length)*100+'%'}}/></div><div className="geo-actions"><button type="button" className="geo-secondary" disabled={!i} onClick={()=>setI(v=>v-1)}>← पिछला</button>{i===d.lessons.length-1?<button type="button" className="geo-primary" onClick={()=>complete('learn',d.lessons.length,d.lessons.length)}>✓ Learn पूरा करें</button>:<button type="button" className="geo-primary" onClick={()=>setI(v=>v+1)}>अगला →</button>}</div></article><section className="geo-timeline-card"><div className="geo-section-head"><div><span>FIELD STUDY FLOW</span><h3>अध्याय की कार्य-श्रृंखला</h3></div><small>समस्या → आँकड़े → विश्लेषण → रिपोर्ट</small></div><div className="geo-timeline">{d.timeline.map((x,n)=><div className="geo-timeline-item" key={n}><div className="geo-dot">{n+1}</div><div><strong>{x[0]} · {x[1]}</strong><p>{x[2]}</p></div></div>)}</div></section><section className="geo-terms-card"><button type="button" onClick={()=>setTerms(v=>!v)}><span>KEY TERMS</span><strong>मुख्य शब्दावली</strong><b>{terms?'−':'+'}</b></button>{terms&&<div className="geo-term-grid">{d.keyTerms.map(x=><div key={x[0]}><strong>{x[0]}</strong><p>{x[1]}</p></div>)}</div>}</section></div>}
 
-export function GeographyChapter9EngineClean({onBack}){
- const [mode,setMode]=useState('learn');
- const [quizMode,setQuizMode]=useState(null);
- const startQuiz=(m)=>{setQuizMode(m);setMode('quiz');};
- const exitQuiz=()=>{setQuizMode(null);setMode('learn');};
- const activeItems=quizMode==='practice'?GEOGRAPHY_CHAPTER_9.practice:quizMode==='challenge'?GEOGRAPHY_CHAPTER_9.challenge:GEOGRAPHY_CHAPTER_9.finalTest;
- return <main className="page">
-  <header className="page-header sst-page-header">
-   <button type="button" onClick={onBack}>← सामाजिक विज्ञान</button>
-   <span>कक्षा 9 • बिहार बोर्ड • भूगोल • अध्याय 9</span>
-   <h1>{GEOGRAPHY_CHAPTER_9.title}</h1>
-   <p>{GEOGRAPHY_CHAPTER_9.subtitle}</p>
-  </header>
-  <section className="page-content">
-   <div style={{display:'flex',gap:10,flexWrap:'wrap',marginBottom:16}}>
-    {['learn','quiz','subjective'].map(key=><button key={key} type="button" className={`sst-btn ${mode===key?'':'secondary'}`} onClick={()=>setMode(key)}>{key==='learn'?'📘 Learn':key==='quiz'?'🧠 Practice & Tests':'✍️ Subjective'}</button>)}
-   </div>
-   {mode==='learn'&&<>
-    <section className="sst-card">
-      <span className="sst-kicker">LEARNING GOAL</span>
-      <h2>{GEOGRAPHY_CHAPTER_9.goal}</h2>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))',gap:12,marginTop:18}}>
-       {GEOGRAPHY_CHAPTER_9.timeline.map(item=><div key={item.label} style={{padding:16,borderRadius:16,border:'1px solid rgba(120,120,120,.2)'}}><strong>{item.label}</strong><div style={{fontSize:18,fontWeight:800,margin:'6px 0'}}>{item.value}</div><p style={{margin:0,fontSize:14}}>{item.detail}</p></div>)}
-      </div>
-    </section>
-    <section className="sst-card" style={{marginTop:18}}>
-      <span className="sst-kicker">12 LESSONS</span>
-      <div style={{display:'grid',gap:12,marginTop:14}}>
-       {GEOGRAPHY_CHAPTER_9.lessons.map((lesson,i)=><article key={lesson.title} style={{padding:18,borderRadius:18,border:'1px solid rgba(120,120,120,.2)'}}><div style={{fontSize:13,fontWeight:800,opacity:.72}}>पाठ {i+1}</div><h3 style={{margin:'5px 0 8px'}}>{lesson.title}</h3><p style={{margin:'0 0 10px',lineHeight:1.65}}>{lesson.summary}</p><ul style={{margin:0,paddingLeft:20}}>{lesson.points.map(point=><li key={point} style={{marginBottom:7,lineHeight:1.55}}>{point}</li>)}</ul></article>)}
-      </div>
-    </section>
-    <section className="sst-card" style={{marginTop:18}}>
-      <span className="sst-kicker">KEY TERMS</span>
-      <div style={{display:'grid',gap:9,marginTop:14}}>{GEOGRAPHY_CHAPTER_9.keyTerms.map(([term,meaning])=><div key={term} style={{display:'grid',gridTemplateColumns:'minmax(120px,180px) 1fr',gap:12,padding:'10px 0',borderBottom:'1px solid rgba(120,120,120,.15)'}}><strong>{term}</strong><span>{meaning}</span></div>)}</div>
-    </section>
-   </>}
-   {mode==='quiz'&&<section className="sst-card">
-     <span className="sst-kicker">ASSESSMENT CENTER</span>
-     <h2 style={{margin:'6px 0'}}>अभ्यास से Final Test तक</h2>
-     <p>चयन के बाद सही/गलत तुरंत नहीं दिखेगा। उत्तर सुरक्षित होंगे और पूरा परिणाम केवल अंतिम समीक्षा में खुलेगा। Timer पूरे test/mode के लिए है।</p>
-     {!quizMode&&<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:14,marginTop:18}}>
-      <div style={{padding:18,borderRadius:18,border:'1px solid rgba(120,120,120,.2)'}}><h3>Practice</h3><p>15 प्रश्न • 15 मिनट • अवधारणा जाँच</p><button className="sst-btn" type="button" onClick={()=>startQuiz('practice')}>Practice शुरू करें</button></div>
-      <div style={{padding:18,borderRadius:18,border:'1px solid rgba(120,120,120,.2)'}}><h3>Challenge</h3><p>12 प्रश्न • 20 मिनट • अनुप्रयोग और तर्क</p><button className="sst-btn" type="button" onClick={()=>startQuiz('challenge')}>Challenge शुरू करें</button></div>
-      <div style={{padding:18,borderRadius:18,border:'1px solid rgba(120,120,120,.2)'}}><h3>Final Test</h3><p>20 प्रश्न • 30 मिनट • पूर्ण अध्याय मूल्यांकन</p><button className="sst-btn" type="button" onClick={()=>startQuiz('test')}>Final Test शुरू करें</button></div>
-     </div>}
-     {quizMode&&<QuizBlock key={quizMode} items={activeItems} mode={quizMode} onExit={exitQuiz}/>} 
-   </section>}
-   {mode==='subjective'&&<section className="sst-card">
-    <span className="sst-kicker">SUBJECTIVE PRACTICE</span>
-    <h2>उत्तर लिखकर तैयारी करें</h2>
-    <p>प्रश्न क्रमशः Easy, Hard और Challenger स्तर में हैं। नीचे मॉडल उत्तर अध्ययन और self-check के लिए दिए गए हैं।</p>
-    {[['Easy',GEOGRAPHY_CHAPTER_9_SUBJECTIVE.easy],['Hard',GEOGRAPHY_CHAPTER_9_SUBJECTIVE.hard],['Challenger',GEOGRAPHY_CHAPTER_9_SUBJECTIVE.challenger]].map(([level,items])=><div key={level} style={{marginTop:20}}><h3>{level}</h3><div style={{display:'grid',gap:10}}>{items.map((item,i)=><details key={i} style={{border:'1px solid rgba(120,120,120,.2)',borderRadius:14,padding:'12px 14px'}}><summary style={{cursor:'pointer',fontWeight:800}}>{i+1}. {item.q}</summary><p style={{margin:'12px 0 0',lineHeight:1.7}}><strong>मॉडल उत्तर:</strong> {item.a}</p></details>)}</div></div>)}
-   </section>}
-  </section>
- </main>;
-}
+function Quiz({mode,complete}){const d=GEOGRAPHY_CHAPTER_9,q=mode==='test'?d.finalTest:d[mode]||[],duration=QUIZ_TIMES[mode]||15*60;const [i,setI]=useState(0),[answers,setAnswers]=useState([]),[done,setDone]=useState(false),[timeExpired,setTimeExpired]=useState(false),[timeLeft,setTimeLeft]=useState(duration);const completedRef=useRef(false);useEffect(()=>{setI(0);setAnswers([]);setDone(false);setTimeExpired(false);setTimeLeft(duration);completedRef.current=false},[mode,duration]);useEffect(()=>{if(done||timeExpired||!q.length)return;if(timeLeft<=0){setTimeExpired(true);return}const timer=setTimeout(()=>setTimeLeft(v=>v-1),1000);return()=>clearTimeout(timer)},[timeLeft,done,timeExpired,q.length]);const review=q.map((item,n)=>{const x=visibleQuestion(item,n),selected=answers[n];return {n,question:x.question,options:x.options,correct:x.correct,selected,correctAnswer:x.options[x.correct],yourAnswer:selected===null||selected===undefined?null:x.options[selected],explanation:x.explanation,marks:selected===x.correct?1:0};});const score=review.reduce((sum,x)=>sum+x.marks,0);const saveCompletion=()=>{if(completedRef.current)return;completedRef.current=true;complete(mode,score,q.length)};useEffect(()=>{if(timeExpired&&!done){setDone(true);saveCompletion()}},[timeExpired,done,score]);if(!q.length)return <div className="geo-result-card"><h2>इस चरण का प्रश्न बैंक उपलब्ध नहीं है।</h2></div>;const finish=()=>{setDone(true);setTimeExpired(false);saveCompletion()};if(done)return <div className="geo-review-card"><div className="geo-review-summary"><div className="geo-result-ring">{score}<small>/{q.length}</small></div><div><span className="geo-result-label">{mode==='practice'?'PRACTICE REVIEW':mode==='challenge'?'CHALLENGE REVIEW':'FINAL TEST REVIEW'}</span><h2>{timeExpired?'⏰ समय समाप्त — परीक्षा समाप्त':'परीक्षा पूर्ण'}</h2><p>कुल अंक: <strong>{score} / {q.length}</strong> • सही: <strong>{score}</strong> • गलत/अनुत्तरित: <strong>{q.length-score}</strong></p></div></div><div className="geo-review-list">{review.map(r=><article className={'geo-review-item '+(r.selected===null||r.selected===undefined?'unanswered':r.marks?'right':'wrong')} key={r.n}><div className="geo-review-item-top"><strong>प्रश्न {r.n+1}</strong><span>{r.marks}/1 अंक</span></div><h3>{r.question}</h3><p><b>आपका उत्तर:</b> {r.yourAnswer??'अनुत्तरित'}</p><p><b>सही उत्तर:</b> {r.correctAnswer}</p><p className="geo-review-explain">व्याख्या: {r.explanation}</p></article>)}</div><div className="geo-review-actions"><button type="button" className="geo-primary" onClick={()=>{setI(0);setAnswers([]);setDone(false);setTimeExpired(false);setTimeLeft(duration);completedRef.current=false}}>फिर से प्रयास करें</button></div></div>;const x=visibleQuestion(q[i],i),selected=answers[i],locked=selected!==undefined&&selected!==null;const choose=n=>{if(locked||timeExpired)return;setAnswers(prev=>{const next=[...prev];next[i]=n;return next});};const next=()=>{if(i<q.length-1)setI(v=>v+1);else finish()};const timerClass=timeLeft<=60?'danger':timeLeft<=300?'warning':'';return <div className="geo-quiz-card"><div className="geo-quiz-top"><span>{mode==='practice'?'PRACTICE':mode==='challenge'?'CHALLENGE':'FINAL TEST'}</span><div><strong>{i+1} / {q.length}</strong><span className={`geo-timer ${timerClass}`} role="timer" aria-live="polite">⏱ {formatTime(timeLeft)}</span></div></div><div className="geo-quiz-track"><span style={{width:((i+1)/q.length)*100+'%'}}/></div><p className="geo-timer-note">पूरे {mode==='practice'?'Practice':mode==='challenge'?'Challenge':'Final Test'} के लिए कुल समय: <strong>{formatTime(duration)}</strong> • प्रश्न बदलने पर timer reset नहीं होगा • उत्तर अंत में review होगा।</p><h2>{x.question}</h2><div className="geo-options">{x.options.map((o,n)=><button type="button" key={o} disabled={locked||timeExpired} className={selected===n?'selected':''} onClick={()=>choose(n)}><span>{String.fromCharCode(65+n)}</span>{o}</button>)}</div>{selected!==undefined&&selected!==null&&<div className="geo-selection-note">✓ उत्तर दर्ज हो गया है • सही/गलत परिणाम परीक्षा के अंत में दिखेगा।</div>}<div className="geo-quiz-footer"><small>{selected!==undefined&&selected!==null?'उत्तर सुरक्षित है':'एक विकल्प चुनें'}</small><button type="button" className="geo-primary" onClick={next}>{i===q.length-1?'परीक्षा समाप्त करें':'अगला प्रश्न →'}</button></div></div>}
+
+function Subjective(){const d=GEOGRAPHY_CHAPTER_9_SUBJECTIVE,l=[['easy','🌱 आसान','मूल तथ्य और पहचान'],['hard','🧠 कठिन','अंतर, कारण और व्याख्या'],['challenger','🏆 चैलेंजर','गणना, तर्क और क्षेत्रीय-विश्लेषण']];return <section className="geo-subjective"><div className="geo-subjective-head"><span>✍ SUBJECTIVE PRACTICE</span><h2>विषयपरक प्रश्न</h2><p>क्षेत्रीय अध्ययन • 15 प्रश्न • उत्तर अपने शब्दों में लिखें</p></div><div className="geo-subjective-levels">{l.map(([k,label,desc])=><div className={'geo-subjective-level level-'+k} key={k}><div className="geo-level-head"><div><span>{label}</span><strong>{k==='easy'?'आसान':k==='hard'?'कठिन':'चैलेंजर'}</strong></div><small>{d[k].length} प्रश्न</small></div><p className="geo-level-desc">{desc}</p><div className="geo-subjective-list">{d[k].map((x,n)=><article className="geo-subjective-item" key={n}><div className="geo-number">{String(n+1).padStart(2,'0')}</div><div><p>{x.q}</p><span>{x.marks||'अध्ययन'} अंक</span><details><summary>मॉडल उत्तर देखें</summary><p><strong>मॉडल उत्तर:</strong> {x.a}</p></details></div></article>)}</div></div>)}</div></section>}
+
+export function GeographyChapter9EngineClean({onBack}){const d=GEOGRAPHY_CHAPTER_9,[mode,setMode]=useState(null),[progress,setProgress]=useState(readProgress);const complete=(id,score,total)=>{const n={...progress,[id]:{score,total,completedAt:new Date().toISOString()}};if(id==='test'){n.chapterCompleted={completedAt:new Date().toISOString(),score,total};markComplete()}setProgress(n);saveProgress(n)};const workspace=mode&&<div className="geo-workspace"><button type="button" className="geo-mode-back" onClick={()=>setMode(null)}>← चरण चयन पर लौटें</button>{mode==='learn'?<Learn complete={complete}/>:mode==='subjective'?<Subjective/>:<Quiz mode={mode} complete={complete}/>}</div>;return <main className="geo-chapter"><header className="geo-header"><button type="button" className="geo-back" onClick={onBack}>← सामाजिक विज्ञान</button><div><span>भूगोल • अध्याय 9 • बिहार बोर्ड</span><h1>{d.title}</h1><p>{d.subtitle}</p>{progress.chapterCompleted&&<div className="geo-complete">✓ CHAPTER COMPLETED</div>}</div><div className="geo-stat"><strong>{['learn','practice','challenge','test'].filter(x=>progress[x]).length}/4</strong><span>stages complete</span></div></header><section className="geo-content"><div className="geo-intro"><div><span>अध्याय का लक्ष्य</span><p>{d.goal}</p></div><div className="geo-chips"><span>{d.lessons.length} lessons</span><span>{d.practice.length} practice</span><span>{d.challenge.length} challenge</span><span>{d.finalTest.length} test</span><span>{d.easy?.length||5} easy subjective</span><span>{d.hard?.length||5} hard</span><span>{d.challenger?.length||5} challenger</span></div></div>{workspace||<div className="geo-mode-grid">{MODES.map(([id,icon,title,desc])=><button type="button" key={id} className={'geo-mode-card '+(id!=='subjective'&&progress[id]?'completed':'')} onClick={()=>setMode(id)}><span className="geo-mode-icon">{icon}</span><strong>{title}</strong><p>{desc}</p>{id!=='subjective'&&<em>{progress[id]?'✓ '+progress[id].score+'/'+progress[id].total:'⏱ '+modeTimeLabel(id)}</em>}{id==='subjective'&&<em>शुरू करें →</em>}</button>)}</div>}</section></main>}
