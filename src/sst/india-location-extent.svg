@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 720" role="img" aria-labelledby="title desc">
+<title id="title">भारत : स्थिति एवं विस्तार</title>
+<desc id="desc">भारत के अक्षांशीय और देशांतरीय विस्तार, कर्क रेखा, मानक देशांतर तथा आसपास के जल और पड़ोसी क्षेत्रों का अध्ययन-आरेख। सीमाएँ सांकेतिक हैं।</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7fbff"/><stop offset="1" stop-color="#eef5fb"/></linearGradient>
+ <linearGradient id="land" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dcefdc"/><stop offset="1" stop-color="#c8dfcb"/></linearGradient>
+ <style>
+  .txt{font-family:Arial,'Noto Sans Devanagari',sans-serif;fill:#233142}.small{font-size:18px}.mid{font-size:21px;font-weight:700}.large{font-size:30px;font-weight:800}.line{stroke:#76879b;stroke-width:2}.dash{stroke-dasharray:8 7}.water{fill:#dff2fb}.accent{stroke:#cf7c2d;stroke-width:4}.std{stroke:#6a62c5;stroke-width:4}.labelbox{fill:#fff;stroke:#ccd7e2;stroke-width:2;rx:12}.neighbor{font-size:19px;font-weight:700;fill:#4a5969}
+ </style>
+</defs>
+<rect width="1000" height="720" rx="24" fill="url(#bg)"/>
+<text x="44" y="48" class="txt large">भारत : स्थिति एवं विस्तार</text>
+<text x="44" y="78" class="txt small" fill="#617183">अध्ययन-आरेख • अक्षांश, देशांतर, मानक देशांतर और पड़ोसी क्षेत्रों को एक साथ पढ़ें</text>
+
+<!-- water and study frame -->
+<rect x="36" y="108" width="928" height="568" rx="18" class="water" stroke="#bdd7e6" stroke-width="2"/>
+
+<!-- latitude bands -->
+<line x1="120" y1="160" x2="880" y2="160" class="line dash"/>
+<line x1="120" y1="390" x2="880" y2="390" class="accent"/>
+<line x1="120" y1="620" x2="880" y2="620" class="line dash"/>
+<text x="62" y="166" class="txt mid">37°6′ उ.</text>
+<text x="62" y="396" class="txt mid" fill="#a45c16">23°30′ उ. • कर्क रेखा</text>
+<text x="62" y="626" class="txt mid">8°4′ उ.</text>
+
+<!-- longitude guides -->
+<line x1="285" y1="128" x2="285" y2="650" class="line dash"/>
+<line x1="505" y1="128" x2="505" y2="650" class="std"/>
+<line x1="715" y1="128" x2="715" y2="650" class="line dash"/>
+<text x="246" y="147" class="txt mid">68°7′ पू.</text>
+<text x="463" y="147" class="txt mid" fill="#554fa2">82°30′ पू.</text>
+<text x="677" y="147" class="txt mid">97°25′ पू.</text>
+
+<!-- schematic peninsula -->
+<path d="M386 188 C355 212 342 252 351 299 C360 342 385 367 392 405 C399 447 421 500 452 553 C470 584 492 615 505 645 C518 615 537 575 550 537 C569 482 606 444 628 397 C646 359 662 315 653 275 C644 238 614 213 582 192 C538 163 430 157 386 188 Z" fill="url(#land)" stroke="#729076" stroke-width="3"/>
+<!-- north-west/north-east study extensions -->
+<path d="M387 188 C350 172 315 174 289 193 L275 222 L321 251 L351 238 L386 188 Z" fill="#d3e6d5" stroke="#729076" stroke-width="3"/>
+<path d="M582 192 L637 176 L708 204 L731 237 L655 249 L628 226 Z" fill="#d3e6d5" stroke="#729076" stroke-width="3"/>
+<!-- standard meridian in India -->
+<path d="M505 169 C500 238 505 316 505 390 C505 463 505 532 505 636" fill="none" class="std" stroke-dasharray="12 6"/>
+<circle cx="505" cy="383" r="7" fill="#6a62c5"/>
+<text x="522" y="382" class="txt small" fill="#554fa2">नैनी/प्रयागराज के निकट</text>
+<!-- tropic crossing marker -->
+<circle cx="492" cy="390" r="7" fill="#cf7c2d"/>
+<text x="420" y="416" class="txt small" fill="#9f5f1e">कर्क रेखा</text>
+
+<!-- oceans -->
+<text x="155" y="475" class="txt mid" fill="#31738e" transform="rotate(-18 155 475)">अरब सागर</text>
+<text x="700" y="420" class="txt mid" fill="#31738e" transform="rotate(18 700 420)">बंगाल की खाड़ी</text>
+<text x="445" y="655" class="txt mid" fill="#31738e">हिन्द महासागर</text>
+
+<!-- neighbors: schematic labels, not borders -->
+<g>
+ <rect x="112" y="240" width="130" height="48" class="labelbox"/>
+ <text x="177" y="270" text-anchor="middle" class="txt neighbor">पाकिस्तान</text>
+ <rect x="410" y="116" width="90" height="38" class="labelbox"/>
+ <text x="455" y="141" text-anchor="middle" class="txt neighbor">चीन</text>
+ <rect x="525" y="116" width="80" height="38" class="labelbox"/>
+ <text x="565" y="141" text-anchor="middle" class="txt neighbor">नेपाल</text>
+ <rect x="615" y="160" width="80" height="38" class="labelbox"/>
+ <text x="655" y="185" text-anchor="middle" class="txt neighbor">भूटान</text>
+ <rect x="742" y="250" width="130" height="48" class="labelbox"/>
+ <text x="807" y="280" text-anchor="middle" class="txt neighbor">बांग्लादेश</text>
+ <rect x="760" y="335" width="108" height="48" class="labelbox"/>
+ <text x="814" y="365" text-anchor="middle" class="txt neighbor">म्यांमार</text>
+ <rect x="150" y="340" width="118" height="48" class="labelbox"/>
+ <text x="209" y="370" text-anchor="middle" class="txt neighbor">अफगानिस्तान*</text>
+</g>
+<text x="160" y="410" class="txt small" fill="#6a7584">*पाठ्यपुस्तक के पड़ोसी-वर्णन के अनुसार</text>
+
+<!-- island inset -->
+<rect x="770" y="535" width="150" height="105" rx="14" fill="#fff" stroke="#c9d5df" stroke-width="2"/>
+<text x="785" y="559" class="txt mid">द्वीपीय पड़ोसी</text>
+<text x="785" y="585" class="txt small">श्रीलंका • मालदीव</text>
+<text x="785" y="610" class="txt small">भारत के दक्षिण में</text>
+<circle cx="675" cy="575" r="6" fill="#6f9b78"/>
+<text x="690" y="581" class="txt small">इंदिरा प्वाइंट</text>
+
+<!-- extent callouts -->
+<rect x="55" y="130" width="205" height="66" class="labelbox"/>
+<text x="70" y="158" class="txt small">उत्तरतम मुख्य अक्षांश</text>
+<text x="70" y="184" class="txt mid">37°6′ उ.</text>
+<rect x="55" y="555" width="205" height="66" class="labelbox"/>
+<text x="70" y="583" class="txt small">दक्षिणतम मुख्य अक्षांश</text>
+<text x="70" y="609" class="txt mid">8°4′ उ.</text>
+
+<!-- legend -->
+<rect x="292" y="662" width="420" height="28" rx="10" fill="#fff" stroke="#d1dbe4"/>
+<text x="502" y="682" text-anchor="middle" class="txt small">मानक देशांतर = 82°30′ पू.  |  1° देशांतर ≈ 4 मिनट</text>
+<text x="950" y="706" text-anchor="end" class="txt small" fill="#6c7888">सीमाएँ व आकृति सांकेतिक • अध्ययन हेतु</text>
+</svg>
