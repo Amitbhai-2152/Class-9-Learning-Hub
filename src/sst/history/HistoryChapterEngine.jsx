@@ -1,4 +1,4 @@
-import React,{useEffect,useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {historyChapter1} from './historyChapter1Data';
 import {HISTORY_CHAPTER_2} from './historyChapter2Data';
 import './historyChapter.css';
@@ -14,6 +14,8 @@ const key=(n)=>`sst-history-ch${n}-progress`;
 const read=(n)=>{try{return JSON.parse(localStorage.getItem(key(n))||'{}')||{}}catch{return {}}};
 const save=(n,v)=>{try{localStorage.setItem(key(n),JSON.stringify(v));window.dispatchEvent(new Event('sst-progress-updated'))}catch{}};
 const markComplete=(n)=>{try{const ids=JSON.parse(localStorage.getItem('sst-completed-chapters')||'[]')||[];if(!ids.includes(`history-ch-${n}`))localStorage.setItem('sst-completed-chapters',JSON.stringify([...ids,`history-ch-${n}`]));window.dispatchEvent(new Event('sst-progress-updated'))}catch{}};
+const secondsPerQuestion=(mode)=>mode==='practice'?40:60;
+const formatTime=(s)=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
 
 function LearnView({data,onComplete}){
  const [lesson,setLesson]=useState(0),[showTerms,setShowTerms]=useState(false);const current=data.lessons[lesson];
@@ -24,15 +26,27 @@ function LearnView({data,onComplete}){
   {data.keyTerms&&<section className="history-terms-card"><button onClick={()=>setShowTerms(v=>!v)}><span>KEY TERMS</span><strong>मुख्य शब्दावली</strong><b>{showTerms?'−':'+'}</b></button>{showTerms&&<div className="history-term-grid">{data.keyTerms.map(([term,meaning])=><div key={term}><strong>{term}</strong><p>{meaning}</p></div>)}</div>}</section>}
  </div>;
 }
+
 function QuizView({data,mode,onComplete}){
- const questions=data[mode]||[];const [index,setIndex]=useState(0),[picked,setPicked]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false);const q=questions[index];
+ const questions=mode==='test'?(data.finalTest||[]):(data[mode]||[]);
+ const [index,setIndex]=useState(0),[picked,setPicked]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[timeLeft,setTimeLeft]=useState(()=>questions.length*secondsPerQuestion(mode));
+ const scoreRef=useRef(score),pickedRef=useRef(picked),doneRef=useRef(done);
+ useEffect(()=>{scoreRef.current=score},[score]);
+ useEffect(()=>{pickedRef.current=picked},[picked]);
+ useEffect(()=>{doneRef.current=done},[done]);
+ useEffect(()=>{setIndex(0);setPicked(null);setScore(0);setDone(false);setTimeLeft(questions.length*secondsPerQuestion(mode))},[mode,questions.length]);
+ const q=questions[index];
+ const finish=()=>{if(doneRef.current)return;const finalScore=scoreRef.current+(pickedRef.current===q?.[2]?1:0);doneRef.current=true;setScore(finalScore);setDone(true);setTimeLeft(0);onComplete(mode,finalScore,questions.length)};
+ useEffect(()=>{if(done||!questions.length)return;const timer=setInterval(()=>setTimeLeft(v=>{if(v<=1){clearInterval(timer);finish();return 0}return v-1}),1000);return()=>clearInterval(timer)},[done,index,questions.length,mode]);
  if(!q)return <div className="history-result-card"><h2>इस चरण का प्रश्न बैंक उपलब्ध नहीं है।</h2></div>;
- const choose=(choice)=>{if(picked!==null)return;setPicked(choice);if(choice===q[2])setScore(v=>v+1)};
- const next=()=>{if(index<questions.length-1){setIndex(v=>v+1);setPicked(null)}else{const finalScore=score+(picked===q[2]?1:0);setScore(finalScore);setDone(true);onComplete(mode,finalScore,questions.length)}};
- const restart=()=>{setIndex(0);setPicked(null);setScore(0);setDone(false)};
- if(done)return <div className="history-result-card"><div className="history-result-ring">{score}<small>/{questions.length}</small></div><span className="history-result-label">{mode==='practice'?'PRACTICE COMPLETE':mode==='challenge'?'CHALLENGE COMPLETE':'FINAL TEST COMPLETE'}</span><h2>{score/questions.length>=.8?'बहुत बढ़िया!':score/questions.length>=.6?'अच्छी तैयारी!':'एक बार फिर दोहराएँ।'}</h2><p>आपका स्कोर {score} / {questions.length} है। गलत प्रश्नों की explanation देखकर दोबारा अभ्यास करें।</p>{mode==='test'&&<div className="history-chapter-finish">✓ अध्याय पूरा हुआ — अब यह chapter completed के रूप में सेव है।</div>}<button className="history-primary" onClick={restart}>फिर से प्रयास करें</button></div>;
- const answered=picked!==null;return <div className="history-quiz-card"><div className="history-quiz-top"><span>{mode==='practice'?'PRACTICE':mode==='challenge'?'CHALLENGE':'FINAL TEST'}</span><strong>{index+1} / {questions.length}</strong></div><div className="history-quiz-track"><span style={{width:`${((index+1)/questions.length)*100}%`}}/></div><h2>{q[0]}</h2><div className="history-options">{q[1].map((option,choice)=><button key={option} className={answered?(choice===q[2]?'correct':choice===picked?'wrong':''):''} disabled={answered} onClick={()=>choose(choice)}><span>{String.fromCharCode(65+choice)}</span>{option}</button>)}</div>{answered&&<div className={`history-explain ${picked===q[2]?'ok':'no'}`}><strong>{picked===q[2]?'✓ सही उत्तर':'✕ ध्यान दें'}</strong><p>{q[3]}</p></div>}<div className="history-quiz-footer"><small>{answered?'उत्तर lock हो गया है':'एक विकल्प चुनें'}</small><button className="history-primary" disabled={!answered} onClick={next}>{index===questions.length-1?'परिणाम देखें':'अगला प्रश्न →'}</button></div></div>;
+ const choose=(choice)=>{if(picked!==null||done)return;setPicked(choice);if(choice===q[2])setScore(v=>v+1)};
+ const next=()=>{if(picked===null)return;if(index<questions.length-1){setIndex(v=>v+1);setPicked(null)}else finish()};
+ const restart=()=>{setIndex(0);setPicked(null);setScore(0);setDone(false);setTimeLeft(questions.length*secondsPerQuestion(mode))};
+ if(done)return <div className="history-result-card"><div className="history-result-ring">{score}<small>/{questions.length}</small></div><span className="history-result-label">{mode==='practice'?'PRACTICE COMPLETE':mode==='challenge'?'CHALLENGE COMPLETE':'FINAL TEST COMPLETE'}</span><h2>{score/questions.length>=.8?'बहुत बढ़िया!':score/questions.length>=.6?'अच्छी तैयारी!':'एक बार फिर दोहराएँ।'}</h2><p>आपका स्कोर {score} / {questions.length} है। समय समाप्त होने पर बिना उत्तर दिए प्रश्नों को गलत माना जाता है।</p>{mode==='test'&&<div className="history-chapter-finish">✓ अध्याय पूरा हुआ — अब यह chapter completed के रूप में सेव है।</div>}<button className="history-primary" onClick={restart}>फिर से प्रयास करें</button></div>;
+ const answered=picked!==null;const timerClass=timeLeft<=Math.max(10,Math.floor((questions.length*secondsPerQuestion(mode))*.25))?'danger':timeLeft<=Math.floor((questions.length*secondsPerQuestion(mode))*.5)?'warning':'';
+ return <div className="history-quiz-card"><div className="history-quiz-top"><span>{mode==='practice'?'PRACTICE':mode==='challenge'?'CHALLENGE':'FINAL TEST'}</span><div className="history-quiz-meta"><strong>{index+1} / {questions.length}</strong><span className={`history-timer ${timerClass}`} aria-live="polite">⏱ {formatTime(timeLeft)}</span></div></div><div className="history-quiz-track"><span style={{width:`${((index+1)/questions.length)*100}%`}}/></div><p className="history-timer-note">हर प्रश्न के लिए {secondsPerQuestion(mode)} सेकंड • कुल समय {formatTime(questions.length*secondsPerQuestion(mode))}</p><h2>{q[0]}</h2><div className="history-options">{q[1].map((option,choice)=><button key={option} className={answered?(choice===q[2]?'correct':choice===picked?'wrong':''):''} disabled={answered} onClick={()=>choose(choice)}><span>{String.fromCharCode(65+choice)}</span>{option}</button>)}</div>{answered&&<div className={`history-explain ${picked===q[2]?'ok':'no'}`}><strong>{picked===q[2]?'✓ सही उत्तर':'✕ ध्यान दें'}</strong><p>{q[3]}</p></div>}<div className="history-quiz-footer"><small>{answered?'उत्तर lock हो गया है':'एक विकल्प चुनें'}</small><button className="history-primary" disabled={!answered} onClick={next}>{index===questions.length-1?'परिणाम देखें':'अगला प्रश्न →'}</button></div></div>;
 }
+
 export function HistoryChapterEngine({onBack,chapterNumber=1}){
  const data=DATA[chapterNumber]||historyChapter1;const [mode,setMode]=useState(null);const [progress,setProgress]=useState(()=>read(chapterNumber));
  useEffect(()=>setProgress(read(chapterNumber)),[chapterNumber]);
