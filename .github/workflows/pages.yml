@@ -50,6 +50,24 @@ jobs:
       - name: Hindi unseen passage QA
         run: npm run qa:hindi:unseen
 
+      - name: Civics content QA
+        run: npm run qa:civics
+
+      - name: Economics content QA
+        run: npm run qa:economics
+
+      - name: SST structure QA
+        run: npm run qa:sst:structure
+
+      - name: SST data QA
+        run: npm run qa:sst:data
+
+      - name: SST engine QA
+        run: npm run qa:sst:engines
+
+      - name: SST wiring QA
+        run: npm run qa:sst:wiring
+
       - name: Build application
         run: npm run build
 
