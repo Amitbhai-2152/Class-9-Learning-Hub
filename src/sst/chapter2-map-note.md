@@ -1,0 +1,1 @@
+Chapter 2 study map uses the Wikimedia Commons file “Physical Map of India.jpg” by Vigneshdm1990, licensed CC BY-SA 4.0. Source: https://commons.wikimedia.org/wiki/File:Physical_Map_of_India.jpg
