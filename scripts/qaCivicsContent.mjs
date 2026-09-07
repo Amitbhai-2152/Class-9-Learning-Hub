@@ -11,12 +11,13 @@ for(let n=1;n<=6;n++){
   const subjective=getCivicsSubjective(n);
   assert.ok(data,`Missing Civics chapter ${n} data`);
   assert.ok(subjective,`Missing Civics chapter ${n} subjective data`);
+  const subjectiveCount=Object.values(subjective.questions).reduce((sum,items)=>sum+items.length,0);
+  console.log(`Civics Ch${n}: lessons=${data.lessons.length}, practice=${data.practice.length}, challenge=${data.challenge.length}, final=${data.finalTest.length}, subjective=${subjectiveCount}`);
   assert.equal(data.title,civicsTrack.chapters[n-1],`Chapter ${n} title mismatch with registry`);
   assert.equal(data.lessons.length,15,`Chapter ${n}: expected 15 lessons`);
   assert.equal(data.practice.length,15,`Chapter ${n}: expected 15 practice questions`);
   assert.equal(data.challenge.length,12,`Chapter ${n}: expected 12 challenge questions`);
   assert.equal(data.finalTest.length,20,`Chapter ${n}: expected 20 final-test questions`);
-  const subjectiveCount=Object.values(subjective.questions).reduce((sum,items)=>sum+items.length,0);
   assert.equal(subjectiveCount,15,`Chapter ${n}: expected 15 subjective questions`);
   assert.equal(subjective.questions.easy.length,5,`Chapter ${n}: expected 5 easy subjective questions`);
   assert.equal(subjective.questions.hard.length,5,`Chapter ${n}: expected 5 hard subjective questions`);
