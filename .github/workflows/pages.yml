@@ -31,48 +31,36 @@ jobs:
 
       - name: Science content QA
         run: npm run qa:science
-
       - name: Hindi gadhya content QA
         run: npm run qa:hindi:gadhya
-
       - name: Hindi kavya content QA
         run: npm run qa:hindi:kavya
-
       - name: Hindi Varnika content QA
         run: npm run qa:hindi:varnika
-
       - name: Hindi grammar content QA
         run: npm run qa:hindi:grammar
-
       - name: Hindi grammar dedicated-page QA
         run: npm run qa:hindi:grammar:dedicated
-
       - name: Hindi unseen passage QA
         run: npm run qa:hindi:unseen
-
       - name: Civics content QA
         run: npm run qa:civics
-
       - name: Economics content QA
         run: npm run qa:economics
-
       - name: SST structure QA
         run: npm run qa:sst:structure
-
       - name: SST data QA
         run: npm run qa:sst:data
-
       - name: SST engine QA
         run: npm run qa:sst:engines
-
       - name: SST wiring QA
         run: npm run qa:sst:wiring
-
       - name: History subjective QA
         run: node scripts/qaHistorySubjective.mjs
-
       - name: Sanskrit content QA
         run: npm run qa:sanskrit
+      - name: Sanskrit Grammar QA
+        run: npm run qa:sanskrit:grammar
 
       - name: Build application
         run: npm run build
