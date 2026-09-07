@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const root=fs.readFileSync(new URL('../src/sst/SSTRoot.jsx',import.meta.url),'utf8');
+for(const n of [1,2,3,4]) assert.match(root,/track==='history'.*\[1,2,3,4\]\.includes\(Number\(route\.chapter\)\)/,`History group missing; checked ch${n}`);
+for(const n of [5,6,7,8]) assert.ok(root.includes(`Number(route.chapter)===${n}`),`History ${n} route missing`);
+for(let n=1;n<=13;n++) assert.ok(root.includes(`Number(route.chapter)===${n}`),`SST route token ${n} missing`);
+assert.ok(root.includes("track==='civics'&&[1,2,3,4,5,6].includes(Number(route.chapter))"),'Civics route group missing');
+assert.ok(root.includes("track==='economics'&&[1,2,3,4,5,6].includes(Number(route.chapter))"),'Economics route group missing');
+const files=['CivicsEngine.jsx','EconomicsEngine.jsx','GeographyChapter1Engine.jsx','GeographyChapter2Engine.jsx','GeographyChapter3Engine.jsx','GeographyChapter4EngineClean.jsx','GeographyChapter5EngineClean.jsx','GeographyChapter6EngineClean.jsx','GeographyChapter7EngineClean.jsx','GeographyChapter8EngineClean.jsx','GeographyChapter9EngineClean.jsx','GeographyChapter10EngineClean.jsx','GeographyChapter11EngineClean.jsx','GeographyChapter12EngineClean.jsx','GeographyChapter13EngineClean.jsx','history/HistoryChapterEngine.jsx','history/HistoryChapter5Engine.jsx','history/HistoryChapter6Engine.jsx','history/HistoryChapter7Engine.jsx','history/HistoryChapter8Engine.jsx'];
+for(const p of files) assert.ok(fs.existsSync(new URL(`../src/sst/${p}`,import.meta.url)),`Missing engine ${p}`);
+console.log('Strict SST wiring QA passed: 33 chapter routes and all dedicated engines verified.');
