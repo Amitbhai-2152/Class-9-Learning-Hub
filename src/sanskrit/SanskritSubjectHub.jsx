@@ -6,7 +6,7 @@ import {SanskritGrammarLab} from './SanskritGrammarLab';
 import './sanskrit-section.css';
 
 const MODES=[
-  ['learn','📖','सीखें','पाठ का अर्थ, मुख्य विचार, शब्दावली और व्याकरण focus',10],
+  ['learn','📖','सीखें','पाठ का अर्थ, मुख्य विचार, पाठ-विशेष सामग्री, शब्दावली और व्याकरण focus',10],
   ['practice','📝','अभ्यास','15 पाठ-आधारित MCQs और तुरंत feedback',15],
   ['challenge','🔥','चुनौती','12 कठिन comprehension / reasoning MCQs',25],
   ['test','🎯','फाइनल टेस्ट','20 प्रश्नों का समयबद्ध assessment',30]
@@ -74,21 +74,52 @@ function QuestionSet({questions,mode,addXp,finishSession,chapter,back}){
   </section>;
 }
 
-function LearnView({content}){
-  return <section className="sanskrit-learning-card">
+function DeepContentView({content}){
+  const deep=content?.deepContent;
+  if(!deep)return null;
+  return <section className="sanskrit-learning-card sanskrit-deep-content">
     <div className="sanskrit-section-head">
-      <div><span className="sanskrit-kicker">सीखें</span><h2>Chapter Concept Builder</h2></div>
-      <span className="sanskrit-score">{content.concepts.length} core blocks</span>
+      <div><span className="sanskrit-kicker">पाठ-विशेष</span><h2>{deep.label}</h2></div>
+      <span className="sanskrit-score">{deep.type}</span>
     </div>
-    <p className="sanskrit-lead">{content.intro}</p>
+    <p className="sanskrit-lead">{deep.overview}</p>
     <div className="sanskrit-learning-grid">
-      {content.concepts.map(([title,text])=><div key={title}><h3>{title}</h3><p>{text}</p></div>)}
+      <div>
+        <h3>पाठ का क्रम</h3>
+        <ol>{deep.sequence.map(item=><li key={item}>{item}</li>)}</ol>
+      </div>
+      <div>
+        <h3>परीक्षा में क्या पढ़ें?</h3>
+        <ul>{deep.examFocus.map(item=><li key={item}>{item}</li>)}</ul>
+      </div>
     </div>
-    <div className="sanskrit-learning-meta">
-      <div><strong>मुख्य शब्द</strong><span>{content.vocabulary.join(' · ')}</span></div>
-      <div><strong>व्याकरण focus</strong><span>{content.grammarFocus}</span></div>
-    </div>
+    {deep.anchor&&<div className="sanskrit-passage-anchor">
+      <strong>पाठ-पहचान अंश</strong>
+      <blockquote>{deep.anchor}</blockquote>
+      <small>{deep.anchorNote}</small>
+    </div>}
+    {!deep.anchor&&<p className="sanskrit-explain"><strong>मूल पाठ:</strong> पूर्ण प्रार्थना/गीत/गद्य/कथा/पहेलियों को अपनी पाठ्यपुस्तक से पढ़कर इस अध्ययन-सार के साथ मिलाएँ।</p>}
   </section>;
+}
+
+function LearnView({content}){
+  return <>
+    <DeepContentView content={content}/>
+    <section className="sanskrit-learning-card">
+      <div className="sanskrit-section-head">
+        <div><span className="sanskrit-kicker">सीखें</span><h2>Chapter Concept Builder</h2></div>
+        <span className="sanskrit-score">{content.concepts.length} core blocks</span>
+      </div>
+      <p className="sanskrit-lead">{content.intro}</p>
+      <div className="sanskrit-learning-grid">
+        {content.concepts.map(([title,text])=><div key={title}><h3>{title}</h3><p>{text}</p></div>)}
+      </div>
+      <div className="sanskrit-learning-meta">
+        <div><strong>मुख्य शब्द</strong><span>{content.vocabulary.join(' · ')}</span></div>
+        <div><strong>व्याकरण focus</strong><span>{content.grammarFocus}</span></div>
+      </div>
+    </section>
+  </>;
 }
 
 export function SanskritSubjectSection({open}){
