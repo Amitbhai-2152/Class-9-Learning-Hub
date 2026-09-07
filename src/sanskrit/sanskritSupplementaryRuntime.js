@@ -1,0 +1,15 @@
+import {SANSKRIT_SUPPLEMENTARY_CONTENT} from './sanskritSupplementaryContent';
+
+const balanceQuestions=(items,offset=0)=>items.map((item,index)=>{const shift=(index+offset)%4;const options=item.options.map((_,i)=>item.options[(i+4-shift)%4]);return {...item,options,answer:(item.answer+shift)%4}});
+
+const enrich=chapter=>({
+ ...chapter,
+ lessons:chapter.concepts.map(([title,text],i)=>({title:`${i+1}. ${title}`,points:[text,'प्रसंग के साथ अर्थ समझें।','मुख्य शब्दों को दोहराएँ।']})),
+ practice:balanceQuestions(chapter.practice,0),
+ challenge:balanceQuestions(chapter.challenge,1),
+ finalTest:balanceQuestions(chapter.finalTest,2),
+ subjective:chapter.subjective
+});
+
+export const SANSKRIT_SUPPLEMENTARY_RUNTIME_CONTENT=Object.fromEntries(Object.entries(SANSKRIT_SUPPLEMENTARY_CONTENT).map(([key,value])=>[key,enrich(value)]));
+export const getSanskritSupplementaryContent=chapterNumber=>SANSKRIT_SUPPLEMENTARY_RUNTIME_CONTENT[chapterNumber]||null;
