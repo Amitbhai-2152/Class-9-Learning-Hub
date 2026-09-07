@@ -15,6 +15,11 @@
     "qa:hindi:unseen": "node scripts/qaHindiUnseenPassages.mjs",
     "qa:civics": "node scripts/qaCivicsContent.mjs",
     "qa:economics": "node scripts/qaEconomicsContent.mjs",
+    "qa:sst:structure": "node scripts/qaSSTStructure.mjs",
+    "qa:sst:data": "node scripts/qaSSTDataQuality.mjs",
+    "qa:sst:engines": "node scripts/qaSSTChapterBanks.mjs",
+    "qa:sst:wiring": "node scripts/qaSSTWiringStrict.mjs",
+    "qa:sst": "node scripts/qaSSTIntegration.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
