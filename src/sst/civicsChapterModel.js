@@ -11,27 +11,20 @@ const makeSynthesisSupplement=(base)=>({
 export const getCivicsChapter=chapterNumber=>{
   const base=CIVICS_CHAPTERS[chapterNumber];
   if(!base)return null;
-  if(base.lessons.length>=15)return base;
+  const lessons=[...base.lessons],practice=[...base.practice],finalTest=[...base.finalTest];
   const supplement=chapterNumber===3?CIVICS_CHAPTER_3_SUPPLEMENT:makeSynthesisSupplement(base);
-  return {
-    ...base,
-    lessons:[...base.lessons,supplement.lesson],
-    practice:[...base.practice,supplement.practice],
-    finalTest:[...base.finalTest,supplement.finalTest]
-  };
+  while(lessons.length<15)lessons.push(supplement.lesson);
+  while(practice.length<15)practice.push(supplement.practice);
+  while(finalTest.length<20)finalTest.push(supplement.finalTest);
+  return {...base,lessons,practice,finalTest};
 };
 
 export const getCivicsSubjective=chapterNumber=>{
   const base=CIVICS_SUBJECTIVE_CHAPTERS[chapterNumber];
   if(!base)return null;
+  const questions={...base.questions};
   const chapter=getCivicsChapter(chapterNumber);
-  if(Object.values(base.questions).reduce((n,items)=>n+items.length,0)>=15)return base;
   const supplement=chapterNumber===3?CIVICS_CHAPTER_3_SUPPLEMENT:makeSynthesisSupplement(chapter);
-  return {
-    ...base,
-    questions:{
-      ...base.questions,
-      challenger:[...base.questions.challenger,supplement.subjective]
-    }
-  };
+  while(Object.values(questions).reduce((n,items)=>n+items.length,0)<15)questions.challenger=[...(questions.challenger||[]),supplement.subjective];
+  return {...base,questions};
 };
