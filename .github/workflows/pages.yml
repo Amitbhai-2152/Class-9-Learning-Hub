@@ -71,6 +71,9 @@ jobs:
       - name: History subjective QA
         run: node scripts/qaHistorySubjective.mjs
 
+      - name: Sanskrit content QA
+        run: npm run qa:sanskrit
+
       - name: Build application
         run: npm run build
 
