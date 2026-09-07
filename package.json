@@ -21,6 +21,7 @@
     "qa:sst:wiring": "node scripts/qaSSTWiringStrict3.mjs",
     "qa:sst": "node scripts/qaSSTCheck.mjs",
     "qa:sanskrit": "node scripts/qaSanskritContent.mjs",
+    "qa:sanskrit:grammar": "node scripts/qaSanskritGrammar.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
