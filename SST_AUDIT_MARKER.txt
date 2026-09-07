@@ -1,0 +1,1 @@
+SST release audit gates are enabled in both CI workflows.
