@@ -34,5 +34,7 @@ jobs:
         run: npm run qa:hindi:unseen
       - name: Civics content QA
         run: npm run qa:civics
+      - name: Economics content QA
+        run: npm run qa:economics
       - name: Build application
         run: npm run build
