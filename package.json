@@ -18,7 +18,7 @@
     "qa:sst:structure": "node scripts/qaSSTStructure.mjs",
     "qa:sst:data": "node scripts/qaSSTDataQuality.mjs",
     "qa:sst:engines": "node scripts/qaSSTChapterBanks.mjs",
-    "qa:sst:wiring": "node scripts/qaSSTWiringStrict.mjs",
+    "qa:sst:wiring": "node scripts/qaSSTWiringStrict3.mjs",
     "qa:sst": "node scripts/qaSSTIntegration.mjs",
     "preview": "vite preview"
   },
