@@ -48,5 +48,7 @@ jobs:
         run: node scripts/qaHistorySubjective.mjs
       - name: Sanskrit content QA
         run: npm run qa:sanskrit
+      - name: Sanskrit Grammar QA
+        run: npm run qa:sanskrit:grammar
       - name: Build application
         run: npm run build
