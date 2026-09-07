@@ -1,0 +1,1 @@
+export const GEOGRAPHY_CHAPTER_2_MAP_INFO={source:'Wikimedia Commons',author:'Vigneshdm1990',license:'CC BY-SA 4.0',note:'Physical map with physiographic subdivisions; used as an external study reference.'};
