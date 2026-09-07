@@ -68,6 +68,9 @@ jobs:
       - name: SST wiring QA
         run: npm run qa:sst:wiring
 
+      - name: History subjective QA
+        run: node scripts/qaHistorySubjective.mjs
+
       - name: Build application
         run: npm run build
 
