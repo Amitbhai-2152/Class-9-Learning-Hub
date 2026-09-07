@@ -1,5 +1,5 @@
-import {CIVICS_CHAPTERS,CIVICS_SUBJECTIVE_CHAPTERS} from './civicsData';
-import {CIVICS_CHAPTER_3_SUPPLEMENT} from './civicsChapter3Supplement';
+import {CIVICS_CHAPTERS,CIVICS_SUBJECTIVE_CHAPTERS} from './civicsData.js';
+import {CIVICS_CHAPTER_3_SUPPLEMENT} from './civicsChapter3Supplement.js';
 
 export const getCivicsChapter=chapterNumber=>{
   const base=CIVICS_CHAPTERS[chapterNumber];
