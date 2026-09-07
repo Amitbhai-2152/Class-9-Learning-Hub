@@ -1,6 +1,7 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {GEOGRAPHY_CHAPTER_1} from './geographyChapter1Data';
 import {GEOGRAPHY_SUBJECTIVE_CHAPTER_1} from './geographyChapter1SubjectiveData';
+import locationExtentMap from './india-location-extent.svg';
 import './geographyChapter1.css';
 
 const progressKey='sst-geography-ch1-progress';
@@ -25,7 +26,7 @@ function LearnView({onComplete}){
   <article className="geo-lesson-card">
    <div className="geo-kicker">LESSON {lesson+1} / {data.lessons.length}</div><h2>{current.title}</h2><p className="geo-summary">{current.summary}</p>
    <div className="geo-point-grid">{current.points.map(point=><div className="geo-point" key={point}><span>✓</span><p>{point}</p></div>)}</div>
-   {lesson===0&&<figure className="geo-map-card"><img src={data.visual.src} alt={data.visual.alt}/><figcaption>मानचित्र-आरेख: मुख्य अक्षांश, देशांतर, कर्क रेखा और भारतीय मानक देशांतर। आकृति सांकेतिक है।</figcaption></figure>}
+   {lesson===0&&<figure className="geo-map-card"><img src={locationExtentMap} alt={data.visual.alt}/><figcaption>मानचित्र-आरेख: मुख्य अक्षांश, देशांतर, कर्क रेखा और भारतीय मानक देशांतर। आकृति सांकेतिक है।</figcaption></figure>}
    <div className="geo-progress"><span style={{width:`${((lesson+1)/data.lessons.length)*100}%`}}/></div>
    <div className="geo-actions"><button type="button" className="geo-secondary" disabled={lesson===0} onClick={()=>setLesson(v=>Math.max(0,v-1))}>← पिछला</button>{lesson===data.lessons.length-1?<button type="button" className="geo-primary" onClick={()=>onComplete('learn',data.lessons.length,data.lessons.length)}>✓ Learn पूरा करें</button>:<button type="button" className="geo-primary" onClick={()=>setLesson(v=>v+1)}>अगला →</button>}</div>
   </article>
