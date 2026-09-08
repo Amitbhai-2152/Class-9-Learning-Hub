@@ -53,9 +53,9 @@ assert(/challenge:[\s\S]*?60/.test(panoramaEngine),'Panorama timed engine: chall
 assert(/test:[\s\S]*?75/.test(panoramaEngine),'Panorama timed engine: test timing config missing');
 assert(/bank\.length\s*\*/.test(panoramaEngine),'Panorama timed engine: question-count-based timing missing');
 assert(/allAnswered=/.test(panoramaEngine)&&/disabled=\{!allAnswered\}/.test(panoramaEngine),'Panorama timed engine: all-question completion gate missing');
-assert(/timeLeft<=0/.test(panoramaEngine),'Panorama timed engine: auto-submit timeout missing');
+assert(/prev<=1/.test(panoramaEngine)&&/setSubmitted\(true\)/.test(panoramaEngine),'Panorama timed engine: auto-submit timeout missing');
 assert(/Your answer/.test(panoramaEngine)&&/Correct answer/.test(panoramaEngine),'Panorama timed engine: full answer review missing');
-assert(/score/.test(panoramaEngine)&&/%/.test(panoramaEngine),'Panorama timed engine: score/percentage result missing');
+assert(/score/.test(panoramaEngine)&&/pct/.test(panoramaEngine),'Panorama timed engine: score/percentage result missing');
 
 for(const [text,name] of [[panorama,'Panorama Ch1'],[panorama2,'Panorama Ch2'],[panorama3,'Panorama Ch3']]){
   assert(text.includes("PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx'"),`${name}: shared timed engine not wired`);
