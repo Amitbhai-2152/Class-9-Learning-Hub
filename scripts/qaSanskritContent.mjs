@@ -20,7 +20,8 @@ if(!registry.includes('SANSKRIT_SUPPLEMENTARY_CHAPTERS'))failures.push('Suppleme
 if(count(registry,"status:'planned'")<14)failures.push('Expected 14 planned primary chapter markers');
 for(const title of primaryTitles)if(!registry.includes(`title:'${title}'`))failures.push(`Primary registry chapter missing: ${title}`);
 for(const title of supplementaryTitles)if(!registry.includes(`title:'${title}'`))failures.push(`Supplementary registry chapter missing: ${title}`);
-for(let i=1;i<=15;i++)if(!content.includes(`  ${i}:{`))failures.push(`Structured primary content missing for chapter ${i}`);
+// Primary chapter entries may be stored in a compact one-line array or a formatted multi-line object.
+for(let i=1;i<=15;i++)if(!new RegExp(`(?:^|[,{])\\s*${i}:\\s*\\{`).test(content))failures.push(`Structured primary content missing for chapter ${i}`);
 
 if(!supplementarySource.includes('export const SANSKRIT_SUPPLEMENTARY_CONTENT'))failures.push('Supplementary content export missing');
 if(supplementarySource.includes('subjective'))failures.push('Supplementary source still contains subjective layer');
