@@ -1,6 +1,7 @@
 import {SANSKRIT_SUPPLEMENTARY_CONTENT} from './sanskritSupplementaryContent.js';
 import {getSanskritSupplementaryDeepContent} from './sanskritSupplementaryDeepContent.js';
 import {getSanskritSupplementaryStudyModule,getSanskritSupplementaryTypeToolkit} from './sanskritSupplementaryStudyModules.js';
+import {getSanskritSupplementaryDetailedStudy} from './sanskritSupplementaryDetailedStudy.js';
 
 const balanceQuestions=(items,offset=0)=>items.map((item,index)=>{
   const shift=(index+offset)%4;
@@ -11,6 +12,7 @@ const balanceQuestions=(items,offset=0)=>items.map((item,index)=>{
 const enrich=chapter=>{
   const deep=getSanskritSupplementaryDeepContent(chapter.id);
   const study=getSanskritSupplementaryStudyModule(chapter.id)||{};
+  const detailedStudy=getSanskritSupplementaryDetailedStudy(chapter.id);
   const toolkit=getSanskritSupplementaryTypeToolkit(deep?.type)||{};
   const sequence=Array.isArray(deep?.sequence)?deep.sequence:[];
   const examFocus=Array.isArray(deep?.examFocus)?deep.examFocus:[];
@@ -21,6 +23,7 @@ const enrich=chapter=>{
   return {
     ...chapter,
     deepContent:deep,
+    detailedStudy,
     studyModule:{...study,typeReading:toolkit.reading||'',answerMethod:toolkit.answerMethod||''},
     lessons:chapter.concepts.map(([title,text],index)=>({
       title,
