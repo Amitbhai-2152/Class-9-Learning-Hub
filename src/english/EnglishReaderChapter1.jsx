@@ -1,3 +1,4 @@
+import './english-reader.css';
 import React,{useMemo,useState} from 'react';
 
 const study={
