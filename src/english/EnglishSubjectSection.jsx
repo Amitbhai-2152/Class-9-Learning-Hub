@@ -10,9 +10,11 @@ const panoramaPoetry=['The Grandmother','On His Blindness','Blow, Blow, Thou Win
 const panoramaRte=['The Secret of Work','Gandhiji’s Passion for Nursing','With the Photographer'];
 
 function openPanoramaChapter(chapter,open){
- if(chapter==='Panorama • Prose 5 Echo and Narcissus'){
+ const match=chapter.match(/^Panorama • Prose (\d+) /);
+ const n=match?Number(match[1]):null;
+ if(n===5||n===6||n===7){
   const params=new URLSearchParams();
-  params.set('page','chapter');params.set('subject','english');params.set('chapter','12');params.set('mode','learn');params.set('panorama5','1');
+  params.set('page','chapter');params.set('subject','english');params.set('chapter',String(7+n));params.set('mode','learn');params.set(`panorama${n}`,'1');
   window.history.pushState({},'',`${window.location.pathname}?${params.toString()}${window.location.hash||''}`);
   window.dispatchEvent(new Event('popstate'));
   return;
