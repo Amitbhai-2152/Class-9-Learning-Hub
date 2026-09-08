@@ -35,8 +35,9 @@ function bankChecks(text,name){
   const displayed=[...Array(total)].map((_,i)=>(0-((i*3)%4)+4)%4);
   assert(new Set(displayed).size===4,`${name}: option-position shuffle does not distribute across A-D`);
   assert(/selected===q\.a|selected===current\.a/.test(text),`${name}: missing correctness check`);
-  assert(/nextScore=score\+\(.*current\.a.*\?1:0\)/.test(text),`${name}: answer must update score using current.a`);
-  assert(/finalScore=nextScore/.test(text),`${name}: final result must use accumulated score`);
+  const panScore=/nextScore=score\+\(n===current\.a\?1:0\)/.test(text)&&/finalScore=nextScore/.test(text);
+  const readerScore=/if\(n===current\.a\)setScore\(s=>s\+1\)/.test(text)&&/score\+\(selected===current\.a\?1:0\)/.test(text);
+  assert(panScore||readerScore,`${name}: accumulated scoring guard missing`);
 }
 
 bankChecks(reader,'English Reader Ch1');
@@ -51,7 +52,7 @@ assert(app.includes("EnglishPanoramaChapter1"),'Panorama Ch1 import/route missin
 assert(app.includes("EnglishReaderChapter1"),'Reader Ch1 import/route missing');
 assert(app.includes("chapter==='Reader • 1 I’m going to dance again'"),'Reader Ch1 route missing');
 assert(app.includes("chapter==='Panorama • Prose 1 Dharam Juddha'"),'Panorama Ch1 route missing');
-const readerNames=['I’m going to dance again','Scaling Great Heights','Saint Kabir','The eyes are not here','Ismat Chugtai: A woman with a difference','The accidental tourist','Saint Ravidas','Bharathipura'];
+const readerNames=['I’m going to dance again','Scaling Great Heights','Saint Kabir','The eyes are not here','Ismat Chughtai: A woman with a difference','The accidental tourist','Saint Ravidas','Bharathipura'];
 const prose=['Dharam Juddha','Yayati','A Silent Revolution','Too Many People, Too Few Trees','Echo and Narcissus','The Shehnai of Bismillah Khan','Kathmandu','My Childhood','The Gift of the Magi'];
 const poetry=['The Grandmother','On His Blindness','Blow, Blow, Thou Winter Wind','To Daffodils','Sound','Self Introduction','I Am Like Grass','Abraham Lincoln’s Letter to His Son’s Teacher'];
 const rte=['The Secret of Work','Gandhiji’s Passion for Nursing','With the Photographer'];
