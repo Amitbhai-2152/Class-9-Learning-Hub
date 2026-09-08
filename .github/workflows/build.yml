@@ -6,12 +6,111 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Patch Panorama Chapter 1 runtime randomization
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          path = Path('src/english/EnglishPanoramaChapter1.jsx')
+          text = path.read_text(encoding='utf-8')
+
+          old_import = "import React,{useMemo,useState} from 'react';"
+          new_import = "import React,{useEffect,useMemo,useState} from 'react';"
+          if old_import in text:
+              text = text.replace(old_import, new_import, 1)
+
+          old_helper = '''function shuffleQuestion(q){
+  const options=q.o.map((text,sourceIndex)=>({text,sourceIndex}));
+  for(let i=options.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [options[i],options[j]]=[options[j],options[i]];
+  }
+  if(options.length>1&&options.every((item,index)=>item.sourceIndex===index)){
+    [options[0],options[1]]=[options[1],options[0]];
+  }
+  return {
+    ...q,
+    o:options.map(item=>item.text),
+    a:options.findIndex(item=>item.sourceIndex===q.a)
+  };
+}'''
+          new_helper = '''function shuffleQuestion(q){
+  const options=q.o.map((text,sourceIndex)=>({text,sourceIndex}));
+  const original=options.map(item=>item.sourceIndex).join(',');
+  for(let i=options.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [options[i],options[j]]=[options[j],options[i]];
+  }
+  if(options.length>1&&options.map(item=>item.sourceIndex).join(',')===original){
+    [options[0],options[1]]=[options[1],options[0]];
+  }
+  let answerIndex=options.findIndex(item=>item.sourceIndex===q.a);
+  if(answerIndex===0&&options.length>1){
+    const swapIndex=1+Math.floor(Math.random()*(options.length-1));
+    [options[0],options[swapIndex]]=[options[swapIndex],options[0]];
+    answerIndex=swapIndex;
+  }
+  return {
+    ...q,
+    o:options.map(item=>item.text),
+    a:answerIndex
+  };
+}'''
+          if old_helper in text:
+              text = text.replace(old_helper, new_helper, 1)
+
+          old_state = '''  const [score,setScore]=useState(0);
+  const [result,setResult]=useState(null);
+  const [quizRun,setQuizRun]=useState(0);
+  const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);
+  const current=useMemo(()=>bank[idx]?shuffleQuestion(bank[idx]):null,[bank,idx,quizRun]);
+  const begin=m=>{setMode(m);setIdx(0);setSelected(null);setScore(0);setResult(null);setQuizRun(r=>r+1)};'''
+          new_state = '''  const [score,setScore]=useState(0);
+  const [result,setResult]=useState(null);
+  const [quizRun,setQuizRun]=useState(0);
+  const [quizQuestions,setQuizQuestions]=useState([]);
+  const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);
+  useEffect(()=>{
+    if(!bank.length){setQuizQuestions([]);return;}
+    setQuizQuestions(bank.map(question=>shuffleQuestion(question)));
+  },[bank,quizRun]);
+  const current=quizQuestions[idx]||null;
+  const begin=m=>{
+    setMode(m);
+    setIdx(0);
+    setSelected(null);
+    setScore(0);
+    setResult(null);
+    setQuizQuestions([]);
+    setQuizRun(r=>r+1);
+  };'''
+          if old_state in text:
+              text = text.replace(old_state, new_state, 1)
+
+          path.write_text(text, encoding='utf-8')
+          text2 = path.read_text(encoding='utf-8')
+          required = [new_import,'Math.random()','sourceIndex','const [quizQuestions,setQuizQuestions]=useState([]);','setQuizQuestions(bank.map(question=>shuffleQuestion(question)));','const current=quizQuestions[idx]||null;']
+          missing = [x for x in required if x not in text2]
+          if missing:
+              raise SystemExit('Panorama patch incomplete: ' + repr(missing))
+          subprocess.run(['git','diff','--check'], check=True)
+          subprocess.run(['git','config','user.name','github-actions[bot]'], check=True)
+          subprocess.run(['git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com'], check=True)
+          subprocess.run(['git','add','src/english/EnglishPanoramaChapter1.jsx'], check=True)
+          if subprocess.run(['git','diff','--cached','--quiet']).returncode != 0:
+              subprocess.run(['git','commit','-m','Harden Panorama Chapter 1 runtime randomization'], check=True)
+              subprocess.run(['git','push'], check=True)
+          PY
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
