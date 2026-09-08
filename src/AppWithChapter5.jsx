@@ -30,7 +30,7 @@ export default function AppWithChapter5(){
   const wrapProse=node=>proseLearn?<div><button type="button" className="english-book-back" onClick={back}>← Exit Prose</button>{node}</div>:node;
   if(chapter===11)return <EnglishPanoramaLanguageSkills onBack={back} addXp={addXp} finishSession={finishSession}/>;
   if(chapter===10)return <EnglishPanoramaProseRevision onBack={back} addXp={addXp} finishSession={finishSession}/>;
-  if(chapter===20)return <EnglishPanoramaPoem4 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
+  if(chapter===20){const mode=routeMode();return <EnglishPanoramaPoem4 initialMode={mode==='learn'?'':mode} onBack={back} addXp={addXp} finishSession={finishSession}/>;}
   if(chapter===19)return <EnglishPanoramaPoem3 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
   if(chapter===18)return <EnglishPanoramaPoem2 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
   if(chapter===17)return <EnglishPanoramaPoem1 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
