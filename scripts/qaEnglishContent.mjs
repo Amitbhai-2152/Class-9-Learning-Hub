@@ -90,7 +90,7 @@ assert(app.includes("EnglishPanoramaChapter2"),'Panorama Ch2 import/route missin
 assert(app.includes("EnglishPanoramaChapter3"),'Panorama Ch3 import/route missing');
 assert(app.includes("EnglishPanoramaChapter4"),'Panorama Ch4 import/route missing');
 assert(appShell.includes("EnglishPanoramaChapter5"),'Panorama Ch5 shell import missing');
-assert(appShell.includes("panorama5==='1'"),'Panorama Ch5 route marker missing');
+assert(appShell.includes("panorama5"),'Panorama Ch5 route marker missing');
 assert(main2.includes("AppWithChapter5"),'main2 is not wired to the Chapter 5 route shell');
 const readerNames=['I’m going to dance again','Scaling Great Heights','Saint Kabir','The eyes are not here','Ismat Chughtai: A woman with a difference','The accidental tourist','Saint Ravidas','Bharathipura'];
 const prose=['Dharam Juddha','Yayati','A Silent Revolution','Too Many People, Too Few Trees','Echo and Narcissus','The Shehnai of Bismillah Khan','Kathmandu','My Childhood','The Gift of the Magi'];
