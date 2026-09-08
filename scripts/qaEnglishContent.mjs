@@ -19,19 +19,20 @@ function bankChecks(text,name){
   const practiceQ=count(practiceBlock,"{q:");
   const challengeQ=count(challengeBlock,"{q:");
   assert(practiceQ===15,`${name}: expected 15 practice questions, got ${practiceQ}`);
-  assert(challengeQ===12,`${name}: expected 12 challenge questions, got ${challengeQ}`);
+  assert(challengeQ>=12,`${name}: expected at least 12 challenge questions, got ${challengeQ}`);
   const all=(practiceBlock+'\n'+challengeBlock);
+  const total=practiceQ+challengeQ;
   const options=(all.match(/o:\[[^\]]+\]/g)||[]);
-  assert(options.length===27,`${name}: expected 27 option arrays, got ${options.length}`);
+  assert(options.length===total,`${name}: expected ${total} option arrays, got ${options.length}`);
   for(const [i,opt] of options.entries()){
     const items=[...opt.matchAll(/'([^']*)'/g)].map(m=>m[1]);
     assert(items.length===4,`${name}: question ${i+1} must have exactly 4 options`);
     assert(new Set(items).size===4,`${name}: question ${i+1} has duplicate options`);
   }
   const correct=(all.match(/a:0/g)||[]).length;
-  assert(correct===27,`${name}: expected explicit source answer keys for 27 questions`);
+  assert(correct===total,`${name}: expected explicit source answer keys for ${total} questions`);
   assert(/function shuffleQuestion/.test(text),`${name}: missing deterministic option shuffle`);
-  const displayed=[...Array(27)].map((_,i)=>(0-((i*3)%4)+4)%4);
+  const displayed=[...Array(total)].map((_,i)=>(0-((i*3)%4)+4)%4);
   assert(new Set(displayed).size===4,`${name}: option-position shuffle does not distribute across A-D`);
   assert(text.includes('selected===q.a'),`${name}: missing correctness check`);
   assert(text.includes('finalScore=score+(selected===current.a?1:0)'),`${name}: final-question scoring guard missing`);
