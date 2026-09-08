@@ -55,7 +55,7 @@ export function EnglishSubjectSection({open}){
   <div className="english-book-grid english-book-grid-three">
    <button className="english-book-card" onClick={()=>setBook('panorama')}><span>📘</span><strong>The Panorama</strong><small>Prose • Poetry • Read, Think &amp; Enjoy</small><b>Open Panorama →</b></button>
    <button className="english-book-card" onClick={()=>setBook('reader')}><span>📗</span><strong>English Reader</strong><small>Panorama English Reader • 8 chapters</small><b>Open English Reader →</b></button>
-   <button className="english-book-card english-skills-card" onClick={openLanguageSkills}><span>✦</span><strong>Language &amp; Skills</strong><small>Grammar • Writing • Reading • Translation</small><b>Open Skills Hub →</b></button>
+   <button className="english-book-card english-skills-card" onClick={openLanguageSkills}><span>✦</span><strong>English Language &amp; Skills Hub</strong><small>Grammar • Writing • Reading • Translation</small><b>Open Skills Hub →</b></button>
   </div>
  </div>;
  return <div className="english-book-shell">
