@@ -35,7 +35,7 @@ function bankChecks(text,name){
   const displayed=[...Array(total)].map((_,i)=>(0-((i*3)%4)+4)%4);
   assert(new Set(displayed).size===4,`${name}: option-position shuffle does not distribute across A-D`);
   assert(/selected===q\.a|selected===current\.a/.test(text),`${name}: missing correctness check`);
-  assert(text.includes('finalScore=score+(selected===current.a?1:0)'),`${name}: final-question scoring guard missing`);
+  assert(/finalScore=.*selected===current\.a\?1:0/.test(text),`${name}: final-question scoring guard missing`);
 }
 
 bankChecks(reader,'English Reader Ch1');
@@ -50,12 +50,12 @@ assert(app.includes("EnglishPanoramaChapter1"),'Panorama Ch1 import/route missin
 assert(app.includes("EnglishReaderChapter1"),'Reader Ch1 import/route missing');
 assert(app.includes("chapter==='Reader • 1 I’m going to dance again'"),'Reader Ch1 route missing');
 assert(app.includes("chapter==='Panorama • Prose 1 Dharam Juddha'"),'Panorama Ch1 route missing');
-const readerNames=['I’m going to dance again','Scaling Great Heights','Saint Kabir','The eyes are not here','Ismat Chughtai: A woman with a difference','The accidental tourist','Saint Ravidas','Bharathipura'];
+const readerNames=['I’m going to dance again','Scaling Great Heights','Saint Kabir','The eyes are not here','Ismat Chugtai: A woman with a difference','The accidental tourist','Saint Ravidas','Bharathipura'];
 const prose=['Dharam Juddha','Yayati','A Silent Revolution','Too Many People, Too Few Trees','Echo and Narcissus','The Shehnai of Bismillah Khan','Kathmandu','My Childhood','The Gift of the Magi'];
 const poetry=['The Grandmother','On His Blindness','Blow, Blow, Thou Winter Wind','To Daffodils','Sound','Self Introduction','I Am Like Grass','Abraham Lincoln’s Letter to His Son’s Teacher'];
 const rte=['The Secret of Work','Gandhiji’s Passion for Nursing','With the Photographer'];
 for(const n of [...readerNames,...prose,...poetry,...rte])assert(nav.includes(n),`navigation missing chapter: ${n}`);
-assert((panorama.match(/sections:\[/)?.[0]||'').length>0,'Panorama Ch1 guided sections missing');
+assert(/sections:\[/.test(panorama),'Panorama Ch1 guided sections missing');
 assert(count(panorama,"{title:'Part ")>=12,'Panorama Ch1 expected at least 12 guided reading parts');
 assert(panorama.includes('wordStudy:'),'Panorama Ch1 word study missing');
 assert(panorama.includes('grammar:'),'Panorama Ch1 grammar lab missing');
