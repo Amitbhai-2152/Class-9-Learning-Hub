@@ -4,7 +4,8 @@ import path from 'node:path';
 const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const assert=(v,m)=>{if(!v)throw new Error(`English poetry QA: ${m}`)};
-const count=(s,n)=>(s.match(new RegExp(n.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&'),'g'))||[]).length;
+const escapeRegex=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const count=(s,n)=>(s.match(new RegExp(escapeRegex(n),'g'))||[]).length;
 
 const poem=read('src/english/EnglishPanoramaPoem1.jsx');
 const nav=read('src/english/EnglishSubjectSection.jsx');
