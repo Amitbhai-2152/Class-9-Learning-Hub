@@ -51,7 +51,7 @@ function checkBank(segment,name,expected){
 const practice=poem.match(/const practice=\[(.*?)\];/s)?.[1]||'';
 const challenge=poem.match(/const challenge=\[(.*?)\];/s)?.[1]||'';
 checkBank(practice,'Practice',15);
-checkBank(challenge,'Challenge',23);
+checkBank(challenge,'Challenge',25);
 assert(poem.includes("const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)];"),'Final Test must contain 20 questions from the verified banks');
 
 assert(nav.includes("const panoramaPoetry=['The Grandmother'"),'Grandmother poetry entry missing');
