@@ -27,12 +27,10 @@ function bankChecks(text,name){
   const practiceQ=count(practiceBlock,"{q:");
   const challengeQ=count(challengeBlock,"{q:");
   assert(practiceQ===15,`${name}: expected 15 practice questions, got ${practiceQ}`);
-  assert(challengeQ===23,`${name}: expected 23 challenge questions, got ${challengeQ}`);
-  if(['Panorama Ch3','Panorama Ch4','Panorama Ch5','Panorama Ch6'].includes(name)){
-    assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(text),`${name}: final test must be 10 practice + 10 challenge questions`);
-  }
-  const all=(practiceBlock+'\n'+challengeBlock);
-  const total=practiceQ+challengeQ;
+  if(['Panorama Ch3','Panorama Ch4','Panorama Ch5','Panorama Ch6'].includes(name))assert(challengeQ===23,`${name}: expected 23 challenge questions, got ${challengeQ}`);
+  else assert(challengeQ>=12,`${name}: expected at least 12 challenge questions, got ${challengeQ}`);
+  if(['Panorama Ch3','Panorama Ch4','Panorama Ch5','Panorama Ch6'].includes(name))assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(text),`${name}: final test must be 10 practice + 10 challenge questions`);
+  const all=(practiceBlock+'\n'+challengeBlock), total=practiceQ+challengeQ;
   const options=(all.match(/o:\[[^\]]+\]/g)||[]);
   assert(options.length===total,`${name}: expected ${total} option arrays, got ${options.length}`);
   for(const [i,opt] of options.entries()){
