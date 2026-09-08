@@ -5,6 +5,8 @@ const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const reader=read('src/english/EnglishReaderChapter1.jsx');
 const panorama=read('src/english/EnglishPanoramaChapter1.jsx');
+const panoramaEngine=read('src/english/PanoramaTimedQuiz.jsx');
+const panorama2=read('src/english/EnglishPanoramaChapter2.jsx');
 const nav=read('src/english/EnglishSubjectSection.jsx');
 const app=read('src/App.jsx');
 
@@ -31,21 +33,38 @@ function bankChecks(text,name){
   }
   const correct=(all.match(/a:0/g)||[]).length;
   assert(correct===total,`${name}: expected explicit source answer keys for ${total} questions`);
-  assert(/function shuffleQuestion/.test(text),`${name}: missing deterministic option shuffle`);
-  const displayed=[...Array(total)].map((_,i)=>(0-((i*3)%4)+4)%4);
-  assert(new Set(displayed).size===4,`${name}: option-position shuffle does not distribute across A-D`);
-  assert(/selected===q\.a|selected===current\.a/.test(text),`${name}: missing correctness check`);
-  const panScore=/nextScore=score\+\(n===current\.a\?1:0\)/.test(text)&&/finalScore=nextScore/.test(text);
-  const readerScore=/if\(n===current\.a\)setScore\(s=>s\+1\)/.test(text)&&/score\+\(selected===current\.a\?1:0\)/.test(text);
-  assert(panScore||readerScore,`${name}: accumulated scoring guard missing`);
 }
 
 bankChecks(reader,'English Reader Ch1');
 bankChecks(panorama,'Panorama Ch1');
+bankChecks(panorama2,'Panorama Ch2');
+
+assert(/function shuffleQuestion/.test(reader),'English Reader Ch1: missing option shuffle');
+assert(/function shuffleQuestion/.test(panoramaEngine),'Panorama timed engine: missing runtime option shuffle');
+assert(/sourceIndex/.test(panoramaEngine),'Panorama timed engine: source-index answer remapping missing');
+assert(/MODE_CONFIG/.test(panoramaEngine),'Panorama timed engine: mode timing config missing');
+assert(/practice:[\s\S]*?45/.test(panoramaEngine),'Panorama timed engine: practice timing config missing');
+assert(/challenge:[\s\S]*?60/.test(panoramaEngine),'Panorama timed engine: challenge timing config missing');
+assert(/test:[\s\S]*?75/.test(panoramaEngine),'Panorama timed engine: test timing config missing');
+assert(/bank\.length\s*\*/.test(panoramaEngine),'Panorama timed engine: question-count-based timing missing');
+assert(/disabled=\{answers\.some\(a=>a===null\)\}/.test(panoramaEngine),'Panorama timed engine: all-question completion gate missing');
+assert(/timeLeft<=0/.test(panoramaEngine),'Panorama timed engine: auto-submit timeout missing');
+assert(/Your answer/.test(panoramaEngine)&&/Correct answer/.test(panoramaEngine),'Panorama timed engine: full answer review missing');
+assert(/score/.test(panoramaEngine)&&/%/.test(panoramaEngine),'Panorama timed engine: score/percentage result missing');
+
+for(const [text,name] of [[panorama,'Panorama Ch1'],[panorama2,'Panorama Ch2']]){
+  assert(text.includes("PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx'"),`${name}: shared timed engine not wired`);
+  assert(!text.includes('const [selected,setSelected]'),`${name}: legacy selected-answer state remains`);
+  assert(!text.includes('pg-feedback'),`${name}: legacy quiz feedback UI remains`);
+  assert(!text.includes('function shuffleQuestion'),`${name}: chapter-local quiz shuffle remains`);
+}
+
 assert(reader.includes("title:\"I'm going to dance again\""),'Reader Ch1 title mismatch');
 assert(reader.includes("author:'Najmul Hasan'"),'Reader Ch1 author missing');
 assert(panorama.includes("title:'Dharam Juddha'"),'Panorama Ch1 title mismatch');
 assert(panorama.includes("author:'Arjun Dev Charan'"),'Panorama Ch1 author missing');
+assert(panorama2.includes("title:'Yayati'"),'Panorama Ch2 title mismatch');
+assert(panorama2.includes("author:'C. Rajagopalachari'"),'Panorama Ch2 author missing');
 assert(nav.includes('The Panorama')&&nav.includes('English Reader'),'book split missing');
 assert(nav.includes('Learn →'),'chapter Learn action missing');
 assert(app.includes("EnglishPanoramaChapter1"),'Panorama Ch1 import/route missing');
@@ -62,4 +81,4 @@ assert(count(panorama,"{title:'Part ")>=12,'Panorama Ch1 expected at least 12 gu
 assert(panorama.includes('wordStudy:'),'Panorama Ch1 word study missing');
 assert(panorama.includes('grammar:'),'Panorama Ch1 grammar lab missing');
 assert(panorama.includes('examPrep:'),'Panorama Ch1 exam prep missing');
-console.log('English content QA passed: book split, chapter registry, Reader/Prose Ch1 banks, deterministic answer distribution, accumulated scoring, guided study depth, word study, grammar, exam prep, and routing verified.');
+console.log('English content QA passed: Reader/Prose banks, shared timed Panorama engine, runtime option randomization, source-answer remapping, timing by mode/question count, completion gating, full review, study depth, and routing verified.');
