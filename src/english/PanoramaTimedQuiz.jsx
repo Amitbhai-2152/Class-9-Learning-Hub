@@ -26,6 +26,16 @@ function formatTime(total){
   return `${m}:${s}`;
 }
 
+function returnPoetryLearn(){
+  if(typeof window==='undefined')return false;
+  const params=new URLSearchParams(window.location.search);
+  const isPoetryRoute=params.get('subject')==='english'&&params.get('page')==='chapter'&&[1,2,3,4].some(n=>params.get(`panoramaPoetry${n}`)==='1');
+  if(!isPoetryRoute)return false;
+  params.set('mode','learn');
+  window.location.assign(`${window.location.pathname}?${params.toString()}${window.location.hash||''}`);
+  return true;
+}
+
 export function PanoramaTimedQuiz({mode,title,bank,onBack,addXp,finishSession}){
   const config=MODE_CONFIG[mode]||MODE_CONFIG.practice;
   const [runId,setRunId]=useState(0);
@@ -80,6 +90,11 @@ export function PanoramaTimedQuiz({mode,title,bank,onBack,addXp,finishSession}){
   const moveTo=i=>setIdx(Math.max(0,Math.min(bank.length-1,i)));
   const restart=()=>begin();
 
+  const backToLearn=()=>{
+    if(returnPoetryLearn())return;
+    if(onBack)onBack();
+  };
+
   const result=useMemo(()=>{
     if(!submitted)return null;
     let score=0;
@@ -97,7 +112,7 @@ export function PanoramaTimedQuiz({mode,title,bank,onBack,addXp,finishSession}){
 
   if(result){
     return <div className="pg-shell"><div className="pg-quiz-wrap">
-      <button className="pg-back" onClick={onBack}>← Back to Learn</button>
+      <button className="pg-back" onClick={backToLearn}>← Back to Learn</button>
       <div className="ptq-result-head"><span>{config.label}</span><h2>{title}</h2><p>{config.difficulty} • {bank.length} questions • Total time {formatTime(totalSeconds)}</p></div>
       <div className="ptq-score-card"><div className="ptq-score">{result.score}<small>/ {result.total}</small></div><div className="ptq-percent">{result.pct}%</div><div className="ptq-time">Time used: {formatTime(result.timeTaken)} {secondsLeft===0?'• Time expired':''}</div><p>{allAnswered?'All questions answered.':'Time expired before every question was answered.'}</p></div>
       <div className="ptq-review">
@@ -119,7 +134,7 @@ export function PanoramaTimedQuiz({mode,title,bank,onBack,addXp,finishSession}){
   }
 
   return <div className="pg-shell"><div className="pg-quiz-wrap">
-    <button className="pg-back" onClick={onBack}>← Back to Learn</button>
+    <button className="pg-back" onClick={backToLearn}>← Back to Learn</button>
     <div className="pg-quiz-head"><div><span>{config.label}</span><h2>{title}</h2></div><div className="ptq-head-meta"><b>{idx+1}/{bank.length}</b><strong className={secondsLeft<=60?'urgent':''}>⏱ {formatTime(secondsLeft)}</strong></div></div>
     <div className="ptq-meta-row"><span>{config.difficulty}</span><span>{bank.length} questions</span><span>Total test time: {formatTime(totalSeconds)}</span><span>{answeredCount}/{bank.length} answered</span></div>
     <div className="pg-progress"><i style={{width:`${Math.round(answeredCount/bank.length*100)}%`}}/></div>
