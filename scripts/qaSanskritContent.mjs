@@ -41,6 +41,8 @@ if(!hub.includes('DeepContentView'))failures.push('Supplementary deep content vi
 if(!wrapper.includes('sanskritPrimaryQuestionPatch'))failures.push('Primary question patch not wired');
 if(!runtimeSource.includes('getSanskritSupplementaryDeepContent'))failures.push('Supplementary deep runtime missing');
 if(!runtimeSource.includes('getSanskritSupplementaryStudyModule'))failures.push('Supplementary study-module runtime missing');
+if(!runtimeSource.includes('sequence[index%Math.max(sequence.length,1)]'))failures.push('Supplementary lessons do not consume chapter-specific sequence guidance');
+if(!runtimeSource.includes('examFocus[index%Math.max(examFocus.length,1)]'))failures.push('Supplementary lessons do not consume chapter-specific exam-focus guidance');
 if(!studySource.includes('SANSKRIT_SUPPLEMENTARY_STUDY_MODULES'))failures.push('Supplementary study export missing');
 if(!deepSource.includes('SANSKRIT_SUPPLEMENTARY_DEEP_CONTENT'))failures.push('Supplementary deep export missing');
 if(!supplementarySource.includes('SANSKRIT_SUPPLEMENTARY_CONTENT'))failures.push('Supplementary content export missing');
@@ -55,7 +57,7 @@ try{
   for(let n=1;n<=15;n++){
     const chapter=SANSKRIT_PRIMARY_CONTENT[n];
     if(!chapter){failures.push(`Primary Ch${n} missing`);continue;}
-    if(chapter.title!==primaryTitles[n-1])failures.push(`Primary title mismatch Ch${n}`);
+    if(normalizeTitle(chapter.title)!==normalizeTitle(primaryTitles[n-1]))failures.push(`Primary title mismatch Ch${n}`);
     checkBanks('Primary',chapter,n);
   }
   const specialChecks=[
@@ -77,13 +79,18 @@ try{
   for(let n=1;n<=21;n++){
     const c=SANSKRIT_SUPPLEMENTARY_RUNTIME_CONTENT[n];
     if(!c){failures.push(`Supplementary Ch${n} missing`);continue;}
-    if(c.title!==supplementaryTitles[n-1])failures.push(`Supplementary title mismatch Ch${n}`);
+    if(normalizeTitle(c.title)!==normalizeTitle(supplementaryTitles[n-1]))failures.push(`Supplementary title mismatch Ch${n}`);
     if(!Array.isArray(c.lessons)||c.lessons.length!==4)failures.push(`Supplementary Ch${n}: expected 4 lessons`);
     if(!Array.isArray(c.concepts)||c.concepts.length!==4)failures.push(`Supplementary Ch${n}: expected 4 concepts`);
     if(!Array.isArray(c.vocabulary)||c.vocabulary.length!==5)failures.push(`Supplementary Ch${n}: expected 5 vocabulary items`);
+    for(const [i,lesson] of (c.lessons||[]).entries()){
+      if(!lesson||typeof lesson.title!=='string'||!Array.isArray(lesson.points)||lesson.points.length<4)failures.push(`Supplementary Ch${n}: lesson ${i+1} has fewer than 4 learning points`);
+      if(lesson?.points?.some(p=>typeof p!=='string'||p.trim().length<12))failures.push(`Supplementary Ch${n}: lesson ${i+1} has shallow learning point text`);
+    }
     const d=c.deepContent,s=c.studyModule;
-    if(!d||!Array.isArray(d.sequence)||d.sequence.length<4||!Array.isArray(d.examFocus)||d.examFocus.length<4)failures.push(`Supplementary Ch${n}: deep study incomplete`);
-    if(!s||!Array.isArray(s.mustKnow)||s.mustKnow.length<2||!Array.isArray(s.examTraps)||s.examTraps.length<2||!Array.isArray(s.highScore)||s.highScore.length<2)failures.push(`Supplementary Ch${n}: high-score study incomplete`);
+    if(!d||typeof d.overview!=='string'||d.overview.length<40||!Array.isArray(d.sequence)||d.sequence.length<4||!Array.isArray(d.examFocus)||d.examFocus.length<4)failures.push(`Supplementary Ch${n}: deep study incomplete`);
+    if(!s||!Array.isArray(s.mustKnow)||s.mustKnow.length<2||!Array.isArray(s.examTraps)||s.examTraps.length<2||!Array.isArray(s.highScore)||s.highScore.length<2||typeof s.revision!=='string'||s.revision.length<12)failures.push(`Supplementary Ch${n}: high-score study incomplete`);
+    if(typeof s.typeReading!=='string'||s.typeReading.length<20||typeof s.answerMethod!=='string'||s.answerMethod.length<20)failures.push(`Supplementary Ch${n}: type toolkit wiring incomplete`);
     checkBanks('Supplementary',c,n);
     if(Object.prototype.hasOwnProperty.call(c,'subjective'))failures.push(`Supplementary Ch${n}: subjective layer must be absent`);
   }
@@ -119,4 +126,4 @@ try{
 }catch(error){failures.push(`Primary detailed-study runtime import failed: ${error.message}`)}
 
 if(failures.length){console.error('SANSKRIT QA FAILED');for(const f of failures)console.error(`- ${f}`);process.exit(1);}
-console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters have valid assessment banks, detailed-study coverage through Ch13, balanced answers, and required study/UI wiring.');
+console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters have valid assessment banks, upgraded supplementary Learn blocks, detailed-study coverage through Ch13, balanced answers, and required study/UI wiring.');
