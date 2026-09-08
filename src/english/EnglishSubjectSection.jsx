@@ -10,11 +10,20 @@ const panoramaPoetry=['The Grandmother','On His Blindness','Blow, Blow, Thou Win
 const panoramaRte=['The Secret of Work','Gandhiji’s Passion for Nursing','With the Photographer'];
 
 function openPanoramaChapter(chapter,open){
- const match=chapter.match(/^Panorama • Prose (\d+) /);
- const n=match?Number(match[1]):null;
- if(n===5||n===6||n===7||n===8||n===9){
+ const proseMatch=chapter.match(/^Panorama • Prose (\d+) /);
+ const poetryMatch=chapter.match(/^Panorama • Poetry (\d+) /);
+ const prose=proseMatch?Number(proseMatch[1]):null;
+ const poetry=poetryMatch?Number(poetryMatch[1]):null;
+ if([5,6,7,8,9].includes(prose)){
   const params=new URLSearchParams();
-  params.set('page','chapter');params.set('subject','english');params.set('chapter',String(7+n));params.set('mode','learn');params.set(`panorama${n}`,'1');
+  params.set('page','chapter');params.set('subject','english');params.set('chapter',String(7+prose));params.set('mode','learn');params.set(`panorama${prose}`,'1');
+  window.history.pushState({},'',`${window.location.pathname}?${params.toString()}${window.location.hash||''}`);
+  window.dispatchEvent(new Event('popstate'));
+  return;
+ }
+ if(poetry===1){
+  const params=new URLSearchParams();
+  params.set('page','chapter');params.set('subject','english');params.set('chapter','17');params.set('mode','learn');params.set('panoramaPoetry1','1');
   window.history.pushState({},'',`${window.location.pathname}?${params.toString()}${window.location.hash||''}`);
   window.dispatchEvent(new Event('popstate'));
   return;
@@ -55,7 +64,7 @@ export function EnglishSubjectSection({open}){
   <div className="english-book-tabs">{book==='panorama'&&<><button className="english-book-tab" onClick={()=>document.getElementById('panorama-prose')?.scrollIntoView({behavior:'smooth'})}>Prose</button><button className="english-book-tab" onClick={()=>document.getElementById('panorama-poetry')?.scrollIntoView({behavior:'smooth'})}>Poetry</button><button className="english-book-tab" onClick={()=>document.getElementById('panorama-rte')?.scrollIntoView({behavior:'smooth'})}>Read, Think &amp; Enjoy</button></>}</div>
   <div className="english-book-list">
    {book==='reader'&&<Section id="reader" title="English Reader" items={readerChapters} offset={0} open={open} prefix="Reader •"/>}
-   {book==='panorama'&&<><section className="english-book-section prose-revision-feature"><div className="english-section-head"><h3>Whole Prose Revision</h3><span>45 fresh questions</span></div><button className="english-book-chapter" onClick={openProseRevision}><span>★</span><div><strong>Whole Prose Revision Test</strong><small>All 9 Panorama prose chapters • timed cumulative test</small></div><b>Start →</b></button></section><Section id="panorama-prose" title="Prose" items={panoramaProse} offset={0} open={chapter=>openPanoramaChapter(chapter,open)} prefix="Panorama • Prose"/><Section id="panorama-poetry" title="Poetry" items={panoramaPoetry} offset={9} open={open} prefix="Panorama • Poetry"/><Section id="panorama-rte" title="Read, Think &amp; Enjoy" items={panoramaRte} offset={0} open={open} prefix="Panorama • Read, Think &amp; Enjoy"/></>}
+   {book==='panorama'&&<><section className="english-book-section prose-revision-feature"><div className="english-section-head"><h3>Whole Prose Revision</h3><span>45 fresh questions</span></div><button className="english-book-chapter" onClick={openProseRevision}><span>★</span><div><strong>Whole Prose Revision Test</strong><small>All 9 Panorama prose chapters • timed cumulative test</small></div><b>Start →</b></button></section><Section id="panorama-prose" title="Prose" items={panoramaProse} offset={0} open={chapter=>openPanoramaChapter(chapter,open)} prefix="Panorama • Prose"/><Section id="panorama-poetry" title="Poetry" items={panoramaPoetry} offset={9} open={chapter=>openPanoramaChapter(chapter,open)} prefix="Panorama • Poetry"/><Section id="panorama-rte" title="Read, Think &amp; Enjoy" items={panoramaRte} offset={0} open={open} prefix="Panorama • Read, Think &amp; Enjoy"/></>}
   </div>
  </div>;
 }
