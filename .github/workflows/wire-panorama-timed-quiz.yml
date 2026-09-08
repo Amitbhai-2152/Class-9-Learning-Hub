@@ -46,7 +46,8 @@ jobs:
 
               marker = f"export function {export_name}"
               start = text.find(marker)
-              meta = f"export const {export_name.replace('EnglishPanoramaChapter1','englishPanoramaChapter1').replace('EnglishPanoramaChapter2','englishPanoramaChapter2')}Meta="
+              meta_name = 'englishPanoramaChapter1Meta' if export_name.endswith('Chapter1') else 'englishPanoramaChapter2Meta'
+              meta = f"export const {meta_name}="
               meta_pos = text.find(meta, start)
               if start < 0 or meta_pos < 0:
                   raise SystemExit(f'{path}: could not find component boundaries')
@@ -77,7 +78,6 @@ jobs:
           replace_component('src/english/EnglishPanoramaChapter1.jsx','EnglishPanoramaChapter1',chapter1_learn)
           replace_component('src/english/EnglishPanoramaChapter2.jsx','EnglishPanoramaChapter2',chapter2_learn)
 
-          # Guardrails: the legacy chapter-local quiz rendering must no longer exist.
           for path in ['src/english/EnglishPanoramaChapter1.jsx','src/english/EnglishPanoramaChapter2.jsx']:
               t=Path(path).read_text(encoding='utf-8')
               for forbidden in ['const [selected,setSelected]', 'const [score,setScore]', 'shuffleQuestion(q)', 'pg-feedback']:
@@ -91,6 +91,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/english/EnglishPanoramaChapter1.jsx src/english/EnglishPanoramaChapter2.jsx
-          git diff --cached --quiet && echo "No source changes needed" && exit 0
-          git commit -m "Use timed Panorama quiz for chapters 1 and 2"
-          git push
+          if git diff --cached --quiet; then
+            echo "No source changes needed"
+          else
+            git commit -m "Use timed Panorama quiz for chapters 1 and 2"
+            git push
+          fi
+          # trigger this workflow from the new workflow revision during the initial wiring pass
