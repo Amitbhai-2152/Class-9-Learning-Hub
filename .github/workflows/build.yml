@@ -54,3 +54,4 @@ jobs:
         run: npm run qa:english
       - name: Build application
         run: npm run build
+      # English modules included in full verification
