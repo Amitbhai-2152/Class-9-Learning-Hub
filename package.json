@@ -22,6 +22,7 @@
     "qa:sst": "node scripts/qaSSTCheck.mjs",
     "qa:sanskrit": "node scripts/qaSanskritContent.mjs",
     "qa:sanskrit:grammar": "node scripts/qaSanskritGrammar.mjs",
+    "qa:english": "node scripts/qaEnglishContent.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
