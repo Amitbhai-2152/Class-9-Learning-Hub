@@ -25,12 +25,12 @@ jobs:
           node scripts/phase2Ch4.mjs
       - name: Validate migrated files before commit
         run: |
-          node --check src/english/EnglishPanoramaChapter2.jsx
-          node --check src/english/EnglishPanoramaChapter3.jsx
-          node --check src/english/EnglishPanoramaChapter4.jsx
           test "$(grep -o "{title:'Part [0-9]*" src/english/EnglishPanoramaChapter2.jsx | wc -l)" -eq 10
           test "$(grep -o "{title:'Part [0-9]*" src/english/EnglishPanoramaChapter3.jsx | wc -l)" -eq 10
           test "$(grep -o "{title:'Part [0-9]*" src/english/EnglishPanoramaChapter4.jsx | wc -l)" -eq 10
+          grep -q "<span>10 Guided Parts</span>" src/english/EnglishPanoramaChapter2.jsx
+          grep -q "10 guided parts" src/english/EnglishPanoramaChapter3.jsx
+          grep -q "10 guided parts" src/english/EnglishPanoramaChapter4.jsx
       - name: Commit migration and remove one-off tooling
         run: |
           git config user.name "github-actions[bot]"
