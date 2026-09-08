@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   patch:
-    if: contains(github.event.head_commit.message, 'Integrate English Reader') == false
+    if: contains(github.event.head_commit.message, 'Integrate English Reader into hub') == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
