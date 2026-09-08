@@ -50,5 +50,7 @@ jobs:
         run: npm run qa:sanskrit
       - name: Sanskrit Grammar QA
         run: npm run qa:sanskrit:grammar
+      - name: English content QA
+        run: npm run qa:english
       - name: Build application
         run: npm run build
