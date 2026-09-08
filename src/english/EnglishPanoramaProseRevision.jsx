@@ -2,6 +2,7 @@ import React,{useState} from 'react';
 import PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx';
 import './english-reader.css';
 import './english-panorama.css';
+import './EnglishPanoramaProseRevision.css';
 
 const chapters=[
  ['1','Dharam Juddha','Arjun Dev Charan','Social customs • dignity • equality'],
