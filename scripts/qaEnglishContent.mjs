@@ -49,7 +49,6 @@ assert(ch8.includes('activities:'),'Chapter 8 activities missing');
 assert(ch8.includes('translationPractice:'),'Chapter 8 translation practice missing');
 assert(ch8.includes('examPrep:'),'Chapter 8 exam preparation missing');
 
-// Chapter 8 UI must follow the established Chapter 7 layout vocabulary.
 const uiMarkers=['pg-shell','pg-hero','pg-kicker','pg-hero-stats','pg-modebar','pg-panel','pg-panel-title','pg-author','pg-anchorbar','pg-section-heading','pg-reading-stack','pg-reading-card','pg-card-top','pg-num','pg-flow','pg-flow-label','pg-hindi','pg-vocab-head','pg-vocab-grid','pg-bottom-grid','pg-exam','pg-think','pg-tool-grid','pg-spelling','pg-pillgrid','pg-two-col','pg-match','pg-phrasegrid','pg-grammar-grid','pg-rulebox','pg-exam-grid','pg-activitygrid','pg-translation','pg-revision','pg-revision-grid'];
 for(const marker of uiMarkers){assert(ch7.includes(marker),`Chapter 7 canonical UI marker missing: ${marker}`);assert(ch8.includes(marker),`Chapter 8 UI marker missing: ${marker}`)}
 assert(ch8.includes('function Learn({onMode})'),'Chapter 8 Learn view missing');
@@ -59,16 +58,14 @@ assert(ch8.includes('<PanoramaTimedQuiz mode={mode} title={study.title} bank={ba
 assert(!ch8.includes('function StudyView'),'Chapter 8 legacy StudyView remains');
 assert(!ch8.includes('function TestButton'),'Chapter 8 legacy TestButton remains');
 assert(!ch8.includes("window.dispatchEvent(new CustomEvent('panorama-test'"),'Chapter 8 event-dispatch quiz workaround remains');
-assert(!ch8.includes('pg-section-head'),'Chapter 8 non-canonical section-head UI remains');
-assert(!ch8.includes('pg-reading-grid'),'Chapter 8 non-canonical reading-grid UI remains');
+assert(!/className=["']pg-section-head["']/.test(ch8),'Chapter 8 legacy pg-section-head class remains');
+assert(!/className=["']pg-reading-grid["']/.test(ch8),'Chapter 8 legacy pg-reading-grid class remains');
 
-// Shared timed engine rules.
 for(const marker of ['function shuffleQuestion','sourceIndex','MODE_CONFIG','bank.length','allAnswered=','disabled={!allAnswered}','setSubmitted(true)','Your answer','Correct answer','score','pct'])assert(engine.includes(marker),`Panorama timed engine missing: ${marker}`);
 assert(/practice:[\s\S]*?45/.test(engine),'Practice timing config missing');
 assert(/challenge:[\s\S]*?60/.test(engine),'Challenge timing config missing');
 assert(/test:[\s\S]*?75/.test(engine),'Final-test timing config missing');
 
-// Navigation/routing: Chapter 8 remains available; Chapter 9 is completely removed.
 assert(nav.includes('My Childhood'),'Chapter 8 navigation entry missing');
 assert(nav.includes('const panoramaProse='),'Panorama prose registry missing');
 assert(nav.includes('if(n===5||n===6||n===7||n===8)'),'Panorama routing handler must stop at Chapter 8');
@@ -82,7 +79,6 @@ assert(!shell.includes('n===16'),'Chapter 9 chapter-index route still present');
 assert(!shell.includes('chapter===9'),'Chapter 9 render route still present');
 assert(main.includes('AppWithChapter5'),'main2 route shell missing');
 
-// The unapproved Chapter 9 component must be absent from the active tree.
 assert(!fs.existsSync(path.join(root,'src/english/EnglishPanoramaChapter9.jsx')),'Chapter 9 component file still exists');
 
 console.log('English content QA passed: Chapter 8 banks, explanations, UI parity with Chapter 7, shared timed engine, routing, and complete Chapter 9 removal verified.');
