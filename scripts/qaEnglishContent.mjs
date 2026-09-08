@@ -105,4 +105,24 @@ assert(ch9.includes('parsimony'),'Panorama Ch9 word-study coverage missing');
 assert(ch9.includes('platinum fob chain'),'Panorama Ch9 content coverage missing');
 assert(ch9.includes('Christmas, Eid, Diwali and New Year'),'Panorama Ch9 discussion coverage missing');
 assert(ch9.includes('love and sacrifice'),'Panorama Ch9 theme coverage missing');
-console.log('English content QA passed: Chapters 1–9 assessment banks, shared timed engine, runtime option randomization, source-answer remapping, timing by mode/question count, completion gate, auto-submit, full review, study depth, Chapter 9 coverage, navigation, and routing verified.');
+
+// Chapter 8 is the canonical Panorama prose UI. Chapter 9 must reuse that structure exactly,
+// not introduce a second card/section system that merely looks similar.
+const ch8=read('src/english/EnglishPanoramaChapter8.jsx');
+const exactUiMarkers=[
+ 'className="pg-shell"','className="pg-wrap"','← Back to English','className="pg-hero"',
+ 'THE PANORAMA • PROSE 8','className="pg-stage-grid"','className={`pg-stage-card ${mode===m?\'active\':\'\'}`}',
+ 'className="pg-about"','className="pg-about-facts"','className="pg-study-section"','className="pg-study-grid"',
+ 'className="pg-explain"','className="pg-vocab"','className="pg-exam"','className="pg-think"',
+ 'className="pg-vocab-wide"','className="pg-language-point"','EXAM BOOSTER','WRITING / COMPOSITION',
+ 'TRANSLATION PRACTICE','ACTIVITIES','QUICK REVISION','className="pg-revision"','className="pg-mode-cta"'
+];
+for(const m of exactUiMarkers){assert(ch8.includes(m),`Chapter 8 canonical UI marker missing: ${m}`);assert(ch9.includes(m.replace('PROSE 8','PROSE 9')),`Chapter 9 UI marker missing: ${m.replace('PROSE 8','PROSE 9')}`)}
+for(const old of ['pg-section-head','pg-reading-grid','pg-reading-card','pg-list-grid','pg-rule-grid','pg-example-grid','pg-quick-grid','function TestButton','function ChapterShell','function StudyView'])assert(!ch9.includes(old),`Panorama Ch9 contains non-canonical UI structure: ${old}`);
+assert(ch9.includes("const [mode,setMode]=useState(initialMode);const [quizOpen,setQuizOpen]=useState(initialMode!=='learn');"),'Panorama Ch9 mode/quiz state is not copied from Chapter 8');
+assert(ch9.includes("const openMode=m=>{setMode(m);setQuizOpen(m!=='learn')};"),'Panorama Ch9 openMode behavior is not copied from Chapter 8');
+assert(ch9.includes("<PanoramaTimedQuiz mode={mode} title={study.title} bank={bank} onBack={()=>setQuizOpen(false)}"),'Panorama Ch9 quiz integration does not match Chapter 8');
+assert(ch9.includes("[['learn','Learn','Guided study'],['practice','Practice','15 questions • 11:15'],['challenge','Challenge','23 questions • 23:00'],['test','Final Test','20 questions • 25:00']]"),'Panorama Ch9 stage selector does not match Chapter 8');
+assert(ch9.includes('StudyBlock key={s.title} s={s}'),'Panorama Ch9 guided-reading rendering does not use the Chapter 8 StudyBlock pattern');
+
+console.log('English content QA passed: Chapters 1–9 banks, shared timed engine, runtime option randomization, source-answer remapping, timing by mode/question count, completion gate, auto-submit, full review, study depth, Chapter 9 content, navigation/routing, and exact Chapter 8 UI parity verified.');
