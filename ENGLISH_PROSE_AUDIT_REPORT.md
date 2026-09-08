@@ -10,7 +10,7 @@
 
 The nine prescribed Panorama prose chapters are present and activated in the English navigation. The current repository contains a substantial chapter-learning layer plus a shared timed MCQ system. For **chapter-wise prose study**, the content is broadly sufficient and is already stronger than a basic summary/notes implementation.
 
-However, the prose collection is **not yet uniform enough to be called fully complete or fully standardized**. The main issues are not missing chapters; they are depth consistency, source/provenance discipline, a few language-quality items, and the fact that the **complete BSEB English syllabus extends beyond chapter-specific prose content** into dedicated grammar, writing and unseen-reading preparation.
+However, the prose collection is **not yet uniform enough to be called fully complete or fully standardized**. The main issues are not missing chapters; they are depth consistency, remaining teacher-quality cleanup, and the fact that the **complete BSEB English syllabus extends beyond chapter-specific prose content** into dedicated grammar, writing and unseen-reading preparation.
 
 ## 2. Prescribed prose coverage
 
@@ -99,11 +99,13 @@ Every prose chapter has a guided-flow layer that generally contains:
 
 This is enough for a student to learn the broad plot, ideas, characters/themes and key factual points without depending only on a one-line summary.
 
-### B. Vocabulary and word study — SUFFICIENT, BUT QUALITY CONTROL IS NEEDED
+### B. Vocabulary and word study — SUFFICIENT, WITH PHASE-1 CLEANUP COMPLETED FOR VERIFIED ITEMS
 
 Most chapters provide glossaries, spelling tasks, word formation, meanings, matching or phrases. This is considerably better than a minimal chapter summary.
 
-The weakness is that some word-study entries appear to have been inherited from textbook/extraction spellings and should receive a final human/teacher verification pass. Examples include entries where the “wrong” and “right” spelling are identical or where the intended spelling appears questionable.
+Phase 1 corrected the verified spelling issues identified in the audit: Chapter 2 now uses **pitiful** for the relevant spelling exercise, and Chapter 9's checked word-study pairs now include **reflexion, inconsequential, nervously, assertion, worshipped, yearned,** and **privilege** where the source exercise expects those forms.
+
+A broader teacher-quality pass is still appropriate for the remaining chapters.
 
 ### C. Grammar — PARTIALLY SUFFICIENT AT PROSE LEVEL
 
@@ -134,38 +136,49 @@ Most chapters include multiple translation tasks, making translation a repeated 
 
 For complete exam preparation, translation should still be reinforced in the central grammar/writing area, not only inside individual prose chapters.
 
-## 6. Important quality findings
+## 6. Phase 1 — Source & Correctness status
 
-### Finding 1 — Source/provenance labels need strict verification
+### Completed ✅
 
-Chapter 9 currently contains language such as **“supplied Chapter 9”** / “supplied Chapter 9 textbook pages” in its source notes and content sections. That label should be treated as a provenance claim, not merely a display phrase. It must match the actual source document that was used for Chapter 9.
+**1. Chapter 9 provenance corrected.**  
+The Chapter 9 component no longer claims that a supplied Chapter 9 PDF/pages were the source. Its source note now explicitly states that the **user-supplied Chapter 8 PDF is not used as source material for Chapter 9**.
 
-This is the single most important non-UI audit item because a chapter should never be presented as PDF-derived unless the source really is the Chapter 9 source.
+**2. Chapter 2 verified spelling corrected.**  
+The checked spelling pair was changed from `pityful` to `pitiful`.
 
-### Finding 2 — Guided-reading depth is uneven
+**3. Chapter 9 verified spelling pairs corrected.**  
+The word-study spelling section now reflects the checked forms including `reflexion`, `inconsequential`, `nervously`, `assertion`, `worshipped`, `yearned`, and `privilege`.
+
+**4. Phase-1 QA was updated.**  
+The English QA now checks the corrected Chapter 2 spelling and explicitly prevents the old Chapter 9 PDF-provenance claim from returning.
+
+### Deliberately NOT changed in Phase 1
+
+Some earlier audit observations were verified as textbook/source wording and therefore were **not silently rewritten** during the provenance/correctness pass. This includes the Chapter 5 grammar example `I know swimming.` and the Chapter 7 relative-clause example `This is the man who he is talking about.` Such items can be reconsidered later only with explicit source-versus-pedagogy labeling rather than silently replacing the lesson wording.
+
+## 7. Remaining quality findings
+
+### Finding 1 — Guided-reading depth is uneven
 
 Chapters 2, 3 and 4 are the clearest candidates for expansion from 8 guided parts toward the 10-part house standard. This is an educational-quality issue rather than a routing bug.
 
-### Finding 3 — Some language examples need a final teacher-quality pass
+### Finding 2 — Some language examples still need a final teacher-quality pass
 
-A few examples across the prose files are awkward or potentially non-standard. Notable categories include:
+A few examples across the prose files may still benefit from pedagogical cleanup after source verification. The next pass should distinguish clearly between:
 
-- textbook-derived spelling entries whose “incorrect” and “correct” forms are identical
-- awkward translation wording
-- a relative-clause example in Chapter 7 that is not an ideal model sentence for learners
-- a few grammar examples that are understandable but not the cleanest pedagogical model
+- exact textbook/source wording,
+- source-derived exercises that should be preserved, and
+- supplemental examples created specifically for teaching.
 
-These should be corrected in the content layer without changing the quiz engine.
-
-### Finding 4 — Current prose content is not the full English subject
+### Finding 3 — Current prose content is not the full English subject
 
 The prose implementation is strong as a **literature/prose subsystem**. It should not be marketed internally as the complete English preparation system until the dedicated grammar, writing and unseen-reading components are audited to the same standard.
 
-## 7. Source alignment and release confidence
+## 8. Source alignment and release confidence
 
 The repository currently points to SCERT Bihar's Panorama English Prose and Poetry resource collection, and current external syllabus references for 2026–27 list the same nine prose chapters.
 
-The latest repository workflow for the current Chapter 9 release completed successfully:
+The latest previously verified repository workflow for the Chapter 9 release completed successfully:
 
 - content/QA stages completed successfully
 - application build completed successfully
@@ -174,7 +187,9 @@ The latest repository workflow for the current Chapter 9 release completed succe
 
 The successful Pages workflow run was **34217778074**.
 
-## 8. What is already strong
+A fresh verification of the Phase-1 commits is still required before declaring the new state fully release-verified.
+
+## 9. What is already strong
 
 The following areas should be considered established and should be preserved:
 
@@ -187,13 +202,13 @@ The following areas should be considered established and should be preserved:
 7. **Full post-test review is available.**
 8. **Runtime option shuffling is source-key aware.**
 9. **Chapter-specific grammar and writing sections are integrated.**
-10. **The current release builds and deploys successfully.**
+10. **The core code/build/deployment pipeline was healthy before Phase 1 changes.**
 
-## 9. What should be improved before calling the prose “final-final”
+## 10. What should be improved before calling the prose “final-final”
 
-### Priority P0 — provenance
+### Priority P0 — provenance ✅ resolved
 
-Audit every source note and ensure that PDF/source claims correspond to the actual source used for that chapter.
+Chapter 9 no longer carries the incorrect supplied-Chapter-9-PDF claim. QA now guards this correction.
 
 ### Priority P1 — pedagogical consistency
 
@@ -201,7 +216,7 @@ Bring Chapters 2–4 closer to the 10-part guided-reading standard, where the ex
 
 ### Priority P1 — language-quality pass
 
-Review every glossary spelling pair, grammar example and translation sentence for natural, exam-safe English/Hindi.
+Review remaining glossary spelling pairs, grammar examples and translation sentences for natural, exam-safe English/Hindi, with explicit source-versus-supplement labeling where necessary.
 
 ### Priority P1 — chapter-wide cumulative assessment
 
@@ -232,17 +247,17 @@ Add one consolidated page with:
 - most important vocabulary
 - 20–30 ultra-fast revision questions
 
-## 10. Final answer to “Is all the content sufficient?”
+## 11. Final answer to “Is all the content sufficient?”
 
 **For prose chapter study: YES, broadly sufficient.** The student can learn the story/article, revise vocabulary, practise chapter-specific grammar, work on writing/translation and take timed MCQs.
 
-**For perfect uniformity: NO, not yet.** Guided-reading depth is inconsistent and a few content examples need polishing.
+**For perfect uniformity: NO, not yet.** Guided-reading depth is inconsistent and a few content examples still need a teacher-quality pass.
 
 **For the complete BSEB Class 9 English syllabus: NO, not by prose alone.** The 2026–27 English syllabus includes separate reading, writing and grammar requirements in addition to literature, so those systems need their own complete audit and coverage.
 
-**For a true final release: ALMOST, but not yet.** The code/build/deployment side is healthy; the remaining work is primarily educational content QA, provenance verification and consistency polishing rather than core architecture.
+**For a true final release: ALMOST, but not yet.** Phase 1 has addressed the highest-risk provenance issue and the verified spelling items without touching the shared quiz engine. Fresh QA/build/deployment verification remains mandatory after these commits.
 
-## 11. Recommended next milestone
+## 12. Recommended next milestone
 
 The best next milestone is **English Prose Final Audit v2**:
 
