@@ -14,8 +14,8 @@ function bankChecks(text,name){
   assert(text.includes('const practice=['),`${name}: missing practice bank`);
   assert(text.includes('const challenge=['),`${name}: missing challenge bank`);
   assert(text.includes('const finalTest='),`${name}: missing final test bank`);
-  const practiceBlock=text.match(/const practice=\[(.*?)\];\nconst challenge/s)?.[1]||'';
-  const challengeBlock=text.match(/const challenge=\[(.*?)\];\nconst finalTest/s)?.[1]||'';
+  const practiceBlock=text.match(/const practice=\[(.*?)\];\s*const challenge/s)?.[1]||'';
+  const challengeBlock=text.match(/const challenge=\[(.*?)\];\s*const finalTest/s)?.[1]||'';
   const practiceQ=count(practiceBlock,"{q:");
   const challengeQ=count(challengeBlock,"{q:");
   assert(practiceQ===15,`${name}: expected 15 practice questions, got ${practiceQ}`);
