@@ -1,0 +1,37 @@
+name: Finalize Phase 2 English
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: ${{ !contains(github.event.head_commit.message, '[phase2-final]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Fix Phase 2 source syntax and audit report
+        run: node scripts/finalizePhase2Fix.mjs
+      - name: Validate with Phase 2 QA
+        run: node scripts/qaEnglishPhase2Pedagogy.mjs
+      - name: Validate Vite build
+        run: |
+          npm install
+          npm run build
+      - name: Commit final Phase 2 state and remove temporary tooling
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f scripts/finalizePhase2Fix.mjs .github/workflows/finalize-phase2.yml
+          git add -u
+          git add src/english/EnglishPanoramaChapter2.jsx src/english/EnglishPanoramaChapter3.jsx src/english/EnglishPanoramaChapter4.jsx ENGLISH_PROSE_AUDIT_REPORT.md
+          git commit -m "fix(english): finalize phase 2 pedagogy [phase2-final]"
+          git push
