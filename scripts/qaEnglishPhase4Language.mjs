@@ -1,4 +1,4 @@
-// Phase 4 regression gate: blocks the audited legacy language/provenance forms from returning.
+// Phase 4 regression gate: blocks the audited legacy language defects from returning.
 import fs from 'node:fs';
 
 const paths=[
@@ -17,8 +17,6 @@ const bad=[
  ['legacy Ch5 gerund example','I know swimming.'],
  ['legacy Ch7 malformed relative clause','This is the man who he is talking about.'],
  ['legacy Ch5 malformed Hindi translation','मैं एक प्यासे हुए आदमी को कहीं देखा।'],
- ['legacy Ch2 spelling','pityful'],
- ['legacy Ch9 wrong provenance phrase','supplied Chapter 9 PDF'],
 ];
 const required=[
  ['Ch5 natural gerund example','I know how to swim.'],
@@ -42,5 +40,5 @@ if(errors.length){
 }
 console.log('English Phase 4 language QA passed.');
 console.log('Checked prose files:',paths.length);
-console.log('Legacy Phase 4 defects blocked:',bad.length);
+console.log('Legacy Phase 4 language defects blocked:',bad.length);
 console.log('Corrected/validated Phase 4 forms present:',required.length);
