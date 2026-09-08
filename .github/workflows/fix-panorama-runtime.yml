@@ -68,28 +68,7 @@ jobs:
     a:answerIndex
   };
 }'''
-          new_helper = '''function shuffleQuestion(q){
-  const options=q.o.map((text,sourceIndex)=>({text,sourceIndex}));
-  const original=options.map(item=>item.sourceIndex).join(',');
-  for(let i=options.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [options[i],options[j]]=[options[j],options[i]];
-  }
-  if(options.length>1&&options.map(item=>item.sourceIndex).join(',')===original){
-    [options[0],options[1]]=[options[1],options[0]];
-  }
-  let answerIndex=options.findIndex(item=>item.sourceIndex===q.a);
-  if(answerIndex===0&&options.length>1){
-    const swapIndex=1+Math.floor(Math.random()*(options.length-1));
-    [options[0],options[swapIndex]]=[options[swapIndex],options[0]];
-    answerIndex=swapIndex;
-  }
-  return {
-    ...q,
-    o:options.map(item=>item.text),
-    a:answerIndex
-  };
-}'''
+          new_helper = old_helper2
           if old_helper in text:
               text = text.replace(old_helper, new_helper, 1)
           elif old_helper2 not in text and new_helper not in text:
@@ -145,7 +124,8 @@ jobs:
           subprocess.run(['git','config','user.name','github-actions[bot]'],check=True)
           subprocess.run(['git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com'],check=True)
           subprocess.run(['git','add','src/english/EnglishPanoramaChapter1.jsx','.github/workflows/fix-panorama-runtime.yml'],check=True)
-          subprocess.run(['git','commit','-m','Harden Panorama Chapter 1 runtime randomization'],check=True)
+          if subprocess.run(['git','diff','--cached','--quiet']).returncode != 0:
+              subprocess.run(['git','commit','-m','Harden Panorama Chapter 1 runtime randomization'],check=True)
           subprocess.run(['git','rm','.github/workflows/fix-panorama-runtime.yml'],check=True)
           subprocess.run(['git','commit','-m','Remove one-time Panorama runtime fix workflow'],check=True)
           subprocess.run(['git','push'],check=True)
