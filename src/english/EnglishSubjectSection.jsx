@@ -1,3 +1,4 @@
+import './english-reader.css';
 import React,{useState} from 'react';
 
 const readerChapters=[
