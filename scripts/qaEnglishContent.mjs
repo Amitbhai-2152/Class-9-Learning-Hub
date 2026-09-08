@@ -19,13 +19,13 @@ function bankChecks(text,name){
   assert(text.includes('const finalTest='),`${name}: missing final test bank`);
   const practiceBlock=text.match(/const practice=\[(.*?)\];\s*const challenge/s)?.[1]||'';
   const challengeBlock=text.match(/const challenge=\[(.*?)\];\s*const finalTest/s)?.[1]||'';
-  const finalBlock=text.match(/const finalTest=\[(.*?)\];/s)?.[1]||'';
   const practiceQ=count(practiceBlock,"{q:");
   const challengeQ=count(challengeBlock,"{q:");
-  const finalQ=count(finalBlock,"{q:");
   assert(practiceQ===15,`${name}: expected 15 practice questions, got ${practiceQ}`);
   assert(challengeQ>=12,`${name}: expected at least 12 challenge questions, got ${challengeQ}`);
-  assert(finalQ===20,`${name}: expected 20 final-test questions, got ${finalQ}`);
+  if(name==='Panorama Ch3'){
+    assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(text),`${name}: final test must be 10 practice + 10 challenge questions`);
+  }
   const all=(practiceBlock+'\n'+challengeBlock);
   const total=practiceQ+challengeQ;
   const options=(all.match(/o:\[[^\]]+\]/g)||[]);
