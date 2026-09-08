@@ -1,0 +1,42 @@
+name: Wire English chapter routes
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/wire-english-final.yml']
+permissions:
+  contents: write
+jobs:
+  wire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch app and English navigation
+        shell: python
+        run: |
+          from pathlib import Path
+          app=Path('src/App.jsx')
+          s=app.read_text(encoding='utf-8')
+          imp="import {EnglishReaderChapter1} from './english/EnglishReaderChapter1';"
+          if "import {EnglishPanoramaChapter1}" not in s:
+              s=s.replace(imp, imp+"\nimport {EnglishPanoramaChapter1} from './english/EnglishPanoramaChapter1';",1)
+          marker="if(isHindi)return <Simple title={chapter} back={back}><HindiSubjectSection open={open}/></Simple>;if(isSanskrit)return <Simple title={chapter} back={back}><SanskritSubjectSection open={open}/></Simple>;"
+          if "chapter==='Reader • 1 I’m going to dance again'" not in s:
+              marker2=marker+"const isEnglishReader1=subject?.id==='english'&&chapter==='Reader • 1 I’m going to dance again';if(isEnglishReader1)return <Simple title={chapter} back={back}><EnglishReaderChapter1 initialMode={mode} onBack={back} addXp={addXp} finishSession={finishSession}/></Simple>;if(subject?.id==='english'&&chapter==='Panorama • Prose 1 Dharam Juddha')return <Simple title={chapter} back={back}><EnglishPanoramaChapter1 initialMode={mode} onBack={back} addXp={addXp} finishSession={finishSession}/></Simple>;"
+              if marker not in s: raise SystemExit('chapter route anchor not found')
+              s=s.replace(marker,marker2,1)
+          app.write_text(s,encoding='utf-8')
+          nav=Path('src/english/EnglishSubjectSection.jsx')
+          n=nav.read_text(encoding='utf-8')
+          n=n.replace('<h2>Choose your English book</h2><p>Select one textbook stream to open its chapters and learning sections.</p>','<h2>अंग्रेज़ी की किताब चुनें</h2><p>अपनी किताब चुनें और chapter-wise पढ़ाई शुरू करें।</p>',1)
+          n=n.replace('<b>Open Panorama →</b>','<b>Open Panorama →</b>',1)
+          n=n.replace('<b>Open English Reader →</b>','<b>Open English Reader →</b>',1)
+          nav.write_text(n,encoding='utf-8')
+      - name: Remove temp workflow and commit
+        shell: bash
+        run: |
+          rm .github/workflows/wire-english-final.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/App.jsx src/english/EnglishSubjectSection.jsx .github/workflows/wire-english-final.yml
+          git commit -m 'Wire English chapter routes [skip ci]'
+          git push
