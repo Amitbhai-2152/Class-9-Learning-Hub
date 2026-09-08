@@ -6,6 +6,7 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const count=(s,n)=>(s.match(new RegExp(n.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&'),'g'))||[]).length;
 const assert=(v,m)=>{if(!v)throw new Error(`English QA: ${m}`)};
 
+const ch2=read('src/english/EnglishPanoramaChapter2.jsx');
 const ch8=read('src/english/EnglishPanoramaChapter8.jsx');
 const ch9=read('src/english/EnglishPanoramaChapter9.jsx');
 const ch7=read('src/english/EnglishPanoramaChapter7Final.jsx');
@@ -23,7 +24,7 @@ function bank(text,name){
   const pq=count(p,'{q:'),cq=count(c,'{q:'),total=pq+cq;
   assert(pq===15,`${name}: expected 15 practice questions, got ${pq}`);
   assert(cq===23,`${name}: expected 23 challenge questions, got ${cq}`);
-  assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(text),`${name}: final test must be 10 practice + 10 challenge questions`);
+  assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(text)||/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]\./.test(text),`${name}: final test must be 10 practice + 10 challenge questions`);
   const all=p+'\n'+c;
   const arrays=all.match(/o:\[[^\]]+\]/g)||[];
   assert(arrays.length===total,`${name}: expected ${total} option arrays, got ${arrays.length}`);
@@ -58,7 +59,13 @@ for(const [text,name,title,author,source] of [
   assert(!/className=["']pg-reading-grid["']/.test(text),`${name} legacy pg-reading-grid class remains`);
 }
 
-assert(ch9.includes('supplied Chapter 9'), 'Chapter 9 must explicitly identify its supplied Chapter 9 source');
+assert(ch2.includes("['pityful','pitiful']"),'Chapter 2 verified spelling pair must use pitiful');
+assert(!ch2.includes("['pityful','pityful']"),'Chapter 2 retains incorrect pityful pair');
+assert(ch9.includes('The user-supplied Chapter 8 PDF is not used as source material for this chapter.'),'Chapter 9 must explicitly exclude Chapter 8 PDF provenance');
+assert(!ch9.includes('supplied Chapter 9 PDF'),'Chapter 9 must not claim a supplied Chapter 9 PDF');
+assert(!ch9.includes('supplied Chapter 9 Panorama pages'),'Chapter 9 must not claim supplied Chapter 9 Panorama pages');
+assert(ch9.includes("['yarned','yearned']"),'Chapter 9 verified spelling pair must use yearned');
+assert(ch9.includes("['worshiped','worshipped']"),'Chapter 9 verified spelling pair must use worshipped');
 assert(ch9.includes('Active and Passive Voice'),'Chapter 9 active/passive grammar coverage missing');
 assert(ch9.includes('Magi'),'Chapter 9 Magi terminology missing');
 
@@ -81,4 +88,4 @@ assert(shell.includes('if(chapter===9)'),'Chapter 9 render route missing');
 assert(main.includes('AppWithChapter5'),'main2 route shell missing');
 assert(fs.existsSync(path.join(root,'src/english/EnglishPanoramaChapter9.jsx')),'Chapter 9 component file is missing');
 
-console.log('English content QA passed: Chapters 8–9 banks, explanations, canonical UI parity, shared timed engine, routing, source notes, and Chapter 9 activation verified.');
+console.log('English content QA passed: verified Chapter 2 spelling, Chapter 8 source alignment, Chapter 9 provenance/word-study corrections, chapter 8–9 banks, canonical UI parity, shared timed engine, routing, and activation.');
