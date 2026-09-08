@@ -34,10 +34,7 @@ for(const [filename,component,meta,indent] of targets){
     if(p>=0){cut=p;break;}
   }
   if(cut<0) throw new Error(`Missing old quiz branch: ${filename}`);
-  learnPart=learnPart.slice(0,cut);
-  const lastBrace=learnPart.lastIndexOf('}');
-  if(lastBrace<0) throw new Error(`Missing Learn function close: ${filename}`);
-  learnPart=learnPart.slice(0,lastBrace).trimEnd()+'\n';
+  learnPart=learnPart.slice(0,cut).trimEnd()+'\n';
 
   const defaultMode=component==='EnglishPanoramaChapter2'?"||'learn'":'';
   const newFunction=`export function ${component}({initialMode=null,onBack,addXp,finishSession}){\n${indent}const [mode,setMode]=useState(initialMode${defaultMode});\n${indent}const begin=m=>setMode(m);\n${indent}if(mode==='practice'||mode==='challenge'||mode==='test')return <TimedPanoramaQuizEngine chapterTitle={study.title} mode={mode} questionBank={mode==='practice'?practice:mode==='challenge'?challenge:finalTest} onBack={()=>setMode('learn')} addXp={addXp} finishSession={finishSession}/>;\n${learnPart}}\n`;
@@ -54,7 +51,8 @@ for(const obsolete of [
   'src/english/englishChapter1OptionRandomizer.js',
   '.github/workflows/fix-english-ch1-randomization.yml',
   '.github/workflows/apply-panorama-timed-engine.yml',
-  '.github/workflows/repair-panorama-randomization.yml'
+  '.github/workflows/repair-panorama-randomization.yml',
+  '.github/workflows/migrate-panorama-timed-quizzes.yml'
 ]){
   if(existsSync(obsolete)) unlinkSync(obsolete);
 }
