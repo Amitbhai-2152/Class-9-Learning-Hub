@@ -13,14 +13,14 @@ const shell=read('src/AppWithChapter5.jsx');
 const engine=read('src/english/PanoramaTimedQuiz.jsx');
 
 function checkBank(segment,name,expected){
-  assert(count(segment,/q\('/g)===expected,`${name}: expected ${expected} questions`);
-  const records=[...segment.matchAll(/q\('([^']*)',\[(.*?)\],(\d+),'([^']*)'\)/g)];
+  assert(count(segment,/q\s*\(/g)===expected,`${name}: expected ${expected} questions`);
+  const records=[...segment.matchAll(/q\((['"])(.*?)\1,\[(.*?)\],(\d+),(['"])(.*?)\5\)/gs)];
   assert(records.length===expected,`${name}: expected ${expected} complete question records, got ${records.length}`);
   for(const [i,m] of records.entries()){
-    const options=[...m[2].matchAll(optionLiteral)].map(x=>decodeLiteral(x[0]));
+    const options=[...m[3].matchAll(optionLiteral)].map(x=>decodeLiteral(x[0]));
     assert(options.length===4,`${name}: question ${i+1} must have exactly 4 options`);
     assert(new Set(options).size===4,`${name}: question ${i+1} has duplicate options`);
-    const answer=Number(m[3]);
+    const answer=Number(m[4]);
     assert(Number.isInteger(answer)&&answer>=0&&answer<4,`${name}: question ${i+1} has invalid answer index`);
   }
 }
@@ -60,28 +60,44 @@ checkPoem({
   requiredFeatures:['Chorus (Refrain)','Chorus • Repeated','green holly','ingratitude','feigning','folly','jolly','benefits','warp','sting','Personification','Comparison / contrast','Repetition','Refrain','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','WORD STUDY','WORD FORMATION','GRAMMAR','ACTIVITY','TRANSLATION','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']
 });
 
+checkPoem({
+  path:'src/english/EnglishPanoramaPoem4.jsx',title:'To Daffodils',poet:'Robert Herrick',chapter:4,stanzas:2,
+  requiredLines:['Fair Daffodils, we weep to see',"You haste away so soon;","As yet the early-rising Sun","Has not attain'd his noon.",'Stay, stay,','Until the hasting day','But to the even-song;',"And, having pray'd together, we",'Will go with you along.','We have short time to stay, as you,','We have a short Spring;','As quick a growth to meet decay','We die,',"Like to the Summer's rain;",'Or as the pearls of morning’s dew',"Ne'er to be found again."],
+  requiredFeatures:['poem-actual-stanza','SIMPLE EXPLANATION','VOCABULARY','stanza.vocab','STANZA-BY-STANZA','Actual stanza → simple explanation → vocabulary','POETRY TOOLKIT','POETIC DEVICES','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','WORD STUDY','Phrasal verbs with “away”','Present participle + Noun','Correct the spelling','GRAMMAR','Sub + Verb + Infinitive','“as” as a conjunction','Prepositions','ACTIVITIES','school garden','TRANSLATION','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']
+});
+
 assert(nav.includes("const panoramaPoetry=['The Grandmother'"),'Poetry registry missing');
 assert(nav.includes("'On His Blindness'"),'Poetry Chapter 2 entry missing');
 assert(nav.includes("'Blow, Blow, Thou Winter Wind'"),'Poetry Chapter 3 entry missing');
+assert(nav.includes("'To Daffodils'"),'Poetry Chapter 4 entry missing');
 assert(nav.includes("const poetryMatch=chapter.match(/^Panorama • Poetry"),'poetry navigation parser missing');
-assert(nav.includes('if(poetry===1||poetry===2||poetry===3)'), 'Poetry Chapters 1–3 route handler missing');
+assert(nav.includes('if(poetry===1||poetry===2||poetry===3||poetry===4)'), 'Poetry Chapters 1–4 route handler missing');
 assert(nav.includes("params.set(`panoramaPoetry${poetry}`,'1')"),'Poetry runtime flag template missing');
+
 assert(shell.includes("import {EnglishPanoramaPoem1} from './english/EnglishPanoramaPoem1.jsx';"),'Poetry Chapter 1 component import missing');
 assert(shell.includes("import {EnglishPanoramaPoem2} from './english/EnglishPanoramaPoem2.jsx';"),'Poetry Chapter 2 component import missing');
 assert(shell.includes("import {EnglishPanoramaPoem3} from './english/EnglishPanoramaPoem3.jsx';"),'Poetry Chapter 3 component import missing');
+assert(shell.includes("import {EnglishPanoramaPoem4} from './english/EnglishPanoramaPoem4.jsx';"),'Poetry Chapter 4 component import missing');
+
 assert(shell.includes("if(p.get('panoramaPoetry1')==='1')return 17;"),'Poetry Chapter 1 flag route missing');
 assert(shell.includes("if(p.get('panoramaPoetry2')==='1')return 18;"),'Poetry Chapter 2 flag route missing');
 assert(shell.includes("if(p.get('panoramaPoetry3')==='1')return 19;"),'Poetry Chapter 3 flag route missing');
+assert(shell.includes("if(p.get('panoramaPoetry4')==='1')return 20;"),'Poetry Chapter 4 flag route missing');
+
 assert(shell.includes("if(Number.isInteger(n)&&n===17)return 17"),'Poetry Chapter 1 chapter route missing');
 assert(shell.includes("if(Number.isInteger(n)&&n===18)return 18"),'Poetry Chapter 2 chapter route missing');
 assert(shell.includes("if(Number.isInteger(n)&&n===19)return 19"),'Poetry Chapter 3 chapter route missing');
+assert(shell.includes("if(Number.isInteger(n)&&n===20)return 20"),'Poetry Chapter 4 chapter route missing');
+
 assert(shell.includes("if(chapter===17)return <EnglishPanoramaPoem1"),'Poetry Chapter 1 render route missing');
 assert(shell.includes("if(chapter===18)return <EnglishPanoramaPoem2"),'Poetry Chapter 2 render route missing');
 assert(shell.includes("if(chapter===19)return <EnglishPanoramaPoem3"),'Poetry Chapter 3 render route missing');
+assert(shell.includes("if(chapter===20)return <EnglishPanoramaPoem4"),'Poetry Chapter 4 render route missing');
 
 for(const marker of ['function shuffleQuestion','sourceIndex','allAnswered=','disabled={!allAnswered}','setSubmitted(true)','Your answer','Correct answer','score','pct'])assert(engine.includes(marker),`shared timed engine marker missing: ${marker}`);
 
-console.log('English poetry QA passed: Chapters 1–3 have explicit actual poem blocks, stanza/refrain explanations, vocabulary, textbook extensions, timed banks, option integrity, shared timed engine, navigation and App routing.');
+console.log('English poetry QA passed: Chapters 1–4 have explicit actual poem blocks, stanza explanations, vocabulary, textbook extensions, timed banks, option integrity, shared timed engine, navigation and App routing.');
 console.log('Poetry Chapter 1: 15 Practice + 25 Challenge + derived 20 Final Test.');
 console.log('Poetry Chapter 2: 15 Practice + 25 Challenge + derived 20 Final Test.');
 console.log('Poetry Chapter 3: 15 Practice + 25 Challenge + derived 20 Final Test.');
+console.log('Poetry Chapter 4: 15 Practice + 25 Challenge + derived 20 Final Test.');
