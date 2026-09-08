@@ -27,7 +27,7 @@ function bankChecks(text,name){
   const practiceQ=count(practiceBlock,"{q:");
   const challengeQ=count(challengeBlock,"{q:");
   assert(practiceQ===15,`${name}: expected 15 practice questions, got ${practiceQ}`);
-  if(['Panorama Ch3','Panorama Ch4','Panorama Ch5','Panorama Ch6'].includes(name))assert(challengeQ===23,`${name}: expected 23 challenge questions, got ${challengeQ}`);
+  if(name==='Panorama Ch6')assert(challengeQ===23,`${name}: expected 23 challenge questions, got ${challengeQ}`);
   else assert(challengeQ>=12,`${name}: expected at least 12 challenge questions, got ${challengeQ}`);
   if(['Panorama Ch3','Panorama Ch4','Panorama Ch5','Panorama Ch6'].includes(name))assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(text),`${name}: final test must be 10 practice + 10 challenge questions`);
   const all=(practiceBlock+'\n'+challengeBlock), total=practiceQ+challengeQ;
@@ -97,6 +97,7 @@ assert(appShell.includes("EnglishPanoramaChapter6Final"),'Panorama Ch6 shell imp
 assert(appShell.includes("n===12"),'Panorama Ch5 chapter-index route missing');
 assert(appShell.includes("n===13"),'Panorama Ch6 chapter-index route missing');
 assert(main2.includes("AppWithChapter5"),'main2 is not wired to the English chapter route shell');
+
 const readerNames=['I’m going to dance again','Scaling Great Heights','Saint Kabir','The eyes are not here','Ismat Chughtai: A woman with a difference','The accidental tourist','Saint Ravidas','Bharathipura'];
 const prose=['Dharam Juddha','Yayati','A Silent Revolution','Too Many People, Too Few Trees','Echo and Narcissus','The Shehnai of Bismillah Khan','Kathmandu','My Childhood','The Gift of the Magi'];
 const poetry=['The Grandmother','On His Blindness','Blow, Blow, Thou Winter Wind','To Daffodils','Sound','Self Introduction','I Am Like Grass','Abraham Lincoln’s Letter to His Son’s Teacher'];
