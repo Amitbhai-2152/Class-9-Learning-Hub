@@ -21,7 +21,7 @@ function openPanoramaChapter(chapter,open){
   window.dispatchEvent(new Event('popstate'));
   return;
  }
- if(poetry===1||poetry===2||poetry===3||poetry===4){
+ if(poetry>=1&&poetry<=5){
   const params=new URLSearchParams();
   params.set('page','chapter');params.set('subject','english');params.set('chapter',String(16+poetry));params.set('mode','learn');params.set(`panoramaPoetry${poetry}`,'1');
   window.history.pushState({},'',`${window.location.pathname}?${params.toString()}${window.location.hash||''}`);
