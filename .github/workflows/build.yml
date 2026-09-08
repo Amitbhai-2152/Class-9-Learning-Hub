@@ -12,6 +12,60 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: One-time Panorama timed quiz migration
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def wire(path, export_name, meta_name):
+              p=Path(path)
+              text=p.read_text(encoding='utf-8')
+              text=re.sub(r"^import React,\{[^}]+\} from 'react';", "import React,{useState} from 'react';\nimport PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx';", text, count=1, flags=re.M)
+              text,n=re.subn(r"\nfunction shuffleQuestion\(q\)\{.*?\n\}\n\n(?=function StudyView)", "\n", text, count=1, flags=re.S)
+              if n!=1:
+                  raise SystemExit(f'{path}: legacy shuffle helper boundary not found')
+              start=text.find(f'export function {export_name}')
+              end=text.find(f'export const {meta_name}=', start)
+              if start<0 or end<0:
+                  raise SystemExit(f'{path}: component boundary not found')
+              if export_name.endswith('Chapter1'):
+                  learn="""<div className=\"pg-shell\"><header className=\"pg-hero\"><div className=\"pg-kicker\">THE PANORAMA • PROSE 1</div><h1>{study.title}</h1><p>{study.author} · Complete guided study</p><div className=\"pg-hero-stats\"><span>12 Guided Parts</span><span>60+ Vocabulary</span><span>Infinitive Lab</span><span>15 + 23 + 20 Questions</span></div></header><div className=\"pg-modebar\"><button className=\"active\" onClick={{()=>begin('learn')}}><b>Learn</b><span>पूरा chapter समझें</span></button><button onClick={{()=>begin('practice')}}><b>Practice</b><span>15 questions • 11:15 min</span></button><button onClick={{()=>begin('challenge')}}><b>Challenge</b><span>23 questions • 23:00 min</span></button><button onClick={{()=>begin('test')}}><b>Final Test</b><span>20 questions • 25:00 min</span></button></div><button className=\"pg-back\" onClick={{onBack}}>← English books</button><StudyView/></div>"""
+              else:
+                  learn="""<div className=\"pg-shell\"><div className=\"pg-hero\"><span className=\"badge\">CLASS 9 • THE PANORAMA • PROSE 2</span><h1>{study.title}</h1><p>{study.author} • Guided learning</p></div><div className=\"pg-modebar\"><button className=\"active\" onClick={{()=>begin('learn')}}><b>Learn</b><span>पूरा chapter समझें</span></button><button onClick={{()=>begin('practice')}}><b>Practice</b><span>15 questions • 11:15 min</span></button><button onClick={{()=>begin('challenge')}}><b>Challenge</b><span>23 questions • 23:00 min</span></button><button onClick={{()=>begin('test')}}><b>Final Test</b><span>20 questions • 25:00 min</span></button></div><button className=\"pg-back\" onClick={{onBack}}>← English books</button><StudyView/></div>"""
+              component=f'''export function {export_name}({{initialMode=null,onBack,addXp,finishSession}}) {{
+                const [mode,setMode]=useState(initialMode||'learn');
+                const begin=m=>setMode(m);
+                if(mode==='learn'||mode===null)return {learn};
+                const bank=mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[];
+                return <PanoramaTimedQuiz mode={{mode}} title={{study.title}} bank={{bank}} onBack={{()=>begin('learn')}} addXp={{addXp}} finishSession={{payload=>finishSession?.({{subject:'english',book:'The Panorama',...payload}})}} />;
+              }}
+
+'''
+              p.write_text(text[:start]+component+text[end:],encoding='utf-8')
+
+          wire('src/english/EnglishPanoramaChapter1.jsx','EnglishPanoramaChapter1','englishPanoramaChapter1Meta')
+          wire('src/english/EnglishPanoramaChapter2.jsx','EnglishPanoramaChapter2','englishPanoramaChapter2Meta')
+
+          for path in ['src/english/EnglishPanoramaChapter1.jsx','src/english/EnglishPanoramaChapter2.jsx']:
+              t=Path(path).read_text(encoding='utf-8')
+              assert "PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx'" in t, f'{path}: engine import missing'
+              for forbidden in ['const [selected,setSelected]', 'const [score,setScore]', 'pg-feedback']:
+                  assert forbidden not in t, f'{path}: legacy quiz remains: {forbidden}'
+          PY
+
+          if git diff --quiet; then
+            echo 'Timed quiz migration already present.'
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/english/EnglishPanoramaChapter1.jsx src/english/EnglishPanoramaChapter2.jsx
+            git commit -m "Use timed Panorama quiz for chapters 1 and 2"
+            git push
+          fi
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
