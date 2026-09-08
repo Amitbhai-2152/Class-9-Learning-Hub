@@ -52,7 +52,7 @@ assert(/practice:[\s\S]*?45/.test(panoramaEngine),'Panorama timed engine: practi
 assert(/challenge:[\s\S]*?60/.test(panoramaEngine),'Panorama timed engine: challenge timing config missing');
 assert(/test:[\s\S]*?75/.test(panoramaEngine),'Panorama timed engine: test timing config missing');
 assert(/bank\.length\s*\*/.test(panoramaEngine),'Panorama timed engine: question-count-based timing missing');
-assert(/disabled=\{answers\.some\(a=>a===null\)\}/.test(panoramaEngine),'Panorama timed engine: all-question completion gate missing');
+assert(/allAnswered=/.test(panoramaEngine)&&/disabled=\{!allAnswered\}/.test(panoramaEngine),'Panorama timed engine: all-question completion gate missing');
 assert(/timeLeft<=0/.test(panoramaEngine),'Panorama timed engine: auto-submit timeout missing');
 assert(/Your answer/.test(panoramaEngine)&&/Correct answer/.test(panoramaEngine),'Panorama timed engine: full answer review missing');
 assert(/score/.test(panoramaEngine)&&/%/.test(panoramaEngine),'Panorama timed engine: score/percentage result missing');
