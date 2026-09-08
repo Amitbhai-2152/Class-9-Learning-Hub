@@ -16,6 +16,8 @@ const enrich=chapter=>{
   const examFocus=Array.isArray(deep?.examFocus)?deep.examFocus:[];
   const language=Array.isArray(study.language)?study.language:[];
   const highScore=Array.isArray(study.highScore)?study.highScore:[];
+  const topic=deep?.label||chapter.title||`पूरक अध्याय ${chapter.id}`;
+  const wrap=(prefix,value,suffix)=>`${prefix}${value}${suffix}`;
   return {
     ...chapter,
     deepContent:deep,
@@ -23,10 +25,10 @@ const enrich=chapter=>{
     lessons:chapter.concepts.map(([title,text],index)=>({
       title,
       points:[
-        text,
-        sequence[index%Math.max(sequence.length,1)]||'अध्याय के मुख्य प्रसंग को क्रम से समझें।',
-        examFocus[index%Math.max(examFocus.length,1)]||'परीक्षा-उपयोगी तथ्य को अपने शब्दों में दोहराएँ।',
-        language[index%Math.max(language.length,1)]||highScore[index%Math.max(highScore.length,1)]||'शब्दार्थ और वाक्य-अर्थ की जाँच करें।'
+        wrap(`${topic} में इस concept का मुख्य आधार है: `,text,'। इसे पाठ के उदाहरण और प्रश्न के संदर्भ से जोड़कर समझें।'),
+        wrap(`पाठ के क्रम में अगला महत्त्वपूर्ण अध्ययन-बिंदु है: `,sequence[index%Math.max(sequence.length,1)]||'मुख्य प्रसंग और उसके परिणाम को क्रम से समझना','। घटना, विचार या संदेश के बीच संबंध स्पष्ट रखें।'),
+        wrap(`परीक्षा की तैयारी में ध्यान दें: `,examFocus[index%Math.max(examFocus.length,1)]||'अध्याय के मुख्य तथ्य और संदेश को अपने शब्दों में स्पष्ट करना','। उत्तर में प्रसंग और निष्कर्ष दोनों शामिल करें।'),
+        wrap(`भाषा एवं high-score अभ्यास के लिए: `,language[index%Math.max(language.length,1)]||highScore[index%Math.max(highScore.length,1)]||'शब्दार्थ, वाक्य-अर्थ और पाठ-संदेश को एक साथ दोहराना','। केवल शब्द याद करने के बजाय उनका पाठ-संदर्भ भी पहचानें।')
       ]
     })),
     practice:balanceQuestions(chapter.practice,0),
