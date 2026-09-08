@@ -1,7 +1,8 @@
 name: Phase 4 Language Cleanup
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
 
 permissions:
   contents: write
