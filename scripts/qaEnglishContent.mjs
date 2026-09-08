@@ -80,7 +80,7 @@ assert(nav.includes('My Childhood'),'Chapter 8 navigation entry missing');
 assert(nav.includes('The Gift of the Magi'),'Chapter 9 navigation entry missing');
 assert(nav.includes('const panoramaProse='),'Panorama prose registry missing');
 assert(nav.includes('if(n===5||n===6||n===7||n===8||n===9)'),'Panorama routing handler must include Chapters 5–9');
-assert(nav.includes('panorama9'),'Chapter 9 navigation flag missing');
+assert(nav.includes("params.set(`panorama${n}`,'1')"),'Panorama chapter routing must set the matching runtime flag');
 assert(shell.includes('EnglishPanoramaChapter8'),'Chapter 8 shell import missing');
 assert(shell.includes('EnglishPanoramaChapter9'),'Chapter 9 shell import missing');
 assert(shell.includes('n===15'),'Chapter 8 chapter-index route missing');
