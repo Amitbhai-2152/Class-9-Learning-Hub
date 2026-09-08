@@ -24,9 +24,8 @@ const checkBanks=(label,chapter,number)=>{
   }
 };
 
-const checkDetailedStudy=(source,label,expectedNumbers)=>{
-  const exported=source.includes('export const getSanskritPrimaryDetailedStudyContent');
-  if(!exported)failures.push(`${label}: detailed-study getter export missing`);
+const checkDetailedStudySource=(source,label,expectedNumbers,getterToken)=>{
+  if(!source.includes(`export const ${getterToken}`))failures.push(`${label}: expected getter export ${getterToken} missing`);
   for(const n of expectedNumbers){
     const keyStart=`${n}:{title:`;
     if(!source.includes(keyStart))failures.push(`${label}: missing detailed Ch${n}`);
@@ -44,8 +43,8 @@ if(!runtimeSource.includes('getSanskritSupplementaryStudyModule'))failures.push(
 if(!studySource.includes('SANSKRIT_SUPPLEMENTARY_STUDY_MODULES'))failures.push('Supplementary study export missing');
 if(!deepSource.includes('SANSKRIT_SUPPLEMENTARY_DEEP_CONTENT'))failures.push('Supplementary deep export missing');
 if(!supplementarySource.includes('SANSKRIT_SUPPLEMENTARY_CONTENT'))failures.push('Supplementary content export missing');
-checkDetailedStudy(primaryDetailed1to4Source,'Primary detailed 1–4',[1,2,3,4]);
-checkDetailedStudy(primaryDetailed5to15Source,'Primary detailed 5–15',[5,6,7,8,9,10,11,12,13,14,15]);
+checkDetailedStudySource(primaryDetailed1to4Source,'Primary detailed 1–4',[1,2,3,4],'getSanskritPrimaryDetailedStudyContent');
+checkDetailedStudySource(primaryDetailed5to15Source,'Primary detailed 5–15',[5,6,7,8,9,10,11,12,13,14,15],'getSanskritPrimaryDetailedStudyContent5to8');
 if(/sanskritPrimaryDetailedStudyCh9to12/i.test(hub+primaryDetailed1to4Source+primaryDetailed5to15Source))failures.push('Redundant Ch9–12 detailed-study module is still referenced');
 
 try{
