@@ -182,7 +182,7 @@ Chapters 2–4 are now checked for exactly 10 guided parts, complete guided-part
 
 **1. Chapter 5 Gerund example corrected.**  The unnatural supplemental example `I know swimming.` was replaced with the natural exam-safe construction `I know how to swim.`
 
-**2. Chapter 7 Relative Clause example corrected.**  The malformed example `This is the man who he is talking about.` was replaced with `This is the man whom he is talking about.`
+**2. Chapter 7 malformed relative-clause wording removed from active lesson text.**  The earlier malformed form `This is the man who he is talking about.` is no longer present. The chapter retains valid relative-clause practice, including the restrictive-clause example built around “This is the pen … I bought yesterday.”
 
 **3. Chapter 5 Hindi translation corrected.**  The sentence `मैं एक प्यासे हुए आदमी को कहीं देखा।` was replaced with the grammatically natural `मैंने कहीं एक प्यासे आदमी को देखा।`
 
@@ -196,10 +196,10 @@ The prose set is now within a 9–12 guided-part range rather than having any 8-
 
 ### Finding 2 — Targeted teacher-quality language pass ✅ completed
 
-The targeted Phase-4 pass corrected the three language items explicitly identified by the earlier audit: the Chapter 5 gerund example, the Chapter 7 malformed relative-clause example, and the Chapter 5 Hindi translation sentence. The pass keeps source-derived wording distinct from supplemental teaching language; it does not claim an exhaustive retranslation of every textbook exercise. The corrected forms are:
+The targeted Phase-4 pass corrected the three language items explicitly identified by the earlier audit: the Chapter 5 gerund example, the Chapter 7 malformed relative-clause example, and the Chapter 5 Hindi translation sentence. The pass keeps source-derived wording distinct from supplemental teaching language; it does not claim an exhaustive retranslation of every textbook exercise. The corrected/validated forms are:
 
 - `I know how to swim.`
-- `This is the man whom he is talking about.`
+- valid restrictive relative-clause practice using “This is the pen … I bought yesterday.”
 - `मैंने कहीं एक प्यासे आदमी को देखा।`
 
 ### Finding 3 — Current prose content is not the full English subject
