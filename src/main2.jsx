@@ -8,7 +8,6 @@ import './subject-overrides.css';
 import './science-navigation.css';
 import './science-learn-navigator-fix.css';
 import './sst/sst-section.css';
-import './english/panoramaChapter1RuntimeRandomizer.js';
 
 function RootRouter(){
   const [isSST,setIsSST]=useState(()=>new URLSearchParams(window.location.search).get('subject')==='sst'||new URLSearchParams(window.location.search).get('page')?.startsWith('sst-'));

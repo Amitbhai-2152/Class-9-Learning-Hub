@@ -1,4 +1,5 @@
-import React,{useMemo,useState} from 'react';
+import React,{useState} from 'react';
+import PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx';
 import './english-reader.css';
 import './english-panorama.css';
 
@@ -76,14 +77,6 @@ const challenge=[
 
 const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)].map((x,i)=>({...x,id:`panorama-yayati-final-${i}`}));
 
-function shuffleQuestion(q){
-  const indexed=q.o.map((option,index)=>({option,index}));
-  for(let i=indexed.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[indexed[i],indexed[j]]=[indexed[j],indexed[i]];}
-  const o=indexed.map(item=>item.option);
-  const a=indexed.findIndex(item=>item.index===q.a);
-  return {...q,o,a};
-}
-
 function StudyView(){return <div className="pg-learn">
   <div className="pg-callout pg-no-book"><b>📘 Complete Guided Study</b><span>Chapter flow, आसान हिन्दी explanation, vocabulary, word study, grammar, telegram writing, translation और exam preparation एक ही जगह।</span></div>
   <section className="pg-panel"><div className="pg-panel-title"><span>ABOUT THE LESSON</span><h2>Chapter का basic idea</h2></div><p>{study.intro}</p><div className="pg-author"><b>लेखक / स्रोत परिचय</b><p>{study.authorNote}</p></div></section>
@@ -106,19 +99,36 @@ function StudyView(){return <div className="pg-learn">
   <section className="pg-panel pg-revision"><h3>⚡ 30-second Revision</h3><div className="pg-revision-grid"><div><b>Curse</b><span>Sukracharya के curse से premature old age.</span></div><div><b>Yayati</b><span>Youth की इच्छा और बाद में desire पर realisation.</span></div><div><b>Puru</b><span>पिता के लिए youth देने वाला पुत्र.</span></div><div><b>Indulgence</b><span>अति-भोग desire को स्थायी रूप से शांत नहीं करता.</span></div><div><b>Peace</b><span>Attachment और dislike से ऊपर mental state.</span></div><div><b>Grammar</b><span>Sequence of Tenses + important exceptions.</span></div></div></section>
 </div>}
 
-export function EnglishPanoramaChapter2({initialMode=null,onBack,addXp,finishSession}){
- const [mode,setMode]=useState(initialMode||'learn');
- const [idx,setIdx]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[result,setResult]=useState(null),[shuffleNonce,setShuffleNonce]=useState(0);
- const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);
- const randomizedBank=useMemo(()=>bank.map(q=>shuffleQuestion(q)),[bank,shuffleNonce]);
- const current=randomizedBank[idx]||null;
- const begin=m=>{setMode(m);setIdx(0);setSelected(null);setScore(0);setResult(null);setShuffleNonce(n=>n+1)};
- const choose=n=>{if(selected!==null||!current)return;setSelected(n);if(n===current.a)setScore(s=>s+1)};
- const next=()=>{if(idx===bank.length-1){const finalScore=score+(selected===current.a?1:0);const pct=Math.round(finalScore/bank.length*100);setResult({score:finalScore,total:bank.length,pct});finishSession?.({chapter:study.title,mode,score:finalScore,total:bank.length,percent:pct,completed:true});}else{setIdx(i=>i+1);setSelected(null)}};
- if(mode==='learn')return <div className="pg-shell"><div className="pg-hero"><span className="badge">CLASS 9 • THE PANORAMA • PROSE 2</span><h1>{study.title}</h1><p>{study.author} • Guided learning</p></div><div className="pg-modebar"><button className="active" onClick={()=>begin('learn')}><b>Learn</b><span>पूरा chapter समझें</span></button><button onClick={()=>begin('practice')}><b>Practice</b><span>15 questions</span></button><button onClick={()=>begin('challenge')}><b>Challenge</b><span>23 thinking questions</span></button><button onClick={()=>begin('test')}><b>Final Test</b><span>20 mixed questions</span></button></div><button className="pg-back" onClick={onBack}>← English books</button><StudyView/></div>;
- if(result)return <div className="pg-shell"><div className="pg-quiz-wrap"><button className="pg-back" onClick={()=>begin('learn')}>← Back to Learn</button><div className="pg-panel"><span className="pg-qtag">RESULT</span><h2>{study.title}</h2><div className="result-score">{result.score}<small>/ {result.total}</small></div><div className="result-percent">{result.pct}% correct</div><p>{result.pct===100?'Excellent! 🎉':result.pct>=70?'Very good! 💪':'Keep practising 📚'}</p><div className="result-actions"><button className="secondary-btn pressable" onClick={()=>begin(mode)}>Try Again</button><button className="primary-btn pressable" onClick={onBack}>Back to English →</button></div></div></div></div>;
- const progress=Math.round(((idx+(selected!==null?1:0))/bank.length)*100);
- return <div className="pg-shell"><div className="pg-quiz-wrap"><button className="pg-back" onClick={()=>begin('learn')}>← Back to Learn</button><div className="pg-quiz-head"><div><span>{mode==='practice'?'PRACTICE':mode==='challenge'?'CHALLENGE':'FINAL TEST'}</span><h2>{study.title}</h2></div><b>{idx+1}/{bank.length}</b></div><div className="pg-progress"><i style={{width:`${progress}%`}}/></div><div className="pg-question-card"><span className="pg-qtag">Question {idx+1}</span><h3>{current.q}</h3><div className="pg-options">{current.o.map((o,i)=>{const cls=selected===null?'':i===current.a?'correct':i===selected?'wrong':'';return <button key={o} className={`pg-option ${cls}`} onClick={()=>choose(i)} disabled={selected!==null}><span>{String.fromCharCode(65+i)}</span><b>{o}</b></button>})}</div>{selected!==null&&<div className={`pg-feedback ${selected===current.a?'good':'bad'}`}><b>{selected===current.a?'✓ Correct':'✗ Not quite'}</b><p>{current.e}</p><button className="pg-next" onClick={next}>{idx===bank.length-1?'View Result':'Next Question →'}</button></div>}</div></div></div>;
+export function EnglishPanoramaChapter2({initialMode=null,onBack,addXp,finishSession}) {
+  const [mode,setMode] = useState(initialMode || 'learn');
+  const begin = nextMode => setMode(nextMode);
+  if (mode === 'learn' || mode === null) return <div className="pg-shell">
+    <div className="pg-hero">
+      <span className="badge">CLASS 9 • THE PANORAMA • PROSE 2</span>
+      <h1>{study.title}</h1>
+      <p>{study.author} • Guided learning</p>
+      <div className="pg-hero-stats">
+        <span>Complete Chapter Study</span><span>15 Practice</span><span>23 Challenge</span><span>20 Final Test</span>
+      </div>
+    </div>
+    <div className="pg-modebar">
+      <button className="active" onClick={() => begin('learn')}><b>Learn</b><span>पूरा chapter समझें</span></button>
+      <button onClick={() => begin('practice')}><b>Practice</b><span>15 questions • 11:15 min • Easy → Moderate</span></button>
+      <button onClick={() => begin('challenge')}><b>Challenge</b><span>23 questions • 23:00 min • Moderate → Hard</span></button>
+      <button onClick={() => begin('test')}><b>Final Test</b><span>20 questions • 25:00 min • Exam Level</span></button>
+    </div>
+    <button className="pg-back" onClick={onBack}>← English books</button>
+    <StudyView />
+  </div>;
+  const bank = mode === 'practice' ? practice : mode === 'challenge' ? challenge : mode === 'test' ? finalTest : [];
+  return <PanoramaTimedQuiz
+    mode={mode}
+    title={study.title}
+    bank={bank}
+    onBack={() => begin('learn')}
+    addXp={addXp}
+    finishSession={payload => finishSession?.({subject:'english',book:'The Panorama',...payload})}
+  />;
 }
 
 export const englishPanoramaChapter2Meta={title:study.title,author:study.author,book:'The Panorama',type:'Prose'};

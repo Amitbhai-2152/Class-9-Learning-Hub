@@ -1,4 +1,5 @@
-import React,{useEffect,useMemo,useState} from 'react';
+import React,{useState} from 'react';
+import PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx';
 import './english-reader.css';
 import './english-panorama.css';
 
@@ -195,22 +196,6 @@ const challenge=[
 
 const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)].map((x,i)=>({...x,id:`panorama-final-${i}`}));
 
-function shuffleQuestion(q){
-  const options=q.o.map((text,sourceIndex)=>({text,sourceIndex}));
-  for(let i=options.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [options[i],options[j]]=[options[j],options[i]];
-  }
-  if(options.length>1&&options.every((item,index)=>item.sourceIndex===index)){
-    [options[0],options[1]]=[options[1],options[0]];
-  }
-  return {
-    ...q,
-    o:options.map(item=>item.text),
-    a:options.findIndex(item=>item.sourceIndex===q.a)
-  };
-}
-
 function StudyView(){
   const [openGrammar,setOpenGrammar]=useState(null);
   return <div className="pg-learn">
@@ -264,40 +249,36 @@ function StudyView(){
   </div>;
 }
 
-export function EnglishPanoramaChapter1({initialMode=null,onBack,addXp,finishSession}){
-  const [mode,setMode]=useState(initialMode);
-  const [idx,setIdx]=useState(0);
-  const [selected,setSelected]=useState(null);
-  const [score,setScore]=useState(0);
-  const [result,setResult]=useState(null);
-  const [quizRun,setQuizRun]=useState(0);
-  const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);
-  const current=useMemo(()=>bank[idx]?shuffleQuestion(bank[idx]):null,[bank,idx,quizRun]);
-  const begin=m=>{setMode(m);setIdx(0);setSelected(null);setScore(0);setResult(null);setQuizRun(r=>r+1)};
-  const choose=n=>{
-    if(selected!==null||!current)return;
-    setSelected(n);
-    const nextScore=score+(n===current.a?1:0);
-    if(idx===bank.length-1){
-      const finalScore=nextScore;
-      const pct=Math.round((finalScore/bank.length)*100);
-      setResult({score:finalScore,total:bank.length,pct});
-      if(addXp)addXp(finalScore*2+(mode==='challenge'?4:2));
-      if(finishSession)finishSession({subject:'english',book:'The Panorama',chapter:'Dharam Juddha',mode,score:finalScore,total:bank.length,pct,completedAt:new Date().toISOString()});
-    }else{
-      setScore(nextScore);
-    }
-  };
-  const next=()=>{if(selected===null)return;setIdx(i=>i+1);setSelected(null)};
-  if(result)return <div className="pg-shell"><div className="pg-result"><span>TEST COMPLETE</span><h2>{result.score}/{result.total}</h2><p>{result.pct}% score</p><div className="pg-result-message">{result.pct>=80?'बहुत बढ़िया! अब chapter को exam point से एक बार revise कर लो।':result.pct>=60?'अच्छा प्रयास! गलत answers की explanation पढ़कर फिर कोशिश करो।':'Basics से दुबारा start करो और Guided Reading के blocks revise करो।'}</div><div className="pg-result-actions"><button onClick={()=>begin(mode)}>Try Again</button><button className="primary" onClick={()=>begin('practice')}>Practice Again</button><button onClick={onBack}>Back to English</button></div></div></div>;
-  if(mode==='learn'||mode===null)return <div className="pg-shell">
-    <header className="pg-hero"><div className="pg-kicker">THE PANORAMA • PROSE 1</div><h1>{study.title}</h1><p>{study.author} · Complete guided study</p><div className="pg-hero-stats"><span>12 Guided Parts</span><span>60+ Vocabulary</span><span>Infinitive Lab</span><span>15 + 23 + 20 Questions</span></div></header>
-    <div className="pg-modebar"><button className={mode==='learn'?'active':''} onClick={()=>begin('learn')}><b>Learn</b><span>पूरा chapter समझें</span></button><button onClick={()=>begin('practice')}><b>Practice</b><span>15 questions</span></button><button onClick={()=>begin('challenge')}><b>Challenge</b><span>23 thinking questions</span></button><button onClick={()=>begin('test')}><b>Final Test</b><span>20 mixed questions</span></button></div>
-    <button className="pg-back" onClick={onBack}>← English books</button><StudyView/>
+export function EnglishPanoramaChapter1({initialMode=null,onBack,addXp,finishSession}) {
+  const [mode,setMode] = useState(initialMode || 'learn');
+  const begin = nextMode => setMode(nextMode);
+  if (mode === 'learn' || mode === null) return <div className="pg-shell">
+    <div className="pg-hero">
+      <span className="badge">CLASS 9 • THE PANORAMA • PROSE 1</span>
+      <h1>{study.title}</h1>
+      <p>{study.author} • Guided learning</p>
+      <div className="pg-hero-stats">
+        <span>Complete Chapter Study</span><span>15 Practice</span><span>23 Challenge</span><span>20 Final Test</span>
+      </div>
+    </div>
+    <div className="pg-modebar">
+      <button className="active" onClick={() => begin('learn')}><b>Learn</b><span>पूरा chapter समझें</span></button>
+      <button onClick={() => begin('practice')}><b>Practice</b><span>15 questions • 11:15 min • Easy → Moderate</span></button>
+      <button onClick={() => begin('challenge')}><b>Challenge</b><span>23 questions • 23:00 min • Moderate → Hard</span></button>
+      <button onClick={() => begin('test')}><b>Final Test</b><span>20 questions • 25:00 min • Exam Level</span></button>
+    </div>
+    <button className="pg-back" onClick={onBack}>← English books</button>
+    <StudyView />
   </div>;
-
-  const progress=Math.round(((idx+(selected!==null?1:0))/bank.length)*100);
-  return <div className="pg-shell"><div className="pg-quiz-wrap"><button className="pg-back" onClick={()=>begin('learn')}>← Back to Learn</button><div className="pg-quiz-head"><div><span>{mode==='practice'?'PRACTICE':mode==='challenge'?'CHALLENGE':'FINAL TEST'}</span><h2>{study.title}</h2></div><b>{idx+1}/{bank.length}</b></div><div className="pg-progress"><i style={{width:`${progress}%`}}/></div><div className="pg-question-card"><span className="pg-qtag">Question {idx+1}</span><h3>{current.q}</h3><div className="pg-options">{current.o.map((o,i)=>{const cls=selected===null?'':i===current.a?'correct':i===selected?'wrong':'';return <button key={o} className={`pg-option ${cls}`} onClick={()=>choose(i)} disabled={selected!==null}><span>{String.fromCharCode(65+i)}</span><b>{o}</b></button>})}</div>{selected!==null&&<div className={`pg-feedback ${selected===current.a?'good':'bad'}`}><b>{selected===current.a?'✓ Correct':'✗ Not quite'}</b><p>{current.e}</p><button className="pg-next" onClick={idx===bank.length-1?()=>setResult({score:score+(selected===current.a?1:0),total:bank.length,pct:Math.round(((score+(selected===current.a?1:0))/bank.length)*100)}):next}>{idx===bank.length-1?'View Result':'Next Question →'}</button></div>}</div></div></div>;
+  const bank = mode === 'practice' ? practice : mode === 'challenge' ? challenge : mode === 'test' ? finalTest : [];
+  return <PanoramaTimedQuiz
+    mode={mode}
+    title={study.title}
+    bank={bank}
+    onBack={() => begin('learn')}
+    addXp={addXp}
+    finishSession={payload => finishSession?.({subject:'english',book:'The Panorama',...payload})}
+  />;
 }
 
 export const englishPanoramaChapter1Meta={title:study.title,author:study.author,book:'The Panorama',type:'Prose'};
