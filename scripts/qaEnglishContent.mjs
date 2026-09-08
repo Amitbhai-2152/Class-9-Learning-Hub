@@ -12,7 +12,7 @@ const panorama4=read('src/english/EnglishPanoramaChapter4.jsx');
 const panorama5=read('src/english/EnglishPanoramaChapter5.jsx');
 const panorama6=read('src/english/EnglishPanoramaChapter6Final.jsx');
 const panorama7=read('src/english/EnglishPanoramaChapter7Final.jsx');
-const panorama8=read('src/english/EnglishPanoramaChapter8Final.jsx');
+const panorama8=read('src/english/EnglishPanoramaChapter8.jsx');
 const nav=read('src/english/EnglishSubjectSection.jsx');
 const app=read('src/App.jsx');
 const appShell=read('src/AppWithChapter5.jsx');
@@ -107,7 +107,7 @@ assert(app.includes("EnglishPanoramaChapter4"),'Panorama Ch4 import/route missin
 assert(appShell.includes("EnglishPanoramaChapter5"),'Panorama Ch5 shell import missing');
 assert(appShell.includes("EnglishPanoramaChapter6Final"),'Panorama Ch6 shell import missing');
 assert(appShell.includes("EnglishPanoramaChapter7Final"),'Panorama Ch7 shell import missing');
-assert(appShell.includes("EnglishPanoramaChapter8Final"),'Panorama Ch8 shell import missing');
+assert(appShell.includes("EnglishPanoramaChapter8"),'Panorama Ch8 shell import missing');
 assert(appShell.includes("n===12"),'Panorama Ch5 chapter-index route missing');
 assert(appShell.includes("n===13"),'Panorama Ch6 chapter-index route missing');
 assert(appShell.includes("n===14"),'Panorama Ch7 chapter-index route missing');
