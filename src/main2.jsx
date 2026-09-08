@@ -4,6 +4,7 @@ import App from './App.jsx';
 import { AppErrorBoundary } from './AppErrorBoundary.jsx';
 import SSTRoot from './sst/SSTRoot.jsx';
 import './scienceModeRouter.js';
+import './english/englishChapter1OptionRandomizer.js';
 import './subject-overrides.css';
 import './science-navigation.css';
 import './science-learn-navigator-fix.css';
