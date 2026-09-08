@@ -29,7 +29,7 @@ function formatTime(total){
 function returnPoetryLearn(){
   if(typeof window==='undefined')return false;
   const params=new URLSearchParams(window.location.search);
-  const isPoetryRoute=params.get('subject')==='english'&&params.get('page')==='chapter'&&Array.from({length:5},(_,i)=>i+1).some(n=>params.get(`panoramaPoetry${n}`)==='1');
+  const isPoetryRoute=params.get('subject')==='english'&&params.get('page')==='chapter'&&[1,2,3,4,5,6].some(n=>params.get(`panoramaPoetry${n}`)==='1');
   if(!isPoetryRoute)return false;
   params.set('mode','learn');
   window.location.assign(`${window.location.pathname}?${params.toString()}${window.location.hash||''}`);
