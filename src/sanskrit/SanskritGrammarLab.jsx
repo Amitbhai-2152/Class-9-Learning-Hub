@@ -1,5 +1,5 @@
 import React,{useMemo,useState} from 'react';
-import {SANSKRIT_GRAMMAR_UNITS} from './sanskritGrammarSyllabus.mjs';
+import {SANSKRIT_GRAMMAR_UNITS} from './sanskritGrammarRuntime.mjs';
 import './sanskrit-grammar.css';
 
 function UnitStudy({unit}){return <div className="sg-deep-grid"><article className="sg-deep-card"><h4>क्या पढ़ना है</h4><ul>{unit.subtopics.map(x=><li key={x}>{x}</li>)}</ul></article><article className="sg-deep-card"><h4>हल करने की विधि</h4><ol>{unit.method.map(x=><li key={x}>{x}</li>)}</ol></article><article className="sg-deep-card sg-warning-card"><h4>सामान्य गलतियाँ</h4><ul>{unit.mistakes.map(x=><li key={x}>{x}</li>)}</ul></article><article className="sg-deep-card"><h4>Board Exam Tips</h4><ul>{unit.tips.map(x=><li key={x}>{x}</li>)}</ul></article></div>}
