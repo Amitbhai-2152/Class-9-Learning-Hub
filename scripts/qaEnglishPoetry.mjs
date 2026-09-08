@@ -31,8 +31,13 @@ function checkPoem(cfg){
  assert(p.includes(`poet:'${cfg.poet}'`),`${cfg.title}: poet missing`);
  assert(p.includes(`The Panorama • Poetry Chapter ${cfg.chapter}`),`${cfg.title}: chapter marker missing`);
  assert(p.includes('stanzas:['),`${cfg.title}: stanza data missing`);
- assert(count(p,/poemLines:\[/g)===cfg.blocks,`${cfg.title}: expected ${cfg.blocks} source-cue stanza blocks`);
- for(const x of cfg.lines)assert(p.includes(x),`${cfg.title}: missing source marker ${x}`);
+ assert(count(p,/poemLines:\[/g)===cfg.blocks,`${cfg.title}: expected ${cfg.blocks} poem blocks`);
+ if(cfg.totalLines){
+  const blocks=[...p.matchAll(/poemLines:\[(.*?)\]/gs)];
+  const lineCount=blocks.reduce((n,m)=>n+[...m[1].matchAll(optionLiteral)].length,0);
+  assert(lineCount===cfg.totalLines,`${cfg.title}: expected ${cfg.totalLines} total poem lines, got ${lineCount}`);
+ }
+ for(const x of cfg.lines)assert(p.includes(x),`${cfg.title}: missing complete source line ${x}`);
  for(const x of cfg.features)assert(p.includes(x),`${cfg.title}: missing required feature ${x}`);
  const practice=p.match(/const practice=\[(.*?)\];/s)?.[1]||'';
  const challenge=p.match(/const challenge=\[(.*?)\];/s)?.[1]||'';
@@ -45,7 +50,7 @@ checkPoem({path:'src/english/EnglishPanoramaPoem1.jsx',title:'The Grandmother',p
 checkPoem({path:'src/english/EnglishPanoramaPoem2.jsx',title:'On His Blindness',poet:'John Milton',chapter:2,blocks:2,lines:["poemLines:['When I consider how my light is spent'","'They also serve who only stand and wait.”'"],features:['Petrarchan sonnet','Octave','Sestet','Volta / turn','POETRY TOOLKIT','POETIC DEVICES','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','Conditional Clauses','Translation Focus','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']});
 checkPoem({path:'src/english/EnglishPanoramaPoem3.jsx',title:'Blow, Blow, Thou Winter Wind',poet:'William Shakespeare',chapter:3,blocks:4,lines:["poemLines:['Blow, blow, thou winter wind,'","poemLines:['Heigh-ho! sing, heigh-ho! unto the green holly:'","poemLines:['Freeze, freeze, thou bitter sky,'"],features:['Chorus (Refrain)','Chorus • Repeated','Personification','Comparison / contrast','Repetition','Refrain','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','WORD STUDY','WORD FORMATION','GRAMMAR','ACTIVITY','TRANSLATION','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']});
 checkPoem({path:'src/english/EnglishPanoramaPoem4.jsx',title:'To Daffodils',poet:'Robert Herrick',chapter:4,blocks:2,lines:["poemLines:['Fair Daffodils, we weep to see'","poemLines:['We have short time to stay, as you,'"],features:['STANZA-BY-STANZA','POETRY TOOLKIT','POETIC DEVICES','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','WORD STUDY','Sub + Verb + Infinitive','“as” as a conjunction','Prepositions','ACTIVITIES','TRANSLATION','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']});
-checkPoem({path:'src/english/EnglishPanoramaPoem5.jsx',title:'Sound',poet:'Rajani Parulekar',chapter:5,blocks:4,lines:["poemLines:['A tree in the woods is hacked…'","poemLines:['Oh! But the wind knows.'","poemLines:['Those songs not all could praise…'"],features:['Opening movement — The hacked tree','Memory movement — What the tree remembers','The wind movement — Nature as witness','Closing movement — Sounds beyond language','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','Long Answers','Composition','Word Study','Dictionary Use','Word Formation','Verb forms','Passive to active','Direct to indirect narration','ACTIVITIES','TRANSLATION','Personification','Rhetorical questions','Symbolism','Contrast','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']});
+checkPoem({path:'src/english/EnglishPanoramaPoem5.jsx',title:'Sound',poet:'Rajani Parulekar',chapter:5,blocks:4,totalLines:25,lines:["poemLines:['A tree in the woods is hacked'","'Its branch breaking away'","'what do the halves'","'whisper to each other?'","'Do they moan and groan'","'In the heart of their hearts?'","'And do these logs driven from each other'","'Reminisce?'","'Do they remember how the wind tossed them?'","'How they got drenched in the rain?'","'And the blossoms in the spring'","'And the fall in autumn?'","'Oh! But the wind knows.'","'The wind blowing with a din'","'In places forlorn'","'Sings such songs'","'Those songs not all could praise'","'Many a man is blunt'","'He doesn’t even sense'","'The agonies caught'","'Even in simple words!'","'What then of these songs'","'They are just sounds'","'Such sounds as would be choked to death'","'If confined in the strokes and coils of script.'"],features:['Complete 25-line source poem','Opening movement — The tree is cut','Memory movement — Memory of the living tree','Movement 3 — The wind knows','Movement 4 — Sounds beyond ordinary words','WORDS TO KNOW','THEMES','TEXTBOOK PREPARATION','Long Answers','Composition','Word Study','Dictionary Use','Word Formation','Verb forms','Passive to active','Direct to indirect narration','ACTIVITIES','TRANSLATION','Personification','Rhetorical questions','Symbolism','Contrast','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']});
 
 for(const [title,num] of [['The Grandmother',1],['On His Blindness',2],['Blow, Blow, Thou Winter Wind',3],['To Daffodils',4],['Sound',5]])assert(nav.includes(`'${title}'`),`Poetry Chapter ${num} registry entry missing`);
 assert(nav.includes('if(poetry>=1&&poetry<=5)'), 'Poetry Chapters 1–5 route handler missing');
@@ -57,6 +62,7 @@ for(const [n,ch] of [[1,17],[2,18],[3,19],[4,20],[5,21]]){
  assert(shell.includes(`if(chapter===${ch})`),`Poetry ${n} render route missing`);
 }
 for(const marker of ['function shuffleQuestion','sourceIndex','allAnswered=','disabled={!allAnswered}','setSubmitted(true)','Your answer','Correct answer','score','pct','function returnPoetryLearn'])assert(engine.includes(marker),`shared timed engine marker missing: ${marker}`);
-assert(engine.includes('Array.from({length:5}'), 'shared poetry back-navigation must cover Chapters 1–5');
+assert(engine.includes('[1,2,3,4,5].some'), 'shared poetry back-navigation must cover Chapters 1–5');
 
-console.log('English poetry QA passed: Chapters 1–5 have source cues/stanza blocks, detailed learning sections, 15 Practice + 25 Challenge + derived 20 Final Test banks, option integrity, shared timed engine, navigation and App routing.');
+console.log('English poetry QA passed: Chapters 1–5 include complete source poem blocks, 15 Practice + 25 Challenge + derived 20 Final Test banks, option integrity, shared timed engine, navigation and App routing.');
+console.log('Sound: all 25 source poem lines are present and validated.');
