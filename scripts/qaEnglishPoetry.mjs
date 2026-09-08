@@ -38,16 +38,15 @@ function checkPoem({path:titlePath,title,poet,chapter,stanzas,requiredLines=[],r
   checkBank(practice,`${title} Practice`,15);
   checkBank(challenge,`${title} Challenge`,25);
   assert(poem.includes('const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)];'),`${title}: Final Test derivation missing`);
-  return poem;
 }
 
-const poem1=checkPoem({
+checkPoem({
   path:'src/english/EnglishPanoramaPoem1.jsx',title:'The Grandmother',poet:'Ray Young Bear',chapter:1,stanzas:3,
   requiredLines:["poemLines:['If I were to see her shape'","poemLines:['If I felt'","poemLines:['If I heard'","'and the plastic shopping bag'","'with the smell of roots.'","'from a sleeping fire at night'"],
   requiredFeatures:['poem-actual-stanza','SIMPLE EXPLANATION','VOCABULARY','stanza.vocab','STANZA-BY-STANZA','Actual stanza → simple explanation → vocabulary','POETRY TOOLKIT','POETIC DEVICES','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','sight','touch','smell','hearing','Simile','Imagery','damp','ashes','purple scarf','plastic shopping bag','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']
 });
 
-const poem2=checkPoem({
+checkPoem({
   path:'src/english/EnglishPanoramaPoem2.jsx',title:'On His Blindness',poet:'John Milton',chapter:2,stanzas:2,
   requiredLines:["poemLines:['When I consider how my light is spent'","'I fondly ask; but Patience to prevent'","poemLines:['That murmur, soon replies, “God doth not need'","'They also serve who only stand and wait.”'"],
   requiredFeatures:['Petrarchan sonnet','Octave','Sestet','Volta / turn','POETRY TOOLKIT','POETIC DEVICES','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','Patience','rhetorical question','mild yoke','bidding','talent','Conditional Clauses','Translation Focus','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']
@@ -57,7 +56,7 @@ assert(nav.includes("const panoramaPoetry=['The Grandmother'"),'Poetry registry 
 assert(nav.includes("'On His Blindness'"),'Poetry Chapter 2 entry missing');
 assert(nav.includes("const poetryMatch=chapter.match(/^Panorama • Poetry"),'poetry navigation parser missing');
 assert(nav.includes('if(poetry===1||poetry===2)'), 'Poetry Chapters 1–2 route handler missing');
-assert(nav.includes("params.set('panoramaPoetry${poetry}','1')"),'Poetry runtime flag template missing');
+assert(nav.includes("params.set(`panoramaPoetry${poetry}`,'1')"),'Poetry runtime flag template missing');
 assert(shell.includes("import {EnglishPanoramaPoem1} from './english/EnglishPanoramaPoem1.jsx';"),'Poetry Chapter 1 component import missing');
 assert(shell.includes("import {EnglishPanoramaPoem2} from './english/EnglishPanoramaPoem2.jsx';"),'Poetry Chapter 2 component import missing');
 assert(shell.includes("if(p.get('panoramaPoetry1')==='1')return 17;"),'Poetry Chapter 1 flag route missing');
