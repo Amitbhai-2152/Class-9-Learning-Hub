@@ -35,6 +35,7 @@ import {HindiHubEngine} from './HindiHubEngine';
 import {HindiSubjectSection} from './HindiSubjectSection';
 import {SanskritSubjectSection,SanskritChapterEngine} from './sanskrit/SanskritSubjectSection';
 import {EnglishReaderChapter1} from './english/EnglishReaderChapter1';
+import {EnglishPanoramaChapter1} from './english/EnglishPanoramaChapter1';
 import {EnglishSubjectSection} from './english/EnglishSubjectSection';
 import {chapter2Learning} from './chapter2Learning';
 import {chapter3Learning} from './chapter3Learning';
