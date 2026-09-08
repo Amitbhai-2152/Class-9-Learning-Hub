@@ -7,6 +7,8 @@ const supplementarySource=readFileSync(new URL('../src/sanskrit/sanskritSuppleme
 const deepSource=readFileSync(new URL('../src/sanskrit/sanskritSupplementaryDeepContent.js',import.meta.url),'utf8');
 const studySource=readFileSync(new URL('../src/sanskrit/sanskritSupplementaryStudyModules.js',import.meta.url),'utf8');
 const runtimeSource=readFileSync(new URL('../src/sanskrit/sanskritSupplementaryRuntime.js',import.meta.url),'utf8');
+const primaryDetailed1to4Source=readFileSync(new URL('../src/sanskrit/sanskritPrimaryDetailedStudy.js',import.meta.url),'utf8');
+const primaryDetailed5to15Source=readFileSync(new URL('../src/sanskrit/sanskritPrimaryDetailedStudy5to8.js',import.meta.url),'utf8');
 const primaryTitles=['ईशस्तुति:','लोभविष्टः चक्रधरः','यक्ष-युधिष्ठिर संवाद','चत्वारो वेदाः','संस्कृतस्य महिमा','संस्कृतसाहित्ये पर्यावरणम्','ज्ञानं भारः क्रियां विना','नीतिपधानिः','बिहारस्य संस्कृतिकं वैभवम्','ईद-महोत्सवः','ग्राम्यजीवनम्','वीर कूँवर सिंहः','किशोराणां मनोविज्ञानम्','राष्ट्रबोधः','विश्ववन्दिता वैशाली'];
 const supplementaryTitles=['सरस्वती-वन्दना','संस्कृत-भाषा','प्रार्थना','यत्नं विना न रत्नम्','विदुला-पुत्र संवादः','सम्पूर्णविश्वरत्नम्','लोकगीतम्','अमृतं बालभाषितम्','प्रभात-वर्णनम्','नायं छागः','प्रयाणगीतम्','महात्मा गाँधी','भारतीयप्रजातन्त्रम्','संस्मरणम्','धर्मेषु भावः समानः समेषाम्','बिहारो विहारे सदा रोचताम् वः','लौहस्य तुला','ज्ञानेन शोभते किल','कुरुक्षेत्रम्','प्रहेलिका','ग्रन्थकाराः'];
 const failures=[];
@@ -22,9 +24,19 @@ const checkBanks=(label,chapter,number)=>{
   }
 };
 
+const checkDetailedStudy=(source,label,expectedNumbers)=>{
+  const exported=source.includes('export const getSanskritPrimaryDetailedStudyContent');
+  if(!exported)failures.push(`${label}: detailed-study getter export missing`);
+  for(const n of expectedNumbers){
+    const keyStart=`${n}:{title:`;
+    if(!source.includes(keyStart))failures.push(`${label}: missing detailed Ch${n}`);
+  }
+};
+
 for(const title of primaryTitles)if(!registry.includes(`title:'${title}'`))failures.push(`Primary registry missing: ${title}`);
 for(const title of supplementaryTitles)if(!registry.includes(`title:'${title}'`))failures.push(`Supplementary registry missing: ${title}`);
 if(!hub.includes('getSanskritPrimaryDetailedStudyContent'))failures.push('Detailed primary study not wired');
+if(!hub.includes('getSanskritPrimaryDetailedStudyContent5to8'))failures.push('Extended primary detailed-study fallback not wired');
 if(!hub.includes('DeepContentView'))failures.push('Supplementary deep content view missing');
 if(!wrapper.includes('sanskritPrimaryQuestionPatch'))failures.push('Primary question patch not wired');
 if(!runtimeSource.includes('getSanskritSupplementaryDeepContent'))failures.push('Supplementary deep runtime missing');
@@ -32,6 +44,9 @@ if(!runtimeSource.includes('getSanskritSupplementaryStudyModule'))failures.push(
 if(!studySource.includes('SANSKRIT_SUPPLEMENTARY_STUDY_MODULES'))failures.push('Supplementary study export missing');
 if(!deepSource.includes('SANSKRIT_SUPPLEMENTARY_DEEP_CONTENT'))failures.push('Supplementary deep export missing');
 if(!supplementarySource.includes('SANSKRIT_SUPPLEMENTARY_CONTENT'))failures.push('Supplementary content export missing');
+checkDetailedStudy(primaryDetailed1to4Source,'Primary detailed 1–4',[1,2,3,4]);
+checkDetailedStudy(primaryDetailed5to15Source,'Primary detailed 5–15',[5,6,7,8,9,10,11,12,13,14,15]);
+if(/sanskritPrimaryDetailedStudyCh9to12/i.test(hub+primaryDetailed1to4Source+primaryDetailed5to15Source))failures.push('Redundant Ch9–12 detailed-study module is still referenced');
 
 try{
   await import('../src/sanskrit/sanskritPrimaryQuestionPatch.js');
@@ -74,5 +89,28 @@ try{
   }
 }catch(error){failures.push(`Supplementary runtime import failed: ${error.message}`)}
 
+try{
+  const {SANSKRIT_PRIMARY_DETAILED_STUDY}=await import('../src/sanskrit/sanskritPrimaryDetailedStudy.js');
+  const {SANSKRIT_PRIMARY_DETAILED_STUDY_5_8}=await import('../src/sanskrit/sanskritPrimaryDetailedStudy5to8.js');
+  for(let n=1;n<=4;n++){
+    const d=SANSKRIT_PRIMARY_DETAILED_STUDY?.[n];
+    if(!d)continue;
+    if(d.title!==primaryTitles[n-1])failures.push(`Detailed study title mismatch Ch${n}`);
+    if(!Array.isArray(d.sections)||d.sections.length<4)failures.push(`Detailed Ch${n}: expected at least 4 sections`);
+    for(const [i,s] of (d.sections||[]).entries()){
+      if(!s?.anchor||!s?.explanation||!Array.isArray(s?.vocabulary)||s.vocabulary.length<3)failures.push(`Detailed Ch${n} section ${i+1}: incomplete`);
+    }
+  }
+  for(let n=5;n<=13;n++){
+    const d=SANSKRIT_PRIMARY_DETAILED_STUDY_5_8?.[n];
+    if(!d){failures.push(`Detailed Ch${n}: missing runtime study object`);continue;}
+    if(d.title!==primaryTitles[n-1])failures.push(`Detailed study title mismatch Ch${n}`);
+    if(!Array.isArray(d.sections)||d.sections.length<4)failures.push(`Detailed Ch${n}: expected at least 4 sections`);
+    for(const [i,s] of (d.sections||[]).entries()){
+      if(!s?.anchor||!s?.explanation||!Array.isArray(s?.vocabulary)||s.vocabulary.length<3)failures.push(`Detailed Ch${n} section ${i+1}: incomplete`);
+    }
+  }
+}catch(error){failures.push(`Primary detailed-study runtime import failed: ${error.message}`)}
+
 if(failures.length){console.error('SANSKRIT QA FAILED');for(const f of failures)console.error(`- ${f}`);process.exit(1);}
-console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters have valid assessment banks, primary 1–4 chapter-specific markers, balanced answers, and required study/UI wiring.');
+console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters have valid assessment banks, detailed-study coverage through Ch13, balanced answers, and required study/UI wiring.');
