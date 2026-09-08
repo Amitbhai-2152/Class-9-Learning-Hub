@@ -62,3 +62,5 @@ jobs:
           git rm .github/workflows/fix-english-ch1-randomization.yml
           git commit -m 'fix: runtime-randomize English Chapter 1 options'
           git push
+          # trigger this workflow from a subsequent push; the workflow deletes itself after the patch
+          # randomization must be runtime-only, preserving source answer indexes via remapping
