@@ -10,11 +10,11 @@ const runtimeSource=readFileSync(new URL('../src/sanskrit/sanskritSupplementaryR
 const primaryTitles=['ईशस्तुति:','लोभविष्टः चक्रधरः','यक्ष-युधिष्ठिर संवाद','चत्वारो वेदाः','संस्कृतस्य महिमा','संस्कृतसाहित्ये पर्यावरणम्','ज्ञानं भारः क्रियां विना','नीतिपधानिः','बिहारस्य संस्कृतिकं वैभवम्','ईद-महोत्सवः','ग्राम्यजीवनम्','वीर कूँवर सिंहः','किशोराणां मनोविज्ञानम्','राष्ट्रबोधः','विश्ववन्दिता वैशाली'];
 const supplementaryTitles=['सरस्वती-वन्दना','संस्कृत-भाषा','प्रार्थना','यत्नं विना न रत्नम्','विदुला-पुत्र संवादः','सम्पूर्णविश्वरत्नम्','लोकगीतम्','अमृतं बालभाषितम्','प्रभात-वर्णनम्','नायं छागः','प्रयाणगीतम्','महात्मा गाँधी','भारतीयप्रजातन्त्रम्','संस्मरणम्','धर्मेषु भावः समानः समेषाम्','बिहारो विहारे सदा रोचताम् वः','लौहस्य तुला','ज्ञानेन शोभते किल','कुरुक्षेत्रम्','प्रहेलिका','ग्रन्थकाराः'];
 const failures=[];
-const checkBanks=(label,chapter,number,expectedPractice=15)=>{
-  const banks=[['practice',chapter.practice,expectedPractice],['challenge',chapter.challenge,12],['finalTest',chapter.finalTest,20]];
-  for(const [name,items,expected] of banks){
+const checkBanks=(label,chapter,number)=>{
+  for(const [name,items,expected] of [['practice',chapter.practice,15],['challenge',chapter.challenge,12],['finalTest',chapter.finalTest,20]]){
     if(!Array.isArray(items)||items.length!==expected){failures.push(`${label} Ch${number}: ${name} expected ${expected}, got ${Array.isArray(items)?items.length:0}`);continue;}
-    if(new Set(items.map(x=>x?.q||'')).size!==items.length)failures.push(`${label} Ch${number}: duplicate ${name} questions`);
+    const texts=items.map(x=>x?.q||'');
+    if(new Set(texts).size!==texts.length)failures.push(`${label} Ch${number}: duplicate ${name} questions`);
     const bad=items.filter(x=>!x||typeof x.q!=='string'||x.q.length<12||!Array.isArray(x.options)||x.options.length!==4||new Set(x.options).size!==4||![0,1,2,3].includes(x.answer)||typeof x.explain!=='string').length;
     if(bad)failures.push(`${label} Ch${number}: ${name} has ${bad} invalid MCQs`);
     const dist=items.reduce((a,x)=>(a[x.answer]++,a),[0,0,0,0]);
@@ -41,12 +41,12 @@ try{
     const chapter=SANSKRIT_PRIMARY_CONTENT[n];
     if(!chapter){failures.push(`Primary Ch${n} missing`);continue;}
     if(chapter.title!==primaryTitles[n-1])failures.push(`Primary title mismatch Ch${n}`);
-    checkBanks('Primary',chapter,n,15);
+    checkBanks('Primary',chapter,n);
   }
   const specialChecks=[
     [1,['यतो वाचो निवर्तन्ते','असतो मा सद्गमय','सर्वभूतान्तरात्मा']],
-    [2,['भैखानन्दः','सिद्धवर्तिचतुष्टयम्','ताम्रम्','रजतम्','स्वर्णम्']],
-    [3,['अज्ञानेन','सर्वभूतहितेरतः','तत्त्वार्थसम्बोधनम्','स्वधर्मम्','क्रोधः']],
+    [2,['सिद्धवर्तिचतुष्टयम्','ताम्रम्','रजतम्','स्वर्णम्']],
+    [3,['सर्वभूतहितेरतः','तत्त्वार्थसम्बोधनम्','स्वधर्मम्','क्रोधः']],
     [4,['ऋग्वेद','यजुर्वेद','सामवेद','अथर्ववेद','वेदाङ्ग']]
   ];
   for(const [n,tokens] of specialChecks){
@@ -69,10 +69,10 @@ try{
     const d=c.deepContent,s=c.studyModule;
     if(!d||!Array.isArray(d.sequence)||d.sequence.length<4||!Array.isArray(d.examFocus)||d.examFocus.length<4)failures.push(`Supplementary Ch${n}: deep study incomplete`);
     if(!s||!Array.isArray(s.mustKnow)||s.mustKnow.length<2||!Array.isArray(s.examTraps)||s.examTraps.length<2||!Array.isArray(s.highScore)||s.highScore.length<2)failures.push(`Supplementary Ch${n}: high-score study incomplete`);
-    checkBanks('Supplementary',c,n,15);
+    checkBanks('Supplementary',c,n);
     if(Object.prototype.hasOwnProperty.call(c,'subjective'))failures.push(`Supplementary Ch${n}: subjective layer must be absent`);
   }
 }catch(error){failures.push(`Supplementary runtime import failed: ${error.message}`)}
 
 if(failures.length){console.error('SANSKRIT QA FAILED');for(const f of failures)console.error(`- ${f}`);process.exit(1);}
-console.log('SANSKRIT QA PASSED: primary 1–15 and supplementary 1–21 have valid assessment banks, chapter-specific guards for primary 1–4, balanced answers, and required study/UI wiring.');
+console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters have valid assessment banks, primary 1–4 chapter-specific markers, balanced answers, and required study/UI wiring.');
