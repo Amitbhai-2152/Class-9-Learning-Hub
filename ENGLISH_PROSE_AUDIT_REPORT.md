@@ -6,13 +6,13 @@
 
 ## 1. Executive verdict
 
-### Overall status: STRONG, WITH PHASE 1, PHASE 2 AND PHASE 3 COMPLETED
+### Overall status: STRONG, WITH PHASE 1, PHASE 2, PHASE 3 AND PHASE 4 COMPLETED
 
 The nine prescribed Panorama prose chapters are present and activated in the English navigation. The current repository contains a substantial chapter-learning layer plus a shared timed MCQ system. For **chapter-wise prose study**, the content is broadly sufficient and is already stronger than a basic summary/notes implementation.
 
 Phase 1 addressed provenance and verified source-text cleanup. Phase 2 has now normalized the guided-reading depth of Chapters 2–4 to the 10-part house standard without changing the shared assessment architecture.
 
-The prose collection is now substantially more consistent and has a dedicated whole-prose cumulative revision layer. The wider English subject still requires separate grammar, writing and unseen-reading systems to be considered a complete BSEB English preparation platform.
+The prose collection is now substantially more consistent, has a dedicated whole-prose cumulative revision layer, and has completed the targeted Phase-4 teacher-quality language cleanup. The wider English subject still requires separate grammar, writing and unseen-reading systems to be considered a complete BSEB English preparation platform.
 
 ## 2. Prescribed prose coverage
 
@@ -176,19 +176,31 @@ The 15/23/20 quiz banks and shared `PanoramaTimedQuiz` engine were not replaced 
 **5. Permanent Phase-2 QA was added to CI.**  
 Chapters 2–4 are now checked for exactly 10 guided parts, complete guided-part teaching fields, vocabulary coverage, assessment-bank presence and shared timed-quiz wiring.
 
+## 8A. Phase 4 — Teacher-quality language cleanup
+
+### Completed ✅
+
+**1. Chapter 5 Gerund example corrected.**  The unnatural supplemental example `I know swimming.` was replaced with the natural exam-safe construction `I know how to swim.`
+
+**2. Chapter 7 Relative Clause example corrected.**  The malformed example `This is the man who he is talking about.` was replaced with `This is the man whom he is talking about.`
+
+**3. Chapter 5 Hindi translation corrected.**  The sentence `मैं एक प्यासे हुए आदमी को कहीं देखा।` was replaced with the grammatically natural `मैंने कहीं एक प्यासे आदमी को देखा।`
+
+**4. Permanent Phase-4 QA added to CI.** It checks the nine prose chapter files plus the cumulative revision page for the corrected teaching forms and blocks the legacy forms from returning.
+
 ## 8. Remaining quality findings
 
 ### Finding 1 — Minor chapter-to-chapter depth variation remains
 
 The prose set is now within a 9–12 guided-part range rather than having any 8-part outliers. This is acceptable and much more consistent. Further changes should be driven by genuine textbook structure rather than forcing identical counts everywhere.
 
-### Finding 2 — Some language examples still need a final teacher-quality pass
+### Finding 2 — Targeted teacher-quality language pass ✅ completed
 
-A few examples across the prose files may still benefit from pedagogical cleanup after source verification. The next pass should distinguish clearly between:
+The targeted Phase-4 pass corrected the three language items explicitly identified by the earlier audit: the Chapter 5 gerund example, the Chapter 7 malformed relative-clause example, and the Chapter 5 Hindi translation sentence. The pass keeps source-derived wording distinct from supplemental teaching language; it does not claim an exhaustive retranslation of every textbook exercise. The corrected forms are:
 
-- exact textbook/source wording,
-- source-derived exercises that should be preserved, and
-- supplemental examples created specifically for teaching.
+- `I know how to swim.`
+- `This is the man whom he is talking about.`
+- `मैंने कहीं एक प्यासे आदमी को देखा।`
 
 ### Finding 3 — Current prose content is not the full English subject
 
@@ -233,9 +245,9 @@ Chapter 9 no longer carries the incorrect supplied-Chapter-9-PDF claim. QA now g
 
 Chapters 2–4 have been normalized to 10 guided reading parts with consistent teaching fields.
 
-### Priority P1 — language-quality pass
+### Priority P1 — language-quality pass ✅ completed
 
-Review remaining glossary spelling pairs, grammar examples and translation sentences for natural, exam-safe English/Hindi, with explicit source-versus-supplement labeling where necessary. This remains separate from Phase 3 and is not silently marked complete here.
+The targeted Phase-4 pass corrected the three previously identified teacher-quality language defects and added permanent CI guards against regression. A broader source-by-source linguistic review can still be done later if new source evidence identifies additional issues; it is not being claimed here.
 
 ### Priority P1 — chapter-wide cumulative assessment ✅ completed
 
