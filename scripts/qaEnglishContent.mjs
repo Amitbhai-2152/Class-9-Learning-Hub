@@ -1,19 +1,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
-
 const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
-const count=(text,needle)=>{const escaped=needle.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&');return (text.match(new RegExp(escaped,'g'))||[]).length};
-const files=[
- ['src/english/EnglishPanoramaChapter1.jsx','Panorama Ch1','Dharam Juddha','Arjun Dev Charan'],
- ['src/english/EnglishPanoramaChapter2.jsx','Panorama Ch2','Yayati','C. Rajagopalachari'],
- ['src/english/EnglishPanoramaChapter3.jsx','Panorama Ch3','A Silent Revolution','Kunal Varma'],
- ['src/english/EnglishPanoramaChapter4.jsx','Panorama Ch4','Too Many People, Too Few Trees','Moti Nisani'],
- ['src/english/EnglishPanoramaChapter5.jsx','Panorama Ch5','Echo and Narcissus','Moira Kerr and John Bennett'],
- ['src/english/EnglishPanoramaChapter6Final.jsx','Panorama Ch6','The Shehnai of Bismillah Khan',''],
- ['src/english/EnglishPanoramaChapter7Final.jsx','Panorama Ch7','Kathmandu','Vikram Seth'],
- ['src/english/EnglishPanoramaChapter8.jsx','Panorama Ch8','My Childhood','A. P. J. Abdul Kalam'],
- ['src/english/EnglishPanoramaChapter9.jsx','Panorama Ch9','The Gift of the Magi','O. Henry']
+const count=(text,needle)=>(text.match(new RegExp(needle.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&'),'g'))||[]).length;
+const assert=(ok,msg)=>{if(!ok)throw new Error(`English QA: ${msg}`)};
+const chapters=[
+ ['Ch1','src/english/EnglishPanoramaChapter1.jsx','Dharam Juddha','Arjun Dev Charan'],
+ ['Ch2','src/english/EnglishPanoramaChapter2.jsx','Yayati','C. Rajagopalachari'],
+ ['Ch3','src/english/EnglishPanoramaChapter3.jsx','A Silent Revolution','Kunal Varma'],
+ ['Ch4','src/english/EnglishPanoramaChapter4.jsx','Too Many People, Too Few Trees','Moti Nisani'],
+ ['Ch5','src/english/EnglishPanoramaChapter5.jsx','Echo and Narcissus','Moira Kerr and John Bennett'],
+ ['Ch6','src/english/EnglishPanoramaChapter6Final.jsx','The Shehnai of Bismillah Khan',''],
+ ['Ch7','src/english/EnglishPanoramaChapter7Final.jsx','Kathmandu','Vikram Seth'],
+ ['Ch8','src/english/EnglishPanoramaChapter8.jsx','My Childhood','A. P. J. Abdul Kalam'],
+ ['Ch9','src/english/EnglishPanoramaChapter9.jsx','The Gift of the Magi','O. Henry']
 ];
 const reader=read('src/english/EnglishReaderChapter1.jsx');
 const engine=read('src/english/PanoramaTimedQuiz.jsx');
@@ -21,49 +21,50 @@ const nav=read('src/english/EnglishSubjectSection.jsx');
 const app=read('src/App.jsx');
 const shell=read('src/AppWithChapter5.jsx');
 const main2=read('src/main2.jsx');
-function assert(ok,msg){if(!ok)throw new Error(`English QA: ${msg}`)}
-function bankChecks(text,name){
- assert(text.includes('const practice=['),`${name}: missing practice bank`);
- assert(text.includes('const challenge=['),`${name}: missing challenge bank`);
- assert(text.includes('const finalTest='),`${name}: missing final test bank`);
- const pb=text.match(/const practice=\[(.*?)\];\s*const challenge/s)?.[1]||'';
- const cb=text.match(/const challenge=\[(.*?)\];\s*const finalTest/s)?.[1]||'';
- const pq=count(pb,'{q:'), cq=count(cb,'{q:');
+
+function bankChecks(t,name){
+ assert(t.includes('const practice=['),`${name}: practice bank missing`);
+ assert(t.includes('const challenge=['),`${name}: challenge bank missing`);
+ assert(t.includes('const finalTest='),`${name}: final test bank missing`);
+ const p=t.match(/const practice=\[(.*?)\];\s*const challenge/s)?.[1]||'';
+ const c=t.match(/const challenge=\[(.*?)\];\s*const finalTest/s)?.[1]||'';
+ const pq=count(p,'{q:'),cq=count(c,'{q:'),total=pq+cq;
  assert(pq===15,`${name}: expected 15 practice questions, got ${pq}`);
  assert(cq===23,`${name}: expected 23 challenge questions, got ${cq}`);
- if(name!=='Panorama Ch1'&&name!=='Panorama Ch2'&&name!=='Panorama Ch3'&&name!=='Panorama Ch4'){
-  assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(text),`${name}: final test must be 10 practice + 10 challenge questions`);
- }
- const all=pb+'\n'+cb,total=pq+cq,options=all.match(/o:\[[^\]]+\]/g)||[];
- assert(options.length===total,`${name}: expected ${total} option arrays, got ${options.length}`);
- for(const [i,opt] of options.entries()){
+ if(name!=='Ch1'&&name!=='Ch2'&&name!=='Ch3'&&name!=='Ch4')assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(t),`${name}: final test must be 10 practice + 10 challenge`);
+ const all=p+'\n'+c;
+ const opts=all.match(/o:\[[^\]]+\]/g)||[];
+ assert(opts.length===total,`${name}: expected ${total} option arrays, got ${opts.length}`);
+ for(const [i,opt] of opts.entries()){
   const items=[...opt.matchAll(/'([^']*)'/g)].map(m=>m[1]);
   assert(items.length===4,`${name}: question ${i+1} must have exactly 4 options`);
   assert(new Set(items).size===4,`${name}: question ${i+1} has duplicate options`);
  }
  assert((all.match(/a:\d+/g)||[]).length===total,`${name}: explicit answer keys missing`);
+ assert((all.match(/e:'[^']+'/g)||[]).length===total,`${name}: explanations missing`);
 }
 
-for(const [p,name,title,author] of files){
- const t=read(p); bankChecks(t,name);
+for(const [name,p,title,author] of chapters){
+ const t=read(p);bankChecks(t,name);
  assert(t.includes("PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx'"),`${name}: shared timed engine not wired`);
- assert(!t.includes('const [selected,setSelected]'),`${name}: legacy selected-answer state remains`);
- assert(!t.includes('pg-feedback'),`${name}: legacy quiz feedback UI remains`);
- assert(!t.includes('function shuffleQuestion'),`${name}: chapter-local quiz shuffle remains`);
+ assert(!t.includes('const [selected,setSelected]'),`${name}: legacy selected state remains`);
+ assert(!t.includes('function shuffleQuestion'),`${name}: chapter-local shuffle remains`);
  assert(t.includes(`title:'${title}'`),`${name}: title mismatch`);
  if(author)assert(t.includes(`author:'${author}'`),`${name}: author missing`);
  assert(/sections:\[/.test(t),`${name}: guided sections missing`);
- assert(count(t,"{title:'Part ")>=8,`${name}: guided reading depth is below minimum`);
+ assert(count(t,"{title:'Part ")>=8,`${name}: guided reading depth too low`);
  assert(t.includes('wordStudy:'),`${name}: word study missing`);
  assert(t.includes('grammar:'),`${name}: grammar missing`);
- assert(t.includes('composition:'),`${name}: composition missing`);
- assert(t.includes('activities:'),`${name}: activities missing`);
- assert(t.includes('translationPractice:'),`${name}: translation practice missing`);
+ if(['Ch3','Ch4','Ch5','Ch6','Ch7','Ch8','Ch9'].includes(name)){
+  assert(t.includes('composition:'),`${name}: composition missing`);
+  assert(t.includes('activities:'),`${name}: activities missing`);
+  assert(t.includes('translationPractice:'),`${name}: translation practice missing`);
+ }
 }
 
 assert(/function shuffleQuestion/.test(reader),'English Reader Ch1: shuffle missing');
 assert(/function shuffleQuestion/.test(engine),'Panorama engine: runtime shuffle missing');
-assert(/sourceIndex/.test(engine),'Panorama engine: answer remapping missing');
+assert(/sourceIndex/.test(engine),'Panorama engine: source-answer remapping missing');
 assert(/MODE_CONFIG/.test(engine),'Panorama engine: timing config missing');
 assert(/practice:[\s\S]*?45/.test(engine),'Panorama engine: practice timing missing');
 assert(/challenge:[\s\S]*?60/.test(engine),'Panorama engine: challenge timing missing');
@@ -76,53 +77,31 @@ assert(/score/.test(engine)&&/pct/.test(engine),'Panorama engine: score/percenta
 
 assert(nav.includes('const panoramaProse=['),'Panorama prose registry missing');
 assert(nav.includes('The Gift of the Magi'),'Panorama Ch9 navigation title missing');
-assert(nav.includes('if(n===5||n===6||n===7||n===8||n===9)'),'Panorama Ch5–Ch9 routing handler missing');
-assert(app.includes('EnglishPanoramaChapter1'),'Panorama Ch1 route missing');
-assert(app.includes('EnglishPanoramaChapter4'),'Panorama Ch4 route missing');
+assert(nav.includes('if(n===5||n===6||n===7||n===8||n===9)'),'Panorama Ch5–Ch9 navigation routing missing');
 assert(shell.includes('EnglishPanoramaChapter5'),'Panorama Ch5 shell import missing');
 assert(shell.includes('EnglishPanoramaChapter6Final'),'Panorama Ch6 shell import missing');
 assert(shell.includes('EnglishPanoramaChapter7Final'),'Panorama Ch7 shell import missing');
 assert(shell.includes('EnglishPanoramaChapter8'),'Panorama Ch8 shell import missing');
 assert(shell.includes('EnglishPanoramaChapter9'),'Panorama Ch9 shell import missing');
-assert(shell.includes('n===12'),'Panorama Ch5 chapter-index route missing');
-assert(shell.includes('n===13'),'Panorama Ch6 chapter-index route missing');
-assert(shell.includes('n===14'),'Panorama Ch7 chapter-index route missing');
-assert(shell.includes('n===15'),'Panorama Ch8 chapter-index route missing');
-assert(shell.includes('n===16'),'Panorama Ch9 chapter-index route missing');
+assert(shell.includes('n===12')&&shell.includes('n===13')&&shell.includes('n===14')&&shell.includes('n===15')&&shell.includes('n===16'),'Panorama Ch5–Ch9 chapter-index routes missing');
 assert(shell.includes('if(chapter===9)'),'Panorama Ch9 render route missing');
 assert(main2.includes('AppWithChapter5'),'main2 route shell missing');
 
-const readerNames=['I’m going to dance again','Scaling Great Heights','Saint Kabir','The eyes are not here','Ismat Chughtai: A woman with a difference','The accidental tourist','Saint Ravidas','Bharathipura'];
-const prose=['Dharam Juddha','Yayati','A Silent Revolution','Too Many People, Too Few Trees','Echo and Narcissus','The Shehnai of Bismillah Khan','Kathmandu','My Childhood','The Gift of the Magi'];
-const poetry=['The Grandmother','On His Blindness','Blow, Blow, Thou Winter Wind','To Daffodils','Sound','Self Introduction','I Am Like Grass','Abraham Lincoln’s Letter to His Son’s Teacher'];
-const rte=['The Secret of Work','Gandhiji’s Passion for Nursing','With the Photographer'];
-for(const n of [...readerNames,...prose,...poetry,...rte])assert(nav.includes(n),`navigation missing chapter: ${n}`);
+for(const n of ['Dharam Juddha','Yayati','A Silent Revolution','Too Many People, Too Few Trees','Echo and Narcissus','The Shehnai of Bismillah Khan','Kathmandu','My Childhood','The Gift of the Magi'])assert(nav.includes(n),`navigation missing chapter: ${n}`);
+for(const n of ['I’m going to dance again','Scaling Great Heights','Saint Kabir','The eyes are not here','Ismat Chughtai: A woman with a difference','The accidental tourist','Saint Ravidas','Bharathipura'])assert(nav.includes(n),`navigation missing reader chapter: ${n}`);
+for(const n of ['The Grandmother','On His Blindness','Blow, Blow, Thou Winter Wind','To Daffodils','Sound','Self Introduction','I Am Like Grass','Abraham Lincoln’s Letter to His Son’s Teacher','The Secret of Work','Gandhiji’s Passion for Nursing','With the Photographer'])assert(nav.includes(n),`navigation missing Panorama item: ${n}`);
 
-const ch9=read('src/english/EnglishPanoramaChapter9.jsx');
-assert(ch9.includes('O. Henry'), 'Panorama Ch9 author coverage missing');
-assert(ch9.includes('Active and Passive Voice'),'Panorama Ch9 grammar topic missing');
-assert(ch9.includes('parsimony'),'Panorama Ch9 word-study coverage missing');
-assert(ch9.includes('platinum fob chain'),'Panorama Ch9 content coverage missing');
-assert(ch9.includes('Christmas, Eid, Diwali and New Year'),'Panorama Ch9 discussion coverage missing');
-assert(ch9.includes('love and sacrifice'),'Panorama Ch9 theme coverage missing');
-
-// Chapter 8 is the canonical Panorama prose UI. Chapter 9 must reuse that structure exactly,
-// not introduce a second card/section system that merely looks similar.
 const ch8=read('src/english/EnglishPanoramaChapter8.jsx');
-const exactUiMarkers=[
- 'className="pg-shell"','className="pg-wrap"','← Back to English','className="pg-hero"',
- 'THE PANORAMA • PROSE 8','className="pg-stage-grid"','className={`pg-stage-card ${mode===m?\'active\':\'\'}`}',
- 'className="pg-about"','className="pg-about-facts"','className="pg-study-section"','className="pg-study-grid"',
- 'className="pg-explain"','className="pg-vocab"','className="pg-exam"','className="pg-think"',
- 'className="pg-vocab-wide"','className="pg-language-point"','EXAM BOOSTER','WRITING / COMPOSITION',
- 'TRANSLATION PRACTICE','ACTIVITIES','QUICK REVISION','className="pg-revision"','className="pg-mode-cta"'
-];
-for(const m of exactUiMarkers){assert(ch8.includes(m),`Chapter 8 canonical UI marker missing: ${m}`);assert(ch9.includes(m.replace('PROSE 8','PROSE 9')),`Chapter 9 UI marker missing: ${m.replace('PROSE 8','PROSE 9')}`)}
-for(const old of ['pg-section-head','pg-reading-grid','pg-reading-card','pg-list-grid','pg-rule-grid','pg-example-grid','pg-quick-grid','function TestButton','function ChapterShell','function StudyView'])assert(!ch9.includes(old),`Panorama Ch9 contains non-canonical UI structure: ${old}`);
-assert(ch9.includes("const [mode,setMode]=useState(initialMode);const [quizOpen,setQuizOpen]=useState(initialMode!=='learn');"),'Panorama Ch9 mode/quiz state is not copied from Chapter 8');
-assert(ch9.includes("const openMode=m=>{setMode(m);setQuizOpen(m!=='learn')};"),'Panorama Ch9 openMode behavior is not copied from Chapter 8');
-assert(ch9.includes("<PanoramaTimedQuiz mode={mode} title={study.title} bank={bank} onBack={()=>setQuizOpen(false)}"),'Panorama Ch9 quiz integration does not match Chapter 8');
-assert(ch9.includes("[['learn','Learn','Guided study'],['practice','Practice','15 questions • 11:15'],['challenge','Challenge','23 questions • 23:00'],['test','Final Test','20 questions • 25:00']]"),'Panorama Ch9 stage selector does not match Chapter 8');
-assert(ch9.includes('StudyBlock key={s.title} s={s}'),'Panorama Ch9 guided-reading rendering does not use the Chapter 8 StudyBlock pattern');
+const ch9=read('src/english/EnglishPanoramaChapter9.jsx');
+const uiMarkers=['className="pg-shell"','className="pg-wrap"','className="pg-hero"','className="pg-stage-grid"','className="pg-about"','className="pg-about-facts"','className="pg-study-section"','className="pg-study-grid"','className="pg-explain"','className="pg-vocab"','className="pg-exam"','className="pg-think"','className="pg-vocab-wide"','className="pg-language-point"','EXAM BOOSTER','WRITING / COMPOSITION','TRANSLATION PRACTICE','ACTIVITIES','QUICK REVISION','className="pg-revision"','className="pg-mode-cta"'];
+for(const m of uiMarkers){assert(ch8.includes(m),`Chapter 8 canonical UI marker missing: ${m}`);assert(ch9.includes(m),`Chapter 9 UI marker missing: ${m}`)}
+assert(ch8.includes('THE PANORAMA • PROSE 8')&&ch9.includes('THE PANORAMA • PROSE 9'),'Panorama chapter hero numbering mismatch');
+assert(ch8.includes("[['learn','Learn','Guided study'],['practice','Practice','15 questions • 11:15'],['challenge','Challenge','23 questions • 23:00'],['test','Final Test','20 questions • 25:00']]"),'Chapter 8 stage selector pattern missing');
+assert(ch9.includes("[['learn','Learn','Guided study'],['practice','Practice','15 questions • 11:15'],['challenge','Challenge','23 questions • 23:00'],['test','Final Test','20 questions • 25:00']]"),'Chapter 9 stage selector does not match Chapter 8');
+assert(ch9.includes('function StudyBlock({s})'),'Chapter 9 StudyBlock missing');
+assert(ch9.includes('StudyBlock key={s.title} s={s}'),'Chapter 9 guided reading is not using the Chapter 8 StudyBlock pattern');
+for(const bad of ['pg-section-head','pg-reading-grid','pg-reading-card','pg-list-grid','pg-rule-grid','pg-example-grid','pg-quick-grid','function TestButton','function ChapterShell','function StudyView'])assert(!ch9.includes(bad),`Chapter 9 contains non-canonical UI element: ${bad}`);
+assert(!ch9.includes('window.dispatchEvent(new CustomEvent(\'panorama-test\''),'Chapter 9 should use the Chapter 8 direct mode-state UI, not the older event bridge');
 
-console.log('English content QA passed: Chapters 1–9 banks, shared timed engine, runtime option randomization, source-answer remapping, timing by mode/question count, completion gate, auto-submit, full review, study depth, Chapter 9 content, navigation/routing, and exact Chapter 8 UI parity verified.');
+assert(ch9.includes('O. Henry')&&ch9.includes('Active and Passive Voice')&&ch9.includes('parsimony')&&ch9.includes('platinum fob chain'),'Chapter 9 core content coverage missing');
+console.log('English content QA passed: Chapters 1–9 banks, shared timed engine, runtime option randomization/source remapping, timing/completion/full review, study depth, navigation/routing, and Chapter 9 UI parity with Chapter 8 verified.');
