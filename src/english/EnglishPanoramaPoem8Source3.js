@@ -1,0 +1,2 @@
+export const poem8Part3=[
+'the bullies are the easiest to lick...','Teach him, if you can,','the wonder of books...','But also give him quiet time','to ponder the eternal mystery of birds in the sky,','bees
