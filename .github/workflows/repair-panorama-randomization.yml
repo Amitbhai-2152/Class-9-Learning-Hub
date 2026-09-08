@@ -1,0 +1,100 @@
+name: Repair Panorama Randomization
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch React quiz randomization and remove DOM workaround
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('src/english/EnglishPanoramaChapter1.jsx')
+          text = path.read_text(encoding='utf-8')
+
+          old_helper = '''function shuffleQuestion(q,i){
+            const shift=(i*3)%q.o.length;
+            const o=q.o.map((_,idx)=>q.o[(idx+shift)%q.o.length]);
+            const a=(q.a-shift+q.o.length)%q.o.length;
+            return {...q,o,a};
+          }'''
+          new_helper = '''function shuffleQuestion(q){
+            const options=q.o.map((text,sourceIndex)=>({text,sourceIndex}));
+            for(let i=options.length-1;i>0;i--){
+              const j=Math.floor(Math.random()*(i+1));
+              [options[i],options[j]]=[options[j],options[i]];
+            }
+            if(options.length>1&&options.every((item,index)=>item.sourceIndex===index)){
+              [options[0],options[1]]=[options[1],options[0]];
+            }
+            return {
+              ...q,
+              o:options.map(item=>item.text),
+              a:options.findIndex(item=>item.sourceIndex===q.a)
+            };
+          }'''
+          if old_helper not in text:
+              raise SystemExit('Expected old shuffleQuestion helper was not found')
+          text = text.replace(old_helper, new_helper, 1)
+
+          old_state = '''  const [result,setResult]=useState(null);
+  const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);
+  const current=bank[idx]?shuffleQuestion(bank[idx],idx):null;
+  const begin=m=>{setMode(m);setIdx(0);setSelected(null);setScore(0);setResult(null)};'''
+          new_state = '''  const [result,setResult]=useState(null);
+  const [quizRun,setQuizRun]=useState(0);
+  const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);
+  const current=useMemo(()=>bank[idx]?shuffleQuestion(bank[idx]):null,[bank,idx,quizRun]);
+  const begin=m=>{setMode(m);setIdx(0);setSelected(null);setScore(0);setResult(null);setQuizRun(r=>r+1)};'''
+          if old_state not in text:
+              raise SystemExit('Expected quiz state block was not found')
+          text = text.replace(old_state, new_state, 1)
+
+          path.write_text(text, encoding='utf-8')
+
+          main = Path('src/main2.jsx')
+          main_text = main.read_text(encoding='utf-8')
+          main_text = main_text.replace("import './english/englishChapter1OptionRandomizer.js';\n", '', 1)
+          main.write_text(main_text, encoding='utf-8')
+          PY
+
+          rm -f src/english/englishChapter1OptionRandomizer.js
+          rm -f .github/workflows/fix-english-ch1-randomization.yml
+
+          if git diff --quiet; then
+            echo 'No repair changes were needed.'
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/english/EnglishPanoramaChapter1.jsx src/main2.jsx src/english/englishChapter1OptionRandomizer.js .github/workflows/fix-english-ch1-randomization.yml
+          git commit -m 'Fix Panorama quiz option randomization in React'
+          git push
+
+      - name: Remove repair workflow
+        if: always()
+        shell: bash
+        run: |
+          git pull --ff-only
+          if [ -f .github/workflows/repair-panorama-randomization.yml ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git rm .github/workflows/repair-panorama-randomization.yml
+            git commit -m 'Remove one-time Panorama repair workflow'
+            git push
+          fi
