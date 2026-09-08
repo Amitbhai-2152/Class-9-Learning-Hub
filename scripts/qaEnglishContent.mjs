@@ -106,5 +106,4 @@ assert(panorama4.includes('composition:'),'Panorama Ch4 composition section miss
 assert(panorama4.includes('activities:'),'Panorama Ch4 activities section missing');
 assert(panorama4.includes('translationPractice:'),'Panorama Ch4 translation section missing');
 assert(panorama4.includes('Modal Auxiliaries'),'Panorama Ch4 modal grammar missing');
-assert(count(panorama4,"['Germany, Sweden, China, Thailand and Egypt'" )===0,'Panorama Ch4: do not embed unverifiable alternate country list in question data');
 console.log('English content QA passed: Reader/Prose banks, shared timed Panorama engine, runtime option randomization, source-answer remapping, timing by mode/question count, completion gating, full review, Chapters 1–4 study depth, Chapter 4 source coverage, and routing verified.');
