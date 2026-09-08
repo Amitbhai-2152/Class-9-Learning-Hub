@@ -5,6 +5,8 @@ const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const assert=(v,m)=>{if(!v)throw new Error(`English poetry QA: ${m}`)};
 const count=(s,re)=>[...s.matchAll(re)].length;
+const optionLiteral=/'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"/g;
+const decodeLiteral=raw=>{const quote=raw[0];const body=raw.slice(1,-1);return body.replace(new RegExp(`\\\\${quote}`,'g'),quote).replace(/\\(.)/g,'$1')};
 
 const nav=read('src/english/EnglishSubjectSection.jsx');
 const shell=read('src/AppWithChapter5.jsx');
@@ -15,7 +17,7 @@ function checkBank(segment,name,expected){
   const records=[...segment.matchAll(/q\('([^']*)',\[(.*?)\],(\d+),'([^']*)'\)/g)];
   assert(records.length===expected,`${name}: expected ${expected} complete question records, got ${records.length}`);
   for(const [i,m] of records.entries()){
-    const options=[...m[2].matchAll(/'([^']*)'/g)].map(x=>x[1]);
+    const options=[...m[2].matchAll(optionLiteral)].map(x=>decodeLiteral(x[0]));
     assert(options.length===4,`${name}: question ${i+1} must have exactly 4 options`);
     assert(new Set(options).size===4,`${name}: question ${i+1} has duplicate options`);
     const answer=Number(m[3]);
