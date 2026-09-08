@@ -6,13 +6,13 @@
 
 ## 1. Executive verdict
 
-### Overall status: STRONG, WITH PHASE 1 AND PHASE 2 COMPLETED
+### Overall status: STRONG, WITH PHASE 1, PHASE 2 AND PHASE 3 COMPLETED
 
 The nine prescribed Panorama prose chapters are present and activated in the English navigation. The current repository contains a substantial chapter-learning layer plus a shared timed MCQ system. For **chapter-wise prose study**, the content is broadly sufficient and is already stronger than a basic summary/notes implementation.
 
 Phase 1 addressed provenance and verified source-text cleanup. Phase 2 has now normalized the guided-reading depth of Chapters 2–4 to the 10-part house standard without changing the shared assessment architecture.
 
-The prose collection is therefore substantially more consistent, but the wider English subject still requires separate grammar, writing and unseen-reading systems to be considered a complete BSEB English preparation platform.
+The prose collection is now substantially more consistent and has a dedicated whole-prose cumulative revision layer. The wider English subject still requires separate grammar, writing and unseen-reading systems to be considered a complete BSEB English preparation platform.
 
 ## 2. Prescribed prose coverage
 
@@ -194,9 +194,9 @@ A few examples across the prose files may still benefit from pedagogical cleanup
 
 The prose implementation is strong as a **literature/prose subsystem**. It should not be marketed internally as the complete English preparation system until the dedicated grammar, writing and unseen-reading components are audited to the same standard.
 
-### Finding 4 — Prose-wide cumulative assessment is still pending
+### Finding 4 — Prose-wide cumulative assessment ✅ completed
 
-The current chapter tests are chapter-specific. A separate whole-prose revision test would improve retention and exam simulation without changing the chapter banks.
+A separate whole-prose revision test is now available without changing the chapter banks. It contains 45 fresh MCQs, five from each of the nine prose chapters, and uses the shared timed-quiz engine in Challenge mode for a 45-minute cumulative test.
 
 ## 9. Source alignment and release confidence
 
@@ -235,9 +235,9 @@ Chapters 2–4 have been normalized to 10 guided reading parts with consistent t
 
 ### Priority P1 — language-quality pass
 
-Review remaining glossary spelling pairs, grammar examples and translation sentences for natural, exam-safe English/Hindi, with explicit source-versus-supplement labeling where necessary.
+Review remaining glossary spelling pairs, grammar examples and translation sentences for natural, exam-safe English/Hindi, with explicit source-versus-supplement labeling where necessary. This remains separate from Phase 3 and is not silently marked complete here.
 
-### Priority P1 — chapter-wide cumulative assessment
+### Priority P1 — chapter-wide cumulative assessment ✅ completed
 
 Add a **Whole Prose Revision Test** that mixes all nine prose chapters. A useful target would be 45–60 fresh questions rather than simply repeating each chapter's own test bank.
 
@@ -283,3 +283,36 @@ The best next milestone is **English Prose Final Audit v2**:
 > sentence/translation cleanup → prose-wide revision test → misconception checks → final cumulative QA.
 
 After that, the prose subsystem can reasonably be treated as release-ready, provided the dedicated Grammar/Writing/Reading modules are independently complete.
+
+## 12. Phase 3 — Prose-wide revision and cumulative assessment
+
+### Completed ✅
+
+**1. Whole-prose revision page added.**  
+`src/english/EnglishPanoramaProseRevision.jsx` provides a dedicated revision experience covering all nine Panorama prose chapters.
+
+**2. Fresh cumulative question bank added.**  
+The revision test contains **45 newly authored MCQs: 5 questions × 9 chapters**. Questions are mixed across the full prose set rather than grouped chapter-by-chapter during the attempt.
+
+**3. Shared timed engine reused.**  
+The cumulative test uses `PanoramaTimedQuiz` in **Challenge** mode, giving **60 seconds per question = 45:00 total** for 45 questions. Runtime option shuffling remains source-key aware, and the existing all-answered gate, automatic timeout submission and full review behavior are inherited from the shared engine.
+
+**4. Misconception revision layer added.**  
+The revision page includes a nine-item **Do not confuse** section targeting common distinctions across the prose chapters, followed by a chapter map and exam-strategy guidance.
+
+**5. Navigation and routing added.**  
+The new revision test is exposed directly from The Panorama prose area and has its own route state, while the existing chapter routes remain unchanged.
+
+**6. Permanent Phase-3 QA added to CI.**  
+`scripts/qaEnglishPhase3ProseRevision.mjs` checks the 45-question bank, answer/explanation counts, four-option structure, misconception section, timed-quiz wiring and navigation/routing integration.
+
+**7. CI and deployment verification passed.**  
+The final Phase-3 head was verified by the repository-wide **Verify Learning Hub** workflow and then successfully deployed by the **Deploy Learning Hub to GitHub Pages** workflow.
+
+### Phase-3 boundaries
+
+This phase adds cumulative assessment and revision. It does **not** silently rewrite the existing textbook/source wording in individual prose chapters, and it does not claim the user-supplied Chapter 8 PDF as the source for Chapter 9. The earlier source/provenance decisions remain in force.
+
+## 13. Final release checkpoint
+
+Phase 3 is complete for the English Panorama prose subsystem. The cumulative revision layer is live, the permanent Phase-3 QA gate is in CI, and the final repository state has passed both production verification and GitHub Pages deployment. The remaining prose-wide work is limited to the explicitly separate teacher-quality language pass and any future textbook-source verification that is warranted.
