@@ -23,10 +23,9 @@ for(const unit of SANSKRIT_GRAMMAR_UNITS){
     if(typeof q.explain!=='string'||q.explain.trim().length<12) throw new Error(`Explanation too short: ${q.q}`);
   }
 }
-const vachan= SANSKRIT_GRAMMAR_UNITS.find(u=>u.id==='sarvanama');
-if(!vachan) throw new Error('Missing सर्वनामरूप unit for semantic guard');
-const hasCorrectFeminineDual=vachan.questions.some(q=>q.options.includes('सा')&&q.options.includes('ते')&&q.options.includes('ताः'));
-if(!hasCorrectFeminineDual) throw new Error('Missing semantic coverage for feminine dual सर्वनाम');
+const sarvanama=SANSKRIT_GRAMMAR_UNITS.find(u=>u.id==='sarvanama');
+if(!sarvanama?.patterns?.includes('सा/ते/ताः')) throw new Error('Missing semantic coverage pattern for feminine dual सर्वनाम');
+if(!sarvanama?.patterns?.includes('सः/तौ/ते')) throw new Error('Missing semantic coverage pattern for masculine dual सर्वनाम');
 if(!source.includes("./sanskritGrammarRuntime.mjs")) throw new Error('Grammar Lab must use normalized runtime dataset');
 for(const token of ['SanskritGrammarLab','Syllabus Map','15 उत्तर जाँचें','Board Exam Tips','Revision Route']){
   if(!source.includes(token)) throw new Error(`Missing Grammar Lab UI token: ${token}`);
