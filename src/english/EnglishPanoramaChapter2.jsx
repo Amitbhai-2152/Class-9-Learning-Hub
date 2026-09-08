@@ -21,7 +21,7 @@ const study={
   ],
   glossary:[['ancestors','people from whom one is descended — पूर्वज'],['dictate','to order or command — आदेश देना'],['venerated','respected deeply — गहरा सम्मान किया गया'],['prematurely','before the usual or proper time — समय से पहले'],['curse','solemn invocation of divine wrath — शाप'],['wronged','treated unjustly — अन्याय किया'],['bidding','command — आदेश'],['mock','ridicule — उपहास करना'],['plight','an unfortunate condition or state — दयनीय स्थिति'],['supplicated','addressed humbly — विनम्रतापूर्वक प्रार्थना की']],
   wordStudy:{
-    spellings:[['vigor','vigour'],['pityful','pityful'],['relieve','relieve'],['bestouw','bestow'],['indulience','indulgence']],
+    spellings:[['vigor','vigour'],['pityful','pitiful'],['relieve','relieve'],['bestouw','bestow'],['indulience','indulgence']],
     less:[['joyless','बिना आनंद के'],['prestigeless','बिना प्रतिष्ठा के'],['fameless','बिना प्रसिद्धि के'],['population-less','जनसंख्या से रहित'],['vigourless','बिना शक्ति के'],['dangerless','बिना खतरे के'],['courageless','बिना साहस के'],['labourless','बिना श्रम के'],['pitiless','बिना दया के'],['victoryless','बिना विजय के']],
     meanings:[['morally good','virtuous'],['painful feeling','pity'],['person from whom one is descended','ancestor'],['respected deeply','venerated'],['command','bidding']],
     phrases:[['have had','पहले से होना / अनुभव होना'],['fill of','पूरी मात्रा या भरपूर'],['by no means','किसी भी तरह नहीं'],['take upon oneself','अपने ऊपर लेना'],['take up','स्वीकार करना / शुरू करना'],['give back','वापस देना'],['in due course','उचित समय पर'],['in the full vigour of youth','यौवन की पूरी शक्ति में']]
