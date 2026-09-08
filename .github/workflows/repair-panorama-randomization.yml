@@ -1,0 +1,36 @@
+name: Repair Panorama Randomization
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Apply clean timed quiz migration
+        run: node scripts/migrate-panorama-timed-quiz.mjs
+      - name: Validate source
+        run: |
+          test -f src/english/TimedPanoramaQuizEngine.jsx
+          grep -q "TimedPanoramaQuizEngine" src/english/EnglishPanoramaChapter1.jsx
+          grep -q "TimedPanoramaQuizEngine" src/english/EnglishPanoramaChapter2.jsx
+          ! grep -q "englishChapter1OptionRandomizer" src/main2.jsx
+          git diff --check
+      - name: Commit migration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Migrate Panorama chapters 1 and 2 to timed randomized quizzes' || exit 0
+          git push
