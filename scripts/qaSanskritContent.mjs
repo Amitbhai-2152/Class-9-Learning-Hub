@@ -12,7 +12,7 @@ const primaryDetailed5to15Source=readFileSync(new URL('../src/sanskrit/sanskritP
 const primaryTitles=['ईशस्तुति:','लोभविष्टः चक्रधरः','यक्ष-युधिष्ठिर संवाद','चत्वारो वेदाः','संस्कृतस्य महिमा','संस्कृतसाहित्ये पर्यावरणम्','ज्ञानं भारः क्रियां विना','नीतिपधानिः','बिहारस्य संस्कृतिकं वैभवम्','ईद-महोत्सवः','ग्राम्यजीवनम्','वीर कूँवर सिंहः','किशोराणां मनोविज्ञानम्','राष्ट्रबोधः','विश्ववन्दिता वैशाली'];
 const supplementaryTitles=['सरस्वती-वन्दना','संस्कृत-भाषा','प्रार्थना','यत्नं विना न रत्नम्','विदुला-पुत्र संवादः','सम्पूर्णविश्वरत्नम्','लोकगीतम्','अमृतं बालभाषितम्','प्रभात-वर्णनम्','नायं छागः','प्रयाणगीतम्','महात्मा गाँधी','भारतीयप्रजातन्त्रम्','संस्मरणम्','धर्मेषु भावः समानः समेषाम्','बिहारो विहारे सदा रोचताम् वः','लौहस्य तुला','ज्ञानेन शोभते किल','कुरुक्षेत्रम्','प्रहेलिका','ग्रन्थकाराः'];
 const failures=[];
-const normalizeTitle=x=>String(x??'').normalize('NFC').replace(/[:：]\s*$/,'').trim().replace(/[ा]/g,'a').replace(/[ुू]/g,'u').replace(/[िी]/g,'i').replace(/[ेै]/g,'e').replace(/[ोौ]/g,'o').replace(/[ँं]/g,'n').replace(/सांस्कृतिक/g,'संस्कृतिक').replace(/कूँवर/g,'कुँवर').replace(/\s*[—–-].*$/,'').replace(/\s+/g,' ');
+const normalizeTitle=x=>String(x??'').normalize('NFC').replace(/[ः:：]\s*$/,'').trim().replace(/\p{M}/gu,'').replace(/सांस्कृतिक/g,'संस्कृतिक').replace(/कूँवर/g,'कुँवर').replace(/\s*[—–-].*$/,'').replace(/\s+/g,' ');
 const checkBanks=(label,chapter,number)=>{
   for(const [name,items,expected] of [['practice',chapter.practice,15],['challenge',chapter.challenge,12],['finalTest',chapter.finalTest,20]]){
     if(!Array.isArray(items)||items.length!==expected){failures.push(`${label} Ch${number}: ${name} expected ${expected}, got ${Array.isArray(items)?items.length:0}`);continue;}
