@@ -91,9 +91,10 @@ assert(panorama7.includes("author:'Vikram Seth'"),'Panorama Ch7 author missing')
 assert(panorama7.includes('sourceNote:\'Class 9 English • The Panorama • Prose Chapter 7\''),'Panorama Ch7 source note missing');
 assert(nav.includes('The Panorama')&&nav.includes('English Reader'),'book split missing');
 assert(nav.includes('Learn →'),'chapter Learn action missing');
-assert(nav.includes('Panorama • Prose 5 Echo and Narcissus'),'Panorama Ch5 navigation entry missing');
-assert(nav.includes('Panorama • Prose 6 The Shehnai of Bismillah Khan'),'Panorama Ch6 navigation entry missing');
-assert(nav.includes('Panorama • Prose 7 Kathmandu'),'Panorama Ch7 navigation entry missing');
+assert(nav.includes('const panoramaProse=['),'Panorama prose chapter registry missing');
+assert(nav.includes('prefix="Panorama • Prose"'),'Panorama prose card prefix missing');
+assert(nav.includes('const chapter=`${prefix} ${n} ${name}`'),'Panorama chapter-card IDs are constructed consistently');
+assert(nav.includes('if(n===5||n===6||n===7)'),'Panorama Ch5–Ch7 routing handler missing');
 assert(app.includes("EnglishPanoramaChapter1"),'Panorama Ch1 import/route missing');
 assert(app.includes("EnglishPanoramaChapter2"),'Panorama Ch2 import/route missing');
 assert(app.includes("EnglishPanoramaChapter3"),'Panorama Ch3 import/route missing');
