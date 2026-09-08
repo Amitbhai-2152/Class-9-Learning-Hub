@@ -20,8 +20,7 @@ if(!registry.includes('SANSKRIT_SUPPLEMENTARY_CHAPTERS'))failures.push('Suppleme
 if(count(registry,"status:'planned'")<14)failures.push('Expected 14 planned primary chapter markers');
 for(const title of primaryTitles)if(!registry.includes(`title:'${title}'`))failures.push(`Primary registry chapter missing: ${title}`);
 for(const title of supplementaryTitles)if(!registry.includes(`title:'${title}'`))failures.push(`Supplementary registry chapter missing: ${title}`);
-// Primary chapter entries may be stored in a compact one-line array or a formatted multi-line object.
-for(let i=1;i<=15;i++)if(!new RegExp(`(?:^|[,{])\\s*${i}:\\s*\\{`).test(content))failures.push(`Structured primary content missing for chapter ${i}`);
+if(!content.includes('SANSKRIT_PRIMARY_CONTENT'))failures.push('Primary content export missing');
 
 if(!supplementarySource.includes('export const SANSKRIT_SUPPLEMENTARY_CONTENT'))failures.push('Supplementary content export missing');
 if(supplementarySource.includes('subjective'))failures.push('Supplementary source still contains subjective layer');
@@ -45,6 +44,32 @@ if(!engine.includes('SanskritSubjectSection'))failures.push('Subject section sym
 if(!engine.includes('SanskritChapterEngine'))failures.push('Chapter engine symbol missing');
 for(const token of ['सीखें','अभ्यास','चुनौती','फाइनल टेस्ट'])if(!engine.includes(token))failures.push(`Engine mode missing: ${token}`);
 if(!wrapper.includes("from './SanskritSubjectHub'"))failures.push('Subject wrapper path missing');
+
+try{
+ const primary=await import('../src/sanskrit/sanskritPrimaryContent.js');
+ const chapters=primary.SANSKRIT_PRIMARY_CONTENT;
+ if(!chapters||typeof chapters!=='object')failures.push('Primary content object missing');
+ const keys=Object.keys(chapters).sort((a,b)=>Number(a)-Number(b));
+ if(keys.length!==15||keys.some((key,index)=>Number(key)!==index+1))failures.push(`Primary chapter count/keys invalid: ${keys.join(',')}`);
+ for(let number=1;number<=15;number++){
+   const chapter=chapters[number];
+   if(!chapter){continue;}
+   if(chapter.title!==primaryTitles[number-1])failures.push(`Primary title mismatch at chapter ${number}`);
+   for(const [label,items,expected] of [['practice',chapter.practice,15],['challenge',chapter.challenge,12],['finalTest',chapter.finalTest,20]]){
+     if(!Array.isArray(items)||items.length!==expected){failures.push(`Primary Ch${number}: ${label} expected ${expected}, got ${Array.isArray(items)?items.length:0}`);continue;}
+     const texts=items.map(item=>item?.q||'');
+     if(new Set(texts).size!==texts.length)failures.push(`Primary Ch${number}: duplicate ${label} questions`);
+     const bad=items.filter(item=>!item||typeof item.q!=='string'||item.q.length<12||!Array.isArray(item.options)||item.options.length!==4||new Set(item.options).size!==4||![0,1,2,3].includes(item.answer)||typeof item.explain!=='string').length;
+     if(bad)failures.push(`Primary Ch${number}: ${label} has ${bad} invalid MCQ objects`);
+     const distribution=items.reduce((acc,item)=>{acc[item.answer]=(acc[item.answer]||0)+1;return acc},[0,0,0,0]);
+     if(distribution.some(c=>c===0))failures.push(`Primary Ch${number}: ${label} answer positions are not balanced: ${distribution.join('/')}`);
+     const relevantTokens=[chapter.title,chapter.theme,chapter.focus,chapter.intro,chapter.grammarFocus,...(chapter.vocabulary||[]),...(chapter.concepts||[]).flat(),...(Array.isArray(chapter.points)?chapter.points:[])].filter(Boolean);
+     const relevant=items.filter(item=>relevantTokens.some(token=>item.q.includes(token))).length;
+     const required=label==='practice'?8:label==='challenge'?6:10;
+     if(relevant<required)failures.push(`Primary Ch${number}: ${label} is not sufficiently chapter-specific (${relevant}/${required} relevant prompts)`);
+   }
+ }
+}catch(error){failures.push(`Primary content import failed: ${error.message}`)}
 
 try{
  const mod=await import('../src/sanskrit/sanskritSupplementaryRuntime.js');
@@ -105,4 +130,4 @@ if(failures.length){
  process.exit(1);
 }
 
-console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters; every supplementary chapter has deep chapter-specific study content, high-score module, 4 learning blocks, 15 practice, 12 challenge, 20 final-test MCQs, valid 4-option banks, balanced answer positions, no subjective layer, and working supplementary navigation.');
+console.log('SANSKRIT QA PASSED: 15 primary + 21 supplementary chapters; primary and supplementary assessment banks are structurally valid, chapter-specific, balanced, and wired to the learning UI.');
