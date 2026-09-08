@@ -4,27 +4,27 @@ import './english-reader.css';
 import './english-panorama.css';
 
 const chapters=[
- ['1','Dharam Juddha','Arjun Dev Charan'],
- ['2','Yayati','C. Rajagopalachari'],
- ['3','A Silent Revolution','Kunal Varma'],
- ['4','Too Many People, Too Few Trees','Moti Nisani'],
- ['5','Echo and Narcissus','Moira Kerr and John Bennett'],
- ['6','The Shehnai of Bismillah Khan','—'],
- ['7','Kathmandu','Vikram Seth'],
- ['8','My Childhood','A. P. J. Abdul Kalam'],
- ['9','The Gift of the Magi','O. Henry']
+ ['1','Dharam Juddha','Arjun Dev Charan','Social customs • dignity • equality'],
+ ['2','Yayati','C. Rajagopalachari','Desire • youth • restraint'],
+ ['3','A Silent Revolution','Kunal Varma','SMS • IM • mobile communication'],
+ ['4','Too Many People, Too Few Trees','Moti Nisani','Population • resources • environment'],
+ ['5','Echo and Narcissus','Moira Kerr and John Bennett','Myth • rejection • self-absorption'],
+ ['6','The Shehnai of Bismillah Khan','—','Music • tradition • cultural identity'],
+ ['7','Kathmandu','Vikram Seth','Places • contrast • music'],
+ ['8','My Childhood','A. P. J. Abdul Kalam','Childhood • harmony • prejudice • education'],
+ ['9','The Gift of the Magi','O. Henry','Love • sacrifice • irony']
 ];
 
 const misconceptions=[
- ['Dharam Juddha','Tradition is not automatically fair. The chapter invites the reader to question customs that deny dignity or equality.'],
- ['Yayati','Yayati’s problem is not simply old age; the deeper conflict is the endless pursuit of pleasure and desire.'],
- ['A Silent Revolution','SMS is not the same as Instant Messaging: the lesson distinguishes store-and-forward text messaging from real-time internet messaging.'],
- ['Too Many People, Too Few Trees','Environmental claims in the chapter belong to the lesson’s argument; do not treat its numerical examples as current statistical estimates.'],
- ['Echo and Narcissus','The myth’s self-absorption is not the same as healthy self-respect.'],
- ['The Shehnai of Bismillah Khan','The shehnai story is also about cultural continuity and shared musical traditions, not only the instrument itself.'],
- ['Kathmandu','The narrator’s description of two sacred places uses contrast: Pashupatinath is crowded and noisy, while Boudhanath feels comparatively peaceful.'],
- ['My Childhood','The chapter highlights religious harmony alongside the experience of prejudice and the power of education to challenge it.'],
- ['The Gift of the Magi','The ending is ironic because each gift becomes temporarily unusable, yet both sacrifices express deep love.']
+ ['01','Dharam Juddha','Tradition is not automatically fair. The chapter invites the reader to question customs that deny dignity or equality.'],
+ ['02','Yayati','Yayati’s problem is not simply old age; the deeper conflict is the endless pursuit of pleasure and desire.'],
+ ['03','A Silent Revolution','SMS is not the same as Instant Messaging: the lesson distinguishes store-and-forward text messaging from real-time internet messaging.'],
+ ['04','Too Many People, Too Few Trees','Environmental claims in the chapter belong to the lesson’s argument; do not treat its numerical examples as current statistical estimates.'],
+ ['05','Echo and Narcissus','The myth’s self-absorption is not the same as healthy self-respect.'],
+ ['06','The Shehnai of Bismillah Khan','The shehnai story is also about cultural continuity and shared musical traditions, not only the instrument itself.'],
+ ['07','Kathmandu','The narrator’s description of two sacred places uses contrast: Pashupatinath is crowded and noisy, while Boudhanath feels comparatively peaceful.'],
+ ['08','My Childhood','The chapter highlights religious harmony alongside the experience of prejudice and the power of education to challenge it.'],
+ ['09','The Gift of the Magi','The ending is ironic because each gift becomes temporarily unusable, yet both sacrifices express deep love.']
 ];
 
 const revisionBank=[
@@ -78,15 +78,73 @@ const revisionBank=[
 export function EnglishPanoramaProseRevision({onBack,addXp,finishSession}){
  const [start,setStart]=useState(false);
  if(start)return <PanoramaTimedQuiz mode="challenge" title="Whole Prose Revision Test" bank={revisionBank} onBack={()=>setStart(false)} addXp={addXp} finishSession={finishSession}/>;
- return <div className="pg-shell"><div className="pg-wrap">
-  <button className="pg-back" onClick={onBack}>← Back to English</button>
-  <section className="pg-hero"><div><span>CLASS 9 • ENGLISH • THE PANORAMA</span><h1>Whole Prose Revision</h1><p>All nine prose chapters in one fresh, timed revision test — 45 questions, mixed chapters, chapter themes, characters, key facts and integrated reading skills.</p></div><div className="pg-hero-stats"><div><b>45</b><span>Fresh MCQs</span></div><div><b>45:00</b><span>Time limit</span></div><div><b>9</b><span>Chapters</span></div></div></section>
-  <section className="pg-stage-grid"><article className="pg-stage-card"><span>REVISION TEST</span><h2>Test the complete prose set</h2><p>This bank is intentionally separate from each chapter’s own Practice, Challenge and Final Test questions. It is designed for cumulative recall and cross-chapter comparison.</p><button className="primary" onClick={()=>setStart(true)}>Start Revision Test →</button></article><article className="pg-stage-card"><span>BEFORE YOU START</span><h2>What to revise</h2><p>Review the nine chapter themes, major people and places, important events, chapter-specific grammar, vocabulary and writing tasks. Then attempt the test without opening the chapter notes.</p></article></section>
-  <section className="pg-study-section"><div className="pg-section-head"><span>01</span><div><small>CHAPTER MAP</small><h2>All 9 prose chapters</h2><p>एक नजर में chapter, author और focus revise करें।</p></div></div><div className="pg-study-grid">{chapters.map(([n,title,author])=><article className="pg-study-card" key={n}><span>CHAPTER {n}</span><h3>{title}</h3><p><b>Author:</b> {author}</p></article>)}</div></section>
-  <section className="pg-study-section"><div className="pg-section-head"><span>02</span><div><small>COMMON MISTAKES</small><h2>Do not confuse</h2><p>इन distinctions को revision में खास ध्यान दें।</p></div></div><div className="pg-study-grid">{misconceptions.map(([title,text])=><article className="pg-explain" key={title}><b>{title}</b><p>{text}</p></article>)}</div></section>
-  <section className="pg-study-section"><div className="pg-section-head"><span>03</span><div><small>FAST RECALL</small><h2>What this test checks</h2></div></div><div className="pg-study-grid"><article className="pg-vocab"><b>Literature</b><span>Theme, plot, character, setting, author and important event recall.</span></article><article className="pg-vocab"><b>Language</b><span>Chapter-linked grammar, vocabulary and concept distinctions.</span></article><article className="pg-vocab"><b>Exam thinking</b><span>Cause-and-effect, comparison, inference, theme and application.</span></article></div></section>
-  <section className="pg-exam"><b>Exam strategy</b><span>Read every option carefully. The test mixes chapters deliberately, so identify the chapter context before choosing an answer.</span></section>
- </div></div>;
+ return <main className="pg-shell prv-page">
+  <div className="prv-topbar">
+   <button className="pg-back prv-back" onClick={onBack}>← Back to English</button>
+   <span className="prv-status"><i/>Revision Hub</span>
+  </div>
+
+  <section className="prv-hero">
+   <div className="prv-hero-main">
+    <div className="prv-kicker"><span>CLASS 9</span><b>•</b><span>ENGLISH</span><b>•</b><span>THE PANORAMA</span></div>
+    <h1>Whole Prose<br/><em>Revision</em></h1>
+    <p>One focused revision room for all nine prose chapters. Recall the big ideas, spot the common traps, then take the complete timed test.</p>
+    <div className="prv-hero-chips"><span>9 chapters</span><span>45 fresh MCQs</span><span>45:00 timed</span><span>Challenge level</span></div>
+   </div>
+   <div className="prv-scoreboard" aria-label="Revision test overview">
+    <div><strong>45</strong><span>QUESTIONS</span></div>
+    <div><strong>45:00</strong><span>TIME LIMIT</span></div>
+    <div><strong>9</strong><span>CHAPTERS</span></div>
+   </div>
+  </section>
+
+  <section className="prv-start-card">
+   <div className="prv-start-copy">
+    <span className="prv-eyebrow">READY TO TEST?</span>
+    <h2>Finish your prose revision in one sitting.</h2>
+    <p>Every question must be answered before manual submission. When the timer ends, the test submits automatically and the result screen reviews your complete attempt.</p>
+   </div>
+   <button className="prv-start-btn" onClick={()=>setStart(true)}><span>Start Whole Prose Test</span><b>→</b></button>
+  </section>
+
+  <section className="prv-info-grid" aria-label="How the revision works">
+   <article><span className="prv-info-icon">01</span><div><b>Mixed order</b><p>Questions move across all nine chapters, so you must identify context before answering.</p></div></article>
+   <article><span className="prv-info-icon">02</span><div><b>Fresh bank</b><p>This cumulative bank is separate from the individual chapter Practice, Challenge and Final Tests.</p></div></article>
+   <article><span className="prv-info-icon">03</span><div><b>Full review</b><p>Your result includes answers, correct choices, explanations, percentage and time used.</p></div></article>
+  </section>
+
+  <section className="prv-section">
+   <div className="prv-section-head"><div><span className="prv-eyebrow">CHAPTER MAP</span><h2>All 9 prose chapters</h2><p>Five revision questions are drawn from each chapter.</p></div><span className="prv-section-count">9 × 5 = 45</span></div>
+   <div className="prv-chapter-grid">
+    {chapters.map(([n,title,author,focus])=><article className="prv-chapter-card" key={n}>
+      <div className="prv-chapter-num">{n}</div>
+      <div className="prv-chapter-body"><span>CHAPTER {n}</span><h3>{title}</h3><p>{focus}</p><small>{author==='—'?'Text focus':'By '+author}</small></div>
+      <div className="prv-chapter-q"><b>5</b><span>Q</span></div>
+    </article>)}
+   </div>
+  </section>
+
+  <section className="prv-section">
+   <div className="prv-section-head"><div><span className="prv-eyebrow">COMMON TRAPS</span><h2>Do not confuse these ideas</h2><p>These quick checks are here to prevent easy marks from slipping away.</p></div></div>
+   <div className="prv-trap-grid">
+    {misconceptions.map(([n,title,text])=><article className="prv-trap" key={title}><span>{n}</span><div><h3>{title}</h3><p>{text}</p></div></article>)}
+   </div>
+  </section>
+
+  <section className="prv-section prv-last-section">
+   <div className="prv-section-head"><div><span className="prv-eyebrow">TEST STRATEGY</span><h2>Use the revision room properly</h2><p>Three simple moves before you press start.</p></div></div>
+   <div className="prv-steps">
+    <article><div>1</div><div><h3>Scan the map</h3><p>Make sure you remember the title, author, setting and central idea of every chapter.</p></div></article>
+    <article><div>2</div><div><h3>Notice the traps</h3><p>Pay attention to contrasts, cause-and-effect, irony, character roles and chapter-specific concepts.</p></div></article>
+    <article><div>3</div><div><h3>Then test yourself</h3><p>Choose the best answer, not the first answer that sounds familiar. The questions are deliberately mixed.</p></div></article>
+   </div>
+  </section>
+
+  <section className="prv-bottom-cta">
+   <div><span className="prv-eyebrow">45 QUESTIONS • 45 MINUTES</span><h2>Ready for the whole-prose test?</h2><p>Enter Challenge mode and revise all nine chapters in one timed attempt.</p></div>
+   <button className="prv-start-btn light" onClick={()=>setStart(true)}><span>Start Test</span><b>→</b></button>
+  </section>
+ </main>;
 }
 
 export default EnglishPanoramaProseRevision;
