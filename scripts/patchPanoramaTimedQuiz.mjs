@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import { execFileSync } from 'node:child_process';
 
 const root = process.cwd();
 
@@ -82,9 +81,6 @@ for (const file of [
   const full = `${root}/${file}`;
   if (fs.existsSync(full)) fs.rmSync(full);
 }
-
-// Restore standard CI and Pages workflows to the clean pre-experiment versions.
-execFileSync('git', ['checkout', '401fdae45b2643e8c5ca5947069f06060ecdfdcb', '--', '.github/workflows/build.yml', '.github/workflows/pages.yml'], { stdio: 'inherit' });
 
 for (const path of [
   'src/english/EnglishPanoramaChapter1.jsx',
