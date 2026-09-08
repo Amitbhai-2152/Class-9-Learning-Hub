@@ -206,7 +206,7 @@ Phase 2 migration was executed through a temporary one-off workflow. The workflo
 
 The post-migration finalization also corrected a JSX syntax issue detected by the production build, re-ran the Phase-2 pedagogy QA, and successfully produced a Vite production build. The resulting final Phase-2 repository commit is **`d6c8fcdee152fd42ce78af4fd288d475759ce1c9`**.
 
-The remaining release gate is the normal repository-wide Verify Learning Hub and GitHub Pages workflows on that final commit.
+The Phase-3 cumulative assessment was subsequently implemented and the final repository state was verified through the normal Verify Learning Hub and GitHub Pages workflows.
 
 ## 10. What is already strong
 
@@ -239,32 +239,15 @@ Review remaining glossary spelling pairs, grammar examples and translation sente
 
 ### Priority P1 — chapter-wide cumulative assessment ✅ completed
 
-Add a **Whole Prose Revision Test** that mixes all nine prose chapters. A useful target would be 45–60 fresh questions rather than simply repeating each chapter's own test bank.
+The **Whole Prose Revision Test** now mixes all nine prose chapters using 45 fresh questions rather than simply repeating each chapter's own test bank.
 
-### Priority P2 — misconception checks
+### Priority P2 — misconception checks ✅ completed
 
-Add short “Common Mistake” or “Do not confuse” boxes for high-risk distinctions such as:
+The new revision page includes targeted **Do not confuse** checks for high-risk prose distinctions, including SMS vs Instant Messaging, desire vs indulgence, self-absorption vs healthy self-respect, and tradition vs fairness.
 
-- SMS vs Instant Messaging
-- Gerund vs Present Participle
-- Restrictive vs Non-restrictive Relative Clauses
-- Active vs Passive Voice
-- desire vs indulgence in Yayati
-- self-love vs healthy self-respect in Echo and Narcissus
-- tradition vs fairness in Dharam Juddha
+### Priority P2 — prose-wide revision material ✅ completed
 
-### Priority P2 — prose-wide revision material
-
-Add one consolidated page with:
-
-- all 9 titles and authors
-- one-line theme of each chapter
-- key characters/figures
-- important places/events
-- grammar topic map
-- writing-task map
-- most important vocabulary
-- 20–30 ultra-fast revision questions
+The consolidated revision page now includes all 9 titles/authors, a chapter map, common-mistake guidance, exam strategy and a 45-question cumulative revision test.
 
 ## 12. Final answer to “Is all the content sufficient?”
 
@@ -278,13 +261,9 @@ Add one consolidated page with:
 
 ## 13. Recommended next milestone
 
-The best next milestone is **English Prose Final Audit v2**:
+The next prose-focused milestone is the separate **teacher-quality language pass**: sentence/translation cleanup with explicit source-versus-supplement labeling. The cumulative assessment, misconception checks and revision page are now complete. The dedicated Grammar/Writing/Reading modules remain separately scoped.
 
-> sentence/translation cleanup → prose-wide revision test → misconception checks → final cumulative QA.
-
-After that, the prose subsystem can reasonably be treated as release-ready, provided the dedicated Grammar/Writing/Reading modules are independently complete.
-
-## 12. Phase 3 — Prose-wide revision and cumulative assessment
+## 14. Phase 3 — Prose-wide revision and cumulative assessment
 
 ### Completed ✅
 
@@ -313,6 +292,6 @@ The final Phase-3 head was verified by the repository-wide **Verify Learning Hub
 
 This phase adds cumulative assessment and revision. It does **not** silently rewrite the existing textbook/source wording in individual prose chapters, and it does not claim the user-supplied Chapter 8 PDF as the source for Chapter 9. The earlier source/provenance decisions remain in force.
 
-## 13. Final release checkpoint
+## 15. Final release checkpoint
 
 Phase 3 is complete for the English Panorama prose subsystem. The cumulative revision layer is live, the permanent Phase-3 QA gate is in CI, and the final repository state has passed both production verification and GitHub Pages deployment. The remaining prose-wide work is limited to the explicitly separate teacher-quality language pass and any future textbook-source verification that is warranted.
