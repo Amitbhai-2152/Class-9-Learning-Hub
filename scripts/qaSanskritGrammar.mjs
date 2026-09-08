@@ -1,33 +1,29 @@
 import fs from 'node:fs';
+import {SANSKRIT_GRAMMAR_UNITS} from '../src/sanskrit/sanskritGrammarSyllabus.mjs';
 
-const file='src/sanskrit/SanskritGrammarLab.jsx';
-const source=fs.readFileSync(file,'utf8');
-const required=['वचन एवं धातुरूप','कारक-विभक्ति','उपसर्ग','प्रत्यय','संधि','समास','अव्यय','शब्द-रूप पहचान'];
-const missing=required.filter(topic=>!source.includes(topic));
-const questionCount=(source.match(/\{level:'/g)||[]).length;
-if(missing.length) throw new Error(`Missing grammar topics: ${missing.join(', ')}`);
-if(questionCount<79) throw new Error(`Expected at least 79 grammar questions, found ${questionCount}`);
-for(const token of ['SanskritGrammarLab','TopicQuiz','MasteryTest','masteryQuestions','15 उत्तर जाँचें','उत्तर जाँचें']) {
-  if(!source.includes(token)) throw new Error(`Missing grammar UI token: ${token}`);
+const component='src/sanskrit/SanskritGrammarLab.jsx';
+const source=fs.readFileSync(component,'utf8');
+const expected=[
+  'शब्दरूप','सर्वनामरूप','धातुरूप — लट्','लोट् एवं विधिलिङ्','कारक एवं उपपद-विभक्ति',
+  'उपसर्ग','प्रत्यय','सन्धि','समास','अव्यय','संख्या, अनुवाद, रचना एवं अपठित-बोध'
+];
+if(SANSKRIT_GRAMMAR_UNITS.length!==11) throw new Error(`Expected 11 grammar syllabus units, found ${SANSKRIT_GRAMMAR_UNITS.length}`);
+const titles=SANSKRIT_GRAMMAR_UNITS.map(u=>u.title);
+const missing=expected.filter(x=>!titles.includes(x));
+if(missing.length) throw new Error(`Missing syllabus units: ${missing.join(', ')}`);
+const total=SANSKRIT_GRAMMAR_UNITS.reduce((n,u)=>n+u.questions.length,0);
+if(total!==165) throw new Error(`Expected 165 grammar MCQs, found ${total}`);
+for(const unit of SANSKRIT_GRAMMAR_UNITS){
+  if(unit.questions.length!==15) throw new Error(`${unit.title} must have exactly 15 MCQs`);
+  for(const q of unit.questions){
+    if(!['आसान','मध्यम','कठिन','चुनौती'].includes(q.level)) throw new Error(`Invalid level in ${unit.title}: ${q.q}`);
+    if(!Array.isArray(q.options)||q.options.length!==4||new Set(q.options).size!==4) throw new Error(`Question must have 4 unique options: ${q.q}`);
+    if(!Number.isInteger(q.answer)||q.answer<0||q.answer>3) throw new Error(`Invalid answer index: ${q.q}`);
+    if(typeof q.explain!=='string'||q.explain.trim().length<12) throw new Error(`Explanation too short: ${q.q}`);
+  }
+  if(unit.subtopics.length<5||unit.method.length<3||unit.mistakes.length<3||unit.tips.length<3) throw new Error(`Study depth is too shallow for ${unit.title}`);
 }
-const masteryBlock=source.match(/const masteryQuestions=\[(.*?)\];\n\nfunction MasteryTest/s);
-if(!masteryBlock) throw new Error('Mastery question bank not found');
-const masteryCount=(masteryBlock[1].match(/\{level:'/g)||[]).length;
-if(masteryCount!==15) throw new Error(`Expected exactly 15 mastery MCQs, found ${masteryCount}`);
-const questionBlocks=[...source.matchAll(/\{level:'([^']+)',q:'([^']+)',options:\[([^\]]+)\],answer:(\d+),explain:'([^']+)'\}/g)];
-if(questionBlocks.length<79) throw new Error(`Expected at least 79 parseable grammar question blocks, found ${questionBlocks.length}`);
-for(const [,level,q,options,answer,explain] of questionBlocks) {
-  const optionCount=(options.match(/'[^']*'/g)||[]).length;
-  const answerIndex=Number(answer);
-  if(!['आसान','मध्यम','कठिन','चुनौती'].includes(level)) throw new Error(`Invalid question level for: ${q}`);
-  if(optionCount!==4) throw new Error(`Question must have 4 options: ${q}`);
-  if(answerIndex<0 || answerIndex>3) throw new Error(`Invalid answer index for: ${q}`);
-  if(explain.trim().length<12) throw new Error(`Explanation too short for: ${q}`);
+for(const token of ['SanskritGrammarLab','Syllabus Map','15 उत्तर जाँचें','Board Exam Tips','Revision Route']){
+  if(!source.includes(token)) throw new Error(`Missing Grammar Lab UI token: ${token}`);
 }
-if(!source.includes('“सा गच्छति” का स्त्रीलिंग द्विवचन रूप') || !source.includes('स्त्रीलिंग द्विवचन सर्वनाम “ते”')) {
-  throw new Error('Corrected feminine dual vachan rule is missing');
-}
-if(!source.includes('“गजेन्द्र” का उचित विच्छेद “गज + इन्द्र”')) {
-  throw new Error('Corrected sandhi-viched explanation is missing');
-}
-console.log(`Sanskrit Grammar QA passed: ${required.length} topics, ${questionBlocks.length} structured questions, 15 mastery MCQs`);
+console.log(`Sanskrit Grammar QA passed: ${SANSKRIT_GRAMMAR_UNITS.length} syllabus units, ${total} MCQs (15/unit), deep-study metadata verified`);
