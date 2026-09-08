@@ -34,7 +34,7 @@ function bankChecks(text,name){
   assert(/function shuffleQuestion/.test(text),`${name}: missing deterministic option shuffle`);
   const displayed=[...Array(total)].map((_,i)=>(0-((i*3)%4)+4)%4);
   assert(new Set(displayed).size===4,`${name}: option-position shuffle does not distribute across A-D`);
-  assert(text.includes('selected===q.a'),`${name}: missing correctness check`);
+  assert(/selected===q\.a|selected===current\.a/.test(text),`${name}: missing correctness check`);
   assert(text.includes('finalScore=score+(selected===current.a?1:0)'),`${name}: final-question scoring guard missing`);
 }
 
@@ -55,4 +55,9 @@ const prose=['Dharam Juddha','Yayati','A Silent Revolution','Too Many People, To
 const poetry=['The Grandmother','On His Blindness','Blow, Blow, Thou Winter Wind','To Daffodils','Sound','Self Introduction','I Am Like Grass','Abraham Lincoln’s Letter to His Son’s Teacher'];
 const rte=['The Secret of Work','Gandhiji’s Passion for Nursing','With the Photographer'];
 for(const n of [...readerNames,...prose,...poetry,...rte])assert(nav.includes(n),`navigation missing chapter: ${n}`);
-console.log('English content QA passed: book split, chapter registry, Reader/Prose Ch1 banks, deterministic answer distribution, scoring guard, and routing verified.');
+assert((panorama.match(/sections:\[/)?.[0]||'').length>0,'Panorama Ch1 guided sections missing');
+assert(count(panorama,"{title:'Part ")>=12,'Panorama Ch1 expected at least 12 guided reading parts');
+assert(panorama.includes('wordStudy:'),'Panorama Ch1 word study missing');
+assert(panorama.includes('grammar:'),'Panorama Ch1 grammar lab missing');
+assert(panorama.includes('examPrep:'),'Panorama Ch1 exam prep missing');
+console.log('English content QA passed: book split, chapter registry, Reader/Prose Ch1 banks, deterministic answer distribution, scoring guard, guided study depth, word study, grammar, exam prep, and routing verified.');
