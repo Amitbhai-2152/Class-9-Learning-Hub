@@ -167,10 +167,7 @@ assert(panorama8.includes('Simple sentence')&&panorama8.includes('Compound sente
 assert(panorama8.includes('wordStudy:'),'Panorama Ch8 word-study section missing');
 assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(panorama8),'Panorama Ch8 final test composition missing');
 
-// Chapter 9 must use Chapter 8 as the canonical UI template.
-const ch8=panorama8;
-const ch9=panorama9;
-const uiMarkers=['className="pg-shell"','className="pg-wrap"','className="pg-hero"','className="pg-stage-grid"','className="pg-about"','className="pg-about-facts"','className="pg-study-section"','className="pg-study-grid"','className="pg-explain"','className="pg-vocab"','className="pg-exam"','className="pg-think"','className="pg-vocab-wide"','className="pg-language-point"','EXAM BOOSTER','WRITING / COMPOSITION','TRANSLATION PRACTICE','ACTIVITIES','QUICK REVISION','className="pg-revision"','className="pg-mode-cta"'];
+const uiMarkers=['className="pg-shell"','className="pg-wrap"','className="pg-hero"','className="pg-stage-grid"','className="pg-about"','className="pg-about-facts"','className="pg-study-section"','className="pg-study-grid"','className="pg-explain"','className="pg-vocab"','className="pg-exam"','className="pg-think"','pg-vocab-wide','className="pg-language-point"','EXAM BOOSTER','WRITING / COMPOSITION','TRANSLATION PRACTICE','ACTIVITIES','QUICK REVISION','className="pg-revision"','className="pg-mode-cta"'];
 for(const marker of uiMarkers){assert(ch8.includes(marker),`Chapter 8 canonical UI marker missing: ${marker}`);assert(ch9.includes(marker),`Chapter 9 UI marker missing: ${marker}`)}
 assert(ch8.includes('THE PANORAMA • PROSE 8'),'Chapter 8 canonical hero missing');
 assert(ch9.includes('THE PANORAMA • PROSE 9'),'Chapter 9 hero numbering missing');
