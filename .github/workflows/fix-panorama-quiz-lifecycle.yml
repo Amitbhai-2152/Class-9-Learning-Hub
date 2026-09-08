@@ -1,0 +1,134 @@
+name: Fix Panorama Quiz Lifecycle
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch Chapter 1 quiz lifecycle
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          path = Path('src/english/EnglishPanoramaChapter1.jsx')
+          text = path.read_text(encoding='utf-8')
+
+          text = text.replace("import React,{useMemo,useState} from 'react';", "import React,{useEffect,useMemo,useState} from 'react';", 1)
+
+          old_helper = '''function shuffleQuestion(q){
+  const options=q.o.map((text,sourceIndex)=>({text,sourceIndex}));
+  for(let i=options.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [options[i],options[j]]=[options[j],options[i]];
+  }
+  if(options.length>1&&options.every((item,index)=>item.sourceIndex===index)){
+    [options[0],options[1]]=[options[1],options[0]];
+  }
+  return {
+    ...q,
+    o:options.map(item=>item.text),
+    a:options.findIndex(item=>item.sourceIndex===q.a)
+  };
+}'''
+
+          new_helper = '''function shuffleQuestion(q){
+  const options=q.o.map((text,sourceIndex)=>({text,sourceIndex}));
+  const original=options.map(item=>item.sourceIndex).join(',');
+  for(let i=options.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [options[i],options[j]]=[options[j],options[i]];
+  }
+  if(options.length>1&&options.map(item=>item.sourceIndex).join(',')===original){
+    [options[0],options[1]]=[options[1],options[0]];
+  }
+  let answerIndex=options.findIndex(item=>item.sourceIndex===q.a);
+  if(answerIndex===0&&options.length>1){
+    const swapIndex=1+Math.floor(Math.random()*(options.length-1));
+    [options[0],options[swapIndex]]=[options[swapIndex],options[0]];
+    answerIndex=swapIndex;
+  }
+  return {
+    ...q,
+    o:options.map(item=>item.text),
+    a:answerIndex
+  };
+}'''
+
+          if old_helper not in text:
+              raise SystemExit('Expected Chapter 1 randomizer helper not found')
+          text=text.replace(old_helper,new_helper,1)
+
+          old_state = '''  const [score,setScore]=useState(0);
+  const [result,setResult]=useState(null);
+  const [quizRun,setQuizRun]=useState(0);
+  const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);
+  const current=useMemo(()=>bank[idx]?shuffleQuestion(bank[idx]):null,[bank,idx,quizRun]);
+  const begin=m=>{setMode(m);setIdx(0);setSelected(null);setScore(0);setResult(null);setQuizRun(r=>r+1)};'''
+
+          new_state = '''  const [score,setScore]=useState(0);
+  const [result,setResult]=useState(null);
+  const [quizRun,setQuizRun]=useState(0);
+  const [quizQuestions,setQuizQuestions]=useState([]);
+  const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);
+  useEffect(()=>{
+    if(!bank.length){setQuizQuestions([]);return;}
+    setQuizQuestions(bank.map(question=>shuffleQuestion(question)));
+  },[bank,quizRun]);
+  const current=quizQuestions[idx]||null;
+  const begin=m=>{
+    setMode(m);
+    setIdx(0);
+    setSelected(null);
+    setScore(0);
+    setResult(null);
+    setQuizQuestions([]);
+    setQuizRun(r=>r+1);
+  };'''
+
+          if old_state not in text:
+              raise SystemExit('Expected Chapter 1 quiz state block not found')
+          text=text.replace(old_state,new_state,1)
+
+          path.write_text(text,encoding='utf-8')
+
+          checks = [
+            "import React,{useEffect,useMemo,useState} from 'react';",
+            'const [quizQuestions,setQuizQuestions]=useState([]);',
+            'setQuizQuestions(bank.map(question=>shuffleQuestion(question)));',
+            'const current=quizQuestions[idx]||null;',
+            'Math.random()',
+            'sourceIndex',
+            'const [quizRun,setQuizRun]=useState(0);'
+          ]
+          result=path.read_text(encoding='utf-8')
+          for check in checks:
+              assert check in result, check
+
+          subprocess.run(['git','diff','--check'],check=True)
+          subprocess.run(['git','config','user.name','github-actions[bot]'],check=True)
+          subprocess.run(['git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com'],check=True)
+          subprocess.run(['git','add','src/english/EnglishPanoramaChapter1.jsx','.github/workflows/fix-panorama-quiz-lifecycle.yml'],check=True)
+          subprocess.run(['git','commit','-m','Harden Panorama Chapter 1 option randomization'],check=True)
+          subprocess.run(['git','push'],check=True)
+          PY
+
+      - name: Remove one-time workflow
+        if: success()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/fix-panorama-quiz-lifecycle.yml
+          git commit -m 'Remove one-time Panorama quiz lifecycle workflow'
+          git push
