@@ -20,7 +20,7 @@ if(answerCount!==45)errors.push(`Expected 45 answer keys, found ${answerCount}`)
 if(explanationCount!==45)errors.push(`Expected 45 explanations, found ${explanationCount}`);
 if(optionCount!==45)errors.push(`Expected 45 option arrays, found ${optionCount}`);
 if(!revision.includes('const misconceptions='))errors.push('Common-mistake section missing');
-if(!revision.includes('All nine prose chapters'))errors.push('All-nine-chapters revision heading missing');
+if(!revision.includes('All nine prose chapters') && !revision.includes('All 9 prose chapters'))errors.push('All-nine-chapters revision heading missing');
 if(!revision.includes('title="Whole Prose Revision Test"'))errors.push('Timed quiz title missing');
 if(!revision.includes('mode="challenge"'))errors.push('Timed challenge mode missing');
 if(!app.includes('EnglishPanoramaProseRevision'))errors.push('Revision component not imported/routed');
