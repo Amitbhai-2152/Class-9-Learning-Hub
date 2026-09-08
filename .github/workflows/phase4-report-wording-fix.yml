@@ -1,0 +1,40 @@
+name: Phase 4 Report Wording Fix
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Clarify Chapter 7 wording
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('ENGLISH_PROSE_AUDIT_REPORT.md')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('**2. Chapter 7 Relative Clause example corrected.**  The malformed example `This is the man who he is talking about.` was replaced with `This is the man whom he is talking about.`', '**2. Chapter 7 malformed relative-clause wording removed from active lesson text.**  The earlier malformed form `This is the man who he is talking about.` is no longer present. The chapter retains valid relative-clause practice, including the restrictive-clause example built around “This is the pen … I bought yesterday.”')
+          s=s.replace('The corrected forms are:\n\n- `I know how to swim.`\n- `This is the man whom he is talking about.`\n- `मैंने कहीं एक प्यासे आदमी को देखा।`', 'The corrected/validated forms are:\n\n- `I know how to swim.`\n- valid restrictive relative-clause practice using “This is the pen … I bought yesterday.”\n- `मैंने कहीं एक प्यासे आदमी को देखा।`')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit wording fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ENGLISH_PROSE_AUDIT_REPORT.md
+          git commit -m "fix(english): clarify phase-four relative-clause report wording [phase4]" || echo "No report wording change needed"
+          git push origin main
+      - name: Remove temporary workflow
+        run: |
+          rm -f .github/workflows/phase4-report-wording-fix.yml
+          git add .github/workflows/phase4-report-wording-fix.yml
+          git commit -m "chore(english): remove temporary phase-four wording workflow [phase4]" || echo "Temporary workflow already removed"
+          git push origin main
