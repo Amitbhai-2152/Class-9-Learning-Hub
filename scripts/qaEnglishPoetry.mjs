@@ -10,6 +10,7 @@ const decodeLiteral=raw=>{const q=raw[0];const b=raw.slice(1,-1);return b.replac
 const nav=read('src/english/EnglishSubjectSection.jsx');
 const shell=read('src/AppWithChapter5.jsx');
 const engine=read('src/english/PanoramaTimedQuiz.jsx');
+const guide7=read('src/english/EnglishPanoramaPoem7LineGuide.jsx');
 
 function checkBank(segment,name,expected){
  assert(count(segment,/q\s*\(/g)===expected,`${name}: expected ${expected} questions`);
@@ -48,10 +49,17 @@ checkPoem({path:'src/english/EnglishPanoramaPoem5.jsx',title:'Sound',poet:'Rajan
 checkPoem({path:'src/english/EnglishPanoramaPoem6.jsx',title:'Self-Introduction',poet:'Neerada Suresh',chapter:6,excerpts:["poemLines:['I am'","'My ordinariness'"],features:['Three six-line source blocks','STANZA-BY-STANZA','POETRY TOOLKIT','POETIC DEVICES','WORDS TO KNOW','THEMES','TEXTBOOK QUESTIONS','GROUP DISCUSSION','COMPOSITION','WORD STUDY','Dictionary Use','Word Formation','Word Meaning','GRAMMAR','Forms of “bind”','“with” as a preposition','Prepositions','ACTIVITIES','TRANSLATION','Metaphor','Simile','Personification','Contrast','Symbolism','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']});
 checkPoem({path:'src/english/EnglishPanoramaPoem7.jsx',title:'I Am Like Grass',poet:'Pash',chapter:7,excerpts:['I am like grass','but I shall sprout again','you cannot erase my identity','it will be only a matter of time','my green mantle covers everything again','I shall become a vast green jungle'],features:['Five short movements','SOURCE EXCERPTS','STANZA-BY-STANZA','POETRY TOOLKIT','POETIC DEVICES','WORDS TO KNOW','THEMES','TEXTBOOK PREPARATION','Long Answers','GROUP DISCUSSION','COMPOSITION','WORD STUDY','Spelling practice','Meaning matching','Adjective formation with -y','GRAMMAR • FIGURE OF SPEECH','Simile','Metaphor','ACTIVITY','TRANSLATION','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']});
 
+const guideLabels=[...Array(29)].map((_,i)=>`['Line ${i+1}'`);
+assert(fs.existsSync(path.join(root,'src/english/EnglishPanoramaPoem7LineGuide.jsx')),'Chapter 7 line guide missing');
+assert(count(guide7,/\['Line \d+'/g)===29,'Chapter 7 line guide must contain exactly 29 line meanings');
+for(const label of guideLabels)assert(guide7.includes(label),`Chapter 7 line guide missing ${label.slice(2,-1)}`);
+assert(guide7.includes('Every source line, in order'),'Chapter 7 complete-line guide heading missing');
+
 for(const [title,num] of [['The Grandmother',1],['On His Blindness',2],['Blow, Blow, Thou Winter Wind',3],['To Daffodils',4],['Sound',5],['Self-Introduction',6],['I Am Like Grass',7]])assert(nav.includes(`'${title}'`),`Poetry Chapter ${num} registry entry missing`);
 assert(nav.includes('if(poetry>=1&&poetry<=7)'), 'Poetry Chapters 1–7 route handler missing');
 assert(nav.includes("params.set(`panoramaPoetry${poetry}`,'1')"),'Poetry runtime flag missing');
-for(const n of [1,2,3,4,5,6,7])assert(shell.includes(`import {EnglishPanoramaPoem${n}} from './english/EnglishPanoramaPoem${n}.jsx';`),`Poetry ${n} import missing`);
+for(const n of [1,2,3,4,5,6])assert(shell.includes(`import {EnglishPanoramaPoem${n}} from './english/EnglishPanoramaPoem${n}.jsx';`),`Poetry ${n} import missing`);
+assert(shell.includes("import {EnglishPanoramaPoem7WithGuide} from './english/EnglishPanoramaPoem7WithGuide.jsx';"),'Poetry 7 guide wrapper import missing');
 for(const [n,ch] of [[1,17],[2,18],[3,19],[4,20],[5,21],[6,22],[7,23]]){
  assert(shell.includes(`if(p.get('panoramaPoetry${n}')==='1')return ${ch};`),`Poetry ${n} flag route missing`);
  assert(shell.includes(`if(Number.isInteger(n)&&n===${ch})return ${ch}`),`Poetry ${n} numeric route missing`);
@@ -60,5 +68,4 @@ for(const [n,ch] of [[1,17],[2,18],[3,19],[4,20],[5,21],[6,22],[7,23]]){
 for(const marker of ['function shuffleQuestion','sourceIndex','allAnswered=','disabled={!allAnswered}','setSubmitted(true)','Your answer','Correct answer','score','pct','function returnPoetryLearn'])assert(engine.includes(marker),`shared timed engine marker missing: ${marker}`);
 assert(engine.includes('[1,2,3,4,5,6,7].some'), 'shared poetry back-navigation must cover Chapters 1–7');
 
-console.log('English poetry QA passed: Chapters 1–7 include source-supported learning sections, 15 Practice + 25 Challenge + derived 20 Final Test banks, option integrity, shared timed engine, navigation and App routing.');
-console.log('Poetry Chapter 7: source-supported study structure, original explanations, assessment banks and navigation validated.');
+console.log('English poetry QA passed: Chapters 1–7 include source-supported learning sections, Chapter 7 has 29 ordered line meanings, 15 Practice + 25 Challenge + derived 20 Final Test banks, option integrity, shared timed engine, navigation and App routing.');
