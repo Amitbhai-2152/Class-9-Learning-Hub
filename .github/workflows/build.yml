@@ -52,6 +52,8 @@ jobs:
         run: npm run qa:sanskrit:grammar
       - name: English content QA
         run: npm run qa:english
+      - name: English Phase 2 pedagogy QA
+        run: npm run qa:english:phase2
       - name: Build application
         run: npm run build
       # English modules included in full verification
