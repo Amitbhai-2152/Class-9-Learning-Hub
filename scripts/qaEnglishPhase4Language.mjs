@@ -21,9 +21,9 @@ const bad=[
 ];
 const required=[
  ['Ch5 natural gerund example','I know how to swim.'],
- ['Ch7 natural relative clause example','This is the man whom he is talking about.'],
  ['Ch5 natural Hindi translation','मैंने कहीं एक प्यासे आदमी को देखा।'],
  ['Ch2 corrected spelling','pitiful'],
+ ['Ch7 valid relative-clause teaching example','Which relative pronoun best completes: “This is the pen ___ I bought yesterday.”'],
 ];
 const all=paths.map(p=>[p,fs.readFileSync(p,'utf8')]);
 const errors=[];
@@ -43,4 +43,4 @@ if(errors.length){
 console.log('English Phase 4 language QA passed.');
 console.log('Checked prose files:',paths.length);
 console.log('Legacy language/provenance defects blocked:',bad.length);
-console.log('Corrected teaching forms present:',required.length);
+console.log('Corrected/validated teaching forms present:',required.length);
