@@ -116,8 +116,7 @@ const challenge=[
  {q:'Which modal best expresses permission in “May I come in?”',o:['may','must','should','could'],a:0,e:'The chapter explicitly uses may for permission.'},
  {q:'Which modal indicates past ability in “When Rohit was young, he could run twenty miles”?',o:['could','must','may','shall'],a:0,e:'Could is used for past ability in the example.'},
  {q:'Which modal expresses duty in “We should love our country”?',o:['should','might','can','would'],a:0,e:'The grammar section labels should as duty, obligation, advice or instruction.'},
- {q:'Which modal can express strong possibility in “He must be tired”?',o:['must','may','can','shall'],a:0,e:'The grammar notes that must can indicate strong possibility.'},
- {q:'What does “need not” express in a sentence?',o:['Lack of necessity','Strong compulsion','Past ability','Permission only'],a:0,e:'Need can express necessity; need not expresses that something is not necessary.'}
+ {q:'Which modal can express strong possibility in “He must be tired”?',o:['must','may','can','shall'],a:0,e:'The grammar notes that must can indicate strong possibility.'}
 ];
 
 const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)].map((x,i)=>({...x,id:`panorama-too-many-people-final-${i}`}));
