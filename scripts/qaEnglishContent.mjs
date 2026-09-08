@@ -19,10 +19,13 @@ function bankChecks(text,name){
   assert(text.includes('const finalTest='),`${name}: missing final test bank`);
   const practiceBlock=text.match(/const practice=\[(.*?)\];\s*const challenge/s)?.[1]||'';
   const challengeBlock=text.match(/const challenge=\[(.*?)\];\s*const finalTest/s)?.[1]||'';
+  const finalBlock=text.match(/const finalTest=\[(.*?)\];/s)?.[1]||'';
   const practiceQ=count(practiceBlock,"{q:");
   const challengeQ=count(challengeBlock,"{q:");
+  const finalQ=count(finalBlock,"{q:");
   assert(practiceQ===15,`${name}: expected 15 practice questions, got ${practiceQ}`);
   assert(challengeQ>=12,`${name}: expected at least 12 challenge questions, got ${challengeQ}`);
+  assert(finalQ===20,`${name}: expected 20 final-test questions, got ${finalQ}`);
   const all=(practiceBlock+'\n'+challengeBlock);
   const total=practiceQ+challengeQ;
   const options=(all.match(/o:\[[^\]]+\]/g)||[]);
@@ -32,8 +35,8 @@ function bankChecks(text,name){
     assert(items.length===4,`${name}: question ${i+1} must have exactly 4 options`);
     assert(new Set(items).size===4,`${name}: question ${i+1} has duplicate options`);
   }
-  const correct=(all.match(/a:0/g)||[]).length;
-  assert(correct===total,`${name}: expected explicit source answer keys for ${total} questions`);
+  const answers=(all.match(/a:\d+/g)||[]).length;
+  assert(answers===total,`${name}: expected explicit source answer keys for ${total} questions`);
 }
 
 bankChecks(reader,'English Reader Ch1');
