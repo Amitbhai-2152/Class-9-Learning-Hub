@@ -39,10 +39,10 @@ for(const required of ['STANZA-BY-STANZA','Actual stanza → simple explanation 
 function checkBank(segment,name,expected){
   const n=count(segment,'q(');
   assert(n===expected,`${name}: expected ${expected} questions, got ${n}`);
-  const records=[...segment.matchAll(/q\([^,]+,\[(.*?)\],\d+,'[^']*','[^']*'\)/g)];
+  const records=[...segment.matchAll(/q\('([^']*)',\[(.*?)\],(\d+),'([^']*)'\)/g)];
   assert(records.length===expected,`${name}: expected ${expected} complete question records, got ${records.length}`);
   for(const [i,m] of records.entries()){
-    const items=[...m[1].matchAll(/'([^']*)'/g)].map(x=>x[1]);
+    const items=[...m[2].matchAll(/'([^']*)'/g)].map(x=>x[1]);
     assert(items.length===4,`${name}: question ${i+1} must have exactly 4 options`);
     assert(new Set(items).size===4,`${name}: question ${i+1} has duplicate options`);
   }
