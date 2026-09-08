@@ -11,6 +11,7 @@ const panorama3=read('src/english/EnglishPanoramaChapter3.jsx');
 const panorama4=read('src/english/EnglishPanoramaChapter4.jsx');
 const panorama5=read('src/english/EnglishPanoramaChapter5.jsx');
 const panorama6=read('src/english/EnglishPanoramaChapter6Final.jsx');
+const panorama7=read('src/english/EnglishPanoramaChapter7Final.jsx');
 const nav=read('src/english/EnglishSubjectSection.jsx');
 const app=read('src/App.jsx');
 const appShell=read('src/AppWithChapter5.jsx');
@@ -27,9 +28,9 @@ function bankChecks(text,name){
   const practiceQ=count(practiceBlock,"{q:");
   const challengeQ=count(challengeBlock,"{q:");
   assert(practiceQ===15,`${name}: expected 15 practice questions, got ${practiceQ}`);
-  if(name==='Panorama Ch6')assert(challengeQ===23,`${name}: expected 23 challenge questions, got ${challengeQ}`);
+  if(name==='Panorama Ch6'||name==='Panorama Ch7')assert(challengeQ===23,`${name}: expected 23 challenge questions, got ${challengeQ}`);
   else assert(challengeQ>=12,`${name}: expected at least 12 challenge questions, got ${challengeQ}`);
-  if(['Panorama Ch3','Panorama Ch4','Panorama Ch5','Panorama Ch6'].includes(name))assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(text),`${name}: final test must be 10 practice + 10 challenge questions`);
+  if(['Panorama Ch3','Panorama Ch4','Panorama Ch5','Panorama Ch6','Panorama Ch7'].includes(name))assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(text),`${name}: final test must be 10 practice + 10 challenge questions`);
   const all=(practiceBlock+'\n'+challengeBlock), total=practiceQ+challengeQ;
   const options=(all.match(/o:\[[^\]]+\]/g)||[]);
   assert(options.length===total,`${name}: expected ${total} option arrays, got ${options.length}`);
@@ -49,6 +50,7 @@ bankChecks(panorama3,'Panorama Ch3');
 bankChecks(panorama4,'Panorama Ch4');
 bankChecks(panorama5,'Panorama Ch5');
 bankChecks(panorama6,'Panorama Ch6');
+bankChecks(panorama7,'Panorama Ch7');
 
 assert(/function shuffleQuestion/.test(reader),'English Reader Ch1: missing option shuffle');
 assert(/function shuffleQuestion/.test(panoramaEngine),'Panorama timed engine: missing runtime option shuffle');
@@ -63,7 +65,7 @@ assert(/prev<=1/.test(panoramaEngine)&&/setSubmitted\(true\)/.test(panoramaEngin
 assert(/Your answer/.test(panoramaEngine)&&/Correct answer/.test(panoramaEngine),'Panorama timed engine: full answer review missing');
 assert(/score/.test(panoramaEngine)&&/pct/.test(panoramaEngine),'Panorama timed engine: score/percentage result missing');
 
-for(const [text,name] of [[panorama,'Panorama Ch1'],[panorama2,'Panorama Ch2'],[panorama3,'Panorama Ch3'],[panorama4,'Panorama Ch4'],[panorama5,'Panorama Ch5'],[panorama6,'Panorama Ch6']]){
+for(const [text,name] of [[panorama,'Panorama Ch1'],[panorama2,'Panorama Ch2'],[panorama3,'Panorama Ch3'],[panorama4,'Panorama Ch4'],[panorama5,'Panorama Ch5'],[panorama6,'Panorama Ch6'],[panorama7,'Panorama Ch7']]){
   assert(text.includes("PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx'"),`${name}: shared timed engine not wired`);
   assert(!text.includes('const [selected,setSelected]'),`${name}: legacy selected-answer state remains`);
   assert(!text.includes('pg-feedback'),`${name}: legacy quiz feedback UI remains`);
@@ -84,18 +86,24 @@ assert(panorama5.includes("title:'Echo and Narcissus'"),'Panorama Ch5 title mism
 assert(panorama5.includes("author:'Moira Kerr and John Bennett'"),'Panorama Ch5 author missing');
 assert(panorama6.includes("title:'The Shehnai of Bismillah Khan'"),'Panorama Ch6 title mismatch');
 assert(panorama6.includes('sourceNote:\'Class 9 English • The Panorama • Prose Chapter 6\''),'Panorama Ch6 source note missing');
+assert(panorama7.includes("title:'Kathmandu'"),'Panorama Ch7 title mismatch');
+assert(panorama7.includes("author:'Vikram Seth'"),'Panorama Ch7 author missing');
+assert(panorama7.includes('sourceNote:\'Class 9 English • The Panorama • Prose Chapter 7\''),'Panorama Ch7 source note missing');
 assert(nav.includes('The Panorama')&&nav.includes('English Reader'),'book split missing');
 assert(nav.includes('Learn →'),'chapter Learn action missing');
 assert(nav.includes('Panorama • Prose 5 Echo and Narcissus'),'Panorama Ch5 navigation entry missing');
-assert(nav.includes('The Shehnai of Bismillah Khan'),'Panorama Ch6 navigation entry missing');
+assert(nav.includes('Panorama • Prose 6 The Shehnai of Bismillah Khan'),'Panorama Ch6 navigation entry missing');
+assert(nav.includes('Panorama • Prose 7 Kathmandu'),'Panorama Ch7 navigation entry missing');
 assert(app.includes("EnglishPanoramaChapter1"),'Panorama Ch1 import/route missing');
 assert(app.includes("EnglishPanoramaChapter2"),'Panorama Ch2 import/route missing');
 assert(app.includes("EnglishPanoramaChapter3"),'Panorama Ch3 import/route missing');
 assert(app.includes("EnglishPanoramaChapter4"),'Panorama Ch4 import/route missing');
 assert(appShell.includes("EnglishPanoramaChapter5"),'Panorama Ch5 shell import missing');
 assert(appShell.includes("EnglishPanoramaChapter6Final"),'Panorama Ch6 shell import missing');
+assert(appShell.includes("EnglishPanoramaChapter7Final"),'Panorama Ch7 shell import missing');
 assert(appShell.includes("n===12"),'Panorama Ch5 chapter-index route missing');
 assert(appShell.includes("n===13"),'Panorama Ch6 chapter-index route missing');
+assert(appShell.includes("n===14"),'Panorama Ch7 chapter-index route missing');
 assert(main2.includes("AppWithChapter5"),'main2 is not wired to the English chapter route shell');
 
 const readerNames=['I’m going to dance again','Scaling Great Heights','Saint Kabir','The eyes are not here','Ismat Chughtai: A woman with a difference','The accidental tourist','Saint Ravidas','Bharathipura'];
@@ -103,7 +111,7 @@ const prose=['Dharam Juddha','Yayati','A Silent Revolution','Too Many People, To
 const poetry=['The Grandmother','On His Blindness','Blow, Blow, Thou Winter Wind','To Daffodils','Sound','Self Introduction','I Am Like Grass','Abraham Lincoln’s Letter to His Son’s Teacher'];
 const rte=['The Secret of Work','Gandhiji’s Passion for Nursing','With the Photographer'];
 for(const n of [...readerNames,...prose,...poetry,...rte])assert(nav.includes(n),`navigation missing chapter: ${n}`);
-for(const [text,name] of [[panorama,'Panorama Ch1'],[panorama2,'Panorama Ch2'],[panorama3,'Panorama Ch3'],[panorama4,'Panorama Ch4'],[panorama5,'Panorama Ch5'],[panorama6,'Panorama Ch6']]){
+for(const [text,name] of [[panorama,'Panorama Ch1'],[panorama2,'Panorama Ch2'],[panorama3,'Panorama Ch3'],[panorama4,'Panorama Ch4'],[panorama5,'Panorama Ch5'],[panorama6,'Panorama Ch6'],[panorama7,'Panorama Ch7']]){
   assert(/sections:\[/.test(text),`${name} guided sections missing`);
   assert(count(text,"{title:'Part ")>=8,`${name} expected at least 8 guided reading parts`);
   assert(text.includes('wordStudy:'),'word study missing');
@@ -128,4 +136,10 @@ assert(panorama6.includes('translationPractice:'),'Panorama Ch6 translation sect
 assert(panorama6.includes('Punctuation Marks'),'Panorama Ch6 punctuation grammar missing');
 assert(panorama6.includes('formation:'),'Panorama Ch6 word-formation study missing');
 assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(panorama6),'Panorama Ch6 final test composition missing');
-console.log('English content QA passed: Reader/Prose banks, shared timed Panorama engine, runtime option randomization, source-answer remapping, timing by mode/question count, completion gating, full review, Chapters 1–6 study depth, Chapter 6 source coverage, and routing shell verified.');
+assert(panorama7.includes('composition:'),'Panorama Ch7 composition section missing');
+assert(panorama7.includes('activities:'),'Panorama Ch7 activities section missing');
+assert(panorama7.includes('translationPractice:'),'Panorama Ch7 translation section missing');
+assert(panorama7.includes('Relative Clauses'),'Panorama Ch7 relative-clause grammar missing');
+assert(panorama7.includes('wordStudy:'),'Panorama Ch7 word-study section missing');
+assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(panorama7),'Panorama Ch7 final test composition missing');
+console.log('English content QA passed: Reader/Prose banks, shared timed Panorama engine, runtime option randomization, source-answer remapping, timing by mode/question count, completion gating, full review, Chapters 1–7 study depth, Chapter 7 source coverage, and routing shell verified.');
