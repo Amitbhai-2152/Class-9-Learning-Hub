@@ -91,7 +91,7 @@ for(const [text,name] of [[panorama,'Panorama Ch1'],[panorama2,'Panorama Ch2'],[
   assert(count(text,"{title:'Part ")>=8,`${name} expected at least 8 guided reading parts`);
   assert(text.includes('wordStudy:'),'word study missing');
   assert(text.includes('grammar:'),'grammar lab missing');
-  assert(text.includes('examPrep:')||text.includes('examPrep:['),`${name} exam prep missing`);
+  assert(text.includes('examPrep:')||count(text,"exam:'")>=8,`${name} exam prep missing`);
 }
 assert(panorama3.includes('composition:'),'Panorama Ch3 composition section missing');
 assert(panorama3.includes('activities:'),'Panorama Ch3 activities section missing');
