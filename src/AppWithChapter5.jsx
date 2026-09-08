@@ -3,7 +3,7 @@ import App from './App.jsx';
 import {EnglishPanoramaChapter5} from './english/EnglishPanoramaChapter5.jsx';
 import {EnglishPanoramaChapter6Final} from './english/EnglishPanoramaChapter6Final.jsx';
 import {EnglishPanoramaChapter7Final} from './english/EnglishPanoramaChapter7Final.jsx';
-import EnglishPanoramaChapter8Final from './english/EnglishPanoramaChapter8Final.jsx';
+import {EnglishPanoramaChapter8} from './english/EnglishPanoramaChapter8.jsx';
 
 const initial={xp:0,streak:1,dailyXp:0,goal:100,sessions:[]};
 const safeProgress=value=>{const source=value&&typeof value==='object'&&!Array.isArray(value)?value:{};return {...initial,...source,xp:Number.isFinite(source.xp)?source.xp:0,streak:Number.isFinite(source.streak)?source.streak:1,dailyXp:Number.isFinite(source.dailyXp)?source.dailyXp:0,goal:Number.isFinite(source.goal)&&source.goal>0?source.goal:100,sessions:Array.isArray(source.sessions)?source.sessions:[]}};
@@ -22,6 +22,6 @@ export default function AppWithChapter5(){
   if(chapter===5)return <EnglishPanoramaChapter5 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
   if(chapter===6)return <EnglishPanoramaChapter6Final initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
   if(chapter===7)return <EnglishPanoramaChapter7Final initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
-  if(chapter===8)return <EnglishPanoramaChapter8Final initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
+  if(chapter===8)return <EnglishPanoramaChapter8 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
   return <App/>;
 }
