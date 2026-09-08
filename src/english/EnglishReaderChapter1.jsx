@@ -6,36 +6,10 @@ const study={
   author:'Najmul Hasan',
   sourceNote:'Class 9 English Reader (Panorama English Reader)',
   summary:'This chapter profiles Sonal Mansingh and her return to dance after a serious accident. The focus is not only on recovery, but on determination, discipline, artistic commitment and the decision to return to the stage.',
-  timeline:[
-    ['Before the accident','Sonal Mansingh had already established herself as a respected classical dancer and performer.'],
-    ['After the accident','She faced a long period of physical recovery and was told that dancing again would be extremely difficult.'],
-    ['Her response','Instead of accepting defeat, she worked towards recovery and kept her artistic goal in sight.'],
-    ['Return to the stage','The chapter presents her comeback as a symbol of courage, sustained effort and faith in one’s vocation.']
-  ],
-  vocabulary:[
-    ['performance','a public presentation by an artist'],
-    ['recovery','the process of becoming well or strong again'],
-    ['determination','firmness of purpose; the decision to continue despite difficulty'],
-    ['commitment','a strong sense of duty or dedication to something'],
-    ['accident','an unexpected event that causes harm or damage'],
-    ['stage','the place where a public performance takes place'],
-    ['physician','a medical doctor'],
-    ['perseverance','continued effort despite obstacles'],
-    ['classical','related to a recognized traditional artistic form'],
-    ['confidence','belief in one’s own ability or judgment']
-  ],
-  themes:[
-    ['Determination','A difficult setback does not have to end a meaningful goal.'],
-    ['Discipline','A return to demanding art requires regular, patient effort.'],
-    ['Resilience','The chapter shows how a person can respond constructively to a major setback.'],
-    ['Identity and art','Dance is presented as an important part of the protagonist’s identity and purpose.']
-  ],
-  examPoints:[
-    'Know the central situation: a noted dancer preparing to return to performance after a serious accident.',
-    'Connect the comeback with determination, perseverance, discipline and confidence.',
-    'Distinguish factual details from the chapter’s broader message about resilience.',
-    'For inferential questions, use evidence from the sequence of setback → recovery → renewed performance.'
-  ]
+  timeline:[['Before the accident','Sonal Mansingh had already established herself as a respected classical dancer and performer.'],['After the accident','She faced a long period of physical recovery and was told that dancing again would be extremely difficult.'],['Her response','Instead of accepting defeat, she worked towards recovery and kept her artistic goal in sight.'],['Return to the stage','The chapter presents her comeback as a symbol of courage, sustained effort and faith in one’s vocation.']],
+  vocabulary:[['performance','a public presentation by an artist'],['recovery','the process of becoming well or strong again'],['determination','firmness of purpose; the decision to continue despite difficulty'],['commitment','a strong sense of duty or dedication to something'],['accident','an unexpected event that causes harm or damage'],['stage','the place where a public performance takes place'],['physician','a medical doctor'],['perseverance','continued effort despite obstacles'],['classical','related to a recognized traditional artistic form'],['confidence','belief in one’s own ability or judgment']],
+  themes:[['Determination','A difficult setback does not have to end a meaningful goal.'],['Discipline','A return to demanding art requires regular, patient effort.'],['Resilience','The chapter shows how a person can respond constructively to a major setback.'],['Identity and art','Dance is presented as an important part of the protagonist’s identity and purpose.']],
+  examPoints:['Know the central situation: a noted dancer preparing to return to performance after a serious accident.','Connect the comeback with determination, perseverance, discipline and confidence.','Distinguish factual details from the chapter’s broader message about resilience.','For inferential questions, use evidence from the sequence of setback → recovery → renewed performance.']
 };
 
 const practice=[
@@ -55,7 +29,6 @@ const practice=[
  {q:'Why is the accident important to the structure of the chapter?',o:['It creates the major obstacle that makes the comeback meaningful','It introduces a new city','It explains a dance form','It ends the narrative before recovery'],a:0,e:'The obstacle gives the later return its significance.'},
  {q:'What is a strong inference from the chapter?',o:['Artistic identity can motivate sustained effort during recovery','Artists never face setbacks','Medical advice is always irrelevant','Public recognition is the only goal'],a:0,e:'The chapter connects a strong sense of purpose with sustained effort.'}
 ];
-
 const challenge=[
  {q:'Which interpretation most accurately distinguishes resilience from simple optimism?',o:['Resilience involves continuing purposeful effort after difficulty','Resilience means assuming nothing can go wrong','Resilience means avoiding all challenges','Resilience means waiting for others to solve a problem'],a:0,e:'Resilience is active adaptation and continued effort, not merely positive expectation.'},
  {q:'Why is the comeback more powerful as a narrative than a first performance would be?',o:['It places achievement after a major obstacle and sustained effort','First performances are never important','A comeback needs no preparation','The audience automatically prefers accidents'],a:0,e:'The obstacle creates contrast and makes the later achievement meaningful.'},
@@ -70,40 +43,11 @@ const challenge=[
  {q:'Which option best separates the chapter’s fact pattern from its message?',o:['The accident and later return are events; resilience and perseverance are themes','The themes are dates while events are vocabulary words','Both are identical lists of people','Facts and themes are interchangeable'],a:0,e:'Events are concrete narrative elements; themes are the ideas drawn from them.'},
  {q:'Which exam answer would be strongest for “What do you learn from the chapter?”',o:['Meaningful goals can require patience, discipline and persistence after setbacks','Success is always immediate','Difficulties should simply be ignored','Public recognition solves every problem'],a:0,e:'This answer captures the chapter’s central lesson without overclaiming.'}
 ];
-
 const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)].map((x,i)=>({...x,id:`final-${i}`}));
-
-function shuffleQuestion(q,i){
- const shift=(i*3)%q.o.length;
- const o=q.o.map((_,idx)=>q.o[(idx+shift)%q.o.length]);
- const original=q.a;
- const a=(original-shift+q.o.length)%q.o.length;
- return {...q,o,a};
-}
-
-export function EnglishReaderChapter1({initialMode=null,onBack,addXp,finishSession}){
- const [mode,setMode]=useState(initialMode);
- const [idx,setIdx]=useState(0);
- const [selected,setSelected]=useState(null);
- const [score,setScore]=useState(0);
- const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);
- const current=bank[idx]?shuffleQuestion(bank[idx],idx):null;
- const choose=(n)=>{if(selected!==null||!current)return;setSelected(n);if(n===current.a)setScore(s=>s+1)};
- const next=()=>{if(!current)return; if(idx+1<bank.length){setIdx(i=>i+1);setSelected(null)}else{const earned=Math.round(score/bank.length*100);addXp?.(Math.max(5,Math.round(earned/10)));finishSession?.({subject:'अंग्रेज़ी',chapter:study.title,mode,score,total:bank.length,at:new Date().toISOString()});setMode('result')}};
- const start=(m)=>{setMode(m);setIdx(0);setSelected(null);setScore(0)};
- if(mode==='learn')return <Lesson onBack={()=>setMode(null)}/>;
- if(mode==='result')return <Result score={score} total={bank.length} mode={initialMode||'test'} restart={()=>start(initialMode||'test')} back={onBack}/>;
- if(current)return <Quiz mode={mode} q={current} index={idx} total={bank.length} selected={selected} choose={choose} next={next}/>;
- return <Menu onBack={onBack} start={start}/>;
-}
-
+function shuffleQuestion(q,i){const shift=(i*3)%q.o.length;const o=q.o.map((_,idx)=>q.o[(idx+shift)%q.o.length]);const a=(q.a-shift+q.o.length)%q.o.length;return {...q,o,a};}
+export function EnglishReaderChapter1({initialMode=null,onBack,addXp,finishSession}){const[mode,setMode]=useState(initialMode);const[idx,setIdx]=useState(0);const[selected,setSelected]=useState(null);const[score,setScore]=useState(0);const[result,setResult]=useState(null);const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);const current=bank[idx]?shuffleQuestion(bank[idx],idx):null;const choose=n=>{if(selected!==null||!current)return;setSelected(n);if(n===current.a)setScore(s=>s+1)};const next=()=>{if(!current)return;if(idx+1<bank.length){setIdx(i=>i+1);setSelected(null)}else{const finalScore=score+(selected===current.a?1:0);const earned=Math.max(5,Math.round((finalScore/bank.length)*10));setResult({score:finalScore,total:bank.length,mode});addXp?.(earned);finishSession?.({subject:'अंग्रेज़ी',book:'English Reader',chapter:study.title,mode,score:finalScore,total:bank.length,at:new Date().toISOString()});setMode(null)}};const start=m=>{setMode(m);setResult(null);setIdx(0);setSelected(null);setScore(0)};if(result)return <Result result={result} restart={()=>start(result.mode)} back={onBack}/>;if(mode==='learn')return <Lesson onBack={()=>setMode(null}/>;if(current)return <Quiz mode={mode} q={current} index={idx} total={bank.length} selected={selected} choose={choose} next={next}/>;return <Menu onBack={onBack} start={start}/>}
 function Menu({onBack,start}){return <div className="english-chapter-shell"><div className="english-hero"><span>ENGLISH READER • CHAPTER 1</span><h1>{study.title}</h1><p>{study.author} · Learn the chapter, then test your understanding.</p></div><div className="english-mode-grid"><button className="english-mode" onClick={()=>start('learn')}><b>📖 Learn</b><small>Summary, timeline, vocabulary, themes and exam points</small></button><button className="english-mode" onClick={()=>start('practice')}><b>📝 Practice</b><small>15 chapter-focused MCQs with explanations</small></button><button className="english-mode" onClick={()=>start('challenge')}><b>🔥 Challenge</b><small>12 higher-order and inference questions</small></button><button className="english-mode" onClick={()=>start('test')}><b>🎯 Final Test</b><small>20 mixed questions with score tracking</small></button></div><button className="english-back" onClick={onBack}>← Back to English Reader</button></div>}
-
 function Lesson({onBack}){return <div className="english-chapter-shell"><div className="english-lesson-head"><button onClick={onBack}>← Modes</button><span>LEARN</span><h2>{study.title}</h2><p>{study.author}</p></div><section className="english-panel"><h3>Chapter in one view</h3><p>{study.summary}</p></section><section className="english-panel"><h3>Story / idea flow</h3><div className="english-timeline">{study.timeline.map(([h,p])=><article key={h}><strong>{h}</strong><p>{p}</p></article>)}</div></section><section className="english-two-col"><div className="english-panel"><h3>Vocabulary</h3>{study.vocabulary.map(([w,m])=><div className="english-vocab" key={w}><b>{w}</b><span>{m}</span></div>)}</div><div className="english-panel"><h3>Core themes</h3>{study.themes.map(([h,p])=><article className="english-theme" key={h}><b>{h}</b><p>{p}</p></article>)}</div></section><section className="english-panel"><h3>Exam focus</h3>{study.examPoints.map(p=><p className="english-point" key={p}>✓ {p}</p>)}</section><button className="english-back primary" onClick={onBack}>Back to modes</button></div>}
-
 function Quiz({mode,q,index,total,selected,choose,next}){const letters=['A','B','C','D'];return <div className="english-chapter-shell"><div className="quiz-head"><button onClick={()=>location.reload()}>Exit</button><span>{mode.toUpperCase()}</span><strong>{index+1} / {total}</strong></div><div className="quiz-card"><p className="quiz-kicker">Question {index+1}</p><h2>{q.q}</h2>{q.o.map((text,i)=><button key={text} className={`quiz-option ${selected!==null?(i===q.a?'correct':i===selected?'wrong':''):' '}`} onClick={()=>choose(i)} disabled={selected!==null}><span>{letters[i]}</span>{text}</button>)}{selected!==null&&<div className="quiz-feedback"><b>{selected===q.a?'Correct':'Not quite'}</b><p>{q.e}</p><button className="english-back primary" onClick={next}>{index+1===total?'Finish':'Next →'}</button></div>}</div></div>}
-
-function Result({score,total,mode,restart,back}){const pct=Math.round(score/total*100);return <div className="english-chapter-shell"><div className="result-card"><span>RESULT</span><h2>{pct}%</h2><p>{score} correct out of {total}</p><div className="result-actions"><button className="english-back primary" onClick={restart}>Retry</button><button className="english-back" onClick={back}>Back</button></div></div></div>}
-
-export const englishReaderChapter1Meta={title:study.title,author:study.author,sourceNote:study.sourceNote,modeCounts:{practice:practice.length,challenge:challenge.length,final:finalTest.length}};
-export {study as englishReaderChapter1Study};
+function Result({result,restart,back}){const pct=Math.round(result.score/result.total*100);return <div className="english-chapter-shell"><div className="result-card"><span>RESULT</span><h2>{pct}%</h2><p>{result.score} correct out of {result.total}</p><div className="result-actions"><button className="english-back primary" onClick={restart}>Retry</button><button className="english-back" onClick={back}>Back</button></div></div></div>}
+export const englishReaderChapter1Meta={title:study.title,author:study.author,sourceNote:study.sourceNote,modeCounts:{practice:practice.length,challenge:challenge.length,final:finalTest.length}};export {study as englishReaderChapter1Study};
