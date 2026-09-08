@@ -12,7 +12,7 @@ const panoramaRte=['The Secret of Work','Gandhiji’s Passion for Nursing','With
 function openPanoramaChapter(chapter,open){
  const match=chapter.match(/^Panorama • Prose (\d+) /);
  const n=match?Number(match[1]):null;
- if(n===5||n===6||n===7){
+ if(n===5||n===6||n===7||n===8){
   const params=new URLSearchParams();
   params.set('page','chapter');params.set('subject','english');params.set('chapter',String(7+n));params.set('mode','learn');params.set(`panorama${n}`,'1');
   window.history.pushState({},'',`${window.location.pathname}?${params.toString()}${window.location.hash||''}`);
