@@ -22,12 +22,14 @@ export default function AppWithChapter5(){
   const addXp=n=>{const amount=Number.isFinite(n)?n:0;if(!amount)return;setProgress(p=>{const safe=safeProgress(p);return {...safe,xp:safe.xp+amount,dailyXp:Math.min(safe.goal,safe.dailyXp+amount)}})};
   const finishSession=meta=>setProgress(p=>{const safe=safeProgress(p);return {...safe,sessions:[...safe.sessions,meta].slice(-100)}});
   const back=()=>{const params=new URLSearchParams();params.set('page','subject');params.set('subject','english');window.history.pushState({},'',`${window.location.pathname}?${params.toString()}${window.location.hash||''}`);setChapter(0)};
+  const proseLearn=[5,6,7,8,9].includes(chapter)&&routeMode()==='learn';
+  const wrapProse=node=>proseLearn?<div><button type="button" className="english-book-back" onClick={back}>← Exit Prose</button>{node}</div>:node;
   if(chapter===11)return <EnglishPanoramaLanguageSkills onBack={back} addXp={addXp} finishSession={finishSession}/>;
   if(chapter===10)return <EnglishPanoramaProseRevision onBack={back} addXp={addXp} finishSession={finishSession}/>;
-  if(chapter===5)return <EnglishPanoramaChapter5 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
-  if(chapter===6)return <EnglishPanoramaChapter6Final initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
-  if(chapter===7)return <EnglishPanoramaChapter7Final initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
-  if(chapter===8)return <EnglishPanoramaChapter8 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
-  if(chapter===9)return <EnglishPanoramaChapter9 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>;
+  if(chapter===5)return wrapProse(<EnglishPanoramaChapter5 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>);
+  if(chapter===6)return wrapProse(<EnglishPanoramaChapter6Final initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>);
+  if(chapter===7)return wrapProse(<EnglishPanoramaChapter7Final initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>);
+  if(chapter===8)return wrapProse(<EnglishPanoramaChapter8 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>);
+  if(chapter===9)return wrapProse(<EnglishPanoramaChapter9 initialMode={routeMode()} onBack={back} addXp={addXp} finishSession={finishSession}/>);
   return <App/>;
 }
