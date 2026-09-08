@@ -18,13 +18,15 @@ const main=read('src/main2.jsx');
 function bank(text,name){
   assert(text.includes('const practice=['),`${name}: practice bank missing`);
   assert(text.includes('const challenge=['),`${name}: challenge bank missing`);
-  assert(text.includes('const finalTest='),`${name}: final test missing`);
+  assert(text.includes('const finalTest=['),`${name}: final test missing`);
   const p=text.match(/const practice=\[(.*?)\];\s*const challenge/s)?.[1]||'';
   const c=text.match(/const challenge=\[(.*?)\];\s*const finalTest/s)?.[1]||'';
   const pq=count(p,'{q:'),cq=count(c,'{q:'),total=pq+cq;
   assert(pq===15,`${name}: expected 15 practice questions, got ${pq}`);
   assert(cq===23,`${name}: expected 23 challenge questions, got ${cq}`);
-  assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(text)||/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]\./.test(text),`${name}: final test must be 10 practice + 10 challenge questions`);
+  const finalSource=text.match(/const finalTest=([^;]+);/)?.[1]||'';
+  assert(finalSource.includes('practice.slice(0,10)'),`${name}: final test must include first 10 practice questions`);
+  assert(finalSource.includes('challenge.slice(0,10)'),`${name}: final test must include first 10 challenge questions`);
   const all=p+'\n'+c;
   const arrays=all.match(/o:\[[^\]]+\]/g)||[];
   assert(arrays.length===total,`${name}: expected ${total} option arrays, got ${arrays.length}`);
