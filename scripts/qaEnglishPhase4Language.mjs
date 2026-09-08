@@ -1,3 +1,4 @@
+// Phase 4 regression gate: blocks the audited legacy language/provenance forms from returning.
 import fs from 'node:fs';
 
 const paths=[
