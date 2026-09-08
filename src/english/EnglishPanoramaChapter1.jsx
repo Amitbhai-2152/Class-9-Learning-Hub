@@ -1,5 +1,6 @@
 import React,{useMemo,useState} from 'react';
 import './english-reader.css';
+import './english-panorama.css';
 
 const study={
   title:'Dharam Juddha',
@@ -286,7 +287,7 @@ export function EnglishPanoramaChapter1({initialMode=null,onBack,addXp,finishSes
   </div>;
 
   const progress=Math.round(((idx+(selected!==null?1:0))/bank.length)*100);
-  return <div className="pg-shell"><div className="pg-quiz-wrap"><button className="pg-back" onClick={()=>begin('learn')}>← Back to Learn</button><div className="pg-quiz-head"><div><span>{mode==='practice'?'PRACTICE':mode==='challenge'?'CHALLENGE':'FINAL TEST'}</span><h2>{study.title}</h2></div><b>{idx+1}/{bank.length}</b></div><div className="pg-progress"><i style={{width:`${progress}%`}}/></div><div className="pg-question-card"><span className="pg-qtag">Question {idx+1}</span><h3>{current.q}</h3><div className="pg-options">{current.o.map((o,i)=>{const cls=selected===null?'':i===current.a?'correct':i===selected?'wrong':'';return <button key={o} className={`pg-option ${cls}`} onClick={()=>choose(i)} disabled={selected!==null}><span>{String.fromCharCode(65+i)}</span><b>{o}</b></button>})}</div>{selected!==null&&<div className={`pg-feedback ${selected===current.a?'good':'bad'}`}><b>{selected===current.a?'✓ Correct':'✗ Not quite'}</b><p>{current.e}</p><button className="pg-next" onClick={idx===bank.length-1?()=>setResult(r=>r):next}>{idx===bank.length-1?'View Result':'Next Question →'}</button></div>}</div></div></div>;
+  return <div className="pg-shell"><div className="pg-quiz-wrap"><button className="pg-back" onClick={()=>begin('learn')}>← Back to Learn</button><div className="pg-quiz-head"><div><span>{mode==='practice'?'PRACTICE':mode==='challenge'?'CHALLENGE':'FINAL TEST'}</span><h2>{study.title}</h2></div><b>{idx+1}/{bank.length}</b></div><div className="pg-progress"><i style={{width:`${progress}%`}}/></div><div className="pg-question-card"><span className="pg-qtag">Question {idx+1}</span><h3>{current.q}</h3><div className="pg-options">{current.o.map((o,i)=>{const cls=selected===null?'':i===current.a?'correct':i===selected?'wrong':'';return <button key={o} className={`pg-option ${cls}`} onClick={()=>choose(i)} disabled={selected!==null}><span>{String.fromCharCode(65+i)}</span><b>{o}</b></button>})}</div>{selected!==null&&<div className={`pg-feedback ${selected===current.a?'good':'bad'}`}><b>{selected===current.a?'✓ Correct':'✗ Not quite'}</b><p>{current.e}</p><button className="pg-next" onClick={idx===bank.length-1?()=>setResult({score:score+(selected===current.a?1:0),total:bank.length,pct:Math.round(((score+(selected===current.a?1:0))/bank.length)*100)}):next}>{idx===bank.length-1?'View Result':'Next Question →'}</button></div>}</div></div></div>;
 }
 
 export const englishPanoramaChapter1Meta={title:study.title,author:study.author,book:'The Panorama',type:'Prose'};
