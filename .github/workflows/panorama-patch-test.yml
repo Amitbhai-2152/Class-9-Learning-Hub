@@ -1,15 +1,76 @@
 name: Panorama Patch Test
+
 on:
   push:
     branches:
       - main
+
 permissions:
   contents: write
+
 jobs:
-  test:
+  patch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Test
-        run: echo PANORAMA_PATCH_TEST_OK
+        with:
+          fetch-depth: 0
+      - name: Patch Panorama quiz architecture
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def patch_chapter(path, component, meta, label, counts):
+              p=Path(path)
+              text=p.read_text(encoding='utf-8')
+              text=re.sub(r"^import React,\{[^}]+\} from 'react';$", "import React,{useState} from 'react';\nimport PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx';", text, count=1, flags=re.M)
+              text,n=re.subn(r"\nfunction shuffleQuestion\(q\)\{.*?\n\}\n\n(?=function StudyView)", "\n", text, count=1, flags=re.S)
+              if n!=1: raise SystemExit(f'{path}: legacy shuffle helper not found')
+              start=text.find(f'export function {component}')
+              end=text.find(f'export const {meta}=', start)
+              if start<0 or end<0: raise SystemExit(f'{path}: component boundary not found')
+              pc,cc,tc=counts
+              learn=f'''<div className="pg-shell"><div className="pg-hero"><span className="badge">CLASS 9 • THE PANORAMA • {label}</span><h1>{{study.title}}</h1><p>{{study.author}} • Guided learning</p><div className="pg-hero-stats"><span>Complete Chapter Study</span><span>{pc} Practice</span><span>{cc} Challenge</span><span>{tc} Final Test</span></div></div><div className="pg-modebar"><button className="active" onClick={{()=>begin('learn')}}><b>Learn</b><span>पूरा chapter समझें</span></button><button onClick={{()=>begin('practice')}}><b>Practice</b><span>{pc} questions • 45 sec/question</span></button><button onClick={{()=>begin('challenge')}}><b>Challenge</b><span>{cc} questions • 60 sec/question</span></button><button onClick={{()=>begin('test')}}><b>Final Test</b><span>{tc} questions • 75 sec/question</span></button></div><button className="pg-back" onClick={{onBack}}>← English books</button><StudyView /></div>'''
+              replacement=f'''export function {component}({{initialMode=null,onBack,addXp,finishSession}}) {{
+                const [mode,setMode]=useState(initialMode||'learn');
+                const begin=m=>setMode(m);
+                if(mode==='learn'||mode===null)return {learn};
+                const bank=mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[];
+                return <PanoramaTimedQuiz mode={{mode}} title={{study.title}} bank={{bank}} onBack={{()=>begin('learn')}} addXp={{addXp}} finishSession={{payload=>finishSession?.({{subject:'english',book:'The Panorama',...payload}})}} />;
+              }}
+
+'''
+              p.write_text(text[:start]+replacement+text[end:],encoding='utf-8')
+
+          patch_chapter('src/english/EnglishPanoramaChapter1.jsx','EnglishPanoramaChapter1','englishPanoramaChapter1Meta','PROSE 1',(15,23,20))
+          patch_chapter('src/english/EnglishPanoramaChapter2.jsx','EnglishPanoramaChapter2','englishPanoramaChapter2Meta','PROSE 2',(15,23,20))
+
+          main2=Path('src/main2.jsx')
+          m=main2.read_text(encoding='utf-8').replace("import './english/panoramaChapter1RuntimeRandomizer.js';\n",'')
+          main2.write_text(m,encoding='utf-8')
+
+          for f in ['src/english/panoramaChapter1RuntimeRandomizer.js','.github/workflows/panorama-fix.yml','.github/workflows/wire-panorama-timed-quiz.yml','.github/workflows/panorama-patch-test.yml']:
+              p=Path(f)
+              if p.exists(): p.unlink()
+          PY
+
+          git checkout 401fdae45b2643e8c5ca5947069f06060ecdfdcb -- .github/workflows/build.yml .github/workflows/pages.yml
+          grep -q "PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx'" src/english/EnglishPanoramaChapter1.jsx
+          grep -q "PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx'" src/english/EnglishPanoramaChapter2.jsx
+          ! grep -q "const \[selected,setSelected\]" src/english/EnglishPanoramaChapter1.jsx
+          ! grep -q "const \[selected,setSelected\]" src/english/EnglishPanoramaChapter2.jsx
+          ! grep -q "pg-feedback" src/english/EnglishPanoramaChapter1.jsx
+          ! grep -q "pg-feedback" src/english/EnglishPanoramaChapter2.jsx
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/english/EnglishPanoramaChapter1.jsx src/english/EnglishPanoramaChapter2.jsx src/main2.jsx .github/workflows/build.yml .github/workflows/pages.yml
+          git add -u src/english/panoramaChapter1RuntimeRandomizer.js .github/workflows/panorama-fix.yml .github/workflows/wire-panorama-timed-quiz.yml .github/workflows/panorama-patch-test.yml
+          if git diff --cached --quiet; then
+            echo "Panorama architecture already clean."
+          else
+            git commit -m "Replace Panorama chapter quizzes with timed engine"
+            git push
+          fi
