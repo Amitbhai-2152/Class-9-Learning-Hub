@@ -58,6 +58,8 @@ jobs:
         run: npm run qa:english:phase3
       - name: English Phase 4 language QA
         run: npm run qa:english:phase4
+      - name: English Phase 5 language skills QA
+        run: npm run qa:english:phase5
       - name: Build application
         run: npm run build
       # English modules included in full verification

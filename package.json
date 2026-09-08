@@ -26,6 +26,7 @@
     "qa:english:phase2": "node scripts/qaEnglishPhase2Pedagogy.mjs",
     "qa:english:phase3": "node scripts/qaEnglishPhase3ProseRevision.mjs",
     "qa:english:phase4": "node scripts/qaEnglishPhase4Language.mjs",
+    "qa:english:phase5": "node scripts/qaEnglishPhase5LanguageSkills.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
