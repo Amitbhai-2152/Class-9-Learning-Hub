@@ -10,7 +10,9 @@
 
 The nine prescribed Panorama prose chapters are present and activated in the English navigation. The current repository contains a substantial chapter-learning layer plus a shared timed MCQ system. For **chapter-wise prose study**, the content is broadly sufficient and is already stronger than a basic summary/notes implementation.
 
-However, the prose collection is **not yet uniform enough to be called fully complete or fully standardized**. The main issues are not missing chapters; they are depth consistency, remaining teacher-quality cleanup, and the fact that the **complete BSEB English syllabus extends beyond chapter-specific prose content** into dedicated grammar, writing and unseen-reading preparation.
+Phase 1 addressed provenance and verified source-text cleanup. Phase 2 has now normalized the guided-reading depth of Chapters 2–4 to the 10-part house standard without changing the shared assessment architecture.
+
+The prose collection is therefore substantially more consistent, but the wider English subject still requires separate grammar, writing and unseen-reading systems to be considered a complete BSEB English preparation platform.
 
 ## 2. Prescribed prose coverage
 
@@ -47,8 +49,6 @@ The repository's English navigation also lists exactly these nine prose chapters
 The Phase-2 consistency issue identified in the original audit is now resolved for Chapters 2–4. Those chapters each have **10 guided reading parts**, matching the house standard used by Chapters 8 and 9 and bringing the core prose set into a much tighter 9–12 part range.
 
 The normalization was done by **re-segmenting existing chapter material into clearer teaching steps**, not by changing the chapter topics or the established quiz architecture.
-
-**Recommended standard:** 10 guided reading parts per prose chapter, with an allowed range of 8–12 only where the textbook naturally supports that structure.
 
 ## 4. Quiz-system audit
 
@@ -101,7 +101,7 @@ Every prose chapter has a guided-flow layer that generally contains:
 
 This is enough for a student to learn the broad plot, ideas, characters/themes and key factual points without depending only on a one-line summary.
 
-### B. Vocabulary and word study — SUFFICIENT, WITH PHASE-1 CLEANUP COMPLETED FOR VERIFIED ITEMS
+### B. Vocabulary and word study — SUFFICIENT, WITH VERIFIED CLEANUP
 
 Most chapters provide glossaries, spelling tasks, word formation, meanings, matching or phrases. This is considerably better than a minimal chapter summary.
 
@@ -152,13 +152,31 @@ The checked spelling pair was changed from `pityful` to `pitiful`.
 The word-study spelling section now reflects the checked forms including `reflexion`, `inconsequential`, `nervously`, `assertion`, `worshipped`, `yearned`, and `privilege`.
 
 **4. Phase-1 QA was updated.**  
-The English QA now checks the corrected Chapter 2 spelling and explicitly prevents the old Chapter 9 PDF-provenance claim from returning.
+The English QA checks the corrected Chapter 2 spelling and explicitly prevents the old Chapter 9 PDF-provenance claim from returning.
 
 ### Deliberately NOT changed in Phase 1
 
 Some earlier audit observations were verified as textbook/source wording and therefore were **not silently rewritten** during the provenance/correctness pass. This includes the Chapter 5 grammar example `I know swimming.` and the Chapter 7 relative-clause example `This is the man who he is talking about.` Such items can be reconsidered later only with explicit source-versus-pedagogy labeling rather than silently replacing the lesson wording.
 
-## 7. Remaining quality findings
+## 7. Phase 2 — Pedagogical consistency status
+
+### Completed ✅
+
+**1. Chapter 2 — Yayati** now has 10 guided reading parts covering the ruler introduction, curse, loss of youth, sons’ responses, Puru’s sacrifice, renewed indulgence, realisation and final return of youth.
+
+**2. Chapter 3 — A Silent Revolution** now has 10 guided reading parts covering the idea behind SMS, store-and-forward behavior, SMSC, voice-call coexistence, delivery/congestion, Instant Messaging comparison, early limitations, historical spread, industry/language compatibility and the transition to MMS.
+
+**3. Chapter 4 — Too Many People, Too Few Trees** now has 10 guided reading parts covering population growth, ecological limits, resource pressure, pollution, public health, global environmental change, population control, poverty, affluent consumption and deforestation consequences.
+
+Each of the new guided parts includes the same teaching pattern already used across the prose system: **English flow + हिन्दी explanation + vocabulary + exam focus + think prompt**.
+
+**4. Existing assessment/UI architecture was preserved.**  
+The 15/23/20 quiz banks and shared `PanoramaTimedQuiz` engine were not replaced or reworked as part of Phase 2.
+
+**5. Permanent Phase-2 QA was added to CI.**  
+Chapters 2–4 are now checked for exactly 10 guided parts, complete guided-part teaching fields, vocabulary coverage, assessment-bank presence and shared timed-quiz wiring.
+
+## 8. Remaining quality findings
 
 ### Finding 1 — Minor chapter-to-chapter depth variation remains
 
@@ -176,22 +194,21 @@ A few examples across the prose files may still benefit from pedagogical cleanup
 
 The prose implementation is strong as a **literature/prose subsystem**. It should not be marketed internally as the complete English preparation system until the dedicated grammar, writing and unseen-reading components are audited to the same standard.
 
-## 8. Source alignment and release confidence
+### Finding 4 — Prose-wide cumulative assessment is still pending
 
-The repository currently points to SCERT Bihar's Panorama English Prose and Poetry resource collection, and current external syllabus references for 2026–27 list the same nine prose chapters.
+The current chapter tests are chapter-specific. A separate whole-prose revision test would improve retention and exam simulation without changing the chapter banks.
 
-The latest previously verified repository workflow for the Chapter 9 release completed successfully:
+## 9. Source alignment and release confidence
 
-- content/QA stages completed successfully
-- application build completed successfully
-- GitHub Pages upload completed successfully
-- GitHub Pages deployment completed successfully
+The repository points to SCERT Bihar's Panorama English Prose and Poetry resource collection, and current external syllabus references for 2026–27 list the same nine prose chapters.
 
-The successful Pages workflow run was **34217778074**.
+Phase 2 migration was executed through a temporary one-off workflow. The workflow successfully transformed Chapters 2–4 to the 10-part structure, validated the resulting counts and then removed its own temporary migration scripts/workflow from the repository. The resulting repository commit is **`eb6635c90b253bc502d80b1f75a8ed79fee509f4`**.
 
-A fresh verification of the Phase-1 commits is still required before declaring the new state fully release-verified.
+The post-migration finalization also corrected a JSX syntax issue detected by the production build, re-ran the Phase-2 pedagogy QA, and successfully produced a Vite production build. The resulting final Phase-2 repository commit is **`d6c8fcdee152fd42ce78af4fd288d475759ce1c9`**.
 
-## 9. What is already strong
+The remaining release gate is the normal repository-wide Verify Learning Hub and GitHub Pages workflows on that final commit.
+
+## 10. What is already strong
 
 The following areas should be considered established and should be preserved:
 
@@ -204,9 +221,9 @@ The following areas should be considered established and should be preserved:
 7. **Full post-test review is available.**
 8. **Runtime option shuffling is source-key aware.**
 9. **Chapter-specific grammar and writing sections are integrated.**
-10. **The core code/build/deployment pipeline was healthy before Phase 1 changes.**
+10. **Chapters 2–4 now match the 10-part guided-reading standard.**
 
-## 10. What should be improved before calling the prose “final-final”
+## 11. What should be improved before calling the prose “final-final”
 
 ### Priority P0 — provenance ✅ resolved
 
@@ -249,7 +266,7 @@ Add one consolidated page with:
 - most important vocabulary
 - 20–30 ultra-fast revision questions
 
-## 11. Final answer to “Is all the content sufficient?”
+## 12. Final answer to “Is all the content sufficient?”
 
 **For prose chapter study: YES, broadly sufficient.** The student can learn the story/article, revise vocabulary, practise chapter-specific grammar, work on writing/translation and take timed MCQs.
 
@@ -259,10 +276,10 @@ Add one consolidated page with:
 
 **For a true final release: close.** Phase 1 and Phase 2 are implemented; final CI verification remains the release gate.
 
-## 12. Recommended next milestone
+## 13. Recommended next milestone
 
 The best next milestone is **English Prose Final Audit v2**:
 
-> provenance check → chapter-depth normalization → sentence/translation cleanup → prose-wide revision test → final cumulative QA.
+> sentence/translation cleanup → prose-wide revision test → misconception checks → final cumulative QA.
 
 After that, the prose subsystem can reasonably be treated as release-ready, provided the dedicated Grammar/Writing/Reading modules are independently complete.
