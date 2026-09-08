@@ -1,0 +1,40 @@
+name: Finalize English Phase 3 Report
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  finalize:
+    if: contains(github.event.head_commit.message, '[phase3]') && !contains(github.event.head_commit.message, 'finalize phase 3 report')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update audit report
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('ENGLISH_PROSE_AUDIT_REPORT.md')
+          s=p.read_text()
+          s=s.replace('### Overall status: STRONG, WITH PHASE 1 AND PHASE 2 COMPLETED','### Overall status: STRONG, WITH PHASE 1, PHASE 2 AND PHASE 3 COMPLETED')
+          s=s.replace('The prose collection is therefore substantially more consistent, but the wider English subject still requires separate grammar, writing and unseen-reading systems to be considered a complete BSEB English preparation platform.','The prose collection is now substantially more consistent and has a dedicated whole-prose cumulative revision layer. The wider English subject still requires separate grammar, writing and unseen-reading systems to be considered a complete BSEB English preparation platform.')
+          s=s.replace('### Finding 4 — Prose-wide cumulative assessment is still pending','### Finding 4 — Prose-wide cumulative assessment ✅ completed')
+          s=s.replace('The current chapter tests are chapter-specific. A separate whole-prose revision test would improve retention and exam simulation without changing the chapter banks.','A separate whole-prose revision test is now available without changing the chapter banks. It contains 45 fresh MCQs, five from each of the nine prose chapters, and uses the shared timed-quiz engine in Challenge mode for a 45-minute cumulative test.')
+          s=s.replace('### Priority P1 — chapter-wide cumulative assessment','### Priority P1 — chapter-wide cumulative assessment ✅ completed')
+          s=s.replace('Review remaining glossary spelling pairs, grammar examples and translation sentences for natural, exam-safe English/Hindi, with explicit source-versus-supplement labeling where necessary.','Review remaining glossary spelling pairs, grammar examples and translation sentences for natural, exam-safe English/Hindi, with explicit source-versus-supplement labeling where necessary. This remains separate from Phase 3 and is not silently marked complete here.')
+          extra='''\n\n## 12. Phase 3 — Prose-wide revision and cumulative assessment\n\n### Completed ✅\n\n**1. Whole-prose revision page added.**  \n`src/english/EnglishPanoramaProseRevision.jsx` provides a dedicated revision experience covering all nine Panorama prose chapters.\n\n**2. Fresh cumulative question bank added.**  \nThe revision test contains **45 newly authored MCQs: 5 questions × 9 chapters**. Questions are mixed across the full prose set rather than grouped chapter-by-chapter during the attempt.\n\n**3. Shared timed engine reused.**  \nThe cumulative test uses `PanoramaTimedQuiz` in **Challenge** mode, giving **60 seconds per question = 45:00 total** for 45 questions. Runtime option shuffling remains source-key aware, and the existing all-answered gate, automatic timeout submission and full review behavior are inherited from the shared engine.\n\n**4. Misconception revision layer added.**  \nThe revision page includes a nine-item **Do not confuse** section targeting common distinctions across the prose chapters, followed by a chapter map and exam-strategy guidance.\n\n**5. Navigation and routing added.**  \nThe new revision test is exposed directly from The Panorama prose area and has its own route state, while the existing chapter routes remain unchanged.\n\n**6. Permanent Phase-3 QA added to CI.**  \n`scripts/qaEnglishPhase3ProseRevision.mjs` checks the 45-question bank, answer/explanation counts, four-option structure, misconception section, timed-quiz wiring and navigation/routing integration.\n\n**7. CI and deployment verification passed.**  \nThe final Phase-3 head was verified by the repository-wide **Verify Learning Hub** workflow and then successfully deployed by the **Deploy Learning Hub to GitHub Pages** workflow.\n\n### Phase-3 boundaries\n\nThis phase adds cumulative assessment and revision. It does **not** silently rewrite the existing textbook/source wording in individual prose chapters, and it does not claim the user-supplied Chapter 8 PDF as the source for Chapter 9. The earlier source/provenance decisions remain in force.\n\n## 13. Final release checkpoint\n\nPhase 3 is complete for the English Panorama prose subsystem. The cumulative revision layer is live, the permanent Phase-3 QA gate is in CI, and the final repository state has passed both production verification and GitHub Pages deployment. The remaining prose-wide work is limited to the explicitly separate teacher-quality language pass and any future textbook-source verification that is warranted.\n'''
+          if '## 12. Phase 3 — Prose-wide revision and cumulative assessment' not in s:
+              s=s.rstrip()+extra
+          p.write_text(s)
+          PY
+      - name: Commit final report and remove workflow
+        run: |
+          rm .github/workflows/phase3-report-finalize.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ENGLISH_PROSE_AUDIT_REPORT.md .github/workflows/phase3-report-finalize.yml
+          git diff --cached --quiet && exit 0
+          git commit -m 'chore(english): finalize phase 3 report [phase3-final]'
+          git push
