@@ -52,22 +52,34 @@ checkPoem({
   requiredFeatures:['Petrarchan sonnet','Octave','Sestet','Volta / turn','POETRY TOOLKIT','POETIC DEVICES','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','Patience','rhetorical question','mild yoke','bidding','talent','Conditional Clauses','Translation Focus','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']
 });
 
+checkPoem({
+  path:'src/english/EnglishPanoramaPoem3.jsx',title:'Blow, Blow, Thou Winter Wind',poet:'William Shakespeare',chapter:3,stanzas:4,
+  requiredLines:["poemLines:['Blow, blow, thou winter wind,'","'Although thy breath be rude.'","poemLines:['Heigh-ho! sing, heigh-ho! unto the green holly:'","'This life is most jolly.'","poemLines:['Freeze, freeze, thou bitter sky,'","'As friend remember’d not.'"],
+  requiredFeatures:['Chorus (Refrain)','Chorus • Repeated','green holly','ingratitude','feigning','folly','jolly','benefits','warp','sting','Personification','Comparison / contrast','Repetition','Refrain','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','WORD STUDY','WORD FORMATION','GRAMMAR','ACTIVITY','TRANSLATION','function Learn({onMode})','<PanoramaTimedQuiz mode={mode} title={poem.title}','← Exit Poetry']
+});
+
 assert(nav.includes("const panoramaPoetry=['The Grandmother'"),'Poetry registry missing');
 assert(nav.includes("'On His Blindness'"),'Poetry Chapter 2 entry missing');
+assert(nav.includes("'Blow, Blow, Thou Winter Wind'"),'Poetry Chapter 3 entry missing');
 assert(nav.includes("const poetryMatch=chapter.match(/^Panorama • Poetry"),'poetry navigation parser missing');
-assert(nav.includes('if(poetry===1||poetry===2)'), 'Poetry Chapters 1–2 route handler missing');
+assert(nav.includes('if(poetry===1||poetry===2||poetry===3)'), 'Poetry Chapters 1–3 route handler missing');
 assert(nav.includes("params.set(`panoramaPoetry${poetry}`,'1')"),'Poetry runtime flag template missing');
 assert(shell.includes("import {EnglishPanoramaPoem1} from './english/EnglishPanoramaPoem1.jsx';"),'Poetry Chapter 1 component import missing');
 assert(shell.includes("import {EnglishPanoramaPoem2} from './english/EnglishPanoramaPoem2.jsx';"),'Poetry Chapter 2 component import missing');
+assert(shell.includes("import {EnglishPanoramaPoem3} from './english/EnglishPanoramaPoem3.jsx';"),'Poetry Chapter 3 component import missing');
 assert(shell.includes("if(p.get('panoramaPoetry1')==='1')return 17;"),'Poetry Chapter 1 flag route missing');
 assert(shell.includes("if(p.get('panoramaPoetry2')==='1')return 18;"),'Poetry Chapter 2 flag route missing');
+assert(shell.includes("if(p.get('panoramaPoetry3')==='1')return 19;"),'Poetry Chapter 3 flag route missing');
 assert(shell.includes("if(Number.isInteger(n)&&n===17)return 17"),'Poetry Chapter 1 chapter route missing');
 assert(shell.includes("if(Number.isInteger(n)&&n===18)return 18"),'Poetry Chapter 2 chapter route missing');
+assert(shell.includes("if(Number.isInteger(n)&&n===19)return 19"),'Poetry Chapter 3 chapter route missing');
 assert(shell.includes("if(chapter===17)return <EnglishPanoramaPoem1"),'Poetry Chapter 1 render route missing');
 assert(shell.includes("if(chapter===18)return <EnglishPanoramaPoem2"),'Poetry Chapter 2 render route missing');
+assert(shell.includes("if(chapter===19)return <EnglishPanoramaPoem3"),'Poetry Chapter 3 render route missing');
 
 for(const marker of ['function shuffleQuestion','sourceIndex','allAnswered=','disabled={!allAnswered}','setSubmitted(true)','Your answer','Correct answer','score','pct'])assert(engine.includes(marker),`shared timed engine marker missing: ${marker}`);
 
-console.log('English poetry QA passed: Chapters 1–2 have explicit actual stanza blocks, stanza explanations, stanza vocabulary, poetry learning tools, textbook extension, timed banks, option integrity, shared timed engine, navigation and App routing.');
+console.log('English poetry QA passed: Chapters 1–3 have explicit actual poem blocks, stanza/refrain explanations, vocabulary, textbook extensions, timed banks, option integrity, shared timed engine, navigation and App routing.');
 console.log('Poetry Chapter 1: 15 Practice + 25 Challenge + derived 20 Final Test.');
 console.log('Poetry Chapter 2: 15 Practice + 25 Challenge + derived 20 Final Test.');
+console.log('Poetry Chapter 3: 15 Practice + 25 Challenge + derived 20 Final Test.');
