@@ -23,7 +23,7 @@ const bad=[
 const required=[
  ['Ch5 natural gerund example','I know how to swim.'],
  ['Ch5 natural Hindi translation','मैंने कहीं एक प्यासे आदमी को देखा।'],
- ['Ch7 valid relative-clause teaching example','This is the pen ___ I bought yesterday.'],
+ ['Ch7 valid relative-clause teaching example','Which relative pronoun best completes: “This is the pen ___ I bought yesterday.”'],
 ];
 const all=paths.map(p=>[p,fs.readFileSync(p,'utf8')]);
 const errors=[];
