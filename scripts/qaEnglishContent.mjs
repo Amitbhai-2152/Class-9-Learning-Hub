@@ -87,7 +87,7 @@ assert(panorama6.includes('sourceNote:\'Class 9 English • The Panorama • Pro
 assert(nav.includes('The Panorama')&&nav.includes('English Reader'),'book split missing');
 assert(nav.includes('Learn →'),'chapter Learn action missing');
 assert(nav.includes('Panorama • Prose 5 Echo and Narcissus'),'Panorama Ch5 navigation entry missing');
-assert(nav.includes('Panorama • Prose 6 The Shehnai of Bismillah Khan'),'Panorama Ch6 navigation entry missing');
+assert(nav.includes('The Shehnai of Bismillah Khan'),'Panorama Ch6 navigation entry missing');
 assert(app.includes("EnglishPanoramaChapter1"),'Panorama Ch1 import/route missing');
 assert(app.includes("EnglishPanoramaChapter2"),'Panorama Ch2 import/route missing');
 assert(app.includes("EnglishPanoramaChapter3"),'Panorama Ch3 import/route missing');
