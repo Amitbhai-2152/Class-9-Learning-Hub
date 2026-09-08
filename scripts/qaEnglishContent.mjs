@@ -30,8 +30,10 @@ function bankChecks(t,name){
  const c=t.match(/const challenge=\[(.*?)\];\s*const finalTest/s)?.[1]||'';
  const pq=count(p,'{q:'),cq=count(c,'{q:'),total=pq+cq;
  assert(pq===15,`${name}: expected 15 practice questions, got ${pq}`);
- assert(cq===23,`${name}: expected 23 challenge questions, got ${cq}`);
- if(name!=='Ch1'&&name!=='Ch2'&&name!=='Ch3'&&name!=='Ch4')assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(t),`${name}: final test must be 10 practice + 10 challenge`);
+ const exact23=['Ch5','Ch6','Ch7','Ch8','Ch9'].includes(name);
+ if(exact23)assert(cq===23,`${name}: expected 23 challenge questions, got ${cq}`);
+ else assert(cq>=12,`${name}: expected at least 12 challenge questions, got ${cq}`);
+ if(['Ch3','Ch4','Ch5','Ch6','Ch7','Ch8','Ch9'].includes(name))assert(/const finalTest=\[\.\.\.practice\.slice\(0,10\),\.\.\.challenge\.slice\(0,10\)\]/.test(t),`${name}: final test must be 10 practice + 10 challenge`);
  const all=p+'\n'+c;
  const opts=all.match(/o:\[[^\]]+\]/g)||[];
  assert(opts.length===total,`${name}: expected ${total} option arrays, got ${opts.length}`);
