@@ -5,14 +5,14 @@ const readerChapters=[
 'I’m going to dance again','Scaling Great Heights','Saint Kabir','The eyes are not here',
 'Ismat Chughtai: A woman with a difference','The accidental tourist','Saint Ravidas','Bharathipura'
 ];
-const panoramaProse=['Dharam Juddha','Yayati','A Silent Revolution','Too Many People, Too Few Trees','Echo and Narcissus','The Shehnai of Bismillah Khan','Kathmandu','My Childhood','The Gift of the Magi'];
+const panoramaProse=['Dharam Juddha','Yayati','A Silent Revolution','Too Many People, Too Few Trees','Echo and Narcissus','The Shehnai of Bismillah Khan','Kathmandu','My Childhood'];
 const panoramaPoetry=['The Grandmother','On His Blindness','Blow, Blow, Thou Winter Wind','To Daffodils','Sound','Self Introduction','I Am Like Grass','Abraham Lincoln’s Letter to His Son’s Teacher'];
 const panoramaRte=['The Secret of Work','Gandhiji’s Passion for Nursing','With the Photographer'];
 
 function openPanoramaChapter(chapter,open){
  const match=chapter.match(/^Panorama • Prose (\d+) /);
  const n=match?Number(match[1]):null;
- if(n===5||n===6||n===7||n===8||n===9){
+ if(n===5||n===6||n===7||n===8){
   const params=new URLSearchParams();
   params.set('page','chapter');params.set('subject','english');params.set('chapter',String(7+n));params.set('mode','learn');params.set(`panorama${n}`,'1');
   window.history.pushState({},'',`${window.location.pathname}?${params.toString()}${window.location.hash||''}`);
