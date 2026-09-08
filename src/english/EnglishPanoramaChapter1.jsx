@@ -195,11 +195,20 @@ const challenge=[
 
 const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)].map((x,i)=>({...x,id:`panorama-final-${i}`}));
 
-function shuffleQuestion(q,i){
-  const shift=(i*3)%q.o.length;
-  const o=q.o.map((_,idx)=>q.o[(idx+shift)%q.o.length]);
-  const a=(q.a-shift+q.o.length)%q.o.length;
-  return {...q,o,a};
+function shuffleQuestion(q){
+  const options=q.o.map((text,sourceIndex)=>({text,sourceIndex}));
+  for(let i=options.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [options[i],options[j]]=[options[j],options[i]];
+  }
+  if(options.length>1&&options.every((item,index)=>item.sourceIndex===index)){
+    [options[0],options[1]]=[options[1],options[0]];
+  }
+  return {
+    ...q,
+    o:options.map(item=>item.text),
+    a:options.findIndex(item=>item.sourceIndex===q.a)
+  };
 }
 
 function StudyView(){
@@ -261,9 +270,10 @@ export function EnglishPanoramaChapter1({initialMode=null,onBack,addXp,finishSes
   const [selected,setSelected]=useState(null);
   const [score,setScore]=useState(0);
   const [result,setResult]=useState(null);
+  const [quizRun,setQuizRun]=useState(0);
   const bank=useMemo(()=>mode==='practice'?practice:mode==='challenge'?challenge:mode==='test'?finalTest:[],[mode]);
-  const current=bank[idx]?shuffleQuestion(bank[idx],idx):null;
-  const begin=m=>{setMode(m);setIdx(0);setSelected(null);setScore(0);setResult(null)};
+  const current=useMemo(()=>bank[idx]?shuffleQuestion(bank[idx]):null,[bank,idx,quizRun]);
+  const begin=m=>{setMode(m);setIdx(0);setSelected(null);setScore(0);setResult(null);setQuizRun(r=>r+1)};
   const choose=n=>{
     if(selected!==null||!current)return;
     setSelected(n);
