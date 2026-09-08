@@ -15,10 +15,9 @@ assert(fs.existsSync(path.join(root,'src/english/EnglishPanoramaPoem1.jsx')),'po
 assert(poem.includes("title:'The Grandmother'"),'poem title missing');
 assert(poem.includes("poet:'Ray Young Bear'"),'poet missing');
 assert(poem.includes('The Panorama • Poetry Chapter 1'),'book/chapter marker missing');
-assert(poem.includes('const lines:['),'complete poem line array missing');
+assert(poem.includes('lines:['),'complete poem line array missing');
 assert(count(poem,"['")>=26,'expected 26 poem line mappings');
-assert(poem.includes('const stanzas:['),'stanza data missing');
-assert(count(poem,"{title:'Stanza ")===0,'stanza titles should use the current teaching format');
+assert(poem.includes('stanzas:['),'stanza data missing');
 assert(count(poem,"{title:'Stanza 1")===1,'Stanza 1 data missing');
 assert(count(poem,"{title:'Stanza 2")===1,'Stanza 2 data missing');
 assert(count(poem,"{title:'Stanza 3")===1,'Stanza 3 data missing');
@@ -34,15 +33,13 @@ for(const required of ['COMPLETE POEM','Every line with the simplest explanation
 function checkBank(segment,name,expected){
   const n=count(segment,'q(');
   assert(n===expected,`${name}: expected ${expected} questions, got ${n}`);
-  const optionRecords=[...segment.matchAll(/q\([^,]+,\[(.*?)\],\d+,/g)].map(m=>m[1]);
-  assert(optionRecords.length===expected,`${name}: expected ${expected} option arrays, got ${optionRecords.length}`);
-  for(const [i,a] of optionRecords.entries()){
-    const items=[...a.matchAll(/'([^']*)'/g)].map(x=>x[1]);
+  const records=[...segment.matchAll(/q\([^,]+,\[(.*?)\],\d+,'[^']*','[^']*'\)/g)];
+  assert(records.length===expected,`${name}: expected ${expected} complete question records, got ${records.length}`);
+  for(const [i,m] of records.entries()){
+    const items=[...m[1].matchAll(/'([^']*)'/g)].map(x=>x[1]);
     assert(items.length===4,`${name}: question ${i+1} must have exactly 4 options`);
     assert(new Set(items).size===4,`${name}: question ${i+1} has duplicate options`);
   }
-  const records=[...segment.matchAll(/q\([^,]+,\[.*?\],\d+,'[^']*','[^']*'\)/g)];
-  assert(records.length===expected,`${name}: answer/explanation records appear incomplete`);
 }
 
 const practice=poem.match(/const practice=\[(.*?)\];/s)?.[1]||'';
