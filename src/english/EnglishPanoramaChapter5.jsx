@@ -32,7 +32,7 @@ const study={
   grammar:{title:'Gerund and Participle',intro:'The chapter distinguishes a Gerund, which works as a noun, from a Participle, which works as a verb form or adjective. It also introduces Present, Past and Perfect Participles.',rules:[
     ['Gerund — noun form ending in -ing','A gerund is formed by adding -ing to the first form of a verb and functions as a noun.','Swimming is a good exercise. • I like painting.'],
     ['Gerund as subject','An -ing form can act as the subject of a sentence.','Walking is good for health.'],
-    ['Gerund as object','A gerund can follow certain verbs and work as their object.','She hates smoking. • I know swimming.'],
+    ['Gerund as object','A gerund can follow certain verbs and work as their object.','She hates smoking. • I know how to swim.'],
     ['Gerund after a preposition','A gerund can follow a preposition.','He stopped me from smoking.'],
     ['Present Participle','The present participle is the -ing form used to qualify a noun or to show an action in progress.','Barking dogs seldom bite. • Seeing the reflection, he stopped.'],
     ['Past Participle','The past participle is commonly used as an adjective and may show a completed state or action.','A tired man needs rest. • The room looked locked.'],
@@ -47,7 +47,7 @@ const study={
     ['उसने मुझे साथ चलने को कहा।','He asked me to come along.'],
     ['पुलिस ने चोर को भागते हुए देखा।','The police saw the thief running away.'],
     ['एक लड़का चलती हुई गाड़ी से कूद पड़ा।','A boy jumped from a moving vehicle.'],
-    ['मैं एक प्यासे हुए आदमी को कहीं देखा।','I saw a thirsty man somewhere.'],
+    ['मैंने कहीं एक प्यासे आदमी को देखा।','I saw a thirsty man somewhere.'],
     ['इस कमरे में वे टूटी हुई कुर्सियाँ थीं।','There were broken chairs in this room.'],
     ['उसने घायल आदमी की बहुत सेवा की।','He cared for the injured man.'],
     ['मैं उसे कमरे में ताला लगाते देखा।','I saw him locking the room.'],
