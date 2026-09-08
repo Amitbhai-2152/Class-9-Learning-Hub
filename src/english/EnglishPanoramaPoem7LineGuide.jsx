@@ -2,49 +2,51 @@ import React from 'react';
 
 const sections=[
  {title:'Stanza 1 — Grass as resilience',lines:[
-  ['“I am like grass”','The speaker identifies himself with grass, choosing resilience as the central image.'],
-  ['The speaker says grass can be cut or mown down.','External force can damage or suppress him temporarily.'],
-  ['Yet he will sprout again.','He will return and begin growing again.'],
-  ['He will grow.','Renewal will continue after destruction.'],
-  ['He will bounce back.','He will recover after the setback.']
+  ['Line 1','The speaker compares himself with grass and establishes resilience as the central image.'],
+  ['Line 2','He says that an outside force can cut him down, just as grass can be cut.'],
+  ['Line 3','After being cut, he will return and begin growing again.'],
+  ['Line 4','Growth will continue after the setback.'],
+  ['Line 5','He will recover from the damage and regain strength.']
  ]},
  {title:'Stanza 2 — Destruction cannot erase identity',lines:[
-  ['The speaker imagines his signposts being completely destroyed.','Visible markers of place and identity may be wiped out.'],
-  ['He imagines the Universities being bombed.','Institutions can also be attacked and destroyed.'],
-  ['He imagines hostels reduced to rubble.','Buildings may become ruins.'],
-  ['He imagines the slums being scorched.','Even vulnerable neighbourhoods may suffer destruction.'],
-  ['But his identity cannot be erased.','Physical destruction does not remove who he is.'],
-  ['The reason is the grass comparison.','Like grass, identity survives attempts to suppress it.'],
-  ['He will sprout again.','Regrowth remains certain.'],
-  ['His green mantle will cover everything.','Renewed greenery will eventually spread across the damaged landscape.']
+  ['Line 6','Visible signs or markers can be completely destroyed.'],
+  ['Line 7','The poem imagines universities being attacked and destroyed.'],
+  ['Line 8','Hostels may be reduced to broken ruins.'],
+  ['Line 9','Even slum communities may suffer severe destructive force.'],
+  ['Line 10','Despite physical destruction, the speaker’s identity cannot be wiped out.'],
+  ['Line 11','He again explains this survival through the image of grass.'],
+  ['Line 12','He will return and grow again after the destruction.'],
+  ['Line 13','His renewed growth will spread as a green covering over the damaged place.']
  ]},
  {title:'Stanza 3 — Recovery after destruction',lines:[
-  ['The poem imagines Bangla being bombed.','A wider geographical destruction is introduced.'],
-  ['It imagines Sangrur being destroyed.','The violence extends to another named place.'],
-  ['The whole district of Ludhiana is imagined as reduced to ashes.','The destructive image reaches an entire district.'],
-  ['But recovery is only a matter of time.','The destruction is presented as temporary, not final.'],
-  ['The poem gives a broad period from two years to ten years.','Regrowth may require time, but it is expected.'],
-  ['Then the green mantle will cover everything again.','Nature returns and covers the damaged land with greenery.']
+  ['Line 14','The poem extends its destructive imagery to Bangla.'],
+  ['Line 15','Sangrur is also imagined as suffering destruction.'],
+  ['Line 16','The destructive image expands to the whole district of Ludhiana.'],
+  ['Line 17','The district is imagined as being reduced to ashes.'],
+  ['Line 18','The speaker insists that such destruction will not last forever.'],
+  ['Line 19','He allows a broad span of time for recovery before the greenery returns.'],
+  ['Line 20','After that period, the green covering will again spread over everything.']
  ]},
  {title:'Stanza 4 — From grass to a green jungle',lines:[
-  ['The speaker imagines becoming a vast green jungle.','The final recovery grows from grass into something immense.'],
-  ['He calls it the green jungle of Bangala.','The renewed landscape is linked to the place named in the poem.'],
-  ['Tourists will visit that jungle.','The regenerated place becomes attractive and full of life.'],
-  ['They will visit his green jungle.','The speaker’s renewal becomes a visible landscape.'],
-  ['The grass comparison returns.','The speaker again identifies his endurance with grass.'],
-  ['He can be chopped.','Destruction remains possible at the surface level.'],
-  ['He can be mown down.','Even repeated cutting cannot end the process permanently.'],
-  ['But he will sprout again and cover everything.','The final image is complete regeneration and survival.']
+  ['Line 21','The speaker imagines his return becoming as vast as a green jungle.'],
+  ['Line 22','He associates that future green jungle with Bangala.'],
+  ['Line 23','The renewed landscape will become a place that tourists can visit.'],
+  ['Line 24','The visitors will come specifically to see the speaker’s regenerated green landscape.'],
+  ['Line 25','The poem returns once more to the grass comparison.'],
+  ['Line 26','The speaker accepts that he can again be cut at the surface level.'],
+  ['Line 27','Even mowing him down cannot permanently end his growth.'],
+  ['Line 28','He will sprout again after repeated cutting.'],
+  ['Line 29','The final image is complete regeneration: new growth eventually covers everything.']
  ]}
 ];
 
 export function EnglishPanoramaPoem7LineGuide(){
  return <section className="poem-panel" style={{marginTop:20}}>
-  <div className="poem-section-heading"><div><span className="poem-section-label">COMPLETE POEM GUIDE</span><h2>Every source line, in order</h2></div><span>4 stanzas • 27 line-level explanations</span></div>
+  <div className="poem-section-heading"><div><span className="poem-section-label">COMPLETE POEM GUIDE</span><h2>Every source line, in order</h2></div><span>4 sections • 29 line meanings</span></div>
   <p style={{marginTop:0}}>The textbook poem is covered below line-by-line in the exact source order. Each entry gives the line’s meaning rather than reproducing the complete copyrighted poem.</p>
   <div style={{display:'grid',gap:16}}>{sections.map(section=><article key={section.title} style={{padding:'18px',border:'1px solid rgba(127,127,127,.25)',borderRadius:16}}>
    <h3 style={{marginTop:0}}>{section.title}</h3>
-   <div style={{display:'grid',gap:10}}>{section.lines.map(([cue,meaning],i)=><div key={`${section.title}-${i}`} style={{display:'grid',gridTemplateColumns:'minmax(220px,1fr) minmax(280px,2fr)',gap:12,alignItems:'start',padding:'10px 0',borderBottom:'1px solid rgba(127,127,127,.16)'}}><b>{cue}</b><span>{meaning}</span></div>)}</div>
+   <div style={{display:'grid',gap:10}}>{section.lines.map(([label,meaning])=><div key={`${section.title}-${label}`} style={{display:'grid',gridTemplateColumns:'minmax(120px,.5fr) minmax(280px,3fr)',gap:12,alignItems:'start',padding:'10px 0',borderBottom:'1px solid rgba(127,127,127,.16)'}}><b>{label}</b><span>{meaning}</span></div>)}</div>
   </article>)}</div>
  </section>;
 }
