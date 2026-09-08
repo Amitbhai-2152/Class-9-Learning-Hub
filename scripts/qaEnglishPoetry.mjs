@@ -15,23 +15,25 @@ assert(fs.existsSync(path.join(root,'src/english/EnglishPanoramaPoem1.jsx')),'po
 assert(poem.includes("title:'The Grandmother'"),'poem title missing');
 assert(poem.includes("poet:'Ray Young Bear'"),'poet missing');
 assert(poem.includes('The Panorama • Poetry Chapter 1'),'book/chapter marker missing');
-assert(poem.includes('lines:['),'complete poem line array missing');
-assert(count(poem,"['")>=19,'expected the supplied 19 line mappings');
 assert(poem.includes('stanzas:['),'stanza data missing');
 assert(count(poem,"{title:'Stanza 1")===1,'Stanza 1 data missing');
 assert(count(poem,"{title:'Stanza 2")===1,'Stanza 2 data missing');
 assert(count(poem,"{title:'Stanza 3")===1,'Stanza 3 data missing');
-assert(poem.includes("range:'Lines 1–6'"),'Stanza 1 range missing');
-assert(poem.includes("range:'Lines 7–12'"),'Stanza 2 range missing');
-assert(poem.includes("range:'Lines 13–19'"),'Stanza 3 range missing');
-assert(poem.includes('poem.lines.slice(stanza.start,stanza.end)'),'stanza cards must render their source line groups');
-assert(poem.includes('poem-stanza-lines'),'stanza line-by-line rendering missing');
-assert(poem.includes("['If I were to see her shape'"),'Stanza 1 opening line must be preserved');
-assert(poem.includes("['If I felt'"),'Stanza 2 opening line must be preserved');
-assert(poem.includes("['I’d know and I’d know'"),'Stanza 3 recognition line must be preserved');
-assert(poem.includes("['her words would flow inside me'"),'Stanza 3 inner-memory line must be preserved');
+assert(poem.includes("range:'Stanza 1'"),'Stanza 1 label missing');
+assert(poem.includes("range:'Stanza 2'"),'Stanza 2 label missing');
+assert(poem.includes("range:'Stanza 3'"),'Stanza 3 label missing');
+assert(count(poem,'poemLines:[')===3,'expected exactly 3 actual poem stanza blocks');
+assert(poem.includes("poemLines:['If I were to see her shape'"),'Stanza 1 opening line must be preserved');
+assert(poem.includes("poemLines:['If I felt'"),'Stanza 2 opening line must be preserved');
+assert(poem.includes("poemLines:['If I heard'"),'Stanza 3 opening line must be preserved');
+assert(poem.includes("'and the plastic shopping bag'"),'Stanza 1 final line must be preserved');
+assert(poem.includes("'with the smell of roots.'"),'Stanza 2 final line must be preserved');
+assert(poem.includes("'from a sleeping fire at night'"),'Stanza 3 final line must be preserved');
+assert(poem.includes('poem-actual-stanza'),'actual stanza block rendering missing');
+assert(poem.includes('SIMPLE EXPLANATION'),'simple stanza explanation missing');
+assert(poem.includes('VOCABULARY'),'stanza vocabulary heading missing');
 assert(poem.includes('stanza.vocab'),'stanza-level vocabulary rendering missing');
-for(const required of ['COMPLETE POEM','Every line with the simplest explanation','STANZA-BY-STANZA','Every stanza, simply explained','Vocabulary','POETRY TOOLKIT','POETIC DEVICES','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','sight','touch','smell','hearing','Simile','Imagery','damp','ashes','purple scarf','plastic shopping bag',"const practice=[","const challenge=[","const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)]","function Learn({onMode})","<PanoramaTimedQuiz mode={mode} title={poem.title}","← Exit Poetry"])assert(poem.includes(required),`missing required poetry feature/content: ${required}`);
+for(const required of ['STANZA-BY-STANZA','Actual stanza → simple explanation → vocabulary','POETRY TOOLKIT','POETIC DEVICES','WORDS TO KNOW','THEMES','TEXTBOOK QUICK ANSWERS','sight','touch','smell','hearing','Simile','Imagery','damp','ashes','purple scarf','plastic shopping bag',"const practice=[","const challenge=[","const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)]","function Learn({onMode})","<PanoramaTimedQuiz mode={mode} title={poem.title}","← Exit Poetry"])assert(poem.includes(required),`missing required poetry feature/content: ${required}`);
 
 function checkBank(segment,name,expected){
   const n=count(segment,'q(');
@@ -62,4 +64,4 @@ assert(shell.includes("if(chapter===17)return <EnglishPanoramaPoem1"),'Poetry Ch
 
 for(const marker of ['function shuffleQuestion','sourceIndex','allAnswered=','disabled={!allAnswered}','setSubmitted(true)','Your answer','Correct answer','score','pct'])assert(engine.includes(marker),`shared timed engine marker missing: ${marker}`);
 
-console.log('English poetry QA passed: The Grandmother uses the supplied 3-stanza/19-line structure, explicit stanza-level line rendering, simplest explanations, stanza vocabulary, poetry learning tools, timed banks, option integrity, shared timed engine, navigation and App routing.');
+console.log('English poetry QA passed: The Grandmother has 3 explicit actual stanza blocks, stanza explanations, stanza vocabulary, poetry learning tools, timed banks, option integrity, shared timed engine, navigation and App routing.');
