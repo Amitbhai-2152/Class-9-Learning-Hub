@@ -1,0 +1,80 @@
+name: SVA Completion Once
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Complete SVA lesson and assessment coverage
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('src/english/EnglishSubjectVerbAgreementTopic.jsx')
+          s=p.read_text(encoding='utf-8')
+
+          old_lesson="""{id:'16',group:'EXAM MASTER',title:'Five-second agreement audit',meaning:'When an agreement question looks difficult, reduce it to the controlling subject. Ignore distracting phrases, identify number, then choose the finite verb. Finally read the whole sentence for meaning.',structure:'1 Find subject → 2 remove distractions → 3 decide singular/plural → 4 choose verb → 5 reread.',examples:[['The box of old books is heavy.','box → singular → is'],['Neither of the answers is correct.','neither → singular → is'],['Either the boys or the teacher is coming.','nearer subject teacher → is'],['There are many reasons.','reasons → plural → are']],clue:'SUBJECT → NUMBER → VERB → MEANING CHECK.'}\n];"""
+          new_lesson="""{id:'16',group:'EXAM MASTER',title:'Five-second agreement audit',meaning:'When an agreement question looks difficult, reduce it to the controlling subject. Ignore distracting phrases, identify number, then choose the finite verb. Finally read the whole sentence for meaning.',structure:'1 Find subject → 2 remove distractions → 3 decide singular/plural → 4 choose verb → 5 reread.',examples:[['The box of old books is heavy.','box → singular → is'],['Neither of the answers is correct.','neither → singular → is'],['Either the boys or the teacher is coming.','nearer subject teacher → is'],['There are many reasons.','reasons → plural → are']],clue:'SUBJECT → NUMBER → VERB → MEANING CHECK.'},
+{id:'17',group:'SPECIAL AGREEMENT',title:'Many a, more than one and one of…who',meaning:'Some patterns look plural but are grammatically singular in standard school grammar. Many a + singular noun and more than one + singular noun normally take singular verbs. In one of the students who work hard, who refers to students, so the relative-clause verb is plural.',structure:'many a + singular noun + singular verb • more than one + singular noun + singular verb • one of + plural noun + who + plural verb',examples:[['Many a student has worked hard.','many a + student → has'],['More than one student is absent.','more than one + student → is'],['She is one of the students who work hard.','who → students → work'],['She is the only one of the students who works hard.','who → one → works']],clue:'Do not judge by the word nearest the verb; identify the construction and what the relative pronoun refers to.'},
+{id:'18',group:'SPECIAL AGREEMENT',title:'Not only…but also and final contrast control',meaning:'With not only…but also and similar paired constructions, agreement commonly follows the subject nearest the finite verb in school-level grammar. Always re-check the grammatical subject before deciding.',structure:'not only A but also B + verb → check B, the nearer subject, for mixed-number pairs.',examples:[['Not only the teacher but also the students are ready.','nearer subject students → are'],['Not only the students but also the teacher is ready.','nearer subject teacher → is'],['The captain, as well as the players, is ready.','as well as is not a compound subject'],['Either the boys or the teacher is coming.','same nearest-subject logic']],clue:'Paired structures need a deliberate nearest-subject check; interrupting phrases do not.'}
+];"""
+          if old_lesson in s:
+              s=s.replace(old_lesson,new_lesson,1)
+          elif "id:'18',group:'SPECIAL AGREEMENT'" not in s:
+              raise SystemExit('SVA lesson insertion marker not found')
+
+          dup="['The students in my class studies daily.','The students in my class study daily.','The students in my class studies daily.','The students in my class has study daily.']"
+          fixed="['The students in my class studies daily.','The students in my class study daily.','The students in my class are studying daily.','The students in my class has studied daily.']"
+          if dup in s:
+              s=s.replace(dup,fixed,1)
+
+          old_tail="""Q('Which sentence is correct?',['The team are arguing among themselves.','The team is arguing among themselves.','The team were arguing among themselves.','The team have arguing among themselves.'],1,'Plural agreement can be used when members are emphasised; this sentence does that.'),"""
+          # Add two questions immediately before the end of the bank, keeping answer distribution varied.
+          anchor="\n];\n\nconst bankFor=mode=>mode==='practice'?QUESTIONS.slice(0,15):mode==='challenge'?QUESTIONS.slice(15,30):QUESTIONS.slice(25,45).concat(QUESTIONS.slice(5,25)).slice(0,20);"
+          additions="""\nQ('Choose the best completion: “Many a student ___ hard for the exam.”',['study','studies','are studying','have studied'],1,'Many a + singular noun takes a singular verb: studies.'),\nQ('Choose the best completion: “She is one of the students who ___ hard.”',['works','work','is working','has worked'],1,'Who refers to the plural antecedent students, so the relative-clause verb is plural: work.'),"""
+          if anchor in s and "Many a student ___ hard for the exam." not in s:
+              s=s.replace(anchor, additions+anchor,1)
+          elif "Many a student ___ hard for the exam." not in s:
+              raise SystemExit('SVA question bank marker not found')
+
+          old_bank="const bankFor=mode=>mode==='practice'?QUESTIONS.slice(0,15):mode==='challenge'?QUESTIONS.slice(15,30):QUESTIONS.slice(25,45).concat(QUESTIONS.slice(5,25)).slice(0,20);"
+          new_bank="const bankFor=mode=>mode==='practice'?QUESTIONS.slice(0,15):mode==='challenge'?QUESTIONS.slice(15,27):QUESTIONS.slice(27,47);"
+          if old_bank in s:
+              s=s.replace(old_bank,new_bank,1)
+          elif new_bank not in s:
+              raise SystemExit('SVA bank split marker not found')
+
+          p.write_text(s,encoding='utf-8')
+
+      - name: Validate SVA completion
+        shell: bash
+        run: |
+          test -f src/english/EnglishSubjectVerbAgreementTopic.jsx
+          test -f src/english/EnglishSubjectVerbAgreementTopic.css
+          grep -q "id:'18'" src/english/EnglishSubjectVerbAgreementTopic.jsx
+          grep -q "Many a student" src/english/EnglishSubjectVerbAgreementTopic.jsx
+          grep -q "QUESTIONS.slice(15,27)" src/english/EnglishSubjectVerbAgreementTopic.jsx
+          grep -q "QUESTIONS.slice(27,47)" src/english/EnglishSubjectVerbAgreementTopic.jsx
+          node -e "const fs=require('fs'); const s=fs.readFileSync('src/english/EnglishSubjectVerbAgreementTopic.jsx','utf8'); if(!s.includes('Subject–Verb Agreement')||!s.includes('EnglishTimedQuiz')) process.exit(1); console.log('SVA source markers OK')"
+
+      - name: Remove one-time workflow
+        shell: bash
+        run: rm .github/workflows/sva-completion-once.yml
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/english/EnglishSubjectVerbAgreementTopic.jsx .github/workflows/sva-completion-once.yml
+          git commit -m 'feat(english): complete subject verb agreement rules and level split'
+          git push
