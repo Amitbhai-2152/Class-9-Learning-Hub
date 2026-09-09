@@ -74,9 +74,9 @@ q('Why is the complete poem important for study?',['It lets learners connect eve
 
 const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)];
 
-function Learn({onMode,onBack}){
+function Learn({onMode}){
  return <div className="poem-shell">
-  <button className="poem-exit" onClick={onBack}>← Exit Poetry</button>
+  <button className="poem-exit" onClick={()=>onMode(null)}>← Exit Poetry</button>
   <div className="poem-hero"><span>THE PANORAMA • POETRY CHAPTER 5</span><h1>{poem.title}</h1><p>{poem.poet}</p><p>{poem.context}</p></div>
   <div className="poem-panel poem-context"><div><span className="poem-section-label">ABOUT THE POEM</span><h2>{poem.structure}</h2></div><div className="poem-fact-grid"><div><b>Poet</b><span>{poem.poet}</span></div><div><b>Text</b><span>Complete 25-line source poem</span></div></div></div>
   <div className="poem-panel"><div className="poem-section-heading"><div><span className="poem-section-label">COMPLETE POEM</span><h2>Read every line</h2></div><span>25 source lines</span></div><div className="poem-stanza-grid">{poem.stanzas.map(stanza=><article className="poem-stanza-card" key={stanza.title}><span className="poem-card-kicker">{stanza.range}</span><h3>{stanza.title}</h3><span className="poem-actual-label">ACTUAL POEM</span><div className="poem-actual-stanza">{stanza.poemLines.map((line,i)=><div key={`${stanza.title}-${i}`}>{line}</div>)}</div><span className="poem-simple-label">SIMPLE EXPLANATION</span><p className="poem-stanza-explanation">{stanza.explanation}</p><div className="poem-vocab-block"><span className="poem-simple-label">VOCABULARY</span><div className="poem-word-grid">{stanza.vocab.map(([w,m])=><div key={w}><b>{w}</b><span>{m}</span></div>)}</div></div><div className="poem-stanza-key"><b>Exam focus:</b> {stanza.exam}<br/><b>Key:</b> {stanza.key}</div></article>)}</div></div>
@@ -93,5 +93,5 @@ function Learn({onMode,onBack}){
 export function EnglishPanoramaPoem5({initialMode='learn',onBack,addXp,finishSession}){
  const [mode,setMode]=useState(initialMode==='learn'?'':initialMode);
  if(mode)return <PanoramaTimedQuiz mode={mode} title={poem.title} bank={mode==='practice'?practice:mode==='challenge'?challenge:finalTest} onBack={()=>setMode('')} addXp={addXp} finishSession={finishSession}/>;
- return <Learn onMode={setMode} onBack={onBack}/>;
+ return <Learn onMode={setMode}/>;
 }
