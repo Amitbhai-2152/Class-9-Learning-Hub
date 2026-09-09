@@ -1,0 +1,52 @@
+name: Add Formal Letter Extras Once
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add examples and subjective practice
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('src/english/EnglishFormalLetterTopic.jsx')
+          s = p.read_text(encoding='utf-8')
+          imp = "import EnglishFormalLetterExtras from './EnglishFormalLetterExtras.jsx';\n"
+          if imp not in s:
+              marker = "import './EnglishFormalLetterTopic.css';\n"
+              if marker not in s:
+                  raise SystemExit('Formal Letter CSS import marker not found')
+              s = s.replace(marker, marker + imp, 1)
+          marker = "   <section className=\"efl-audit\"><div><span>FINAL CHECK</span><h2>Can you build a complete formal letter?</h2><p>Plan the recipient and purpose, build the format, write relevant facts and a specific action request, then audit tone and correctness.</p></div><button onClick={()=>setMode('practice')}>Start Practice →</button></section>\n  </>:<EnglishTimedQuiz"
+          insert = "   <section className=\"efl-audit\"><div><span>FINAL CHECK</span><h2>Can you build a complete formal letter?</h2><p>Plan the recipient and purpose, build the format, write relevant facts and a specific action request, then audit tone and correctness.</p></div><button onClick={()=>setMode('practice')}>Start Practice →</button></section>\n   <EnglishFormalLetterExtras/>\n  </>:<EnglishTimedQuiz"
+          if marker not in s:
+              raise SystemExit('Learn-page insertion marker not found')
+          s = s.replace(marker, insert, 1)
+          p.write_text(s, encoding='utf-8')
+
+      - name: Validate
+        shell: bash
+        run: |
+          grep -q "EnglishFormalLetterExtras" src/english/EnglishFormalLetterTopic.jsx
+          grep -q "Two complete formal-letter examples" src/english/EnglishFormalLetterExtras.jsx
+          grep -q "8 Subjective Practice Questions" src/english/EnglishFormalLetterExtras.jsx
+
+      - name: Commit patch and remove one-time workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/add-formal-letter-extras-once.yml
+          git add src/english/EnglishFormalLetterTopic.jsx
+          git commit -m 'feat(english): add formal letter models and subjective practice'
+          git push
