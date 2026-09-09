@@ -1,4 +1,4 @@
-import React,{useEffect,useMemo,useState}from'react';
+import React,{useEffect,useMemo,useRef,useState}from'react';
 import './EnglishTimedQuiz.css';
 
 const normalize=q=>Array.isArray(q)?{q:q[0],o:q[1],a:q[2],e:q[3]||''}:q;
@@ -9,9 +9,10 @@ export default function EnglishTimedQuiz({title='English Quiz',mode='test',getBa
  const bank=useMemo(()=>((getBank?getBank(mode):[])||[]).map(normalize),[getBank,mode]);
  const[timeLeft,setTimeLeft]=useState(()=>Math.max(10,bank.length*timeFor(mode)));
  const[index,setIndex]=useState(0),[answers,setAnswers]=useState([]),[submitted,setSubmitted]=useState(false),[started,setStarted]=useState(false);
- useEffect(()=>{setTimeLeft(Math.max(10,bank.length*timeFor(mode)));setIndex(0);setAnswers([]);setSubmitted(false);setStarted(false)},[mode,bank.length]);
+ useEffect(()=>{setTimeLeft(Math.max(10,bank.length*timeFor(mode)));setIndex(0);setAnswers([]);setSubmitted(false);setStarted(false);finalized.current=false},[mode,bank.length]);
  useEffect(()=>{if(!started||submitted)return; if(timeLeft<=0){setSubmitted(true);return}const id=setInterval(()=>setTimeLeft(t=>t-1),1000);return()=>clearInterval(id)},[started,submitted,timeLeft]);
- useEffect(()=>{if(submitted){const score=bank.reduce((s,item,i)=>s+(answers[i]===item.a?1:0),0);addXp(Math.max(5,score*2));finishSession({kind:'language-skills',topic:title.toLowerCase().replace(/[^a-z]+/g,'-'),mode,score,total:bank.length,at:Date.now()})}},[submitted]);
+ const finalized=useRef(false);
+ useEffect(()=>{if(!submitted||finalized.current)return;finalized.current=true;const finalScore=bank.reduce((s,item,i)=>s+(answers[i]===item.a?1:0),0);addXp(Math.max(5,finalScore*2));finishSession({kind:'language-skills',topic:title.toLowerCase().replace(/[^a-z]+/g,'-'),mode,score:finalScore,total:bank.length,at:Date.now()})},[submitted,bank,answers,addXp,finishSession,title,mode]);
  const score=bank.reduce((s,item,i)=>s+(answers[i]===item.a?1:0),0);
  const answered=answers.filter(v=>v!==undefined&&v!==null).length;
  const percent=bank.length?Math.round(score*100/bank.length):0;

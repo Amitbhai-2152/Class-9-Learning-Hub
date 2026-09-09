@@ -71,7 +71,7 @@ makeQ('“The road was being repaired.” is…',['Past Perfect passive','Past C
 makeQ('In “A prize was given to Rina”, the agent is…',['not stated','Rina','the prize','the school'],0,'The sentence does not state who gave it.')
 ];
 
-export default function EnglishActivePassiveTopic({addXp}){
+export default function EnglishActivePassiveTopic({addXp,finishSession=()=>{}}){
 const [mode,setMode]=useState('learn');const [lesson,setLesson]=useState(0);const [topicMode]=useState('active');
 const goBack=()=>{const p=new URLSearchParams();p.set('page','language-skills');p.set('subject','english');p.set('languageSkills','1');window.history.pushState({},'',`${window.location.pathname}?${p}`);window.dispatchEvent(new PopStateEvent('popstate'))};
 const nav=(m)=>{setMode(m);window.scrollTo({top:0,behavior:'smooth'})};
