@@ -16,14 +16,15 @@ const challenge=[...poem8Challenge1,...poem8Challenge2,...poem8Challenge3,...poe
 const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)];
 const title="Abraham Lincoln’s Letter to His Son’s Teacher";
 
-function Learn({onMode,onBack}){
+function Learn({onMode}){
+ const sourceNodes=poem8SourceLines.map((line,index)=><div key={index}>{line}</div>);
  const groups=[];
- for(let i=0;i<poem8SourceLines.length;i+=10)groups.push(poem8SourceLines.slice(i,i+10));
+ for(let i=0;i<sourceNodes.length;i+=10)groups.push({nodes:sourceNodes.slice(i,i+10),index:i/10});
  return <div className="poem-shell">
-  <button className="poem-exit" onClick={onBack}>← Exit Poetry</button>
+  <button className="poem-exit" onClick={()=>onMode(null)}>← Exit Poetry</button>
   <div className="poem-hero"><span>THE PANORAMA • POETRY CHAPTER 8</span><h1>{title}</h1><p>Abraham Lincoln • A father’s request for an education based on character, courage, honesty, independent thought, kindness and faith in humanity.</p></div>
   <div className="poem-panel poem-context"><div><span className="poem-section-label">ABOUT THE TEXT</span><h2>Context &amp; Structure</h2><p>यह letter-poem एक पिता की अपने बेटे के शिक्षक से की गई विस्तृत अपेक्षाओं को सामने रखता है। इसमें honesty, courage, independent thought, kindness, resilience, books, nature और humanity पर faith जैसे character values को शिक्षा का आधार माना गया है।</p></div><div className="poem-fact-grid"><div><b>Poet</b><span>Abraham Lincoln</span></div><div><b>Source</b><span>Complete supplied source text</span></div><div><b>Focus</b><span>Character • courage • honesty • independent thought</span></div></div></div>
-  <div className="poem-panel"><div className="poem-section-heading"><div><span className="poem-section-label">STANZA-BY-STANZA</span><h2>Actual source → simple explanation → vocabulary</h2></div><span>{poem8SourceLines.length} source lines</span></div><div className="poem-stanza-grid">{groups.map((group,i)=>{const section=poem8Sections[Math.min(i,poem8Sections.length-1)]||['Section',''];const vocab=poem8Glossary.slice(i*2,i*2+3);return <article className="poem-stanza-card" key={i}><span className="poem-card-kicker">Lines {i*10+1}–{i*10+group.length}</span><h3>{section[0]}</h3><span className="poem-actual-label">ACTUAL POEM</span><div className="poem-actual-stanza">{group.map((line,j)=><div key={`${i}-${j}`}>{line}</div>)}</div><span className="poem-simple-label">SIMPLE EXPLANATION</span><p className="poem-stanza-explanation">{section[1]}</p><div className="poem-vocab-block"><span className="poem-simple-label">VOCABULARY</span><div className="poem-word-grid">{vocab.map(([w,m])=><div key={w}><b>{w}</b><span>{m}</span></div>)}</div></div></article>})}</div></div>
+  <div className="poem-panel"><div className="poem-section-heading"><div><span className="poem-section-label">STANZA-BY-STANZA</span><span className="poem-source-note">COMPLETE SOURCE TEXT</span><h2>Actual source → simple explanation → vocabulary</h2></div><span>{poem8SourceLines.length} source lines</span></div><div className="poem-stanza-grid">{groups.map(({nodes,index:i})=>{const section=poem8Sections[i]||['Continued source text','यह पूरा supplied source text अगले section में जारी रहता है।'];const vocab=poem8Glossary.slice(i*2,i*2+3);return <article className="poem-stanza-card" key={i}><span className="poem-card-kicker">Lines {i*10+1}–{i*10+nodes.length}</span><h3>{section[0]}</h3><span className="poem-actual-label">ACTUAL POEM</span><div className="poem-actual-stanza">{nodes}</div><span className="poem-simple-label">SIMPLE EXPLANATION</span><p className="poem-stanza-explanation">{section[1]}</p><div className="poem-vocab-block"><span className="poem-simple-label">VOCABULARY</span><div className="poem-word-grid">{vocab.map(([w,m])=><div key={w}><b>{w}</b><span>{m}</span></div>)}</div></div></article>})}</div></div>
   <div className="poem-panel"><div className="poem-section-heading"><div><span className="poem-section-label">ORAL QUESTIONS</span><h2>Think before reading deeply</h2></div></div>{poem8Oral.map((x,i)=><p key={i}><b>{i+1}.</b> {x}</p>)}</div>
   <div className="poem-panel"><div className="poem-section-heading"><div><span className="poem-section-label">TRUE / FALSE</span><h2>Check your reading</h2></div></div>{poem8TrueFalse.map(([x,a],i)=><p key={i}><b>{i+1}. {x}</b> <span>Answer: {a}</span></p>)}</div>
   <div className="poem-panel"><div className="poem-section-heading"><div><span className="poem-section-label">TEXTBOOK COMPLETION</span><h2>Recall the source</h2></div></div>{poem8Complete.map((x,i)=><p key={i}>{i+1}. {x}</p>)}</div>
@@ -40,5 +41,5 @@ function Learn({onMode,onBack}){
 export function EnglishPanoramaPoem8({initialMode='learn',onBack,addXp,finishSession}){
  const[mode,setMode]=useState(initialMode==='learn'?'':initialMode);
  if(mode)return <PanoramaTimedQuiz mode={mode} title={title} bank={mode==='practice'?practice:mode==='challenge'?challenge:finalTest} onBack={()=>setMode('')} addXp={addXp} finishSession={finishSession}/>;
- return <Learn onMode={setMode} onBack={onBack}/>;
+ return <Learn onMode={setMode}/>;
 }
