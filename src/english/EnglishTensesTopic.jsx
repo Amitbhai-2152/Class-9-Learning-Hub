@@ -1,5 +1,6 @@
 import React,{useMemo,useState}from'react';
 import './EnglishTensesTopic.css';
+import EnglishTimedQuiz from './EnglishTimedQuiz.jsx';
 
 const LESSONS=[
  {id:'01',group:'FOUNDATION',title:'What is a tense?',meaning:'Tense tells us when an action happens. First ask: present, past or future? Then ask whether the action is a habit, happening now, completed, or continuing for a period.',structure:'Think in two layers: TIME + ACTION VIEW. Example: “I study” = present + habit. “I am studying” = present + action in progress.',examples:[['I go to school every day.','मैं रोज़ स्कूल जाता हूँ।'],['She is reading now.','वह अभी पढ़ रही है।'],['I finished my homework yesterday.','मैंने कल अपना गृहकार्य पूरा किया।'],['I have finished my homework.','मैं अपना गृहकार्य कर चुका हूँ।'],['I will finish my homework tomorrow.','मैं अपना गृहकार्य कल पूरा करूँगा।']],clue:'often • usually • every day • now • yesterday • already • tomorrow'},
@@ -49,6 +50,7 @@ export default function EnglishTensesTopic({onBack,addXp=()=>{},finishSession=()
  const next=()=>{if(question+1<bank.length){setQuestion(n=>n+1);setSelected(null);return}const final=score+(selected===current[2]?1:0);setDone(true);addXp(Math.max(5,final*2));finishSession({kind:'language-skills',topic:'tenses',mode:section,score:final,total:bank.length,at:Date.now()})};
  const startMode=m=>{setSection(m);setQuestion(0);setSelected(null);setScore(0);setDone(false);window.history.pushState({},'',`${window.location.pathname}?page=language-skills&subject=english&languageSkills=1&topic=tenses&mode=${m}`)};
  const openLesson=i=>{setSection('learn');setLesson(i);window.scrollTo({top:0,behavior:'smooth'})};
+ if(section!=='learn')return <EnglishTimedQuiz title="Tenses" mode={section} getBank={m=>m==='practice'?QUESTIONS:m==='challenge'?[...QUESTIONS.slice(3),...QUESTIONS.slice(0,3),...QUESTIONS.slice(7,12)]:QUESTIONS} onModeChange={startMode} onBack={()=>setSection('learn')} addXp={addXp} finishSession={finishSession}/>;
  return <div className="tenses-hub">
    <header className="tenses-header"><button onClick={onBack}>← Language & Skills</button><span>ENGLISH • GRAMMAR • TENSES</span></header>
    <section className="tenses-hero"><div><span className="tenses-eyebrow">MASTER TENSES STEP BY STEP</span><h1>Tenses</h1><p>Build the meaning first, choose the time second, then choose the verb form. Learn each tense as a usable sentence pattern—not as a table to memorise.</p><div className="tenses-stats"><b>12</b><span>core lessons</span><b>5</b><span>examples / lesson</span><b>15</b><span>practice questions</span></div></div><div className="tenses-hero-card"><strong>TIME → ACTION</strong><span>Reference time</span><span>↓</span><span>Action type</span><span>↓</span><span>Verb structure</span></div></section>

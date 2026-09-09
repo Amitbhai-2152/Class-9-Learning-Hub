@@ -1,5 +1,6 @@
 import React,{useMemo,useState}from'react';
 import './EnglishModalsTopic.css';
+import EnglishTimedQuiz from './EnglishTimedQuiz.jsx';
 
 const LESSONS=[
 {id:'01',group:'FOUNDATION',title:'What is a modal?',meaning:'A modal is a helping verb that adds meaning such as ability, permission, possibility, advice, obligation or prediction. The modal changes the force of the sentence; the main verb stays in its base form.',structure:'modal + V1 → can swim • may come • must study • should listen',examples:[['I can swim.','मैं तैर सकता हूँ।'],['May I come in?','क्या मैं अंदर आ सकता हूँ?'],['You must study.','तुम्हें पढ़ना चाहिए / अवश्य पढ़ना चाहिए।'],['She might arrive late.','वह शायद देर से पहुँचे।'],['We should help him.','हमें उसकी मदद करनी चाहिए।']],clue:'Meaning first → choose the modal → use V1'},
@@ -46,6 +47,7 @@ export default function EnglishModalsTopic({onBack,addXp=()=>{},finishSession=()
  const choose=i=>{if(selected!==null)return;setSelected(i);if(i===bank[index][2])setScore(s=>s+1)};
  const next=()=>{if(index+1<bank.length){setIndex(i=>i+1);setSelected(null);return}const final=score+(selected===bank[index][2]?1:0);setDone(true);addXp(Math.max(5,final*2));finishSession({kind:'language-skills',topic:'modals',mode,score:final,total:bank.length,at:Date.now()})};
  const backHub=()=>{if(onBack)onBack();};
+ if(mode!=='learn')return <EnglishTimedQuiz title="Modals" mode={mode} getBank={m=>m==='practice'?QUESTIONS.slice(0,10):m==='challenge'?[...QUESTIONS.slice(10),...QUESTIONS.slice(0,6)]:QUESTIONS} onModeChange={start} onBack={()=>setMode('learn')} addXp={addXp} finishSession={finishSession}/>;
  return <div className="modals-hub">
   <header className="modals-header"><button onClick={backHub}>← Language & Skills</button><span>ENGLISH • GRAMMAR • MODALS</span></header>
   <section className="modals-hero"><div><span>MASTER MODALS STEP BY STEP</span><h1>Modals</h1><p>Learn what each modal means, when to use it, how to form it, how to translate it, and how exam questions distinguish similar meanings.</p><div className="modals-stats"><b>10</b><small>deep lessons</small><b>20</b><small>assessment questions</small><b>3</b><small>practice levels</small></div></div><div className="modals-hero-card"><strong>MEANING → MODAL → V1</strong><span>Ability</span><span>Permission</span><span>Possibility</span><span>Duty / Advice</span><span>Necessity</span></div></section>
