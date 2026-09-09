@@ -2,6 +2,7 @@ import React,{useEffect,useMemo,useRef,useState}from'react';
 import './EnglishTimedQuiz.css';
 
 const normalize=q=>Array.isArray(q)?{q:q[0],o:q[1],a:q[2],e:q[3]||''}:q;
+const labels=['A','B','C','D'];
 const defaultTimeFor=mode=>mode==='practice'?45:mode==='challenge'?60:50;
 
 export default function EnglishTimedQuiz({title='English Quiz',mode='test',getBank,questions,onModeChange=()=>{},onBack=()=>{},addXp=()=>{},finishSession=()=>{},onRetry,onNextLevel,secondsPerQuestion}){
@@ -9,9 +10,9 @@ export default function EnglishTimedQuiz({title='English Quiz',mode='test',getBa
  const bank=useMemo(()=>{const source=getBank?getBank(mode):questions||[];return (source||[]).map(normalize)},[getBank,questions,mode]);
  const[timeLeft,setTimeLeft]=useState(()=>Math.max(10,bank.length*timeFor(mode)));
  const[index,setIndex]=useState(0),[answers,setAnswers]=useState([]),[submitted,setSubmitted]=useState(false),[started,setStarted]=useState(false);
+ const finalized=useRef(false);
  useEffect(()=>{setTimeLeft(Math.max(10,bank.length*timeFor(mode)));setIndex(0);setAnswers([]);setSubmitted(false);setStarted(false);finalized.current=false},[mode,bank.length,secondsPerQuestion]);
  useEffect(()=>{if(!started||submitted)return; if(timeLeft<=0){setSubmitted(true);return}const id=setInterval(()=>setTimeLeft(t=>t-1),1000);return()=>clearInterval(id)},[started,submitted,timeLeft]);
- const finalized=useRef(false);
  useEffect(()=>{if(!submitted||finalized.current)return;finalized.current=true;const finalScore=bank.reduce((s,item,i)=>s+(answers[i]===item.a?1:0),0);addXp(Math.max(5,finalScore*2));finishSession({kind:'language-skills',topic:title.toLowerCase().replace(/[^a-z]+/g,'-'),mode,score:finalScore,total:bank.length,at:Date.now()})},[submitted,bank,answers,addXp,finishSession,title,mode]);
  const score=bank.reduce((s,item,i)=>s+(answers[i]===item.a?1:0),0);
  const answered=answers.filter(v=>v!==undefined&&v!==null).length;
@@ -24,8 +25,7 @@ export default function EnglishTimedQuiz({title='English Quiz',mode='test',getBa
  const retry=()=>{if(onRetry){onRetry();return}setTimeLeft(Math.max(10,bank.length*timeFor(mode)));setIndex(0);setAnswers([]);setSubmitted(false);setStarted(false);finalized.current=false};
  const nextLevel=()=>{if(onNextLevel){onNextLevel();return}onModeChange(mode==='practice'?'challenge':mode==='challenge'?'test':'practice')};
  if(!bank.length)return <section className="etq-shell"><button onClick={onBack} className="etq-back">← Language & Skills</button><div className="etq-empty">No questions are configured for this quiz.</div></section>;
- const totalSeconds=bank.length*timeFor(mode);
- const totalMinutes=Math.floor(totalSeconds/60),totalRemainingSeconds=totalSeconds%60;
+ const totalSeconds=bank.length*timeFor(mode);const totalMinutes=Math.floor(totalSeconds/60),totalRemainingSeconds=totalSeconds%60;
  return <section className="etq-shell">
   <header className="etq-head"><div><button onClick={onBack} className="etq-back">← Language & Skills</button><div className="etq-kicker">ENGLISH • {title.toUpperCase()}</div><h1>{mode==='practice'?'Practice':mode==='challenge'?'Challenge':'Final Test'}</h1><p>Timed assessment • answer every question • marks and review appear after submission.</p></div><div className={'etq-timer '+(timeLeft<=30?'danger':'')}><small>TIME LEFT</small><strong>{String(Math.floor(timeLeft/60)).padStart(2,'0')}:{String(timeLeft%60).padStart(2,'0')}</strong></div></header>
   <nav className="etq-modes"><button className={mode==='practice'?'active':''} onClick={()=>onModeChange('practice')}>Practice</button><button className={mode==='challenge'?'active':''} onClick={()=>onModeChange('challenge')}>Challenge</button><button className={mode==='test'?'active':''} onClick={()=>onModeChange('test')}>Final Test</button></nav>
