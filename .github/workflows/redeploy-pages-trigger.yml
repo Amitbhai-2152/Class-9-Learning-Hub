@@ -1,0 +1,15 @@
+name: Pages redeploy trigger
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm latest main commit
+        run: echo "Pages redeploy trigger for $GITHUB_SHA"
