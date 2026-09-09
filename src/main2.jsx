@@ -31,9 +31,7 @@ function BuildVersionRefresh(){
           next.searchParams.set('__hub_refresh',data.version);
           window.location.replace(next.toString());
         }
-      }catch{}finally{
-        checking=false;
-      }
+      }catch{}finally{checking=false}
     };
     check();
     const timer=setInterval(check,5000);
@@ -45,9 +43,33 @@ function BuildVersionRefresh(){
   return null;
 }
 
+function FreshTopicNavigation(){
+  useEffect(()=>{
+    const isLanguageSkillsHub=()=>{
+      const p=new URLSearchParams(window.location.search);
+      return p.get('languageSkills')==='1'&&!p.get('topic');
+    };
+    const handler=()=>{
+      if(!isLanguageSkillsHub())return;
+      const before=window.location.href;
+      setTimeout(()=>{
+        if(window.location.href===before)return;
+        const p=new URLSearchParams(window.location.search);
+        if(p.get('languageSkills')!=='1'||!p.get('topic'))return;
+        if(p.get('__hub_topic_reload')==='1')return;
+        p.set('__hub_topic_reload','1');
+        window.location.replace(`${window.location.pathname}?${p.toString()}${window.location.hash||''}`);
+      },0);
+    };
+    document.addEventListener('click',handler);
+    return()=>document.removeEventListener('click',handler);
+  },[]);
+  return null;
+}
+
 function RootRouter(){
   const [isSST,setIsSST]=useState(()=>new URLSearchParams(window.location.search).get('subject')==='sst'||new URLSearchParams(window.location.search).get('page')?.startsWith('sst-'));
-  useEffect(()=>{const sync=()=>setIsSST(new URLSearchParams(window.location.search).get('subject')==='sst'||new URLSearchParams(window.location.search).get('page')?.startsWith('sst-'));window.addEventListener('popstate',sync);const timer=setInterval(sync,250);return()=>{window.removeEventListener('popstate',sync);clearInterval(timer)}} ,[]);
+  useEffect(()=>{const sync=()=>setIsSST(new URLSearchParams(window.location.search).get('subject')==='sst'||new URLSearchParams(window.location.search).get('page')?.startsWith('sst-'));window.addEventListener('popstate',sync);const timer=setInterval(sync,250);return()=>{window.removeEventListener('popstate',sync);clearInterval(timer)}},[]);
   return isSST?<SSTRoot/>:<AppWithChapter5/>;
 }
 
@@ -55,6 +77,7 @@ createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AppErrorBoundary>
       <BuildVersionRefresh />
+      <FreshTopicNavigation />
       <RootRouter />
     </AppErrorBoundary>
   </React.StrictMode>
