@@ -13,6 +13,8 @@ concurrency:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+    env:
+      VITE_BUILD_VERSION: ${{ github.sha }}
     steps:
       - name: Checkout current main
         uses: actions/checkout@v4
@@ -22,6 +24,8 @@ jobs:
           node-version: 24
       - name: Install dependencies
         run: npm install
+      - name: Build revision manifest
+        run: printf '{"version":"%s"}\n' "$VITE_BUILD_VERSION" > public/build-version.json
       - name: Build current main
         run: npm run build
       - name: Configure Pages
