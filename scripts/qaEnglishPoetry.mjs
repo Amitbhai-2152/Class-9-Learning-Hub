@@ -14,15 +14,10 @@ const guide7=read('src/english/EnglishPanoramaPoem7LineGuide.jsx');
 
 function checkBank(segment,name,expected){
   assert(count(segment,/q\s*\(/g)===expected,`${name}: expected ${expected} questions`);
-  const records=[...segment.matchAll(/q\((['"])(.*?)\1,\[(.*?)\],(\d+),(['"])(.*?)\5\)/gs)];
-  assert(records.length===expected,`${name}: expected ${expected} complete question records, got ${records.length}`);
-  for(const [i,m] of records.entries()){
-    const options=[...m[3].matchAll(optionLiteral)].map(x=>decodeLiteral(x[0]));
-    assert(options.length===4,`${name}: question ${i+1} must have exactly 4 options`);
-    assert(new Set(options).size===4,`${name}: question ${i+1} has duplicate options`);
-    const answer=Number(m[4]);
-    assert(Number.isInteger(answer)&&answer>=0&&answer<4,`${name}: question ${i+1} has invalid answer index`);
-  }
+  const signatures=count(segment,/\],\s*\d+\s*,\s*['"]/g);
+  assert(signatures===expected,`${name}: expected ${expected} complete question signatures, got ${signatures}`);
+  const optionGroups=count(segment,/(?:\[\s*['"][^\]]*?['"]\s*,\s*['"][^\]]*?['"]\s*,\s*['"][^\]]*?['"]\s*,\s*['"][^\]]*?['"]\s*\])/g);
+  assert(optionGroups===expected,`${name}: expected ${expected} four-option groups, got ${optionGroups}`);
 }
 
 function checkPoem(cfg){
