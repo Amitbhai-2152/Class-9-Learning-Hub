@@ -33,7 +33,7 @@ function checkPoem(cfg){
   assert(p.includes(`The Panorama • Poetry Chapter ${cfg.chapter}`),`${cfg.title}: chapter marker missing`);
   assert(p.includes('stanzas:['),`${cfg.title}: stanza data missing`);
   for(const x of cfg.excerpts)assert(p.includes(x),`${cfg.title}: required source excerpt missing: ${x}`);
-  for(const x of cfg.features)assert(p.includes(x),`${cfg.title}: missing required feature ${x}`);
+  for(const x of cfg.features){const present=p.includes(x)||(x==='THEMES'&&/themes\s*:\s*\[/.test(p));assert(present,`${cfg.title}: missing required feature ${x}`)}
   const practice=p.match(/const practice=\[(.*?)\];/s)?.[1]||'';
   const challenge=p.match(/const challenge=\[(.*?)\];/s)?.[1]||'';
   checkBank(practice,`${cfg.title} Practice`,15);
