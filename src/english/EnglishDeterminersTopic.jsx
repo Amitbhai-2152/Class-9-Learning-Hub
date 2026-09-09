@@ -30,11 +30,13 @@ const nextMode=mode=>mode==='practice'?'challenge':mode==='challenge'?'test':'pr
 const rotate=(questions,mode)=>{const shift=mode==='challenge'?1:mode==='test'?2:0;return questions.map((item,qi)=>{const[q,opts,a,e]=item;const move=(a+shift+qi)%opts.length;const next=Array(opts.length);for(let i=0;i<opts.length;i++)next[(i+move-a+opts.length)%opts.length]=opts[i];return[q,next,move,e]})};
 
 export default function EnglishDeterminersTopic({onBack,addXp,finishSession}){
- const [mode,setMode]=useState('learn');
+ const initialMode=typeof window!=='undefined'?(new URLSearchParams(window.location.search).get('mode')||'learn'):'learn';
+ const [mode,setMode]=useState(['learn','practice','challenge','test'].includes(initialMode)?initialMode:'learn');
  const [lesson,setLesson]=useState(0);
  const tabs=[['learn','Learn'],['practice','Practice'],['challenge','Challenge'],['test','Final Test']];
  const bank=useMemo(()=>{const source=PHASE4_BANKS.determiners?.[mode]||[];return mode==='learn'?[]:rotate(source,mode)},[mode]);
- const changeMode=m=>setMode(m);
+ const changeMode=m=>{setMode(m);const p=new URLSearchParams(window.location.search);p.set('mode',m);p.set('topic','determiners');p.set('languageSkills','1');p.set('subject','english');window.history.replaceState({},'',`${window.location.pathname}?${p}${window.location.hash||''}`)};
+ const backToLearn=()=>changeMode('learn');
  return <main className="determiners-page">
   <header className="determiners-top">
    <button type="button" onClick={onBack}>← Language &amp; Skills</button>
@@ -67,6 +69,6 @@ export default function EnglishDeterminersTopic({onBack,addXp,finishSession}){
       <div className="determiners-clue"><b>EXAM CLUE</b><span>{LESSONS[lesson].clue}</span></div>
       <div className="determiners-nav"><button type="button" disabled={lesson===0} onClick={()=>setLesson(v=>v-1)}>← Previous</button><button type="button" disabled={lesson===LESSONS.length-1} onClick={()=>setLesson(v=>v+1)}>Next lesson →</button></div>
     </article>
-   </section>:<div className="determiners-assessment"><EnglishTimedQuiz key={mode} title="Determiners" mode={mode} questions={bank} onModeChange={changeMode} onBack={()=>setMode('learn')} addXp={addXp} finishSession={finishSession} onNextLevel={m=>changeMode(nextMode(m))}/></div>}
+   </section>:<div className="determiners-assessment"><EnglishTimedQuiz key={mode} title="Determiners" mode={mode} questions={bank} onModeChange={changeMode} onBack={backToLearn} addXp={addXp} finishSession={finishSession} onNextLevel={m=>changeMode(nextMode(m))}/></div>}
  </main>
 }
