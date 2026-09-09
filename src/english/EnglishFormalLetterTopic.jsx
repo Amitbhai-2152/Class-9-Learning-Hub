@@ -87,7 +87,7 @@ export default function EnglishFormalLetterTopic({addXp=()=>{},finishSession=()=
  const[lesson,setLesson]=useState(0);const[mode,setMode]=useState('learn');
  const progress=Math.round(((lesson+1)/LESSONS.length)*100);const current=LESSONS[lesson];
  const resetLesson=()=>setLesson(0);
- const backToSkills=()=>{const p=new URLSearchParams();p.set('page','language-skills');p.set('subject','english');p.set('languageSkills','1');window.history.pushState({},'',`${window.location.pathname}?${p}${window.location.hash||''}`);window.dispatchEvent(new Event('popstate'))};
+ const backToSkills=()=>{const p=new URLSearchParams();p.set('page','language-skills');p.set('subject','english');p.set('languageSkills','1');const url=`${window.location.pathname}?${p.toString()}${window.location.hash||''}`;window.location.assign(url)};
  const changeMode=m=>setMode(m);
  const quiz=useMemo(()=>getBank(mode),[mode]);
  return <main className="efl-shell">
