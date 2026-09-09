@@ -85,7 +85,7 @@ const challenge=[
 const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)].map((x,i)=>({...x,id:`final-${i}`}));
 
 export function EnglishReaderChapter4({initialMode='learn',onBack,addXp,finishSession}){
- return <EnglishReaderEngine study={study} initialMode={initialMode} onBack={onBack} addXp={addXp} finishSession={finishSession}/>;
+ return <EnglishReaderEngine study={{...study,practice,challenge,finalTest}} initialMode={initialMode} onBack={onBack} addXp={addXp} finishSession={finishSession}/>;
 }
 export const englishReaderChapter4Meta={title:study.title,author:'Ruskin Bond',sourceNote:study.sourceNote,modeCounts:{practice:practice.length,challenge:challenge.length,final:finalTest.length}};
 export {study as englishReaderChapter4Study};
