@@ -1,6 +1,7 @@
 import React,{useMemo,useState}from'react';
 import EnglishTimedQuiz from './EnglishTimedQuiz.jsx';
 import './EnglishFormalLetterTopic.css';
+import EnglishFormalLetterExtras from './EnglishFormalLetterExtras.jsx';
 
 const LESSONS=[
 {n:'01',group:'FOUNDATION',title:'Formal Letter क्या है?',simple:'Formal letter वह पत्र है जो किसी अधिकारी, संस्था, संपादक, कार्यालय या अन्य औपचारिक व्यक्ति/संगठन को स्पष्ट उद्देश्य से लिखा जाता है।',meaning:'It is professional or official communication with a clear purpose and appropriate distance.',structure:'sender details → date → receiver details → subject → salutation → body → close → signature',examples:['विद्यालय की समस्या बताने के लिए प्रधानाचार्य को पत्र।','स्थानीय समस्या पर कार्रवाई माँगने के लिए अधिकारी को पत्र।','संपादक को किसी सामाजिक समस्या पर पत्र।'],clue:'पहले पूछो: सामने वाला व्यक्ति/संस्था formal है या personal? Purpose जितना official होगा, tone उतना controlled होना चाहिए।'},
@@ -98,6 +99,7 @@ export default function EnglishFormalLetterTopic({addXp=()=>{},finishSession=()=
     <article className="efl-lesson"><div className="efl-badge">{current.group}</div><h2>{current.title}</h2><p className="efl-simple">{current.simple}</p><div className="efl-grid"><section><h3>Core idea</h3><p>{current.meaning}</p></section><section><h3>Exam structure</h3><p>{current.structure}</p></section></div><section className="efl-examples"><h3>Examples / application</h3>{current.examples.map((x,i)=><div key={i}>{x}</div>)}</section><section className="efl-clue"><strong>Exam clue</strong><p>{current.clue}</p></section><div className="efl-lesson-nav"><button onClick={()=>setLesson(v=>Math.max(0,v-1))} disabled={lesson===0}>← Previous</button><button onClick={()=>setLesson(v=>Math.min(LESSONS.length-1,v+1))} disabled={lesson===LESSONS.length-1}>{lesson===LESSONS.length-1?'Final lesson':'Next lesson →'}</button></div></article>
    </section>
    <section className="efl-audit"><div><span>FINAL CHECK</span><h2>Can you build a complete formal letter?</h2><p>Plan the recipient and purpose, build the format, write relevant facts and a specific action request, then audit tone and correctness.</p></div><button onClick={()=>setMode('practice')}>Start Practice →</button></section>
+   <EnglishFormalLetterExtras/>
   </>:<EnglishTimedQuiz title="Formal Letter" mode={mode} getBank={getBank} onModeChange={setMode} onBack={()=>{setMode('learn');resetLesson()}} addXp={addXp} finishSession={finishSession}/>} 
  </main>
 }
