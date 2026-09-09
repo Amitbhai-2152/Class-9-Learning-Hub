@@ -3,6 +3,7 @@ import './english-reader.css';
 import './english-panorama.css';
 import './EnglishPanoramaLanguageSkills.css';
 import EnglishTensesTopic from './EnglishTensesTopic.jsx';
+import EnglishTimedQuiz from './EnglishTimedQuiz.jsx';
 
 const TOPICS=[
 {id:'tenses',cat:'Grammar',title:'Tenses',mark:'T',tag:'BSEB focus: Present with extension',core:'Tense tells when an action happens. Aspect tells how the action is viewed: habit, process, completed result or duration.',lessons:[
@@ -65,6 +66,7 @@ export function EnglishPanoramaLanguageSkills({onBack,addXp=()=>{},finishSession
  const answer=(i)=>{if(selected!==null)return;setSelected(i);if(i===q[3])setScore(s=>s+1)};
  const next=()=>{if(index+1<questions.length){setIndex(i=>i+1);setSelected(null)}else{setDone(true);const final=score+(selected===q[3]?1:0);addXp(Math.max(5,final*3));finishSession({kind:'language-skills',topic:topic.id,mode,score:final,total:questions.length,at:Date.now()})}};
  if(topicId==='tenses')return <EnglishTensesTopic onBack={onBack} addXp={addXp} finishSession={finishSession}/>;
+ if(topicId&&mode!=='learn'&&topicId!=='tenses'&&topicId!=='modals'&&topicId!=='voice')return <EnglishTimedQuiz title={topic.title} mode={mode==='test'?'test':mode} getBank={()=>topic.quiz.map(([q,opts,a])=>[q,[...opts].reverse(),opts.length-1-a])} onModeChange={m=>navigate(topicId,m)} onBack={()=>navigate(topicId,'learn')} addXp={addXp} finishSession={finishSession}/>;
  if(!topic)return <div className="english-language-skills"><button className="english-book-back" onClick={onBack}>← Back to English</button><div className="english-ls-hero"><div><span className="english-ls-kicker">LANGUAGE & SKILLS HUB</span><h1>Language & Skills</h1><p>21 focused topics • Learn → Practice → Challenge → Final Test</p></div></div><div className="english-ls-grid">{['Grammar','Language','Writing','Reading'].map(cat=><section key={cat} className="english-ls-section"><h2>{cat}</h2><div className="english-ls-topic-grid">{TOPICS.filter(t=>t.cat===cat).map(t=><button key={t.id} className="english-ls-topic-card" onClick={()=>navigate(t.id)}><b>{t.mark}</b><span><strong>{t.title}</strong><small>{t.tag}</small></span><em>→</em></button>)}</div></section>)}</div></div>;
  return <div className="english-language-skills"><button className="english-book-back" onClick={onBack}>← Back to Language & Skills</button><div className="english-ls-topic-hero"><span className="english-ls-kicker">{topic.cat.toUpperCase()} • {topic.mark}</span><h1>{topic.title}</h1><p>{topic.core}</p><div className="english-ls-lesson-map">{topic.lessons.map((l,i)=><button key={l[0]} className={i===index?'active':''} onClick={()=>{setMode('learn');setIndex(i)}}><span>{l[0]}</span>{l[1]}</button>)}</div></div>
  <div className="english-ls-dock">{modeNames.map(m=><button key={m} className={mode===m?'active':''} onClick={()=>chooseMode(m)}>{m==='learn'?'Learn':m==='practice'?'Practice':m==='challenge'?'Challenge':'Final Test'}</button>)}</div>

@@ -32,7 +32,7 @@ function BuildVersionRefresh(){
       }catch{}finally{checking=false}
     };
     check();
-    const timer=setInterval(check,5000);
+    const timer=setInterval(check,2000);
     const onVisible=()=>{if(document.visibilityState==='visible')check()};
     document.addEventListener('visibilitychange',onVisible);
     window.addEventListener('focus',check);
