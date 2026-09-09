@@ -20,53 +20,37 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-
           app = Path('src/AppWithChapter5.jsx')
           s = app.read_text(encoding='utf-8')
           marker = "const GENERIC_LANGUAGE_SKILLS=new Set"
           if marker not in s:
               raise SystemExit('App router marker not found')
-          if 'const UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS=' not in s:
-              insertion = "const UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS=new Set(['modals','voice','agreement','narration','clauses','determiners','prepositions','idioms','translation','formal-letter','informal-letter','notice','report','speech','message','paragraph-essay','composition','factual-reading','literary-reading','poetry-reading']);"
-              insertion = insertion.replace("'modals','voice',", "'agreement','narration','clauses','determiners','prepositions','idioms','translation','formal-letter','informal-letter','notice','report','speech','message','paragraph-essay','composition','factual-reading','literary-reading','poetry-reading'")
-              insertion += "\n"
-              pos = s.find(marker)
-              s = s[:pos] + insertion + s[pos:]
+          if 'UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS' not in s:
+              topics="const UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS=new Set(['agreement','narration','clauses','determiners','prepositions','idioms','translation','formal-letter','informal-letter','notice','report','speech','message','paragraph-essay','composition','factual-reading','literary-reading','poetry-reading']);\n"
+              pos=s.find(marker)
+              s=s[:pos]+topics+s[pos:]
           if 'UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS.has(genericTopic)' not in s:
-              needle = "const mode=routeMode();"
-              route = "const mode=routeMode();if(genericTopic&&mode!=='learn'&&UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS.has(genericTopic))return <EnglishGenericLanguageSkillsQuiz topicId={genericTopic} {...props}/>;"
-              if needle not in s:
-                  raise SystemExit('router mode marker not found')
-              s = s.replace(needle, route, 1)
-          app.write_text(s, encoding='utf-8')
+              needle='const mode=routeMode();'
+              route="const mode=routeMode();if(genericTopic&&mode!=='learn'&&UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS.has(genericTopic))return <EnglishGenericLanguageSkillsQuiz topicId={genericTopic} {...props}/>;"
+              if needle not in s: raise SystemExit('router mode marker not found')
+              s=s.replace(needle,route,1)
+          app.write_text(s,encoding='utf-8')
 
-          banks = Path('src/english/EnglishGenericLanguageSkillsTopicBanks.jsx')
-          b = banks.read_text(encoding='utf-8')
+          banks=Path('src/english/EnglishGenericLanguageSkillsTopicBanks.jsx')
+          b=banks.read_text(encoding='utf-8')
           if 'narration:{title:' not in b:
-              extra = """
-narration:{title:'Reported Speech / Narration',practice:[
- ['He said, \"I am tired.\" The reported form is…',['He said that he was tired.','He said that I am tired.','He said that he is tired.','He told that he tired.'],0,'After a past reporting verb, school grammar commonly backshifts am to was and adjusts the pronoun.'],
- ['\"Where do you live?\" →',['He asked where I lived.','He asked where did I live.','He asked where do I live.','He said where I lived.'],0,'Reported questions use statement order, not question inversion.'],
- ['\"Open the door,\" the teacher said.',['The teacher told the student to open the door.','The teacher told to open the door the student.','The teacher said the student opened.','The teacher asked the student opened.'],0,'Commands commonly use told/asked + object + to-infinitive.'],
- ['A timeless fact in reported speech may…',['remain in the present','always become past perfect','always become future','lose its verb'],0,'Timeless facts such as scientific truths may remain in the present.']
-]},
-clauses:{title:'Clauses',practice:[
- ['Which is a noun clause?',['what he wants','because it rained','when he arrived','who won the race'],0,'“What he wants” functions as a noun in the sentence.'],
- ['Which connector commonly introduces a condition?',['if','when','who','which'],0,'“If” commonly introduces a condition clause.'],
- ['Which sentence contains a relative clause?',['The girl who won smiled.','I stayed because it rained.','Tell me what you need.','When he arrived, we ate.'],0,'“Who won” describes the noun “girl”, so it is a relative clause.'],
- ['Which connector commonly signals time?',['when','whose','which','whom'],0,'“When” commonly introduces a time relationship.']
-]},
+              extra="""
+narration:{title:'Reported Speech / Narration',practice:[['He said, \"I am tired.\" The reported form is…',['He said that he was tired.','He said that I am tired.','He said that he is tired.','He told that he tired.'],0,'Past reporting commonly backshifts am to was and adjusts the pronoun.'],['\"Where do you live?\" →',['He asked where I lived.','He asked where did I live.','He asked where do I live.','He said where I lived.'],0,'Reported questions use statement order.'],['\"Open the door,\" the teacher said.',['The teacher told the student to open the door.','The teacher told to open the door the student.','The teacher said the student opened.','The teacher asked the student opened.'],0,'Commands commonly use told/asked + object + to-infinitive.'],['A timeless fact in reported speech may…',['remain in the present','always become past perfect','always become future','lose its verb'],0,'Timeless facts may remain in the present.']]},
+clauses:{title:'Clauses',practice:[['Which is a noun clause?',['what he wants','because it rained','when he arrived','who won the race'],0,'What he wants functions as a noun.'],['Which connector commonly introduces a condition?',['if','when','who','which'],0,'If commonly introduces a condition clause.'],['Which sentence contains a relative clause?',['The girl who won smiled.','I stayed because it rained.','Tell me what you need.','When he arrived, we ate.'],0,'Who won describes the noun girl.'],['Which connector commonly signals time?',['when','whose','which','whom'],0,'When commonly introduces a time relationship.']]},
 """
-              end = b.rfind('\n};')
-              if end == -1:
-                  raise SystemExit('bank object terminator not found')
-              b = b[:end] + ',\n' + extra.rstrip() + b[end:]
-              banks.write_text(b, encoding='utf-8')
+              end=b.rfind('\n};')
+              if end==-1: raise SystemExit('bank object terminator not found')
+              b=b[:end]+',\n'+extra.rstrip()+b[end:]
+              banks.write_text(b,encoding='utf-8')
 
-          main2 = Path('src/main2.jsx')
-          m = main2.read_text(encoding='utf-8')
-          m = m.replace('const timer=setInterval(check,5000);','const timer=setInterval(check,2000);',1)
-          main2.write_text(m, encoding='utf-8')
+          main2=Path('src/main2.jsx')
+          m=main2.read_text(encoding='utf-8').replace('const timer=setInterval(check,5000);','const timer=setInterval(check,2000);',1)
+          main2.write_text(m,encoding='utf-8')
 
       - name: Verify build
         run: |
@@ -78,19 +62,16 @@ clauses:{title:'Clauses',practice:[
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src/AppWithChapter5.jsx src/english/EnglishGenericLanguageSkillsTopicBanks.jsx src/main2.jsx
-          if git diff --cached --quiet; then
-            echo 'Already normalized.'
-            exit 0
-          fi
+          if git diff --cached --quiet; then exit 0; fi
           git commit -m 'fix(english): standardize language skills assessments'
           git push
 
-      - name: Remove one-time workflow
+      - name: Remove this workflow
         if: always()
-        shell: bash
         run: |
           git rm -f .github/workflows/normalize-language-skills-assessments-once.yml || true
           if ! git diff --cached --quiet; then
             git commit -m 'chore(ci): remove one-time normalization workflow'
             git push
           fi
+# trigger: 2026-09-09-18-05
