@@ -15,15 +15,13 @@ const BASE_URL=import.meta.env.BASE_URL||'/';
 function BuildVersionRefresh(){
   useEffect(()=>{
     if(!APP_BUILD_VERSION)return;
-    let stopped=false;
-    let checking=false;
+    let stopped=false,checking=false;
     const check=async()=>{
       if(stopped||checking)return;
       checking=true;
       try{
         const base=BASE_URL.endsWith('/')?BASE_URL:`${BASE_URL}/`;
-        const url=`${base}build-version.json?check=${Date.now()}`;
-        const response=await fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+        const response=await fetch(`${base}build-version.json?check=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
         if(!response.ok)return;
         const data=await response.json();
         if(!stopped&&data.version&&data.version!==APP_BUILD_VERSION){
@@ -45,21 +43,26 @@ function BuildVersionRefresh(){
 
 function FreshTopicNavigation(){
   useEffect(()=>{
-    const isLanguageSkillsHub=()=>{
+    const handler=event=>{
+      const target=event.target?.closest?.('button,a');
+      if(!target)return;
       const p=new URLSearchParams(window.location.search);
-      return p.get('languageSkills')==='1'&&!p.get('topic');
-    };
-    const handler=()=>{
-      if(!isLanguageSkillsHub())return;
-      const before=window.location.href;
-      setTimeout(()=>{
-        if(window.location.href===before)return;
-        const p=new URLSearchParams(window.location.search);
-        if(p.get('languageSkills')!=='1'||!p.get('topic'))return;
-        if(p.get('__hub_topic_reload')==='1')return;
-        p.set('__hub_topic_reload','1');
-        window.location.replace(`${window.location.pathname}?${p.toString()}${window.location.hash||''}`);
-      },0);
+      if(p.get('subject')!=='english'||p.get('languageSkills')!=='1')return;
+      const topic=p.get('topic');
+      if(!['speech','message'].includes(topic))return;
+      const text=(target.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+      let mode=null;
+      if(text==='practice'||/^practice\b/.test(text))mode='practice';
+      else if(text==='challenge'||/^challenge\b/.test(text))mode='challenge';
+      else if(text==='final test'||/^final test\b/.test(text)||text.includes('final test'))mode='test';
+      if(!mode||p.get('mode')===mode)return;
+      event.preventDefault();
+      event.stopPropagation();
+      const next=new URLSearchParams(p);
+      next.set('topic',topic);
+      next.set('mode',mode);
+      next.set('__writing_assessment_reload',String(Date.now()));
+      window.location.replace(`${window.location.pathname}?${next.toString()}${window.location.hash||''}`);
     };
     document.addEventListener('click',handler,true);
     return()=>document.removeEventListener('click',handler,true);
@@ -68,8 +71,8 @@ function FreshTopicNavigation(){
 }
 
 function RootRouter(){
-  const [isSST,setIsSST]=useState(()=>new URLSearchParams(window.location.search).get('subject')==='sst'||new URLSearchParams(window.location.search).get('page')?.startsWith('sst-'));
-  useEffect(()=>{const sync=()=>setIsSST(new URLSearchParams(window.location.search).get('subject')==='sst'||new URLSearchParams(window.location.search).get('page')?.startsWith('sst-'));window.addEventListener('popstate',sync);const timer=setInterval(sync,250);return()=>{window.removeEventListener('popstate',sync);clearInterval(timer)}},[]);
+  const [isSST,setIsSST]=useState(()=>{const p=new URLSearchParams(window.location.search);return p.get('subject')==='sst'||p.get('page')?.startsWith('sst-')});
+  useEffect(()=>{const sync=()=>{const p=new URLSearchParams(window.location.search);setIsSST(p.get('subject')==='sst'||p.get('page')?.startsWith('sst-'))};window.addEventListener('popstate',sync);const timer=setInterval(sync,250);return()=>{window.removeEventListener('popstate',sync);clearInterval(timer)}},[]);
   return isSST?<SSTRoot/>:<AppWithChapter5/>;
 }
 
