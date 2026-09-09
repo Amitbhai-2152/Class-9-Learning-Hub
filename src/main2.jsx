@@ -61,8 +61,8 @@ function FreshTopicNavigation(){
         window.location.replace(`${window.location.pathname}?${p.toString()}${window.location.hash||''}`);
       },0);
     };
-    document.addEventListener('click',handler);
-    return()=>document.removeEventListener('click',handler);
+    document.addEventListener('click',handler,true);
+    return()=>document.removeEventListener('click',handler,true);
   },[]);
   return null;
 }
