@@ -16,62 +16,60 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Normalize assessment routing and freshness guard
-        shell: python
+      - name: Apply normalization
         run: |
+          python - <<'PY'
           from pathlib import Path
+
           app = Path('src/AppWithChapter5.jsx')
           s = app.read_text(encoding='utf-8')
           marker = "const GENERIC_LANGUAGE_SKILLS=new Set"
           if marker not in s:
-              raise SystemExit('App router marker not found')
-          if 'UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS' not in s:
-              topics="const UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS=new Set(['agreement','narration','clauses','determiners','prepositions','idioms','translation','formal-letter','informal-letter','notice','report','speech','message','paragraph-essay','composition','factual-reading','literary-reading','poetry-reading']);\n"
-              pos=s.find(marker)
-              s=s[:pos]+topics+s[pos:]
+              raise SystemExit('router marker missing')
+          if 'const UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS=' not in s:
+              topics = "const UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS=new Set(['agreement','narration','clauses','determiners','prepositions','idioms','translation','formal-letter','informal-letter','notice','report','speech','message','paragraph-essay','composition','factual-reading','literary-reading','poetry-reading']);\n"
+              pos = s.find(marker)
+              s = s[:pos] + topics + s[pos:]
           if 'UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS.has(genericTopic)' not in s:
-              needle='const mode=routeMode();'
-              route="const mode=routeMode();if(genericTopic&&mode!=='learn'&&UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS.has(genericTopic))return <EnglishGenericLanguageSkillsQuiz topicId={genericTopic} {...props}/>;"
-              if needle not in s: raise SystemExit('router mode marker not found')
-              s=s.replace(needle,route,1)
-          app.write_text(s,encoding='utf-8')
+              candidates = ['const mode=routeMode();','const m=routeMode();']
+              needle = next((x for x in candidates if x in s), None)
+              if not needle:
+                  raise SystemExit('route mode marker missing')
+              route = "const mode=routeMode();if(genericTopic&&mode!=='learn'&&UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS.has(genericTopic))return <EnglishGenericLanguageSkillsQuiz topicId={genericTopic} {...props}/>;"
+              s = s.replace(needle, route, 1)
+          app.write_text(s, encoding='utf-8')
 
-          banks=Path('src/english/EnglishGenericLanguageSkillsTopicBanks.jsx')
-          b=banks.read_text(encoding='utf-8')
-          if 'narration:{title:' not in b:
-              extra="""
-narration:{title:'Reported Speech / Narration',practice:[['He said, \"I am tired.\" The reported form is…',['He said that he was tired.','He said that I am tired.','He said that he is tired.','He told that he tired.'],0,'Past reporting commonly backshifts am to was and adjusts the pronoun.'],['\"Where do you live?\" →',['He asked where I lived.','He asked where did I live.','He asked where do I live.','He said where I lived.'],0,'Reported questions use statement order.'],['\"Open the door,\" the teacher said.',['The teacher told the student to open the door.','The teacher told to open the door the student.','The teacher said the student opened.','The teacher asked the student opened.'],0,'Commands commonly use told/asked + object + to-infinitive.'],['A timeless fact in reported speech may…',['remain in the present','always become past perfect','always become future','lose its verb'],0,'Timeless facts may remain in the present.']]},
-clauses:{title:'Clauses',practice:[['Which is a noun clause?',['what he wants','because it rained','when he arrived','who won the race'],0,'What he wants functions as a noun.'],['Which connector commonly introduces a condition?',['if','when','who','which'],0,'If commonly introduces a condition clause.'],['Which sentence contains a relative clause?',['The girl who won smiled.','I stayed because it rained.','Tell me what you need.','When he arrived, we ate.'],0,'Who won describes the noun girl.'],['Which connector commonly signals time?',['when','whose','which','whom'],0,'When commonly introduces a time relationship.']]},
-"""
-              end=b.rfind('\n};')
-              if end==-1: raise SystemExit('bank object terminator not found')
-              b=b[:end]+',\n'+extra.rstrip()+b[end:]
-              banks.write_text(b,encoding='utf-8')
+          generic = Path('src/english/EnglishPanoramaLanguageSkills.jsx')
+          g = generic.read_text(encoding='utf-8')
+          if "import EnglishTimedQuiz from './EnglishTimedQuiz.jsx';" not in g:
+              g = g.replace("import EnglishTensesTopic from './EnglishTensesTopic.jsx';", "import EnglishTensesTopic from './EnglishTensesTopic.jsx';\nimport EnglishTimedQuiz from './EnglishTimedQuiz.jsx';", 1)
+          if "if(topicId==='tenses')return <EnglishTensesTopic" in g and "if(topicId&&mode!=='learn'&&topicId!=='tenses'&&topicId!=='modals'&&topicId!=='voice')" not in g:
+              needle = "if(topicId==='tenses')return <EnglishTensesTopic onBack={onBack} addXp={addXp} finishSession={finishSession}/>;"
+              route = needle + "\n if(topicId&&mode!=='learn'&&topicId!=='tenses'&&topicId!=='modals'&&topicId!=='voice')return <EnglishTimedQuiz title={topic.title} mode={mode==='test'?'test':mode} getBank={()=>topic.quiz.map(([q,opts,a])=>[q,[...opts].reverse(),opts.length-1-a])} onModeChange={m=>navigate(topicId,m)} onBack={()=>navigate(topicId,'learn')} addXp={addXp} finishSession={finishSession}/>;"
+              g = g.replace(needle, route, 1)
+          generic.write_text(g, encoding='utf-8')
 
-          main2=Path('src/main2.jsx')
-          m=main2.read_text(encoding='utf-8').replace('const timer=setInterval(check,5000);','const timer=setInterval(check,2000);',1)
-          main2.write_text(m,encoding='utf-8')
+          main2 = Path('src/main2.jsx')
+          m = main2.read_text(encoding='utf-8')
+          m = m.replace('const timer=setInterval(check,5000);','const timer=setInterval(check,2000);',1)
+          main2.write_text(m, encoding='utf-8')
+          PY
 
-      - name: Verify build
+      - name: Verify source and build
         run: |
+          grep -q 'UNIFIED_LANGUAGE_SKILLS_ASSESSMENT_TOPICS.has(genericTopic)' src/AppWithChapter5.jsx
+          grep -q "import EnglishTimedQuiz from './EnglishTimedQuiz.jsx';" src/english/EnglishPanoramaLanguageSkills.jsx
           npm install --legacy-peer-deps
           npm run build
 
-      - name: Commit normalization
+      - name: Commit source fixes
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src/AppWithChapter5.jsx src/english/EnglishGenericLanguageSkillsTopicBanks.jsx src/main2.jsx
-          if git diff --cached --quiet; then exit 0; fi
+          git add src/AppWithChapter5.jsx src/english/EnglishPanoramaLanguageSkills.jsx src/main2.jsx
+          if git diff --cached --quiet; then
+            echo 'No source changes needed.'
+            exit 0
+          fi
           git commit -m 'fix(english): standardize language skills assessments'
           git push
-
-      - name: Remove this workflow
-        if: always()
-        run: |
-          git rm -f .github/workflows/normalize-language-skills-assessments-once.yml || true
-          if ! git diff --cached --quiet; then
-            git commit -m 'chore(ci): remove one-time normalization workflow'
-            git push
-          fi
-# trigger: 2026-09-09-18-05
