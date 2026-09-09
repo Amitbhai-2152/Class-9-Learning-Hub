@@ -15,26 +15,26 @@ const LESSONS=[
 ];
 
 const QUESTIONS=[
-['Which modal commonly expresses ability?',['can','must','should','might'],0,'Can commonly expresses present ability.'],
-['Which is the correct sentence?',['She can swim.','She can swims.','She can to swim.','She can swimming.'],0,'After a central modal, use the base verb.'],
-['“Could you help me?” is mainly a…',['polite request','strong prohibition','past timetable','general truth'],0,'Could is commonly used for polite requests.'],
+['Which modal commonly expresses ability?',['must','should','might','can'],3,'Can commonly expresses present ability.'],
+['Which is the correct sentence?',['She can to swim.','She can swimming.','She can swim.','She can swims.'],2,'After a central modal, use the base verb.'],
+['“Could you help me?” is mainly a…',['general truth','polite request','strong prohibition','past timetable'],1,'Could is commonly used for polite requests.'],
 ['Which can express formal permission?',['may','must','should','need'],0,'May can be used for permission.'],
-['“It might rain.” expresses…',['possibility','ability','prohibition','necessity'],0,'Might commonly expresses possibility.'],
-['Which expresses strong obligation?',['must','might','could','may'],0,'Must expresses strong obligation.'],
-['Which expresses advice?',['should','must not','might','can'],0,'Should commonly expresses advice.'],
+['“It might rain.” expresses…',['ability','prohibition','necessity','possibility'],3,'Might commonly expresses possibility.'],
+['Which expresses strong obligation?',['could','may','must','might'],2,'Must expresses strong obligation.'],
+['Which expresses advice?',['can','should','must not','might'],1,'Should commonly expresses advice.'],
 ['“You must not touch this.” means…',['It is prohibited.','It is unnecessary.','It is possible.','You are able to do it.'],0,'Must not expresses prohibition.'],
-['“You need not come.” means…',['There is no necessity to come.','You are forbidden to come.','You are unable to come.','You must come.'],0,'Need not means absence of necessity.'],
-['Which sentence is correct?',['He should study.','He should to study.','He should studies.','He should studying.'],0,'Should takes the base verb directly.'],
-['Which is the correct negative?',['She cannot drive.','She does not can drive.','She can not drives.','She not can drive.'],0,'A central modal takes not directly.'],
+['“You need not come.” means…',['You are forbidden to come.','You are unable to come.','You must come.','There is no necessity to come.'],3,'Need not means absence of necessity.'],
+['Which sentence is correct?',['He should studies.','He should studying.','He should study.','He should to study.'],2,'Should takes the base verb directly.'],
+['Which is the correct negative?',['She not can drive.','She cannot drive.','She does not can drive.','She can not drives.'],1,'A central modal takes not directly.'],
 ['Which is the correct question?',['Can you swim?','Do you can swim?','Can you swims?','Did you can swim?'],0,'The modal moves before the subject.'],
-['“When I was five, I could swim.” expresses…',['past ability','future plan','prohibition','present permission'],0,'Could can describe past ability.'],
-['“May I sit here?” expresses…',['permission','ability','past habit','strong obligation'],0,'May is commonly used for permission.'],
+['“When I was five, I could swim.” expresses…',['future plan','prohibition','present permission','past ability'],3,'Could can describe past ability.'],
+['“May I sit here?” expresses…',['past habit','strong obligation','permission','ability'],2,'May is commonly used for permission.'],
 ['Which is stronger?',['must','should'],0,'Must generally expresses stronger obligation than should.'],
-['Which pair is correct?',['must not = prohibition; need not = no necessity','must not = no necessity; need not = prohibition','must not = ability; need not = permission','must not = advice; need not = possibility'],0,'These two negatives have different meanings.'],
+['Which pair is correct?',['must not = advice; need not = possibility','must not = prohibition; need not = no necessity','must not = no necessity; need not = prohibition','must not = ability; need not = permission'],1,'These two negatives have different meanings.'],
 ['Choose the best translation: “तुम्हें रोज़ पढ़ना चाहिए।”',['You should study every day.','You can study every day.','You might study every day.','You must not study every day.'],0,'The Hindi sentence expresses advice.'],
-['Choose the best translation: “शायद वह आए।”',['He might come.','He must come.','He can come yesterday.','He should not come.'],0,'“शायद” indicates possibility.'],
-['Choose the best translation: “क्या मैं अंदर आ सकता हूँ?”',['May I come in?','I must come in.','I should come in.','I need not come in.'],0,'The sentence asks for permission.'],
-['After a central modal, the main verb is usually…',['V1 / base form','V2','V3 only','V-ing only'],0,'The base-verb rule applies.']
+['Choose the best translation: “शायद वह आए।”',['He must come.','He can come yesterday.','He should not come.','He might come.'],3,'“शायद” indicates possibility.'],
+['Choose the best translation: “क्या मैं अंदर आ सकता हूँ?”',['I should come in.','I need not come in.','May I come in?','I must come in.'],2,'The sentence asks for permission.'],
+['After a central modal, the main verb is usually…',['V-ing only','V1 / base form','V2','V3 only'],1,'The base-verb rule applies.']
 ];
 
 const bankFor=mode=>mode==='practice'?QUESTIONS.slice(0,10):mode==='challenge'?[...QUESTIONS.slice(10),...QUESTIONS.slice(0,6)]:QUESTIONS;

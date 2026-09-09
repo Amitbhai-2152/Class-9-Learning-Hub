@@ -26,47 +26,47 @@ const LESSONS=[
 
 const makeQ=(q,o,a,e)=>({q,o,a,e});
 const PRACTICE=[
-makeQ('The teacher praised the student.',['The student was praised by the teacher.','The student is praised by the teacher.','The teacher was praised by the student.','The student praised the teacher.'],0,'Simple Past → was/were + V3.'),
-makeQ('People speak English here.',['English is spoken here.','English was spoken here.','English is speaking here.','English has spoken here.'],0,'Simple Present passive uses is/am/are + V3.'),
-makeQ('They are repairing the road.',['The road is being repaired by them.','The road is repaired by them.','The road was being repaired by them.','The road has been repaired by them.'],0,'Present Continuous passive needs being + V3.'),
+makeQ('The teacher praised the student.',['The student is praised by the teacher.','The teacher was praised by the student.','The student praised the teacher.','The student was praised by the teacher.'],3,'Simple Past → was/were + V3.'),
+makeQ('People speak English here.',['English is speaking here.','English has spoken here.','English is spoken here.','English was spoken here.'],2,'Simple Present passive uses is/am/are + V3.'),
+makeQ('They are repairing the road.',['The road has been repaired by them.','The road is being repaired by them.','The road is repaired by them.','The road was being repaired by them.'],1,'Present Continuous passive needs being + V3.'),
 makeQ('She has completed the work.',['The work has been completed by her.','The work was completed by her.','The work is completed by her.','The work has completed by her.'],0,'Present Perfect passive uses has/have been + V3.'),
-makeQ('The police caught the thief.',['The thief was caught by the police.','The thief is caught by the police.','The thief had caught the police.','The police were caught by the thief.'],0,'Object thief becomes subject.'),
-makeQ('They will announce the result.',['The result will be announced by them.','The result is announced by them.','The result will announced by them.','The result was announced by them.'],0,'Will passive = will be + V3.'),
-makeQ('We can solve the problem.',['The problem can be solved by us.','The problem can solved by us.','The problem is solved by us.','The problem could be solved by us.'],0,'Modal passive = modal + be + V3.'),
+makeQ('The police caught the thief.',['The thief is caught by the police.','The thief had caught the police.','The police were caught by the thief.','The thief was caught by the police.'],3,'Object thief becomes subject.'),
+makeQ('They will announce the result.',['The result will announced by them.','The result was announced by them.','The result will be announced by them.','The result is announced by them.'],2,'Will passive = will be + V3.'),
+makeQ('We can solve the problem.',['The problem could be solved by us.','The problem can be solved by us.','The problem can solved by us.','The problem is solved by us.'],1,'Modal passive = modal + be + V3.'),
 makeQ('Did the teacher check the copies?',['Were the copies checked by the teacher?','Did the copies checked by the teacher?','Were the teacher checked by the copies?','Are the copies checked by the teacher?'],0,'Past question → was/were + V3.'),
-makeQ('They do not sell books here.',['Books are not sold here.','Books were not sold here.','Books do not sold here.','Books are not selling here.'],0,'Simple Present negative passive.'),
-makeQ('Which verb normally cannot form an ordinary passive?',['arrive','write','build','praise'],0,'Arrive is intransitive and has no direct object.'),
-makeQ('She helped me.',['I was helped by her.','I was helped by she.','Me was helped by her.','I helped by her.'],0,'Pronoun after by uses object form: her.'),
+makeQ('They do not sell books here.',['Books were not sold here.','Books do not sold here.','Books are not selling here.','Books are not sold here.'],3,'Simple Present negative passive.'),
+makeQ('Which verb normally cannot form an ordinary passive?',['build','praise','arrive','write'],2,'Arrive is intransitive and has no direct object.'),
+makeQ('She helped me.',['I helped by her.','I was helped by her.','I was helped by she.','Me was helped by her.'],1,'Pronoun after by uses object form: her.'),
 makeQ('The teacher gave Rina a prize.',['Rina was given a prize by the teacher.','Rina gave a prize by the teacher.','A prize was gave Rina by the teacher.','The teacher was given Rina a prize.'],0,'Two-object verb can foreground Rina.'),
-makeQ('The baby slept.',['No ordinary passive is formed.','The baby was slept.','Sleep was been by the baby.','The baby is slept.'],0,'Sleep is intransitive here.'),
-makeQ('The project should be completed today. This is…',['Passive with a modal','Simple Present active','Past passive','Future active'],0,'should + be + V3 is modal passive.'),
-makeQ('A correct passive must preserve…',['tense and intended meaning','only the original word order','only the original subject','only the original object'],0,'Transformation changes focus, not the underlying event or tense.')
+makeQ('The baby slept.',['The baby was slept.','Sleep was been by the baby.','The baby is slept.','No ordinary passive is formed.'],3,'Sleep is intransitive here.'),
+makeQ('The project should be completed today. This is…',['Past passive','Future active','Passive with a modal','Simple Present active'],2,'should + be + V3 is modal passive.'),
+makeQ('A correct passive must preserve…',['only the original object','tense and intended meaning','only the original word order','only the original subject'],1,'Transformation changes focus, not the underlying event or tense.')
 ];
 const CHALLENGE=[
 makeQ('Which is the correct passive of “The students were preparing the lesson”?',['The lesson was being prepared by the students.','The lesson was prepared by the students.','The lesson is being prepared by the students.','The lesson had been prepared by the students.'],0,'Past Continuous → was/were being + V3.'),
-makeQ('Which passive is correct for “They had finished the work before noon”?',['The work had been finished by them before noon.','The work was being finished by them before noon.','The work has been finished by them before noon.','The work had finished by them before noon.'],0,'Past Perfect → had been + V3.'),
-makeQ('Which sentence correctly omits the agent?',['The window was broken.','The window was broken by it.','The window broke by someone.','The window was break.'],0,'The agent can be omitted when it is unknown or unimportant.'),
-makeQ('Which transformation keeps the tense unchanged?',['They wrote the letter. → The letter was written by them.','They wrote the letter. → The letter is written by them.','They wrote the letter. → The letter will be written by them.','They wrote the letter. → The letter has been written by them.'],0,'Simple Past remains Simple Past in passive.'),
+makeQ('Which passive is correct for “They had finished the work before noon”?',['The work was being finished by them before noon.','The work has been finished by them before noon.','The work had finished by them before noon.','The work had been finished by them before noon.'],3,'Past Perfect → had been + V3.'),
+makeQ('Which sentence correctly omits the agent?',['The window broke by someone.','The window was break.','The window was broken.','The window was broken by it.'],2,'The agent can be omitted when it is unknown or unimportant.'),
+makeQ('Which transformation keeps the tense unchanged?',['They wrote the letter. → The letter has been written by them.','They wrote the letter. → The letter was written by them.','They wrote the letter. → The letter is written by them.','They wrote the letter. → The letter will be written by them.'],1,'Simple Past remains Simple Past in passive.'),
 makeQ('Choose the passive of “You must obey the rules.”',['The rules must be obeyed by you.','The rules must obey by you.','The rules are must obeyed by you.','The rules had to obey by you.'],0,'Must passive = must be + V3.'),
-makeQ('Which passive question is correct for “When did they build the bridge?”',['When was the bridge built?','When did the bridge built?','When was built the bridge by them?','When is the bridge built?'],0,'Wh-word + was + subject + V3.'),
-makeQ('Which is best when the agent is obvious?',['The road was repaired.','The road was repaired by people.','The road was repaired by someone.','The road was repaired by the repairer.'],0,'Unnecessary agents can be omitted.'),
-makeQ('“Someone has opened the door.” →',['The door has been opened.','The door was opened by someone yesterday.','The door is opening.','The door has opened by someone.'],0,'Present Perfect passive; unknown agent can be omitted.'),
+makeQ('Which passive question is correct for “When did they build the bridge?”',['When did the bridge built?','When was built the bridge by them?','When is the bridge built?','When was the bridge built?'],3,'Wh-word + was + subject + V3.'),
+makeQ('Which is best when the agent is obvious?',['The road was repaired by someone.','The road was repaired by the repairer.','The road was repaired.','The road was repaired by people.'],2,'Unnecessary agents can be omitted.'),
+makeQ('“Someone has opened the door.” →',['The door has opened by someone.','The door has been opened.','The door was opened by someone yesterday.','The door is opening.'],1,'Present Perfect passive; unknown agent can be omitted.'),
 makeQ('Which active sentence corresponds to “The prize was given to Rina by the teacher”?',['The teacher gave Rina the prize.','Rina gave the teacher the prize.','The prize gave Rina the teacher.','The teacher was given the prize by Rina.'],0,'Recover the same doer-object relationship.'),
-makeQ('Why is “The accident was happened” incorrect?',['Happen is normally intransitive, so it has no direct object.','Happen always requires must.','Was cannot be used in passive.','Accident cannot be a subject.'],0,'An ordinary passive needs a transitive verb with an object.'),
-makeQ('Which is the most accurate transformation of “The teacher is checking the copies”?',['The copies are being checked by the teacher.','The copies are checked by the teacher.','The copies were being checked by the teacher.','The copies have been checked by the teacher.'],0,'Present Continuous passive.'),
-makeQ('Which pronoun change is correct?',['He helped us. → We were helped by him.','He helped us. → We were helped by he.','He helped us. → Us were helped by him.','He helped us. → We was helped by him.'],0,'He → him; we stays subject in the passive.')
+makeQ('Why is “The accident was happened” incorrect?',['Happen always requires must.','Was cannot be used in passive.','Accident cannot be a subject.','Happen is normally intransitive, so it has no direct object.'],3,'An ordinary passive needs a transitive verb with an object.'),
+makeQ('Which is the most accurate transformation of “The teacher is checking the copies”?',['The copies were being checked by the teacher.','The copies have been checked by the teacher.','The copies are being checked by the teacher.','The copies are checked by the teacher.'],2,'Present Continuous passive.'),
+makeQ('Which pronoun change is correct?',['He helped us. → We was helped by him.','He helped us. → We were helped by him.','He helped us. → We were helped by he.','He helped us. → Us were helped by him.'],1,'He → him; we stays subject in the passive.')
 ];
 const FINAL=[
 ...PRACTICE.slice(0,5),
 ...CHALLENGE.slice(0,5),
 makeQ('The chef was preparing the meal.',['The meal was being prepared by the chef.','The meal was prepared by the chef.','The meal is being prepared by the chef.','The meal had been prepared by the chef.'],0,'Past Continuous passive.'),
-makeQ('People grow rice in this region.',['Rice is grown in this region.','Rice was grown in this region.','Rice is growing in this region.','Rice has grown in this region.'],0,'General fact in Simple Present passive.'),
-makeQ('The teacher did not punish him.',['He was not punished by the teacher.','He is not punished by the teacher.','He did not be punished by the teacher.','He had not punished by the teacher.'],0,'Simple Past negative passive.'),
-makeQ('Have they completed the project?',['Has the project been completed by them?','Did the project completed by them?','Is the project completed by them?','Has the project completed by them?'],0,'Present Perfect question passive.'),
+makeQ('People grow rice in this region.',['Rice was grown in this region.','Rice is growing in this region.','Rice has grown in this region.','Rice is grown in this region.'],3,'General fact in Simple Present passive.'),
+makeQ('The teacher did not punish him.',['He did not be punished by the teacher.','He had not punished by the teacher.','He was not punished by the teacher.','He is not punished by the teacher.'],2,'Simple Past negative passive.'),
+makeQ('Have they completed the project?',['Has the project completed by them?','Has the project been completed by them?','Did the project completed by them?','Is the project completed by them?'],1,'Present Perfect question passive.'),
 makeQ('Which sentence has no ordinary passive counterpart?',['The birds flew away.','The carpenter built the table.','The class completed the task.','The teacher praised the student.'],0,'Fly is intransitive in this sentence.'),
-makeQ('Which is correct?',['The instructions should be followed carefully.','The instructions should followed carefully.','The instructions should be following carefully.','The instructions should be followed by carefully.'],0,'Modal passive requires should be + V3.'),
-makeQ('“They will organize the event.” →',['The event will be organized by them.','The event is organized by them.','The event will organize by them.','The event was organized by them.'],0,'Future passive with will.'),
-makeQ('“The road was being repaired.” is…',['Past Continuous passive','Simple Past passive','Present Continuous passive','Past Perfect passive'],0,'was/were being + V3 identifies Past Continuous passive.'),
+makeQ('Which is correct?',['The instructions should followed carefully.','The instructions should be following carefully.','The instructions should be followed by carefully.','The instructions should be followed carefully.'],3,'Modal passive requires should be + V3.'),
+makeQ('“They will organize the event.” →',['The event will organize by them.','The event was organized by them.','The event will be organized by them.','The event is organized by them.'],2,'Future passive with will.'),
+makeQ('“The road was being repaired.” is…',['Past Perfect passive','Past Continuous passive','Simple Past passive','Present Continuous passive'],1,'was/were being + V3 identifies Past Continuous passive.'),
 makeQ('In “A prize was given to Rina”, the agent is…',['not stated','Rina','the prize','the school'],0,'The sentence does not state who gave it.')
 ];
 

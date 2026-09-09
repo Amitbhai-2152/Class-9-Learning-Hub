@@ -17,21 +17,21 @@ const LESSONS=[
 ];
 
 const QUESTIONS=[
- ['मैं रोज़ स्कूल जाता हूँ।',['I go to school every day.','I am going to school every day.','I went to school every day.','I have gone to school every day.'],0,'Routine → Simple Present.'],
- ['वह अभी खाना खा रही है।',['She is eating food now.','She eats food now.','She ate food now.','She has eaten food now.'],0,'Now + action in progress → Present Continuous.'],
- ['मैंने अपना काम कर लिया है।',['I have finished my work.','I finished my work yesterday.','I had finish my work.','I am finish my work.'],0,'Completed result linked to the present → Present Perfect.'],
+ ['मैं रोज़ स्कूल जाता हूँ।',['I am going to school every day.','I went to school every day.','I have gone to school every day.','I go to school every day.'],3,'Routine → Simple Present.'],
+ ['वह अभी खाना खा रही है।',['She ate food now.','She has eaten food now.','She is eating food now.','She eats food now.'],2,'Now + action in progress → Present Continuous.'],
+ ['मैंने अपना काम कर लिया है।',['I am finish my work.','I have finished my work.','I finished my work yesterday.','I had finish my work.'],1,'Completed result linked to the present → Present Perfect.'],
  ['मैं दो घंटे से पढ़ रहा हूँ।',['I have been studying for two hours.','I studied for two hours.','I am studied for two hours.','I had study two hours.'],0,'Duration continuing to now → Present Perfect Continuous.'],
- ['मैंने उसे कल देखा।',['I saw him yesterday.','I have seen him yesterday.','I see him yesterday.','I was see him yesterday.'],0,'Finished definite past time → Simple Past.'],
- ['जब तुम आए, मैं पढ़ रहा था।',['I was studying when you came.','I am studying when you came.','I studied when you came.','I had study when you came.'],0,'Action in progress at a past moment → Past Continuous.'],
- ['हम पहुँचे तो ट्रेन जा चुकी थी।',['The train had left before we arrived.','The train has left before we arrived.','The train left before we arrive.','The train was left before we arrived.'],0,'Earlier of two past actions → Past Perfect.'],
+ ['मैंने उसे कल देखा।',['I have seen him yesterday.','I see him yesterday.','I was see him yesterday.','I saw him yesterday.'],3,'Finished definite past time → Simple Past.'],
+ ['जब तुम आए, मैं पढ़ रहा था।',['I studied when you came.','I had study when you came.','I was studying when you came.','I am studying when you came.'],2,'Action in progress at a past moment → Past Continuous.'],
+ ['हम पहुँचे तो ट्रेन जा चुकी थी।',['The train was left before we arrived.','The train had left before we arrived.','The train has left before we arrived.','The train left before we arrive.'],1,'Earlier of two past actions → Past Perfect.'],
  ['मैं तुम्हारी मदद करूँगा।',['I will help you.','I will helped you.','I will helping you.','I help you yesterday.'],0,'will takes V1.'],
- ['Which sentence is correct?',['She does not play cricket.','She does not plays cricket.','She do not play cricket.','She did not plays cricket.'],0,'After does not use the base verb.'],
- ['Which question is correct?',['Did you go there?','Did you went there?','Did you gone there?','Did you going there?'],0,'After did use V1.'],
- ['Since introduces a…',['starting point','duration','finished year','timetable'],0,'Since = starting point.'],
+ ['Which sentence is correct?',['She does not plays cricket.','She do not play cricket.','She did not plays cricket.','She does not play cricket.'],3,'After does not use the base verb.'],
+ ['Which question is correct?',['Did you gone there?','Did you going there?','Did you go there?','Did you went there?'],2,'After did use V1.'],
+ ['Since introduces a…',['timetable','starting point','duration','finished year'],1,'Since = starting point.'],
  ['For usually introduces a…',['duration','starting point','person','place'],0,'For = duration.'],
- ['Which is best for “every day”?',['Simple Present','Present Perfect Continuous','Past Perfect','Future Perfect'],0,'Every day commonly points to routine/habit.'],
- ['Which is best for “now”?',['Present Continuous','Simple Past','Past Perfect','Future Simple'],0,'Now commonly points to an action in progress.'],
- ['Which is best for “yesterday”?',['Simple Past','Present Perfect','Present Continuous','Future Simple'],0,'Yesterday is a definite finished past time.']
+ ['Which is best for “every day”?',['Present Perfect Continuous','Past Perfect','Future Perfect','Simple Present'],3,'Every day commonly points to routine/habit.'],
+ ['Which is best for “now”?',['Past Perfect','Future Simple','Present Continuous','Simple Past'],2,'Now commonly points to an action in progress.'],
+ ['Which is best for “yesterday”?',['Future Simple','Simple Past','Present Perfect','Present Continuous'],1,'Yesterday is a definite finished past time.']
 ];
 
 const ANSWERED_LABELS={practice:'PRACTICE',challenge:'CHALLENGE',test:'FINAL TEST'};
