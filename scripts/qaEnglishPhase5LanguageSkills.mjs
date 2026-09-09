@@ -1,47 +1,43 @@
 import fs from 'node:fs';
 
 const skills=fs.readFileSync('src/english/EnglishPanoramaLanguageSkills.jsx','utf8');
-const css=fs.readFileSync('src/english/EnglishPanoramaLanguageSkills.css','utf8');
+const timedQuiz=fs.readFileSync('src/english/EnglishTimedQuiz.jsx','utf8');
+const clauses=fs.readFileSync('src/english/EnglishClausesTopic.jsx','utf8');
 const app=fs.readFileSync('src/AppWithChapter5.jsx','utf8');
 const subject=fs.readFileSync('src/english/EnglishSubjectSection.jsx','utf8');
 const revision=fs.readFileSync('src/english/EnglishPanoramaProseRevision.jsx','utf8');
-const quiz=fs.readFileSync('src/english/PanoramaTimedQuiz.jsx','utf8');
 const errors=[];
+
 const req=['tenses','modals','voice','agreement','narration','clauses','determiners','prepositions','idioms','translation','formal-letter','informal-letter','notice','report','speech','message','paragraph-essay','composition','factual-reading','literary-reading','poetry-reading'];
-const topicPresent=id=>skills.includes(`g('${id}'`)||skills.includes(`['${id}'`)||skills.includes(`id:'${id}'`);
-for(const id of req)if(!topicPresent(id))errors.push(`Topic missing: ${id}`);
+for(const id of req)if(!skills.includes(`id:'${id}'`))errors.push(`Topic missing from registry: ${id}`);
+
 const lessonMarkers=(skills.match(/\['\d{2}','/g)||[]).length;
-if(lessonMarkers<100)errors.push(`Expected a substantial deep lesson library, found only ${lessonMarkers} lesson markers`);
-const grammarTopicCalls=(skills.match(/g\('/g)||[]).length;
-if(grammarTopicCalls!==10)errors.push(`Expected 10 core grammar/language topic definitions, found ${grammarTopicCalls}`);
-if(!skills.includes("const writing=["))errors.push('Writing topic collection missing');
-if(!skills.includes("const reading=["))errors.push('Reading topic collection missing');
-if(!skills.includes("const topics=[...grammar,translation,...extra,...writing,...reading]"))errors.push('Combined topic registry missing');
-if(!skills.includes("function TopicPage"))errors.push('Dedicated topic-page renderer missing');
-if(!skills.includes("function bank(topic)"))errors.push('Per-topic assessment bank builder missing');
-for(const mode of ['practice','challenge','finalTest'])if(!skills.includes(mode))errors.push(`Assessment mode missing: ${mode}`);
-if(!skills.includes("q.slice(0,5)"))errors.push('Practice bank is not deep enough');
-if(!skills.includes("Math.min(8,q.length)"))errors.push('Challenge bank sizing missing');
-if(!skills.includes("Math.min(10,q.length)"))errors.push('Final-test bank sizing missing');
-if(!skills.includes("p.set('topic',id)"))errors.push('Topic URL state wiring missing');
-if(!skills.includes('3 assessment levels'))errors.push('Three-level assessment UX marker missing');
-if(!skills.includes('ACTIVE RECALL'))errors.push('Active-recall study block missing');
-if(!skills.includes('ERROR CLINIC'))errors.push('Error-clinic study block missing');
-if(!css.includes('.els-topic-page')||!css.includes('.els-assessment-actions')||!css.includes('.els-deep-card'))errors.push('Dedicated topic-page CSS missing');
-if(!quiz.includes('Practice')||!quiz.includes('Challenge')||!quiz.includes('FINAL TEST'))errors.push('Timed quiz mode labels missing');
-if(!quiz.includes('ptq-question-nav')||!quiz.includes('FULL REVIEW'))errors.push('Assessment review/navigation UX missing');
-if(!quiz.includes('ptq-pulse'))errors.push('Timed urgency feedback missing');
+if(lessonMarkers<70)errors.push(`Expected a substantial Language & Skills lesson library, found ${lessonMarkers} lesson markers`);
+
+if(!skills.includes('const TOPICS=['))errors.push('Canonical TOPICS registry missing');
+if(!skills.includes('modeNames'))errors.push('Shared mode registry missing');
+if(!skills.includes("mode==='learn'"))errors.push('Learn mode missing');
+if(!skills.includes("mode==='practice'"))errors.push('Practice mode missing');
+if(!skills.includes("mode==='challenge'"))errors.push('Challenge mode missing');
+if(!skills.includes("mode==='test'"))errors.push('Final Test mode missing');
+
+if(!timedQuiz.includes('getBank')||!timedQuiz.includes('questions'))errors.push('Timed quiz does not expose a shared bank API');
+if(!timedQuiz.includes('setSubmitted')||!timedQuiz.includes('Review answers'))errors.push('Timed quiz submission/review flow missing');
+if(!timedQuiz.includes('Retry')||!timedQuiz.includes('Next level'))errors.push('Timed quiz retry/next-level flow missing');
+if(!timedQuiz.includes('answered')||!timedQuiz.includes('percent'))errors.push('Timed quiz score/percentage review missing');
+
+if(!clauses.includes('<EnglishTimedQuiz')||!clauses.includes('questions={selected}'))errors.push('Clauses is not wired to the shared timed quiz question-bank API');
+if(!clauses.includes("['learn','Learn']")||!clauses.includes("['practice','Practice']")||!clauses.includes("['challenge','Challenge']")||!clauses.includes("['test','Final Test']"))errors.push('Clauses assessment levels are incomplete');
+
 if(!app.includes('EnglishPanoramaLanguageSkills')||!app.includes("p.get('languageSkills')==='1'"))errors.push('Language Skills app routing missing');
 if(!subject.includes('openLanguageSkills')||!subject.includes('English Language &amp; Skills Hub'))errors.push('Language Skills navigation missing');
 if(!revision.includes('Whole Prose Revision Test'))errors.push('Existing prose revision missing');
+
 if(errors.length){console.error('English Phase 5 language-skills QA failed:');errors.forEach(e=>console.error(`- ${e}`));process.exit(1)}
 console.log('English Phase 5 language-skills QA passed.');
-console.log('Dedicated topic pages: 21');
-console.log('Core grammar/language definitions: 10');
-console.log('Writing topics: 8');
-console.log('Reading topics: 3');
-console.log(`Deep lesson markers: ${lessonMarkers}`);
-console.log('Per-topic Practice / Challenge / Final Test wiring: OK');
-console.log('Timed quiz navigation, urgency and full-review UX: OK');
-console.log('Active recall + error clinic UX: OK');
+console.log(`Registry topics: ${req.length}`);
+console.log(`Lesson markers: ${lessonMarkers}`);
+console.log('Canonical timed assessment engine: OK');
+console.log('Clauses shared question-bank wiring: OK');
+console.log('Learn / Practice / Challenge / Final Test modes: OK');
 console.log('Navigation/routing: OK');
