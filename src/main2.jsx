@@ -10,14 +10,19 @@ import './science-learn-navigator-fix.css';
 import './sst/sst-section.css';
 
 const APP_BUILD_VERSION=import.meta.env.VITE_BUILD_VERSION||'';
+const BASE_URL=import.meta.env.BASE_URL||'/';
 
 function BuildVersionRefresh(){
   useEffect(()=>{
     if(!APP_BUILD_VERSION)return;
     let stopped=false;
+    let checking=false;
     const check=async()=>{
+      if(stopped||checking)return;
+      checking=true;
       try{
-        const url=`/build-version.json?check=${Date.now()}`;
+        const base=BASE_URL.endsWith('/')?BASE_URL:`${BASE_URL}/`;
+        const url=`${base}build-version.json?check=${Date.now()}`;
         const response=await fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
         if(!response.ok)return;
         const data=await response.json();
@@ -26,11 +31,16 @@ function BuildVersionRefresh(){
           next.searchParams.set('__hub_refresh',data.version);
           window.location.replace(next.toString());
         }
-      }catch{}
+      }catch{}finally{
+        checking=false;
+      }
     };
     check();
-    const timer=setInterval(check,30000);
-    return()=>{stopped=true;clearInterval(timer)};
+    const timer=setInterval(check,5000);
+    const onVisible=()=>{if(document.visibilityState==='visible')check()};
+    document.addEventListener('visibilitychange',onVisible);
+    window.addEventListener('focus',check);
+    return()=>{stopped=true;clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);window.removeEventListener('focus',check)};
   },[]);
   return null;
 }
