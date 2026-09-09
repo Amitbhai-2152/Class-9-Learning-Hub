@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: 24
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
       - name: Build revision manifest
         run: printf '{"version":"%s"}\n' "$VITE_BUILD_VERSION" > public/build-version.json
       - name: Build application
