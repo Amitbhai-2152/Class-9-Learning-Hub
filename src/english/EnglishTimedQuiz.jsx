@@ -3,7 +3,7 @@ import './EnglishTimedQuiz.css';
 import './EnglishDeterminersAssessmentBridge.jsx';
 
 const normalize=q=>Array.isArray(q)?{q:q[0],o:q[1],a:q[2],e:q[3]||''}:q;
-const defaultTimeFor=(mode,title)=>title==='Determiners'||title==='Prepositions'?(mode==='practice'?50:60):(mode==='practice'?45:mode==='challenge'?60:50);
+const defaultTimeFor=(mode,title)=>title==='Determiners'||title==='Prepositions'||title==='Idioms & Phrases'?(mode==='practice'?50:60):(mode==='practice'?45:mode==='challenge'?60:50);
 const labels=['A','B','C','D'];
 const randomizeOptions=items=>items.map(item=>{const{q,o,a,e}=item;const pairs=o.map((text,index)=>({text,index}));for(let i=pairs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pairs[i],pairs[j]]=[pairs[j],pairs[i]]}return{q,o:pairs.map(pair=>pair.text),a:pairs.findIndex(pair=>pair.index===a),e}});
 
