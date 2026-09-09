@@ -17,6 +17,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      VITE_BUILD_VERSION: ${{ github.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,6 +60,8 @@ jobs:
         run: npm run qa:sanskrit
       - name: Sanskrit Grammar QA
         run: npm run qa:sanskrit:grammar
+      - name: Build revision manifest
+        run: printf '{"version":"%s"}\n' "$VITE_BUILD_VERSION" > public/build-version.json
       - name: Build application
         run: npm run build
       - name: Setup Pages
