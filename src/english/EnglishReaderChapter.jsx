@@ -3,7 +3,7 @@ import PanoramaTimedQuiz from './PanoramaTimedQuiz.jsx';
 import './english-reader.css';
 import './english-panorama.css';
 
-function StudyView({study}){
+function StudyView({study,onMode}){
  return <div className="pg-learn">
   <div className="pg-callout pg-no-book"><b>📗 Complete Reader Study</b><span>Source-based guided reading, सरल हिन्दी explanation, vocabulary, textbook preparation, discussion और project work.</span></div>
   <section className="pg-panel"><div className="pg-panel-title"><span>ABOUT THE LESSON</span><h2>Chapter का basic idea</h2></div><p>{study.intro}</p><div className="pg-author"><b>पाठ / स्रोत</b><p>{study.sourceNote}</p></div></section>
@@ -17,16 +17,16 @@ function StudyView({study}){
   <section id="activities" className="pg-section-heading compact"><span>04</span><div><small>DISCUSS • DO • CREATE</small><h2>Discussion & Activities</h2><p>PDF में दिए discussion points और project tasks को स्पष्ट learner actions में रखा गया है।</p></div></section>
   <section className="pg-tool-grid"><section className="pg-panel"><h3>Let’s Discuss</h3><div className="pg-activitygrid">{study.discussion.map((x,i)=><div key={x}><span>{i+1}</span><p>{x}</p></div>)}</div></section><section className="pg-panel"><h3>Let’s Do</h3><div className="pg-activitygrid">{study.activities.map((x,i)=><div key={x}><span>{i+1}</span><p>{x}</p></div>)}</div></section></section>
   {study.extra&&<section className="pg-panel"><h3>Source Note</h3><p>{study.extra}</p></section>}
-  <div className="pg-modebar"><div><span className="poem-section-label">ASSESSMENT</span><h2>Test what you learned</h2><p>15 Practice • 25 Challenge • 20-question Final Test</p></div><div className="poem-mode-buttons"><button className="primary" onClick={()=>study.onMode?.('practice')}>Practice →</button><button onClick={()=>study.onMode?.('challenge')}>Challenge →</button><button onClick={()=>study.onMode?.('test')}>Final Test →</button></div></div>
+  <div className="pg-modebar"><div><span className="poem-section-label">ASSESSMENT</span><h2>Test what you learned</h2><p>15 Practice • 25 Challenge • 20-question Final Test</p></div><div className="poem-mode-buttons"><button type="button" className="primary" onClick={()=>onMode('practice')}>Practice →</button><button type="button" onClick={()=>onMode('challenge')}>Challenge →</button><button type="button" onClick={()=>onMode('test')}>Final Test →</button></div></div>
  </div>;
 }
 
 export function EnglishReaderEngine({study,initialMode='learn',onBack,addXp,finishSession}){
  const[mode,setMode]=useState(initialMode||'learn');
- const begin=nextMode=>setMode(nextMode);
+ const begin=nextMode=>{if(nextMode==='learn'||nextMode==='practice'||nextMode==='challenge'||nextMode==='test')setMode(nextMode)};
  if(mode!=='learn'){
   const bank=mode==='practice'?study.practice:mode==='challenge'?study.challenge:study.finalTest;
-  return <PanoramaTimedQuiz mode={mode} title={study.title} bank={bank} onBack={()=>begin('learn')} addXp={addXp} finishSession={payload=>finishSession?.({subject:'english',book:'English Reader',...payload})}/>;
+  return <PanoramaTimedQuiz key={`${study.chapter}-${mode}`} mode={mode} title={study.title} bank={bank} onBack={()=>begin('learn')} addXp={addXp} finishSession={payload=>finishSession?.({subject:'english',book:'English Reader',...payload})}/>;
  }
- return <div className="pg-shell"><button className="pg-back" onClick={onBack}>← Back to English Reader</button><header className="pg-hero"><div className="pg-kicker">ENGLISH READER • CHAPTER {study.chapter}</div><h1>{study.title}</h1><p>{study.subtitle}</p><div className="pg-hero-stats"><span>{study.sections.length} guided parts</span><span>15 Practice questions</span><span>25 Challenge questions</span><span>20 Final Test questions</span></div></header><div className="pg-modebar"><button className="active" onClick={()=>begin('learn')}><b>LEARN</b><span>Guided study • vocabulary • textbook prep</span></button><button onClick={()=>begin('practice')}><b>15 Practice</b><span>11:15 min • Easy → Moderate</span></button><button onClick={()=>begin('challenge')}><b>25 Challenge</b><span>25:00 min • Moderate → Hard</span></button><button onClick={()=>begin('test')}><b>20 Final Test</b><span>25:00 min • Exam Level</span></button></div><StudyView study={{...study,onMode:begin}}/></div>;
+ return <div className="pg-shell"><button type="button" className="pg-back" onClick={onBack}>← Back to English Reader</button><header className="pg-hero"><div className="pg-kicker">ENGLISH READER • CHAPTER {study.chapter}</div><h1>{study.title}</h1><p>{study.subtitle}</p><div className="pg-hero-stats"><span>{study.sections.length} guided parts</span><span>15 Practice questions</span><span>25 Challenge questions</span><span>20 Final Test questions</span></div></header><div className="pg-modebar"><button type="button" className="active" onClick={()=>begin('learn')}><b>LEARN</b><span>Guided study • vocabulary • textbook prep</span></button><button type="button" onClick={()=>begin('practice')}><b>15 Practice</b><span>11:15 min • Easy → Moderate</span></button><button type="button" onClick={()=>begin('challenge')}><b>25 Challenge</b><span>25:00 min • Moderate → Hard</span></button><button type="button" onClick={()=>begin('test')}><b>20 Final Test</b><span>25:00 min • Exam Level</span></button></div><StudyView study={study} onMode={begin}/></div>;
 }
