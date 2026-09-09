@@ -1,0 +1,2 @@
+GitHub Pages deployment refresh marker: 2026-09-09
+This file intentionally changes on main so the Pages workflow deploys a fresh build from the current main branch.
