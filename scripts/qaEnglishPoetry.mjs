@@ -68,7 +68,7 @@ const poetryRegistry={
   'I Am Like Grass':7,
 };
 for(const [title,num] of Object.entries(poetryRegistry))assert(nav.includes(`'${title}'`),`Poetry Chapter ${num} registry entry missing`);
-assert(nav.includes('if(poetry>=1&&poetry<=7)'),'Poetry Chapters 1–7 route handler missing');
+assert(nav.includes('if(poetry>=1&&poetry<=8)'),'Poetry Chapters 1–7 route handler missing');
 assert(nav.includes("params.set(`panoramaPoetry${poetry}`,'1')"),'Poetry runtime flag missing');
 for(const n of [1,2,3,4,5,6])assert(shell.includes(`import {EnglishPanoramaPoem${n}} from './english/EnglishPanoramaPoem${n}.jsx';`),`Poetry ${n} import missing`);
 assert(shell.includes("import {EnglishPanoramaPoem7WithGuide} from './english/EnglishPanoramaPoem7WithGuide.jsx';"),'Poetry 7 guide wrapper import missing');
