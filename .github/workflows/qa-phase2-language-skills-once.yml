@@ -1,0 +1,20 @@
+name: Phase 2 Language Skills QA Once
+on:
+  push:
+    paths:
+      - 'src/english/EnglishLanguageSkillsPhase2Expansion.jsx'
+      - 'src/english/EnglishLanguageSkillsPhase2Assessment.jsx'
+      - 'src/main2.jsx'
+      - 'scripts/qaEnglishPhase5LanguageSkills.mjs'
+      - 'package.json'
+jobs:
+  phase2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - run: npm run qa:english:phase5
+      - run: npm run build
