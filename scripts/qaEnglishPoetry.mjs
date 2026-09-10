@@ -40,7 +40,7 @@ function checkPoem(cfg){
   const practice=extractBetween(p,'const practice=[','const challenge=[',`${cfg.title} Practice`);
   const challenge=extractBetween(p,'const challenge=[','const finalTest=[',`${cfg.title} Challenge`);
   checkBank(practice,`${cfg.title} Practice`,15);
-  const challengeExpected=[6,7].includes(cfg.chapter)?24:25;
+  const challengeExpected=cfg.chapter===6?24:25;
   checkBank(challenge,`${cfg.title} Challenge`,challengeExpected);
   assert(p.includes('const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)];'),`${cfg.title}: derived Final Test missing`);
 }
