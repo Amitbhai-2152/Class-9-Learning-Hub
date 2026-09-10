@@ -65,4 +65,4 @@ jobs:
       - name: Build application
         run: npm run build
       # English modules included in full verification
-      # Trigger a fresh full run after the poetry QA contract fix.
+      # Trigger a fresh full run after Language & Skills fixes.
