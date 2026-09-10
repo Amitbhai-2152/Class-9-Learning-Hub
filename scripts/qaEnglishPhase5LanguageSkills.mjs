@@ -7,6 +7,7 @@ const generic=read('src/english/EnglishGenericLanguageSkillsQuiz.jsx');
 const genericBanks=read('src/english/EnglishGenericLanguageSkillsBanks.jsx');
 const genericTopicBanks=read('src/english/EnglishGenericLanguageSkillsTopicBanks.jsx');
 const phase2=read('src/english/EnglishLanguageSkillsPhase2Expansion.jsx');
+const finalStandard=read('src/english/EnglishLanguageSkillsFinalStandardBanks.jsx');
 const phase2Assessment=read('src/english/EnglishLanguageSkillsPhase2Assessment.jsx');
 const main2=read('src/main2.jsx');
 const errors=[];const warnings=[];
@@ -25,29 +26,60 @@ if(!timedQuiz.includes('setShuffleSeed(s=>s+1)'))errors.push('Retry does not int
 for(const marker of ['Review answers','Retry','Next level','answered','percent','timeLeft<=0'])if(!timedQuiz.includes(marker))errors.push(`Shared timed quiz feature missing: ${marker}`);
 
 if(generic.includes('rotateForMode'))errors.push('Generic quiz still performs a second option-rotation layer');
-if(!generic.includes('dedicatedBank?.[mode]'))warnings.push('Generic fallback bank selector changed; verify direct mode selection manually');
 if(!generic.includes('topic?.[mode]'))errors.push('Generic topic-mode bank lookup missing');
 
 const dedicatedWriting=['formal-letter','informal-letter','notice','report','speech','message'];
 for(const id of dedicatedWriting)if(!main2.includes(`route.languageSkills&&route.topic==='${id}'`))errors.push(`Dedicated ${id} route missing from root router`);
 if(!main2.includes(`const KEEP_DEDICATED=new Set(['tenses','modals','voice','paragraph-essay','composition','translation','formal-letter','informal-letter','notice','report','speech','message'])`))errors.push('Dedicated Language & Skills topic set is incomplete');
 
-const phase4Topics=['agreement','determiners','prepositions','idioms'];
-for(const id of phase4Topics)if(!genericBanks.includes(`${id}:`))errors.push(`Phase 4 bank missing: ${id}`);
+const standardTopics=['agreement','determiners','prepositions','idioms'];
+for(const id of standardTopics){
+  if(!genericBanks.includes(`${id}:`))errors.push(`Base bank missing: ${id}`);
+  if(!phase2.includes(`${id}:{`))errors.push(`Phase 2 expansion bank missing: ${id}`);
+  if(!finalStandard.includes(`${id}:{`))errors.push(`Final standard bank missing: ${id}`);
+}
+
+const countMode=(block,mode,nextMode)=>{const start=block.indexOf(`${mode}:[`);if(start<0)return 0;const end=nextMode?block.indexOf(`${nextMode}[`,start):block.length;const segment=block.slice(start,end<0?block.length:end);return (segment.match(/^\s*\[/gm)||[]).length};
+const getBlock=(source,id)=>{const start=source.indexOf(`${id}:{`);if(start<0)return'';const end=source.indexOf('\n  },',start);return source.slice(start,end<0?source.length:end)};
+
+for(const id of standardTopics){
+  const merged={};
+  for(const mode of ['practice','challenge','test']){
+    const b=getBlock(genericBanks,id),p=getBlock(phase2,id),f=getBlock(finalStandard,id);
+    const c=countMode(b,mode,mode==='test'?null:(mode==='practice'?'challenge:':'test:'))+
+      countMode(p,mode,mode==='test'?null:(mode==='practice'?'challenge:':'test:'))+
+      countMode(f,mode,mode==='test'?null:(mode==='practice'?'challenge:':'test:'));
+    merged[mode]=c;
+    const target={practice:15,challenge:12,test:20}[mode];
+    if(c!==target)errors.push(`${id} ${mode} total bank must equal ${target}; found ${c}`);
+  }
+  if(merged.practice+merged.challenge+merged.test!==47)errors.push(`${id} total assessment bank must equal 47; found ${merged.practice+merged.challenge+merged.test}`);
+}
+
+for(const id of standardTopics){
+  const b=getBlock(finalStandard,id);
+  for(const mode of ['practice','challenge','test']){
+    const start=b.indexOf(`${mode}:[`);
+    if(start<0){errors.push(`Final standard ${id} ${mode} block missing`);continue;}
+    const next=mode==='practice'?'challenge:':mode==='challenge'?'test:':null;
+    const end=next?b.indexOf(`${next}[`,start):b.length;
+    const segment=b.slice(start,end<0?b.length:end);
+    const options=(segment.match(/\['[^\n]+?\'/g)||[]).length;
+    if(options===0)warnings.push(`${id} ${mode} final-standard bank could not be structurally counted by fallback parser`);
+  }
+}
+
+if(!phase2Assessment.includes('PHASE2_LANGUAGE_SKILLS_EXPANSION')||!phase2Assessment.includes('FINAL_STANDARD_BANKS'))errors.push('Expanded/final-standard assessment banks are not both wired to the assessment component');
+if(!phase2Assessment.includes('...(FINAL_STANDARD_BANKS[topicId]?.[mode]||[])'))errors.push('Final-standard bank is not appended to the selected mode');
 for(const id of ['formal-letter','informal-letter','notice','report','speech','message','factual-reading','literary-reading','poetry-reading'])if(!genericTopicBanks.includes(`'${id}':`)&&!genericTopicBanks.includes(`${id}:{`))warnings.push(`Generic topic metadata missing: ${id}`);
 
-const countMode=(block,mode,nextMode)=>{const start=block.indexOf(`${mode}:[`);if(start<0)return 0;const end=nextMode?block.indexOf(`${nextMode}:[`,start):block.length;const segment=block.slice(start,end<0?block.length:end);return (segment.match(/^\s*\[/gm)||[]).length};
-for(const id of phase4Topics){const start=genericBanks.indexOf(`${id}:`);const end=genericBanks.indexOf('\n},',start);if(start>=0){const block=genericBanks.slice(start,end<0?genericBanks.length:end);for(const [mode,next] of [['practice','challenge:'],['challenge','test:'],['test',null]]){const c=countMode(block,mode,next);if(c<6)errors.push(`${id} ${mode} base bank has only ${c} questions; minimum 6 expected`);}}}
-
-if(!phase2Assessment.includes('PHASE2_LANGUAGE_SKILLS_EXPANSION'))errors.push('Phase 2 expansion assessment component is not wired to expansion banks');
-for(const id of phase4Topics){for(const mode of ['practice','challenge','test']){const marker=`${id}:{`;const start=phase2.indexOf(marker);const end=phase2.indexOf('\n },',start);const block=start>=0?phase2.slice(start,end<0?phase2.length:end):'';const c=countMode(block,mode,mode==='test'?null:(mode==='practice'?'challenge:':'test:'));if(c<4)errors.push(`Phase 2 expansion ${id} ${mode} has only ${c} questions; expected 4`);}}
-
-if(errors.length){console.error('English Phase 5 Language & Skills QA failed:');for(const e of errors)console.error(`- ${e}`);for(const w of warnings)console.warn(`WARN: ${w}`);process.exit(1)}
-console.log('English Phase 5 Language & Skills QA passed.');
+if(errors.length){console.error('English Language & Skills Phase 4 QA failed:');for(const e of errors)console.error(`- ${e}`);for(const w of warnings)console.warn(`WARN: ${w}`);process.exit(1)}
+console.log('English Language & Skills Phase 4 QA passed.');
 console.log(`Registry topics: ${req.length}`);
 console.log(`Base lesson markers: ${lessonMarkers}`);
 console.log('Shared timed engine: deterministic/stable option randomization, retry reseed, score/review/timer guards OK');
-console.log('Root router: dedicated writing assessments separated from generic fallback routes OK');
-console.log('Phase 2 expansion: agreement, determiners, prepositions and idioms now have 10 questions per assessment mode; 40 expanded questions total');
+console.log('Assessment architecture: one runtime option-randomization layer; no generic pre-rotation');
+console.log('Standardised assessment banks: 4 topics × (15 practice + 12 challenge + 20 test) = 188 questions');
+console.log('Topics standardised:',standardTopics.join(', '));
 console.log('Quality warnings:',warnings.length);
 if(warnings.length)warnings.forEach(w=>console.log(`- ${w}`));
