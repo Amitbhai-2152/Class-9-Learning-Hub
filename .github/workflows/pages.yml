@@ -34,6 +34,9 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: Write build version manifest
+        run: echo '{"version":"'"$GITHUB_SHA"'"}' > dist/build-version.json
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
