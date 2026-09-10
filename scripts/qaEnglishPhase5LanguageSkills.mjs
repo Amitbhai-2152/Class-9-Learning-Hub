@@ -44,7 +44,10 @@ const countMode=(block,mode,nextMode)=>{
   if(start<0)return 0;
   const end=nextMode?block.indexOf(`${nextMode}[`,start):block.length;
   const segment=block.slice(start,end<0?block.length:end);
-  return (segment.match(/^\s*\[\s*['"`]/gm)||[]).length;
+  // Count only top-level question-array starts. Options are never allowed to begin a
+  // question line with the question signature `[stem, [`; this avoids counting option
+  // arrays that may be formatted on their own lines.
+  return (segment.match(/^\s*\['[^'\n]*',\[/gm)||[]).length;
 };
 const getBlock=(source,id)=>{
   const start=source.indexOf(`${id}:{`);
