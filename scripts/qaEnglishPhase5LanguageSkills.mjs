@@ -86,8 +86,8 @@ if(!phase2Assessment.includes('PHASE2_LANGUAGE_SKILLS_EXPANSION')||!phase2Assess
 if(!phase2Assessment.includes('...(FINAL_STANDARD_BANKS[topicId]?.[mode]||[])'))errors.push('Final-standard bank is not appended to the selected mode');
 for(const id of ['formal-letter','informal-letter','notice','report','speech','message','factual-reading','literary-reading','poetry-reading'])if(!genericTopicBanks.includes(`'${id}':`)&&!genericTopicBanks.includes(`${id}:{`))warnings.push(`Generic topic metadata missing: ${id}`);
 
-if(errors.length){console.error('English Language & Skills Phase 4 QA failed:');for(const e of errors)console.error(`- ${e}`);for(const w of warnings)console.warn(`WARN: ${w}`);process.exit(1)}
-console.log('English Language & Skills Phase 4 QA passed.');
+if(errors.length){console.error('English Language & Skills Phase 5 QA failed:');for(const e of errors)console.error(`- ${e}`);for(const w of warnings)console.warn(`WARN: ${w}`);process.exit(1)}
+console.log('English Language & Skills Phase 5 QA passed.');
 console.log(`Registry topics: ${req.length}`);
 console.log(`Base lesson markers: ${lessonMarkers}`);
 console.log('Shared timed engine: deterministic/stable option randomization, retry reseed, score/review/timer guards OK');
