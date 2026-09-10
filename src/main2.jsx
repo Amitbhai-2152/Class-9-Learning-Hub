@@ -74,6 +74,15 @@ function readRoute(){
   return {subject:params.get('subject')||'',page:params.get('page')||'',topic:params.get('topic')||'',mode:params.get('mode')||'learn',languageSkills:params.get('languageSkills')==='1'};
 }
 
+function exitComposition(){
+  const params=new URLSearchParams();
+  params.set('page','language-skills');
+  params.set('subject','english');
+  params.set('languageSkills','1');
+  window.history.pushState({},'',`${window.location.pathname}?${params}${window.location.hash||''}`);
+  window.dispatchEvent(new PopStateEvent('popstate'));
+}
+
 function RootRouter(){
   const [route,setRoute]=useState(readRoute);
   useEffect(()=>{
@@ -87,7 +96,7 @@ function RootRouter(){
 
   const isSST=route.subject==='sst'||route.page.startsWith('sst-');
   if(isSST)return <SSTRoot/>;
-  if(route.languageSkills&&route.topic==='composition')return <EnglishCompositionTopic/>;
+  if(route.languageSkills&&route.topic==='composition')return <EnglishCompositionTopic onBack={exitComposition}/>;
   const englishAssessment=route.languageSkills&&!KEEP_DEDICATED.has(route.topic)&&ASSESSMENT_TOPICS.has(route.topic)&&route.mode!=='learn';
   if(englishAssessment)return <EnglishGenericLanguageSkillsQuiz key={`${route.topic}:${route.mode}`} topicId={route.topic}/>;
   return <AppWithChapter5 key={`${route.subject}:${route.page}:${route.topic}:${route.mode}:${route.languageSkills?'1':'0'}`}/>;
