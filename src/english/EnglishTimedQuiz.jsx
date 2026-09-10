@@ -5,19 +5,20 @@ import './EnglishDeterminersAssessmentBridge.jsx';
 const normalize=q=>Array.isArray(q)?{q:q[0],o:q[1],a:q[2],e:q[3]||''}:q;
 const defaultTimeFor=(mode,title)=>title==='Determiners'||title==='Prepositions'||title==='Idioms & Phrases'?(mode==='practice'?50:60):(mode==='practice'?45:mode==='challenge'?60:50);
 const labels=['A','B','C','D'];
-const stableHash=(value,salt=0)=>{let h=2166136261^salt;for(let i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};
-const randomizeOptions=(items,salt=0)=>items.map((item,qIndex)=>{const{q,o,a,e}=item;const pairs=o.map((text,index)=>({text,index}));for(let i=pairs.length-1;i>0;i--){const seed=stableHash(`${q}|${modeKey}|${qIndex}|${i}`,salt);const j=seed%(i+1);[pairs[i],pairs[j]]=[pairs[j],pairs[i]]}return{q,o:pairs.map(pair=>pair.text),a:pairs.findIndex(pair=>pair.index===a),e}});
-const modeKey='';
+const stableHash=(value,salt=0)=>{let h=(2166136261^salt)>>>0;for(let i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};
+const randomizeOptions=(items,salt=0,mode='',title='')=>items.map((item,qIndex)=>{const{q,o,a,e}=item;const pairs=o.map((text,index)=>({text,index}));for(let i=pairs.length-1;i>0;i--){const j=stableHash(`${title}|${mode}|${q}|${qIndex}|${i}`,salt)%(i+1);[pairs[i],pairs[j]]=[pairs[j],pairs[i]]}return{q,o:pairs.map(pair=>pair.text),a:pairs.findIndex(pair=>pair.index===a),e}});
 
 export default function EnglishTimedQuiz({title='English Quiz',mode='test',getBank,questions,onModeChange=()=>{},onBack=()=>{},addXp=()=>{},finishSession=()=>{},onRetry,onNextLevel,secondsPerQuestion}){
  const timeFor=typeof secondsPerQuestion==='number'&&secondsPerQuestion>0?()=>secondsPerQuestion:mode=>defaultTimeFor(mode,title);
  const[shuffleSeed,setShuffleSeed]=useState(0);
- const bank=useMemo(()=>{const source=getBank?getBank(mode):questions||[];return randomizeOptions((source||[]).map(normalize),shuffleSeed)},[getBank,questions,mode,shuffleSeed]);
+ const source=getBank?getBank(mode):questions||[];
+ const sourceKey=JSON.stringify(source||[]);
+ const bank=useMemo(()=>randomizeOptions((source||[]).map(normalize),shuffleSeed,mode,title),[sourceKey,shuffleSeed,mode,title]);
  const[timeLeft,setTimeLeft]=useState(()=>Math.max(10,bank.length*timeFor(mode)));
  const[index,setIndex]=useState(0),[answers,setAnswers]=useState([]),[submitted,setSubmitted]=useState(false),[started,setStarted]=useState(false);
  const finalized=useRef(false);
  useEffect(()=>{setTimeLeft(Math.max(10,bank.length*timeFor(mode)));setIndex(0);setAnswers([]);setSubmitted(false);setStarted(false);finalized.current=false},[mode,bank.length,secondsPerQuestion,title,shuffleSeed]);
- useEffect(()=>{if(!started||submitted)return; if(timeLeft<=0){setSubmitted(true);return}const id=setInterval(()=>setTimeLeft(t=>t-1),1000);return()=>clearInterval(id)},[started,submitted,timeLeft]);
+ useEffect(()=>{if(!started||submitted)return;if(timeLeft<=0){setSubmitted(true);return}const id=setInterval(()=>setTimeLeft(t=>t-1),1000);return()=>clearInterval(id)},[started,submitted,timeLeft]);
  useEffect(()=>{if(!submitted||finalized.current)return;finalized.current=true;const finalScore=bank.reduce((s,item,i)=>s+(answers[i]===item.a?1:0),0);addXp(Math.max(5,finalScore*2));finishSession({kind:'language-skills',topic:title.toLowerCase().replace(/[^a-z]+/g,'-'),mode,score:finalScore,total:bank.length,at:Date.now()})},[submitted,bank,answers,addXp,finishSession,title,mode]);
  const score=bank.reduce((s,item,i)=>s+(answers[i]===item.a?1:0),0),answered=answers.filter(v=>v!==undefined&&v!==null).length,percent=bank.length?Math.round(score*100/bank.length):0;
  const select=i=>{if(submitted)return;setAnswers(a=>{const n=[...a];n[index]=i;return n})};const start=()=>setStarted(true);const submit=()=>setSubmitted(true);const next=()=>setIndex(i=>Math.min(bank.length-1,i+1));const prev=()=>setIndex(i=>Math.max(0,i-1));
