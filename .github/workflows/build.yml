@@ -60,10 +60,14 @@ jobs:
         run: npm run qa:english:phase3
       - name: English Phase 4 language QA
         run: npm run qa:english:phase4
-      - name: English Phase 5 language skills QA
+      - name: English Phase 5 language QA
         run: npm run qa:english:phase5
+      - name: English language skills quality QA
+        run: npm run qa:english:language-skills-quality
       - name: Reasoning content and wiring QA
         run: npm run qa:reasoning
+      - name: Number System content and UX QA
+        run: npm run qa:number-system
       - name: Build application
         run: npm run build
-      # English and reasoning modules included in full verification.
+      # English, reasoning and Number System modules included in full verification.
