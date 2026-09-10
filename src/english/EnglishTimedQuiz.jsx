@@ -10,7 +10,7 @@ const randomizeOptions=items=>items.map(item=>{const{q,o,a,e}=item;const pairs=o
 export default function EnglishTimedQuiz({title='English Quiz',mode='test',getBank,questions,onModeChange=()=>{},onBack=()=>{},addXp=()=>{},finishSession=()=>{},onRetry,onNextLevel,secondsPerQuestion}){
  const timeFor=typeof secondsPerQuestion==='number'&&secondsPerQuestion>0?()=>secondsPerQuestion:mode=>defaultTimeFor(mode,title);
  const[shuffleSeed,setShuffleSeed]=useState(0);
- const bank=useMemo(()=>{const source=getBank?getBank(mode):questions||[];return randomizeOptions((source||[]).map(normalize))},[getBank,questions,mode,shuffleSeed]);
+ const bank=useMemo(()=>{const source=getBank?getBank(mode):questions||[];return randomizeOptions((source||[]).map(normalize))},[mode,questions,shuffleSeed]);
  const[timeLeft,setTimeLeft]=useState(()=>Math.max(10,bank.length*timeFor(mode)));
  const[index,setIndex]=useState(0),[answers,setAnswers]=useState([]),[submitted,setSubmitted]=useState(false),[started,setStarted]=useState(false);
  const finalized=useRef(false);
