@@ -22,6 +22,48 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Repair Paragraph / Essay source before build
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          path = Path('src/english/EnglishParagraphEssayTopic.jsx')
+          s = path.read_text(encoding='utf-8')
+
+          matches = list(re.finditer(r'const HINDI_GUIDE=\[', s))
+          if len(matches) > 1:
+              first = matches[0]
+              first_end = re.search(r'\n\];', s[first.start():])
+              if not first_end:
+                  raise SystemExit('Could not locate HINDI_GUIDE end')
+              first_end_pos = first.start() + first_end.end()
+              rebuilt = s[:first_end_pos]
+              cursor = first_end_pos
+              for m in matches[1:]:
+                  if m.start() < cursor:
+                      continue
+                  end = re.search(r'\n\];', s[m.start():])
+                  if not end:
+                      raise SystemExit('Could not locate duplicate HINDI_GUIDE end')
+                  cursor = m.start() + end.end()
+              s = rebuilt + s[cursor:]
+
+          s = s.replace(r'\\\n\\\n', r'\\n\\n')
+          s = s.replace("text.split('\\\n\\\n')", "text.split('\\n\\n')")
+          path.write_text(s, encoding='utf-8')
+          PY
+      - name: Verify Paragraph / Essay source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s = Path('src/english/EnglishParagraphEssayTopic.jsx').read_text(encoding='utf-8')
+          assert len(re.findall(r'const HINDI_GUIDE=\[', s)) == 1
+          assert "text.split('\\n\\n')" in s
+          assert 'Examples on Different Topics' in s
+          assert 'Value of Time' in s
+          print('Paragraph / Essay source is clean and contains visible model writing.')
+          PY
       - name: Apply expanded Paragraph / Essay model writings
         if: github.actor != 'github-actions[bot]'
         run: |
