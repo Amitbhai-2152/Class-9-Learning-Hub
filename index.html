@@ -1,10 +1,24 @@
 <!doctype html>
-<html lang="hi">
+<html lang="hi" class="hub-booting">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="कक्षा 9 लर्निंग हब — सीखें, अभ्यास करें, चुनौती लें और टेस्ट दें।" />
     <title>कक्षा 9 लर्निंग हब</title>
+    <style>html.hub-booting body{visibility:hidden}html.hub-booting{background:#fff}</style>
+    <script>
+      (function(){
+        var expected='%VITE_BUILD_VERSION%';
+        var path='./build-version.json?preboot='+Date.now();
+        fetch(path,{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){
+          var remote=String((d&&d.version)||'');
+          if(remote && expected && remote!==expected){
+            var u=new URL(window.location.href);u.searchParams.set('__hub_refresh',remote);window.location.replace(u.toString());return;
+          }
+          document.documentElement.classList.remove('hub-booting');
+        }).catch(function(){document.documentElement.classList.remove('hub-booting')});
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
