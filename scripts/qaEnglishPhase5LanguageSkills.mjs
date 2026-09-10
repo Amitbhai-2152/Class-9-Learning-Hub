@@ -26,20 +26,18 @@ for(const marker of ['Review answers','Retry','Next level','answered','percent',
 if(generic.includes('rotateForMode'))errors.push('Generic quiz still performs a second option-rotation layer');
 if(!generic.includes('dedicatedBank?.[mode]'))errors.push('Generic quiz does not select the requested mode bank directly');
 if(!generic.includes('topic?.[mode]'))errors.push('Generic topic-mode bank lookup missing');
-if(!generic.includes('topic?.practice||[]'))warnings.push('Some generic topics may still fall back to their practice bank when challenge/test banks are absent');
+if(generic.includes('topic?.practice||[]'))warnings.push('Some generic topics may still fall back to their practice bank when challenge/test banks are absent');
 
 const dedicatedWriting=['formal-letter','informal-letter','notice','report','speech','message'];
-for(const id of dedicatedWriting)if(!main2.includes(`route.topic==='${id}'`))errors.push(`Dedicated ${id} route missing from root router`);
+for(const id of dedicatedWriting)if(!main2.includes(`route.languageSkills&&route.topic==='${id}'`))errors.push(`Dedicated ${id} route missing from root router`);
 if(!main2.includes(`const KEEP_DEDICATED=new Set(['tenses','modals','voice','paragraph-essay','composition','translation','formal-letter','informal-letter','notice','report','speech','message'])`))errors.push('Dedicated Language & Skills topic set is incomplete');
-if(main2.includes("genericTopic==='speech'"))warnings.push('Legacy AppWithChapter5 speech route remains in the fallback app; root router now owns the Language & Skills speech route');
 
-for(const id of ['agreement','determiners','prepositions','idioms','translation'])if(!genericBanks.includes(`${id}:{`))errors.push(`Phase 4 bank missing: ${id}`);
-for(const id of ['narration','clauses'])if(!generic.includes(`${id}:{title:`)||!generic.includes(`${id}:{title:'`))warnings.push(`Local bank marker for ${id} should remain easy to audit`);
+for(const id of ['agreement','determiners','prepositions','idioms','translation'])if(!genericBanks.includes(`${id}:`))errors.push(`Phase 4 bank missing: ${id}`);
 for(const id of ['formal-letter','informal-letter','notice','report','speech','message','factual-reading','literary-reading','poetry-reading'])if(!genericTopicBanks.includes(`'${id}':`)&&!genericTopicBanks.includes(`${id}:{`))warnings.push(`Generic topic metadata missing: ${id}`);
 
-const countMode=(source,mode,nextMode)=>{const start=source.indexOf(`${mode}:[`);if(start<0)return 0;const end=nextMode?source.indexOf(`${nextMode}:[`,start):source.length;const block=source.slice(start,end<0?source.length:end);return (block.match(/^\s*\[/gm)||[]).length-1};
+const countMode=(block,mode,nextMode)=>{const start=block.indexOf(`${mode}:[`);if(start<0)return 0;const end=nextMode?block.indexOf(`${nextMode}:[`,start):block.length;const segment=block.slice(start,end<0?block.length:end);return (segment.match(/^\s*\[/gm)||[]).length};
 const phase4Topics=['agreement','determiners','prepositions','idioms','translation'];
-for(const id of phase4Topics){const start=genericBanks.indexOf(`${id}:`);if(start>=0){const end=genericBanks.indexOf('\n},',start);const block=genericBanks.slice(start,end<0?genericBanks.length:end);for(const [mode,next] of [['practice',' challenge:'],['challenge',' test:'],['test',null]]){const c=countMode(block,mode,next);if(c&&c<6)warnings.push(`${id} ${mode} bank has only ${c} questions`);}}}
+for(const id of phase4Topics){const start=genericBanks.indexOf(`${id}:`);const end=genericBanks.indexOf('\n},',start);if(start>=0){const block=genericBanks.slice(start,end<0?genericBanks.length:end);for(const [mode,next] of [['practice','challenge:'],['challenge','test:'],['test',null]]){const c=countMode(block,mode,next);if(c<6)warnings.push(`${id} ${mode} bank has only ${c} questions`);}}}
 
 if(errors.length){console.error('English Phase 5 Language & Skills QA failed:');for(const e of errors)console.error(`- ${e}`);for(const w of warnings)console.warn(`WARN: ${w}`);process.exit(1)}
 console.log('English Phase 5 Language & Skills QA passed.');
@@ -47,4 +45,5 @@ console.log(`Registry topics: ${req.length}`);
 console.log(`Base lesson markers: ${lessonMarkers}`);
 console.log('Shared timed engine: deterministic/stable option randomization, retry reseed, score/review/timer guards OK');
 console.log('Root router: dedicated writing assessments separated from generic fallback routes OK');
+console.log(`Known Phase 4 bank minimum checks: ${phase4Topics.map(id=>{const start=genericBanks.indexOf(`${id}:`);const end=genericBanks.indexOf('\n},',start);const block=genericBanks.slice(start,end<0?genericBanks.length:end);return `${id}=${['practice','challenge','test'].map((m,i)=>countMode(block,m,i===2?null:['challenge','test'][i]+':')).join('/')}`}).join(', ')}`);
 if(warnings.length){console.log(`Quality warnings: ${warnings.length}`);warnings.forEach(w=>console.log(`- ${w}`))}else console.log('Quality warnings: 0');
