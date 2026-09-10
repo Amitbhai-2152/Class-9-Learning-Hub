@@ -39,16 +39,29 @@ for(const id of standardTopics){
   if(!finalStandard.includes(`${id}:{`))errors.push(`Final standard bank missing: ${id}`);
 }
 
-const countMode=(block,mode,nextMode)=>{const start=block.indexOf(`${mode}:[`);if(start<0)return 0;const end=nextMode?block.indexOf(`${nextMode}[`,start):block.length;const segment=block.slice(start,end<0?block.length:end);return (segment.match(/^\s*\[/gm)||[]).length};
-const getBlock=(source,id)=>{const start=source.indexOf(`${id}:{`);if(start<0)return'';const end=source.indexOf('\n  },',start);return source.slice(start,end<0?source.length:end)};
+const countMode=(block,mode,nextMode)=>{
+  const start=block.indexOf(`${mode}:[`);
+  if(start<0)return 0;
+  const end=nextMode?block.indexOf(`${nextMode}[`,start):block.length;
+  const segment=block.slice(start,end<0?block.length:end);
+  return (segment.match(/^\s*\[\s*['"`]/gm)||[]).length;
+};
+const getBlock=(source,id)=>{
+  const start=source.indexOf(`${id}:{`);
+  if(start<0)return'';
+  const nextPositions=standardTopics
+    .map(topic=>source.indexOf(`${topic}:{`,start+1))
+    .filter(pos=>pos>=0);
+  const end=nextPositions.length?Math.min(...nextPositions):source.length;
+  return source.slice(start,end);
+};
+const modeEnd=(mode)=>mode==='practice'?'challenge:':mode==='challenge'?'test:':null;
 
 for(const id of standardTopics){
   const merged={};
   for(const mode of ['practice','challenge','test']){
     const b=getBlock(genericBanks,id),p=getBlock(phase2,id),f=getBlock(finalStandard,id);
-    const c=countMode(b,mode,mode==='test'?null:(mode==='practice'?'challenge:':'test:'))+
-      countMode(p,mode,mode==='test'?null:(mode==='practice'?'challenge:':'test:'))+
-      countMode(f,mode,mode==='test'?null:(mode==='practice'?'challenge:':'test:'));
+    const c=countMode(b,mode,modeEnd(mode))+countMode(p,mode,modeEnd(mode))+countMode(f,mode,modeEnd(mode));
     merged[mode]=c;
     const target={practice:15,challenge:12,test:20}[mode];
     if(c!==target)errors.push(`${id} ${mode} total bank must equal ${target}; found ${c}`);
@@ -61,7 +74,7 @@ for(const id of standardTopics){
   for(const mode of ['practice','challenge','test']){
     const start=b.indexOf(`${mode}:[`);
     if(start<0){errors.push(`Final standard ${id} ${mode} block missing`);continue;}
-    const next=mode==='practice'?'challenge:':mode==='challenge'?'test:':null;
+    const next=modeEnd(mode);
     const end=next?b.indexOf(`${next}[`,start):b.length;
     const segment=b.slice(start,end<0?b.length:end);
     const options=(segment.match(/\['[^\n]+?\'/g)||[]).length;
