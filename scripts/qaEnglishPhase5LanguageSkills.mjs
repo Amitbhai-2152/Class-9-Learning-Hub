@@ -44,10 +44,9 @@ const countMode=(block,mode,nextMode)=>{
   if(start<0)return 0;
   const end=nextMode?block.indexOf(`${nextMode}[`,start):block.length;
   const segment=block.slice(start,end<0?block.length:end);
-  // Count only top-level question-array starts. Options are never allowed to begin a
-  // question line with the question signature `[stem, [`; this avoids counting option
-  // arrays that may be formatted on their own lines.
-  return (segment.match(/^\s*\['[^'\n]*',\[/gm)||[]).length;
+  // Every question tuple ends with an answer index followed by its explanation.
+  // This signature is unique to question records and does not count option arrays.
+  return (segment.match(/\],\s*\d\s*,\s*['"`]/g)||[]).length;
 };
 const getBlock=(source,id)=>{
   const start=source.indexOf(`${id}:{`);
