@@ -2,6 +2,7 @@ import React,{useEffect,useState} from 'react';
 import { createRoot } from 'react-dom/client';
 import AppWithChapter5 from './AppWithChapter5.jsx';
 import EnglishGenericLanguageSkillsQuiz from './english/EnglishGenericLanguageSkillsQuiz.jsx';
+import EnglishCompositionTopic from './english/EnglishCompositionTopic.jsx';
 import { AppErrorBoundary } from './AppErrorBoundary.jsx';
 import SSTRoot from './sst/SSTRoot.jsx';
 import './scienceModeRouter.js';
@@ -13,7 +14,7 @@ import './sst/sst-section.css';
 const APP_BUILD_VERSION=import.meta.env.VITE_BUILD_VERSION||'';
 const BASE_URL=import.meta.env.BASE_URL||'/';
 const ASSESSMENT_TOPICS=new Set(['agreement','narration','clauses','determiners','prepositions','idioms','translation','formal-letter','informal-letter','notice','report','speech','message','paragraph-essay','composition','factual-reading','literary-reading','poetry-reading']);
-const KEEP_DEDICATED=new Set(['tenses','modals','voice','paragraph-essay']);
+const KEEP_DEDICATED=new Set(['tenses','modals','voice','paragraph-essay','composition']);
 
 function BuildVersionRefresh(){
   useEffect(()=>{
@@ -85,8 +86,9 @@ function RootRouter(){
   },[]);
 
   const isSST=route.subject==='sst'||route.page.startsWith('sst-');
-  const englishAssessment=route.languageSkills&&!KEEP_DEDICATED.has(route.topic)&&ASSESSMENT_TOPICS.has(route.topic)&&route.mode!=='learn';
   if(isSST)return <SSTRoot/>;
+  if(route.languageSkills&&route.topic==='composition')return <EnglishCompositionTopic/>;
+  const englishAssessment=route.languageSkills&&!KEEP_DEDICATED.has(route.topic)&&ASSESSMENT_TOPICS.has(route.topic)&&route.mode!=='learn';
   if(englishAssessment)return <EnglishGenericLanguageSkillsQuiz key={`${route.topic}:${route.mode}`} topicId={route.topic}/>;
   return <AppWithChapter5 key={`${route.subject}:${route.page}:${route.topic}:${route.mode}:${route.languageSkills?'1':'0'}`}/>;
 }
