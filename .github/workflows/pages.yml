@@ -30,6 +30,16 @@ jobs:
         run: npm install --legacy-peer-deps
       - name: Build revision manifest
         run: printf '{"version":"%s"}\n' "$VITE_BUILD_VERSION" > public/build-version.json
+      - name: Embed build marker
+        run: python - <<'PY'
+          from pathlib import Path
+          path=Path('index.html')
+          text=path.read_text(encoding='utf-8')
+          marker=f'<meta name="hub-build-version" content="{__import__("os").environ["VITE_BUILD_VERSION"]}">'
+          if 'name="hub-build-version"' not in text:
+              text=text.replace('<head>', f'<head>\n    {marker}', 1)
+          path.write_text(text, encoding='utf-8')
+          PY
       - name: Build application
         run: npm run build
       - name: Setup Pages
