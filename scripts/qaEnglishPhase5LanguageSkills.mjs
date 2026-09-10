@@ -39,6 +39,29 @@ for(const id of standardTopics){
   if(!finalStandard.includes(`${id}:{`))errors.push(`Final standard bank missing: ${id}`);
 }
 
+// Extract exactly one top-level topic object, using brace balancing while ignoring
+// quoted strings. This prevents the last standardized topic (idioms) from consuming
+// later translation/writing data or helper code in the same source file.
+const getBlock=(source,id)=>{
+  const key=source.indexOf(`${id}:{`);
+  if(key<0)return'';
+  const open=source.indexOf('{',key);
+  let depth=0;let quote='';let escape=false;
+  for(let i=open;i<source.length;i++){
+    const ch=source[i];
+    if(quote){
+      if(escape)escape=false;
+      else if(ch==='\\')escape=true;
+      else if(ch===quote)quote='';
+      continue;
+    }
+    if(ch==='\''||ch==='"'||ch==='`'){quote=ch;continue;}
+    if(ch==='{')depth++;
+    else if(ch==='}'){depth--;if(depth===0)return source.slice(key,i+1);}
+  }
+  return source.slice(key);
+};
+
 const countMode=(block,mode,nextMode)=>{
   const start=block.indexOf(`${mode}:[`);
   if(start<0)return 0;
@@ -47,16 +70,6 @@ const countMode=(block,mode,nextMode)=>{
   // Every question tuple ends with an answer index followed by its explanation.
   // This signature is unique to question records and does not count option arrays.
   return (segment.match(/\],\s*\d\s*,\s*['"`]/g)||[]).length;
-};
-const getBlock=(source,id)=>{
-  const start=source.indexOf(`${id}:{`);
-  if(start<0)return'';
-  // End at the next top-level topic key, not merely the next standardized topic.
-  // The generic source contains additional topics after idioms (e.g. translation),
-  // which must not leak into idioms' counts.
-  const tail=source.slice(start+id.length+2);
-  const next=tail.search(/\n[A-Za-z][A-Za-z0-9-]*:\{\s*\n/);
-  return source.slice(start,next<0?source.length:start+id.length+2+next);
 };
 const modeEnd=(mode)=>mode==='practice'?'challenge:':mode==='challenge'?'test:':null;
 
