@@ -18,47 +18,24 @@ const KEEP_DEDICATED=new Set(['tenses','modals','voice','paragraph-essay']);
 function BuildVersionRefresh(){
   useEffect(()=>{
     if(!APP_BUILD_VERSION)return;
-    let stopped=false,checking=false;
-    const readDeployedVersion=async()=>{
-      const base=BASE_URL.endsWith('/')?BASE_URL:`${BASE_URL}/`;
-      const bust=Date.now();
-      const [manifestResponse,indexResponse]=await Promise.all([
-        fetch(`${base}build-version.json?hub_check=${bust}`,{cache:'no-store',headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}}),
-        fetch(`${base}index.html?hub_check=${bust}`,{cache:'no-store',headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}})
-      ]);
-      let remoteVersion='';
-      if(manifestResponse.ok){
-        const data=await manifestResponse.json();
-        remoteVersion=String(data?.version||'');
-      }
-      if(indexResponse.ok){
-        const html=await indexResponse.text();
-        const match=html.match(/name=["']hub-build-version["'][^>]*content=["']([^"']+)["']/i)||html.match(/content=["']([^"']+)["'][^>]*name=["']hub-build-version["']/i);
-        const htmlVersion=String(match?.[1]||'');
-        if(!remoteVersion)remoteVersion=htmlVersion;
-        if(htmlVersion&&htmlVersion!==APP_BUILD_VERSION)return htmlVersion;
-      }
-      return remoteVersion;
-    };
-    const check=async()=>{
-      if(stopped||checking)return;
-      checking=true;
+    let stopped=false;
+    const checkOnce=async()=>{
       try{
-        const remoteVersion=await readDeployedVersion();
-        if(!stopped&&remoteVersion&&remoteVersion!==APP_BUILD_VERSION){
+        const base=BASE_URL.endsWith('/')?BASE_URL:`${BASE_URL}/`;
+        const bust=Date.now();
+        const response=await fetch(`${base}build-version.json?hub_check=${bust}`,{cache:'no-store',headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}});
+        if(!response.ok||stopped)return;
+        const data=await response.json();
+        const remoteVersion=String(data?.version||'');
+        if(remoteVersion&&remoteVersion!==APP_BUILD_VERSION){
           const next=new URL(window.location.href);
           next.searchParams.set('__hub_refresh',remoteVersion);
           window.location.replace(next.toString());
         }
       }catch{}
-      finally{checking=false}
     };
-    check();
-    const timer=setInterval(check,2000);
-    const onVisible=()=>{if(document.visibilityState==='visible')check()};
-    document.addEventListener('visibilitychange',onVisible);
-    window.addEventListener('focus',check);
-    return()=>{stopped=true;clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);window.removeEventListener('focus',check)};
+    checkOnce();
+    return()=>{stopped=true};
   },[]);
   return null;
 }
