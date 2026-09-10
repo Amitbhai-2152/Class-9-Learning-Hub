@@ -36,6 +36,32 @@ function FreshLanguageSkillsNavigation(){
   useEffect(()=>{const hideReading=()=>{const p=new URLSearchParams(window.location.search);if(p.get('subject')!=='english'||p.get('languageSkills')!=='1'||!p.get('topic'))return;document.querySelectorAll('.english-ls-grid > section').forEach(section=>{const heading=section.querySelector('h2');if(heading?.textContent?.trim()==='Reading')section.hidden=true})};const observer=new MutationObserver(hideReading);observer.observe(document.body,{childList:true,subtree:true});hideReading();return()=>observer.disconnect()},[]);return null;
 }
 
+function MathNumberSystemNavigationGuard(){
+  useEffect(()=>{
+    const handler=event=>{
+      const target=event.target?.closest?.('button,a');
+      if(!target)return;
+      const p=new URLSearchParams(window.location.search);
+      if(p.get('subject')!=='math'||p.get('page')!=='subject')return;
+      const card=target.closest?.('.chapter-card');
+      if(!card)return;
+      const title=card.querySelector('strong')?.textContent?.replace(/\s+/g,' ').trim();
+      if(title!=='संख्या पद्धति')return;
+      event.preventDefault();
+      event.stopPropagation();
+      const next=new URLSearchParams();
+      next.set('page','chapter');
+      next.set('subject','math');
+      next.set('chapter','0');
+      window.history.pushState({},'',`${window.location.pathname}?${next.toString()}${window.location.hash||''}`);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    };
+    document.addEventListener('click',handler,true);
+    return()=>document.removeEventListener('click',handler,true);
+  },[]);
+  return null;
+}
+
 function readRoute(){const params=new URLSearchParams(window.location.search);return{subject:params.get('subject')||'',page:params.get('page')||'',topic:params.get('topic')||'',mode:params.get('mode')||'learn',languageSkills:params.get('languageSkills')==='1'}}
 function exitLanguageSkills(){const params=new URLSearchParams();params.set('page','language-skills');params.set('subject','english');params.set('languageSkills','1');window.history.pushState({},'',`${window.location.pathname}?${params}${window.location.hash||''}`);window.dispatchEvent(new PopStateEvent('popstate'))}
 
@@ -56,4 +82,4 @@ function RootRouter(){const[route,setRoute]=useState(readRoute);useEffect(()=>{c
  return <AppWithChapter5 key={`${route.subject}:${route.page}:${route.topic}:${route.mode}:${route.languageSkills?'1':'0'}`}/>;
 }
 
-createRoot(document.getElementById('root')).render(<React.StrictMode><AppErrorBoundary><BuildVersionRefresh/><FreshLanguageSkillsNavigation/><RootRouter/></AppErrorBoundary></React.StrictMode>);
+createRoot(document.getElementById('root')).render(<React.StrictMode><AppErrorBoundary><BuildVersionRefresh/><FreshLanguageSkillsNavigation/><MathNumberSystemNavigationGuard/><RootRouter/></AppErrorBoundary></React.StrictMode>);
