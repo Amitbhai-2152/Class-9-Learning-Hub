@@ -51,11 +51,12 @@ const countMode=(block,mode,nextMode)=>{
 const getBlock=(source,id)=>{
   const start=source.indexOf(`${id}:{`);
   if(start<0)return'';
-  const nextPositions=standardTopics
-    .map(topic=>source.indexOf(`${topic}:{`,start+1))
-    .filter(pos=>pos>=0);
-  const end=nextPositions.length?Math.min(...nextPositions):source.length;
-  return source.slice(start,end);
+  // End at the next top-level topic key, not merely the next standardized topic.
+  // The generic source contains additional topics after idioms (e.g. translation),
+  // which must not leak into idioms' counts.
+  const tail=source.slice(start+id.length+2);
+  const next=tail.search(/\n[A-Za-z][A-Za-z0-9-]*:\{\s*\n/);
+  return source.slice(start,next<0?source.length:start+id.length+2+next);
 };
 const modeEnd=(mode)=>mode==='practice'?'challenge:':mode==='challenge'?'test:':null;
 
