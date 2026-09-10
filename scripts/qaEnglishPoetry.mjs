@@ -10,6 +10,15 @@ const shell=read('src/AppWithChapter5.jsx');
 const engine=read('src/english/PanoramaTimedQuiz.jsx');
 const guide7=read('src/english/EnglishPanoramaPoem7LineGuide.jsx');
 
+function extractBetween(source,startMarker,endMarker,name){
+  const start=source.indexOf(startMarker);
+  assert(start>=0,`${name}: start marker missing`);
+  const bodyStart=start+startMarker.length;
+  const end=source.indexOf(endMarker,bodyStart);
+  assert(end>=0,`${name}: end marker missing`);
+  return source.slice(bodyStart,end);
+}
+
 function checkBank(segment,name,expected){
   assert(count(segment,/q\s*\(/g)===expected,`${name}: expected ${expected} questions`);
   const signatures=count(segment,/\],\s*\d+\s*,\s*['"]/g);
@@ -27,8 +36,9 @@ function checkPoem(cfg){
   assert(p.includes('stanzas:['),`${cfg.title}: stanza data missing`);
   for(const x of cfg.excerpts)assert(p.includes(x),`${cfg.title}: required source excerpt missing: ${x}`);
   for(const x of cfg.features){const present=p.includes(x)||(x==='THEMES'&&/themes\s*:\s*\[/.test(p));assert(present,`${cfg.title}: missing required feature ${x}`)}
-  const practice=p.match(/const practice=\[(.*?)\];/s)?.[1]||'';
-  const challenge=p.match(/const challenge=\[(.*?)\];/s)?.[1]||'';
+
+  const practice=extractBetween(p,'const practice=[','const challenge=[',`${cfg.title} Practice`);
+  const challenge=extractBetween(p,'const challenge=[','const finalTest=[',`${cfg.title} Challenge`);
   checkBank(practice,`${cfg.title} Practice`,15);
   // Chapter 6 currently ships a 15-question Challenge bank; the remaining
   // released Panorama poetry chapters use the 25-question Challenge contract.
