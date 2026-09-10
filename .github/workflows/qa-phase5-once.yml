@@ -1,0 +1,19 @@
+name: Language & Skills QA Once
+on:
+  push:
+    paths:
+      - 'src/main2.jsx'
+      - 'src/english/EnglishTimedQuiz.jsx'
+      - 'src/english/EnglishGenericLanguageSkillsQuiz.jsx'
+      - 'scripts/qaEnglishPhase5LanguageSkills.mjs'
+      - '.github/workflows/qa-phase5-once.yml'
+jobs:
+  phase5:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - run: npm run qa:english:phase5
