@@ -20,10 +20,11 @@ function extractBetween(source,startMarker,endMarker,name){
 }
 
 function checkBank(segment,name,expected){
-  assert(count(segment,/q\s*\(/g)===expected,`${name}: expected ${expected} questions`);
+  const qCount=count(segment,/q\s*\(/g);
   const signatures=count(segment,/\],\s*\d+\s*,\s*['"]/g);
-  assert(signatures===expected,`${name}: expected ${expected} complete question signatures, got ${signatures}`);
   const optionGroups=count(segment,/(?:\[\s*['"][^\]]*?['"]\s*,\s*['"][^\]]*?['"]\s*,\s*['"][^\]]*?['"]\s*,\s*['"][^\]]*?['"]\s*\])/g);
+  assert(qCount===expected,`${name}: expected ${expected} questions, got ${qCount}`);
+  assert(signatures===expected,`${name}: expected ${expected} complete question signatures, got ${signatures}`);
   assert(optionGroups===expected,`${name}: expected ${expected} four-option groups, got ${optionGroups}`);
 }
 
@@ -36,12 +37,9 @@ function checkPoem(cfg){
   assert(p.includes('stanzas:['),`${cfg.title}: stanza data missing`);
   for(const x of cfg.excerpts)assert(p.includes(x),`${cfg.title}: required source excerpt missing: ${x}`);
   for(const x of cfg.features){const present=p.includes(x)||(x==='THEMES'&&/themes\s*:\s*\[/.test(p));assert(present,`${cfg.title}: missing required feature ${x}`)}
-
   const practice=extractBetween(p,'const practice=[','const challenge=[',`${cfg.title} Practice`);
   const challenge=extractBetween(p,'const challenge=[','const finalTest=[',`${cfg.title} Challenge`);
   checkBank(practice,`${cfg.title} Practice`,15);
-  // Chapter 6 currently ships a 15-question Challenge bank; the remaining
-  // released Panorama poetry chapters use the 25-question Challenge contract.
   const challengeExpected=cfg.chapter===6?15:25;
   checkBank(challenge,`${cfg.title} Challenge`,challengeExpected);
   assert(p.includes('const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)];'),`${cfg.title}: derived Final Test missing`);
