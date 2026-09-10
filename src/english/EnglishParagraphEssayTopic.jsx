@@ -66,6 +66,27 @@ const HINDI_GUIDE=[
 ['Exam audit','Final check में task, purpose, unity, coherence, support, language और required length देखें। कठिन vocabulary से ज्यादा clarity और relevance महत्वपूर्ण हैं।']
 ];
 
+const HINDI_GUIDE=[
+['What is a paragraph?','Paragraph एक ही मुख्य विचार पर आधारित वाक्यों का संगठित समूह है। हर वाक्य उसी central idea को समझाए, स्पष्ट करे या support करे।'],
+['What is an essay?','Essay किसी बड़े विषय पर क्रमबद्ध ढंग से लिखा जाता है: Introduction में विषय की दिशा, Body में अलग-अलग points और Conclusion में समापन।'],
+['Topic + controlling idea','Topic बताता है कि हम किस विषय पर लिख रहे हैं, जबकि controlling idea बताता है कि उस विषय के बारे में हमारा exact focus क्या है।'],
+['Topic sentence','Topic sentence paragraph की मुख्य दिशा बताता है। इसे पढ़कर reader को पता चल जाना चाहिए कि आगे किस विचार को develop किया जाएगा।'],
+['Supporting sentences','Supporting sentences मुख्य विचार को reason, example, fact, explanation या detail से मजबूत करते हैं। केवल वही बातें लिखें जो topic से जुड़ी हों।'],
+['Unity','Unity का अर्थ है कि paragraph का हर sentence एक ही central idea के साथ जुड़ा रहे। अलग या attractive लेकिन unrelated बात भी focus बिगाड़ सकती है।'],
+['Coherence','Coherence का मतलब ideas का logical flow है। विचार ऐसे क्रम में आएँ कि reader को बीच का connection समझने के लिए अनुमान न लगाना पड़े।'],
+['Cohesive devices','First, next, however, therefore, because, for example जैसे connectors ideas के बीच संबंध दिखाते हैं। Connector तभी लगाएँ जब उसका meaning वास्तव में सही हो।'],
+['Development patterns','Description, narration, cause-effect, problem-solution, comparison और argument अलग-अलग writing purposes हैं। Question देखकर सही pattern चुनना चाहिए।'],
+['Introduction','Introduction में topic का context और essay की direction स्पष्ट होती है। “I am going to write…” जैसे mechanical openings से बचें।'],
+['Body paragraph control','Essay के प्रत्येक body paragraph का एक clear function होना चाहिए। एक paragraph में बहुत सारे unrelated points न मिलाएँ।'],
+['Examples and evidence','Example point को clearer बनाता है; वह reasoning की जगह नहीं लेता। बिना आधार के exact statistics लिखने से बचें।'],
+['Argument writing','Argument में clear position, reasons, support और जरूरत पड़ने पर counterpoint होता है। सिर्फ emotion नहीं, reasoned explanation महत्वपूर्ण है।'],
+['Cause and effect','Cause यानी “क्यों हुआ” और effect यानी “उसके परिणाम में क्या हुआ”। इसलिए cause और effect को उलटकर नहीं लिखना चाहिए।'],
+['Problem–solution','पहले problem को स्पष्ट करें, फिर उसका impact या cause बताकर practical solution और उसका expected benefit दें।'],
+['Conclusion','Conclusion में developed idea का purposeful closure होना चाहिए। बिल्कुल नया बड़ा argument अन्त में अचानक शुरू न करें।'],
+['Language and editing','Ideas के बाद grammar, spelling, punctuation, articles, subject-verb agreement और sentence boundaries check करें।'],
+['Exam audit','Final check में task, purpose, unity, coherence, support, language और required length देखें। कठिन vocabulary से ज्यादा clarity और relevance महत्वपूर्ण हैं।']
+];
+
 const MODEL_WRITINGS=[
 ['Paragraph','Value of Time','Time is one of the most valuable resources in human life. Unlike money or material possessions, time cannot be stored for later use. Every student receives the same twenty-four hours in a day, but the results depend greatly on how those hours are planned. A student who follows a simple timetable can divide time among schoolwork, revision, reading, exercise, family responsibilities and rest. Such planning reduces last-minute pressure and makes difficult tasks easier to manage.\n\nWasting time, on the other hand, often leads to unfinished work and unnecessary stress. Spending every free moment on distractions can leave little time for important goals. This does not mean that students should study every minute; recreation and rest are also necessary. The real lesson is to give each activity an appropriate place.\n\nTherefore, we should respect time and use it wisely. Small habits such as preparing a daily plan, avoiding unnecessary delay and completing tasks on schedule can make a major difference. Good time management develops discipline and helps students use their abilities more effectively.'],
 ['Paragraph','A Responsible Student','A responsible student understands that education is not limited to attending classes or completing examinations. Responsibility begins with regular habits. Such a student listens carefully in class, brings the necessary books, completes assignments on time and asks questions when a concept is not clear. Instead of waiting for someone else to solve every difficulty, the student makes an honest effort to understand the work and correct mistakes.\n\nResponsibility also includes behaviour towards other people and shared spaces. A responsible student respects teachers, classmates and school property. Keeping the classroom clean, following school rules and helping others when appropriate are small actions, but together they create a positive learning environment. Being responsible also means admitting an error rather than making excuses for it.\n\nA responsible student therefore combines academic effort with good conduct. These habits make school life more meaningful and gradually prepare young people for larger responsibilities at home, in their community and in their future work. Responsibility is not a single act; it is a daily practice.'],
