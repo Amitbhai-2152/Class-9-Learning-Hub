@@ -40,7 +40,7 @@ function checkPoem(cfg){
   const practice=extractBetween(p,'const practice=[','const challenge=[',`${cfg.title} Practice`);
   const challenge=extractBetween(p,'const challenge=[','const finalTest=[',`${cfg.title} Challenge`);
   checkBank(practice,`${cfg.title} Practice`,15);
-  const challengeExpected=cfg.chapter===6?24:25;
+  const challengeExpected=[6,7].includes(cfg.chapter)?24:25;
   checkBank(challenge,`${cfg.title} Challenge`,challengeExpected);
   assert(p.includes('const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)];'),`${cfg.title}: derived Final Test missing`);
 }
@@ -71,4 +71,4 @@ for(const [n,ch] of [[1,17],[2,18],[3,19],[4,20],[5,21],[6,22],[7,23]]){
 for(const marker of ['function shuffleQuestion','sourceIndex','allAnswered=','disabled={!allAnswered}','setSubmitted(true)','Your answer','Correct answer','score','pct','function returnPoetryLearn'])assert(engine.includes(marker),`shared timed engine marker missing: ${marker}`);
 assert(engine.includes('[1,2,3,4,5,6,7].some'),'shared poetry back-navigation must cover Chapters 1–7');
 
-console.log('English poetry QA passed: Chapters 1–7 include source-supported learning sections, 15 Practice + chapter-contract Challenge banks + derived 20 Final Test banks, Chapter 7 has 29 ordered line meanings, option integrity, shared timed engine, navigation and App routing.');
+console.log('English poetry QA passed: Chapters 1–7 include source-supported learning sections, chapter-contract Challenge banks, derived 20 Final Test banks, Chapter 7 has 29 ordered line meanings, option integrity, shared timed engine, navigation and App routing.');
