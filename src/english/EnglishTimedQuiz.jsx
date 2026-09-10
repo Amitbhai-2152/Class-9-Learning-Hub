@@ -5,12 +5,14 @@ import './EnglishDeterminersAssessmentBridge.jsx';
 const normalize=q=>Array.isArray(q)?{q:q[0],o:q[1],a:q[2],e:q[3]||''}:q;
 const defaultTimeFor=(mode,title)=>title==='Determiners'||title==='Prepositions'||title==='Idioms & Phrases'?(mode==='practice'?50:60):(mode==='practice'?45:mode==='challenge'?60:50);
 const labels=['A','B','C','D'];
-const randomizeOptions=items=>items.map(item=>{const{q,o,a,e}=item;const pairs=o.map((text,index)=>({text,index}));for(let i=pairs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pairs[i],pairs[j]]=[pairs[j],pairs[i]]}return{q,o:pairs.map(pair=>pair.text),a:pairs.findIndex(pair=>pair.index===a),e}});
+const stableHash=(value,salt=0)=>{let h=2166136261^salt;for(let i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};
+const randomizeOptions=(items,salt=0)=>items.map((item,qIndex)=>{const{q,o,a,e}=item;const pairs=o.map((text,index)=>({text,index}));for(let i=pairs.length-1;i>0;i--){const seed=stableHash(`${q}|${modeKey}|${qIndex}|${i}`,salt);const j=seed%(i+1);[pairs[i],pairs[j]]=[pairs[j],pairs[i]]}return{q,o:pairs.map(pair=>pair.text),a:pairs.findIndex(pair=>pair.index===a),e}});
+const modeKey='';
 
 export default function EnglishTimedQuiz({title='English Quiz',mode='test',getBank,questions,onModeChange=()=>{},onBack=()=>{},addXp=()=>{},finishSession=()=>{},onRetry,onNextLevel,secondsPerQuestion}){
  const timeFor=typeof secondsPerQuestion==='number'&&secondsPerQuestion>0?()=>secondsPerQuestion:mode=>defaultTimeFor(mode,title);
  const[shuffleSeed,setShuffleSeed]=useState(0);
- const bank=useMemo(()=>{const source=getBank?getBank(mode):questions||[];return randomizeOptions((source||[]).map(normalize))},[mode,questions,shuffleSeed]);
+ const bank=useMemo(()=>{const source=getBank?getBank(mode):questions||[];return randomizeOptions((source||[]).map(normalize),shuffleSeed)},[getBank,questions,mode,shuffleSeed]);
  const[timeLeft,setTimeLeft]=useState(()=>Math.max(10,bank.length*timeFor(mode)));
  const[index,setIndex]=useState(0),[answers,setAnswers]=useState([]),[submitted,setSubmitted]=useState(false),[started,setStarted]=useState(false);
  const finalized=useRef(false);
