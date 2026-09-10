@@ -24,15 +24,17 @@ function BuildVersionRefresh(){
       checking=true;
       try{
         const base=BASE_URL.endsWith('/')?BASE_URL:`${BASE_URL}/`;
-        const response=await fetch(`${base}build-version.json?check=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+        const response=await fetch(`${base}build-version.json?hub_check=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}});
         if(!response.ok)return;
         const data=await response.json();
-        if(!stopped&&data.version&&data.version!==APP_BUILD_VERSION){
+        const remoteVersion=String(data?.version||'');
+        if(!stopped&&remoteVersion&&remoteVersion!==APP_BUILD_VERSION){
           const next=new URL(window.location.href);
-          next.searchParams.set('__hub_refresh',data.version);
+          next.searchParams.set('__hub_refresh',remoteVersion);
           window.location.replace(next.toString());
         }
-      }catch{}finally{checking=false}
+      }catch{}
+      finally{checking=false}
     };
     check();
     const timer=setInterval(check,2000);
@@ -72,17 +74,27 @@ function FreshLanguageSkillsNavigation(){
   return null;
 }
 
-function RootRouter(){
-  const [isSST,setIsSST]=useState(()=>{const p=new URLSearchParams(window.location.search);return p.get('subject')==='sst'||p.get('page')?.startsWith('sst-')});
-  useEffect(()=>{const sync=()=>{const p=new URLSearchParams(window.location.search);setIsSST(p.get('subject')==='sst'||p.get('page')?.startsWith('sst-'))};window.addEventListener('popstate',sync);const timer=setInterval(sync,250);return()=>{window.removeEventListener('popstate',sync);clearInterval(timer)}},[]);
+function readRoute(){
   const params=new URLSearchParams(window.location.search);
-  const topic=params.get('topic');
-  const mode=params.get('mode')||'learn';
-  const languageSkills=params.get('languageSkills')==='1';
-  const englishAssessment=languageSkills&&!KEEP_DEDICATED.has(topic)&&ASSESSMENT_TOPICS.has(topic)&&mode!=='learn';
+  return {subject:params.get('subject')||'',page:params.get('page')||'',topic:params.get('topic')||'',mode:params.get('mode')||'learn',languageSkills:params.get('languageSkills')==='1'};
+}
+
+function RootRouter(){
+  const [route,setRoute]=useState(readRoute);
+  useEffect(()=>{
+    const sync=()=>setRoute(readRoute());
+    window.addEventListener('popstate',sync);
+    window.addEventListener('hashchange',sync);
+    const timer=setInterval(sync,250);
+    sync();
+    return()=>{window.removeEventListener('popstate',sync);window.removeEventListener('hashchange',sync);clearInterval(timer)};
+  },[]);
+
+  const isSST=route.subject==='sst'||route.page.startsWith('sst-');
+  const englishAssessment=route.languageSkills&&!KEEP_DEDICATED.has(route.topic)&&ASSESSMENT_TOPICS.has(route.topic)&&route.mode!=='learn';
   if(isSST)return <SSTRoot/>;
-  if(englishAssessment)return <EnglishGenericLanguageSkillsQuiz topicId={topic}/>;
-  return <AppWithChapter5/>;
+  if(englishAssessment)return <EnglishGenericLanguageSkillsQuiz key={`${route.topic}:${route.mode}`} topicId={route.topic}/>;
+  return <AppWithChapter5 key={`${route.subject}:${route.page}:${route.topic}:${route.mode}:${route.languageSkills?'1':'0'}`}/>;
 }
 
 createRoot(document.getElementById('root')).render(
