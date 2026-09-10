@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="कक्षा 9 लर्निंग हब — सीखें, अभ्यास करें, चुनौती लें और टेस्ट दें।" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>कक्षा 9 लर्निंग हब</title>
     <style>html.hub-booting body{visibility:hidden}html.hub-booting{background:#fff}</style>
     <script>
@@ -17,6 +20,25 @@
           }
           document.documentElement.classList.remove('hub-booting');
         }).catch(function(){document.documentElement.classList.remove('hub-booting')});
+      })();
+    </script>
+    <script>
+      (function(){
+        document.addEventListener('click',function(event){
+          var tile=event.target&&event.target.closest?event.target.closest('.subject-tile'):null;
+          if(!tile)return;
+          var text=(tile.textContent||'').replace(/\s+/g,' ').trim();
+          if(!text.includes('तर्कशक्ति'))return;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          var url=new URL(window.location.href);
+          url.searchParams.set('page','classes');
+          url.searchParams.set('subject','reasoning');
+          url.searchParams.delete('chapter');
+          url.searchParams.delete('mode');
+          window.history.pushState({},'',url.toString());
+          window.dispatchEvent(new PopStateEvent('popstate'));
+        },true);
       })();
     </script>
   </head>
