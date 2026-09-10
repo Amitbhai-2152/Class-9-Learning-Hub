@@ -2,7 +2,6 @@ import fs from 'node:fs';
 const assert=(v,m)=>{if(!v)throw new Error(`English Reader QA: ${m}`)};
 const root='src/english';
 const files={one:fs.readFileSync(`${root}/EnglishReaderChapter1Source.jsx`,'utf8'),two:fs.readFileSync(`${root}/EnglishReaderChapter2.jsx`,'utf8'),three:fs.readFileSync(`${root}/EnglishReaderChapter3.jsx`,'utf8'),four:fs.readFileSync(`${root}/EnglishReaderChapter4.jsx`,'utf8'),five:fs.readFileSync(`${root}/EnglishReaderChapter5.jsx`,'utf8'),six:fs.readFileSync(`${root}/EnglishReaderChapter6.jsx`,'utf8'),seven:fs.readFileSync(`${root}/EnglishReaderChapter7.jsx`,'utf8'),eight:fs.readFileSync(`${root}/EnglishReaderChapter8.jsx`,'utf8'),engine:fs.readFileSync(`${root}/EnglishReaderChapter.jsx`,'utf8'),subject:fs.readFileSync(`${root}/EnglishSubjectSection.jsx`,'utf8'),app:fs.readFileSync('src/AppWithChapter5.jsx','utf8')};
-// Reader source notes use the conventional “pp.” abbreviation; normalize it for the legacy marker assertions below without changing source content.
 for(const k of ['one','two','three','four','five','six','seven','eight'])files[k]=files[k].replace(/pp\.\s/g,'pages ');
 function bankChecks(s,label){
  const practice=s.match(/const practice=\[/)?.[0]; const challenge=s.match(/const challenge=\[/)?.[0];
@@ -12,7 +11,6 @@ function bankChecks(s,label){
  for(const [name,body,expected] of [['Practice',p,15],['Challenge',c,25]]){
   const qCount=(body.match(/\bq\s*\(/g)||[]).length;
   assert(qCount>=expected,`${label}: ${name} must contain at least ${expected} questions`);
-  // Count q() answer signatures without depending on question text's quoting style or apostrophes.
   assert((body.match(/\],\s*\d\s*,\s*['"`]/g)||[]).length>=expected,`${label}: ${name} question signatures incomplete`);
  }
  assert(s.includes('const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)]'),`${label}: derived 20-question Final Test contract missing`);
