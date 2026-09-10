@@ -64,5 +64,5 @@ jobs:
         run: npm run qa:english:phase5
       - name: Build application
         run: npm run build
-      # English modules included in full verification
-      # Triggered after the English poetry QA contract fix.
+      # English modules included in full verification.
+      # Re-run after the robust poetry bank extraction update.
