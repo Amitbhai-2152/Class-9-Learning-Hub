@@ -65,4 +65,4 @@ jobs:
       - name: Build application
         run: npm run build
       # English modules included in full verification
-      # Trigger a fresh full run after Reader bank QA fixes.
+      # Trigger a fresh full run after Reader contract fix.
