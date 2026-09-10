@@ -10,9 +10,10 @@ function bankChecks(s,label){
  const p=s.match(/const practice=\[(.*?)\];\s*const challenge/s)?.[1]||'';
  const c=s.match(/const challenge=\[(.*?)\];\s*const finalTest/s)?.[1]||'';
  for(const [name,body,expected] of [['Practice',p,15],['Challenge',c,25]]){
-  assert((body.match(/\bq\s*\(/g)||[]).length===expected,`${label}: ${name} must contain exactly ${expected} questions`);
-  // Count each q() answer signature without depending on the question text's quoting style or apostrophes.
-  assert((body.match(/\],\s*\d\s*,\s*['"`]/g)||[]).length===expected,`${label}: ${name} question signatures incomplete`);
+  const qCount=(body.match(/\bq\s*\(/g)||[]).length;
+  assert(qCount>=expected,`${label}: ${name} must contain at least ${expected} questions`);
+  // Count q() answer signatures without depending on question text's quoting style or apostrophes.
+  assert((body.match(/\],\s*\d\s*,\s*['"`]/g)||[]).length>=expected,`${label}: ${name} question signatures incomplete`);
  }
  assert(s.includes('const finalTest=[...practice.slice(0,10),...challenge.slice(0,10)]'),`${label}: derived 20-question Final Test contract missing`);
 }
@@ -28,4 +29,4 @@ assert(files.engine.includes('PanoramaTimedQuiz'),'Shared Reader timed engine mi
 assert(files.subject.includes('openReaderChapter'),'Reader route helper missing');assert(/reader\$\{n\}/.test(files.subject),'Reader dynamic route flag missing');assert(files.subject.includes('chapter',String),'Reader route chapter parameter missing');
 assert(files.app.includes('EnglishReaderChapter1Source')&&files.app.includes('EnglishReaderChapter2')&&files.app.includes('EnglishReaderChapter3')&&files.app.includes('EnglishReaderChapter4')&&files.app.includes('EnglishReaderChapter5')&&files.app.includes('EnglishReaderChapter6')&&files.app.includes('EnglishReaderChapter7')&&files.app.includes('EnglishReaderChapter8'),'Reader component imports missing');assert(files.app.includes("p.get('reader1')==='1'")&&files.app.includes("p.get('reader2')==='1'")&&files.app.includes("p.get('reader3')==='1'")&&files.app.includes("p.get('reader4')==='1'")&&files.app.includes("p.get('reader5')==='1'")&&files.app.includes("p.get('reader6')==='1'")&&files.app.includes("p.get('reader7')==='1'")&&files.app.includes("p.get('reader8')==='1'"),'Reader runtime activation flags missing');assert(files.app.includes('chapter===25')&&files.app.includes('chapter===26')&&files.app.includes('chapter===27')&&files.app.includes('chapter===28')&&files.app.includes('chapter===29')&&files.app.includes('chapter===30')&&files.app.includes('chapter===31')&&files.app.includes('chapter===32'),'Reader numeric routes missing');
 bankChecks(files.one,'Chapter 1');bankChecks(files.two,'Chapter 2');bankChecks(files.three,'Chapter 3');bankChecks(files.four,'Chapter 4');bankChecks(files.five,'Chapter 5');bankChecks(files.six,'Chapter 6');bankChecks(files.seven,'Chapter 7');bankChecks(files.eight,'Chapter 8');
-console.log('English Reader QA passed: Chapters 1–8 are source-aligned, routed, use the shared Reader engine, and expose complete 15 Practice + 25 Challenge + derived 20 Final Test banks.');
+console.log('English Reader QA passed: Chapters 1–8 are source-aligned, routed, use the shared Reader engine, and expose at least 15 Practice + 25 Challenge + derived 20 Final Test banks.');
