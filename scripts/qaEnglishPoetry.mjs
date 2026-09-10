@@ -70,8 +70,12 @@ const poetryRegistry={
 for(const [title,num] of Object.entries(poetryRegistry))assert(nav.includes(`'${title}'`),`Poetry Chapter ${num} registry entry missing`);
 assert(nav.includes('if(poetry>=1&&poetry<=8)'),'Poetry Chapters 1–7 route handler missing');
 assert(nav.includes("params.set(`panoramaPoetry${poetry}`,'1')"),'Poetry runtime flag missing');
-for(const n of [1,2,3,4,5,6])assert(shell.includes(`import {EnglishPanoramaPoem${n}} from './english/EnglishPanoramaPoem${n}.jsx';`),`Poetry ${n} import missing`);
-assert(shell.includes("import {EnglishPanoramaPoem7WithGuide} from './english/EnglishPanoramaPoem7WithGuide.jsx';"),'Poetry 7 guide wrapper import missing');
+for(const n of [1,2,3,4,5,6]){
+  const importRe=new RegExp(`import\\s*\\{EnglishPanoramaPoem${n}\\}\\s*from\\s*['"]\\./english/EnglishPanoramaPoem${n}\\.jsx['"]`);
+  assert(importRe.test(shell),`Poetry ${n} import missing`);
+}
+const poem7Import=/import\s*\{EnglishPanoramaPoem7WithGuide\}\s*from\s*['"]\.\/english\/EnglishPanoramaPoem7WithGuide\.jsx['"]/;
+assert(poem7Import.test(shell),'Poetry 7 guide wrapper import missing');
 for(const [n,ch] of [[1,17],[2,18],[3,19],[4,20],[5,21],[6,22],[7,23]]){
  assert(shell.includes(`if(p.get('panoramaPoetry${n}')==='1')return ${ch};`),`Poetry ${n} flag route missing`);
  assert(shell.includes(`if(Number.isInteger(n)&&n===${ch})return ${ch}`),`Poetry ${n} numeric route missing`);
