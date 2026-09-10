@@ -1,0 +1,78 @@
+name: Repair Paragraph Essay Source
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Repair duplicated guide and model separators
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('src/english/EnglishParagraphEssayTopic.jsx')
+          s = path.read_text(encoding='utf-8')
+
+          # Keep exactly one HINDI_GUIDE declaration.
+          matches = list(re.finditer(r'const HINDI_GUIDE=\[', s))
+          if len(matches) > 1:
+              first_end = re.search(r'\n\];', s[matches[0].start():])
+              if not first_end:
+                  raise SystemExit('Could not locate the first HINDI_GUIDE end')
+              first_end = matches[0].start() + first_end.end()
+              rebuilt = s[:first_end]
+              cursor = first_end
+              for m in matches[1:]:
+                  if m.start() < cursor:
+                      continue
+                  end = re.search(r'\n\];', s[m.start():])
+                  if not end:
+                      raise SystemExit('Could not locate a duplicate HINDI_GUIDE end')
+                  end = m.start() + end.end()
+                  cursor = end
+              s = rebuilt + s[cursor:]
+
+          # Normalize accidental JS line continuations inside model writings.
+          s = s.replace(r'\\\n\\\n', r'\\n\\n')
+
+          # Ensure paragraph rendering splits on actual newline escapes.
+          s = s.replace("text.split('\\\n\\\n')", "text.split('\\n\\n')")
+
+          path.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Verify source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s = Path('src/english/EnglishParagraphEssayTopic.jsx').read_text(encoding='utf-8')
+          assert len(re.findall(r'const HINDI_GUIDE=\[', s)) == 1
+          assert "text.split('\\n\\n')" in s
+          assert 'Examples on Different Topics' in s
+          assert 'Value of Time' in s
+          print('Paragraph/Essay source repair verified.')
+          PY
+
+      - name: Commit repair
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/english/EnglishParagraphEssayTopic.jsx
+          if git diff --cached --quiet; then
+            echo 'No repair needed.'
+            exit 0
+          fi
+          git commit -m 'fix(english): repair paragraph essay source'
+          git push
