@@ -45,7 +45,7 @@ determiners:{
  test:[
   ['___ of the advice was useful.',['Many','A few','Much','Several'],2,'“Advice” is uncountable, so “much” is the appropriate determiner in this construction.'],
   ['He did not make ___ mistakes in the final draft.',['much','many','little','a little'],1,'“Mistakes” is plural countable, so “many” is correct.'],
-  ['I need ___ pair of scissors for the project.',['a','an','some','much'],2,'“Scissors” is normally plural; “a pair of scissors” is the natural expression, but “some” is also possible when the exact construction is omitted.'],
+  ['I need ___ pair of scissors for the project.',['a pair of','an','some','much'],0,'The noun “scissors” is plural in form; for one set, the standard expression is “a pair of scissors”.'],
   ['Which sentence is correct?',['There are much reasons to wait.','There is many reasons to wait.','There are a lot of reasons to wait.','There is a few reasons to wait.'],2,'“Reasons” is plural countable, so “a lot of” works naturally with “are”.'],
   ['___ book on the table belongs to me.',['A','An','The','Some'],2,'A particular book already identified by its position takes “the”.'],
   ['Choose the best correction: “She has less books than her sister.”',['She has fewer books than her sister.','She has few books than her sister.','She has little books than her sister.','She has lesser books than her sister.'],0,'“Books” is plural countable, so “fewer” is the standard comparative determiner.']
@@ -110,7 +110,7 @@ translation:{
   ['“राम ने अपना काम पूरा कर लिया है।”',['Ram completed his work.','Ram is completing his work.','Ram has completed his work.','Ram had complete his work.'],2,'The perfect aspect is expressed by “has completed”.'],
   ['“क्या तुमने उसे देखा?”',['Did you see him?','Do you saw him?','Have you saw him?','Did you saw him?'],0,'A completed past action framed as a question uses “Did + base verb”: “see”.'],
   ['“दो घंटे से बारिश हो रही है।”',['It rains for two hours.','It has been raining for two hours.','It was raining since two hours.','It is rain for two hours.'],1,'A continuing action with duration “for two hours” is naturally expressed with Present Perfect Continuous.'],
-  ['Best final translation check for “वह कल बाजार गया था।”',['He had gone to the market yesterday.','He goes to the market yesterday.','He has gone to the market yesterday.','He was go to the market yesterday.'],0,'The Hindi past-perfect cue “गया था” is represented naturally by “had gone” in the intended context.']
+  ['Best final translation check for “वह कल बाजार गया था।”',['He went to the market yesterday.','He goes to the market yesterday.','He has gone to the market yesterday.','He was go to the market yesterday.'],0,'For a simple completed past event with “कल”, Simple Past is the clearest school-level translation: “went”.']
  ],
  challenge:[
   ['“जब मैं पहुँचा, ट्रेन जा चुकी थी।”',['When I arrived, the train had left.','When I arrive, the train left.','When I arrived, the train has left.','When I was arrive, the train leaves.'],0,'The earlier past action takes Past Perfect: “had left”.'],
