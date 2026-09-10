@@ -66,6 +66,20 @@ function FreshLanguageSkillsNavigation(){
     document.addEventListener('click',handler,true);
     return()=>document.removeEventListener('click',handler,true);
   },[]);
+  useEffect(()=>{
+    const hideReading=()=>{
+      const p=new URLSearchParams(window.location.search);
+      if(p.get('subject')!=='english'||p.get('languageSkills')!=='1'||p.get('topic'))return;
+      document.querySelectorAll('.english-ls-grid > section').forEach(section=>{
+        const heading=section.querySelector('h2');
+        if(heading?.textContent?.trim()==='Reading')section.hidden=true;
+      });
+    };
+    const observer=new MutationObserver(hideReading);
+    observer.observe(document.body,{childList:true,subtree:true});
+    hideReading();
+    return()=>observer.disconnect();
+  },[]);
   return null;
 }
 
