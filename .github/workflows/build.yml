@@ -62,7 +62,8 @@ jobs:
         run: npm run qa:english:phase4
       - name: English Phase 5 language skills QA
         run: npm run qa:english:phase5
+      - name: Reasoning content and wiring QA
+        run: npm run qa:reasoning
       - name: Build application
         run: npm run build
-      # English modules included in full verification
-      # Force full verification after balanced Phase 5 topic extraction.
+      # English and reasoning modules included in full verification.
