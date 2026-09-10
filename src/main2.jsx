@@ -13,7 +13,7 @@ import './sst/sst-section.css';
 const APP_BUILD_VERSION=import.meta.env.VITE_BUILD_VERSION||'';
 const BASE_URL=import.meta.env.BASE_URL||'/';
 const ASSESSMENT_TOPICS=new Set(['agreement','narration','clauses','determiners','prepositions','idioms','translation','formal-letter','informal-letter','notice','report','speech','message','paragraph-essay','composition','factual-reading','literary-reading','poetry-reading']);
-const KEEP_DEDICATED=new Set(['tenses','modals','voice']);
+const KEEP_DEDICATED=new Set(['tenses','modals','voice','paragraph-essay']);
 
 function BuildVersionRefresh(){
   useEffect(()=>{
