@@ -65,4 +65,4 @@ jobs:
       - name: Build application
         run: npm run build
       # English modules included in full verification
-      # Trigger fresh verification after Phase 5 topic-boundary fix.
+      # Force full verification after balanced Phase 5 topic extraction.
