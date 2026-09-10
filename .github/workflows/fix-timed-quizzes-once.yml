@@ -29,7 +29,7 @@ jobs:
 
           m = re.search(r'function Quiz\(\{title,bank,mode,onBack,addXp\}\)\{.*?\n\}\n\nexport default function EnglishActivePassiveTopic', s, re.S)
           if m:
-              s = s[:m.start()] + '''function Quiz({title,bank,mode,onBack,addXp,finishSession,onModeChange}){\n return <EnglishTimedQuiz title="Active & Passive Voice" mode={mode==='final test'?'test':mode} getBank={()=>bank} onModeChange={onModeChange} onBack={onBack} addXp={addXp} finishSession={finishSession}/>;\n}\n\nexport default function EnglishActivePassiveTopic''' + s[m.end():]
+              s = s[:m.start()] + '''function Quiz({title,bank,mode,onBack,addXp,finishSession,onModeChange){\n return <EnglishTimedQuiz title="Active & Passive Voice" mode={mode==='final test'?'test':mode} getBank={()=>bank} onModeChange={onModeChange} onBack={onBack} addXp={addXp} finishSession={finishSession}/>;\n}\n\nexport default function EnglishActivePassiveTopic''' + s[m.end():]
 
           s = s.replace('export default function EnglishActivePassiveTopic({addXp}){', 'export default function EnglishActivePassiveTopic({addXp,finishSession=()=>{}}){', 1)
 
@@ -53,9 +53,6 @@ jobs:
           t = t.replace(" useEffect(()=>{setTimeLeft(Math.max(10,bank.length*timeFor(mode)));setIndex(0);setAnswers([]);setSubmitted(false);setStarted(false)},[mode,bank.length]);", " useEffect(()=>{setTimeLeft(Math.max(10,bank.length*timeFor(mode)));setIndex(0);setAnswers([]);setSubmitted(false);setStarted(false);finalized.current=false},[mode,bank.length]);", 1)
           timed.write_text(t, encoding='utf-8')
 
-      - name: Apply Paragraph Essay content
-        run: python scripts/apply-paragraph-essay-content.py
-
       - name: Verify source changes
         shell: bash
         run: |
@@ -63,20 +60,16 @@ jobs:
           grep -q "<EnglishTimedQuiz" src/english/EnglishActivePassiveTopic.jsx
           grep -q "useRef" src/english/EnglishTimedQuiz.jsx
           grep -q "finalized.current" src/english/EnglishTimedQuiz.jsx
-          grep -q "const HINDI_GUIDE=" src/english/EnglishParagraphEssayTopic.jsx
-          grep -q "className=\"pe-hindi\"" src/english/EnglishParagraphEssayTopic.jsx
-          grep -q "The first step towards a clean school is proper waste management." src/english/EnglishParagraphEssayTopic.jsx
-          grep -q "Paragraph एक ही मुख्य विचार" src/english/EnglishParagraphEssayTopic.jsx
 
       - name: Commit and push
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src/english/EnglishActivePassiveTopic.jsx src/english/EnglishTimedQuiz.jsx src/english/EnglishParagraphEssayTopic.jsx scripts/apply-paragraph-essay-content.py
+          git add src/english/EnglishActivePassiveTopic.jsx src/english/EnglishTimedQuiz.jsx
           if git diff --cached --quiet; then
             echo 'Already fixed.'
             exit 0
           fi
-          git commit -m 'feat(english): expand paragraph essay examples with Hindi guidance'
+          git commit -m 'fix(english): harden timed quiz finalization'
           git push
