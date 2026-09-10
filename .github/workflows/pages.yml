@@ -1,5 +1,6 @@
 name: Deploy Learning Hub to GitHub Pages
 
+# Deploy every main-branch update so the live hub stays in sync.
 on:
   push:
     branches: [main]
