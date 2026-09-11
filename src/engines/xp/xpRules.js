@@ -4,16 +4,17 @@ export const XP_RULES_VERSION=1;
 export const XP_REPEAT_MULTIPLIERS=Object.freeze([1,0.5,0.25,0]);
 export const XP_RULE_BASE=Object.freeze({learn:10,practice:5,challenge:10,test:10,milestone:20});
 
+const STAGES=Object.freeze(['learn','practice','challenge','test']);
 const int=v=>Number.isSafeInteger(Number(v))?Number(v):0;
 const pct=v=>Math.max(0,Math.min(100,Number.isFinite(Number(v))?Number(v):0));
 const bool=v=>v===true;
 const scoreOf=r=>r?.scorePercent==null?(int(r?.questionsTotal)>0?pct(int(r.correctAnswers)/int(r.questionsTotal)*100):0):pct(r.scorePercent);
 const multiplierFor=n=>XP_REPEAT_MULTIPLIERS[Math.min(Math.max(0,int(n)),XP_REPEAT_MULTIPLIERS.length-1)];
-const attemptsFor=(ledger,activityId,source,stage)=>ledger.filter(e=>e?.metadata?.activityId===activityId&&e.source===source&&e.stage===stage).length;
+const attemptsFor=(ledger,activityId,stage)=>ledger.filter(e=>e?.metadata?.activityId===activityId&&e.source===stage&&e.stage===stage).length;
 
 export function calculateStageXP(stage,result={},attemptNumber=0){
  const r=result||{};
- if(!['learn','practice','challenge','test'].includes(stage))return {eligible:false,amount:0,base:0,multiplier:0,scorePercent:0,reason:'unsupported stage'};
+ if(!STAGES.includes(stage))return {eligible:false,amount:0,base:0,multiplier:0,scorePercent:0,reason:'unsupported stage'};
  const completed=bool(r.completed);
  if(!completed)return {eligible:false,amount:0,base:0,multiplier:0,scorePercent:scoreOf(r),reason:'activity not completed'};
  const scorePercent=scoreOf(r);
@@ -32,20 +33,30 @@ export function calculateMilestoneXP({completed=false,milestoneId='' }={}){
  return {eligible:valid,amount:valid?XP_RULE_BASE.milestone:0,reason:valid?'milestone completed':'milestone not completed or missing id'};
 }
 
-export function buildSmartXPRequest({stage,activityId,subjectId=null,topicId=null,result={},attemptNumber=0}={}){
+const eventIdFor=({stage,activityId,attemptId=null,subjectId=null,topicId=null,attemptNumber=0}={})=>{
+ const activity=String(activityId??'').trim();
+ const attempt=String(attemptId??'').trim();
+ const eventActivity=attempt?`${activity}:attempt:${attempt}`:activity;
+ return makeXPEventId({activityId:eventActivity,subjectId,topicId,stage});
+};
+
+export function buildSmartXPRequest({stage,activityId,attemptId=null,subjectId=null,topicId=null,result={},attemptNumber=0}={}){
  const activity=String(activityId??'').trim();
  if(!activity)return {eligible:false,amount:0,reason:'activityId is required'};
+ const attempt=String(attemptId??'').trim()||null;
  const rule=calculateStageXP(stage,result,attemptNumber);
- if(!rule.eligible)return {...rule,eventId:makeXPEventId({activityId:activity,subjectId,topicId,stage})};
- return {...rule,eventId:makeXPEventId({activityId:activity,subjectId,topicId,stage}),source:stage,stage,subjectId,topicId,metadata:{activityId:activity,ruleVersion:XP_RULES_VERSION,attemptNumber,scorePercent:rule.scorePercent}};
+ const eventId=eventIdFor({stage,activityId:activity,attemptId:attempt,subjectId,topicId,attemptNumber});
+ if(!rule.eligible)return {...rule,eventId};
+ return {...rule,eventId,source:stage,stage,subjectId,topicId,metadata:{activityId:activity,attemptId,attemptNumber,ruleVersion:XP_RULES_VERSION,scorePercent:rule.scorePercent}};
 }
 
-export function awardSmartXP({stage,activityId,subjectId=null,topicId=null,result={},at=null}={}){
+export function awardSmartXP({stage,activityId,attemptId=null,subjectId=null,topicId=null,result={},at=null}={}){
  const activity=String(activityId??'').trim();
  if(!activity)return {awarded:0,rejected:true,reason:'activityId is required'};
+ const attempt=String(attemptId??'').trim()||null;
  const ledger=getXPLedger();
- const attemptNumber=attemptsFor(ledger,activity,stage,stage);
- const request=buildSmartXPRequest({stage,activityId:activity,subjectId,topicId,result,attemptNumber});
+ const attemptNumber=attempt?attemptsFor(ledger,activity,stage):0;
+ const request=buildSmartXPRequest({stage,activityId:activity,attemptId:attempt,subjectId,topicId,result,attemptNumber});
  if(!request.eligible)return {awarded:0,rejected:false,duplicate:false,reason:request.reason,rule:request};
  return awardXP({amount:request.amount,eventId:request.eventId,source:request.source,subjectId:request.subjectId,topicId:request.topicId,stage:request.stage,at,metadata:request.metadata});
 }
