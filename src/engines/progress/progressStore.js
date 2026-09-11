@@ -6,19 +6,70 @@ const CANONICAL_KEY='class9-progress-canonical-v1';
 const ANON_ID_KEY='class9-anonymous-student-id';
 const safeObject=value=>value&&typeof value==='object'&&!Array.isArray(value)?value:{};
 const safeNumber=value=>Number.isFinite(Number(value))?Number(value):0;
+const safePercent=value=>Math.max(0,Math.min(100,safeNumber(value)));
 
 function getStudentId(){
  try{const existing=localStorage.getItem(ANON_ID_KEY);if(existing)return existing;const id=globalThis.crypto?.randomUUID?.()||`anon-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;localStorage.setItem(ANON_ID_KEY,id);return id;}catch{return 'anonymous';}
 }
 function readCanonical(){try{const raw=JSON.parse(localStorage.getItem(CANONICAL_KEY)||'null');if(raw?.schemaVersion===1&&raw?.topics&&typeof raw.topics==='object')return raw;}catch{}return{schemaVersion:1,studentId:getStudentId(),updatedAt:null,topics:{}};}
 function writeCanonical(value){try{localStorage.setItem(CANONICAL_KEY,JSON.stringify(value));return true;}catch{return false;}}
+function resolveCanonicalTopic(subject,chapter){const subjectRecord=resolveSubject(subject);const topic=resolveTopic(subjectRecord,chapter);return subjectRecord&&topic?{subjectRecord,topic}:null;}
+function touchTopic({subjectRecord,topic,stage,at,attempts=0,correct=0,quiz=null}){
+ const now=at||new Date().toISOString();const state=readCanonical();const key=`${subjectRecord.id}::${topic.id}`;const previous=safeObject(state.topics[key]);
+ const previousAnalytics=safeObject(previous.analytics);const previousAttemptIds=Array.isArray(previousAnalytics.attemptIds)?previousAnalytics.attemptIds:[];
+ let analytics={
+  quizAttempts:safeNumber(previousAnalytics.quizAttempts),
+  questionsAnswered:safeNumber(previousAnalytics.questionsAnswered),
+  questionsTotal:safeNumber(previousAnalytics.questionsTotal),
+  correctAnswers:safeNumber(previousAnalytics.correctAnswers),
+  bestPercent:safePercent(previousAnalytics.bestPercent),
+  lastPercent:safePercent(previousAnalytics.lastPercent),
+  lastAttemptAt:previousAnalytics.lastAttemptAt||null,
+  attemptIds:previousAttemptIds
+ };
+ if(quiz&&quiz.attemptId){
+  const attemptId=String(quiz.attemptId);
+  if(!previousAttemptIds.includes(attemptId)){
+   const questionsAnswered=Math.max(0,safeNumber(quiz.questionsAnswered));
+   const questionsTotal=Math.max(questionsAnswered,safeNumber(quiz.questionsTotal));
+   const correctAnswers=Math.max(0,Math.min(questionsAnswered,safeNumber(quiz.correctAnswers)));
+   const percent=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):safePercent(quiz.percent);
+   analytics={...analytics,
+    quizAttempts:analytics.quizAttempts+1,
+    questionsAnswered:analytics.questionsAnswered+questionsAnswered,
+    questionsTotal:analytics.questionsTotal+questionsTotal,
+    correctAnswers:analytics.correctAnswers+correctAnswers,
+    bestPercent:Math.max(analytics.bestPercent,percent),
+    lastPercent:percent,
+    lastAttemptAt:quiz.at||now,
+    attemptIds:[...previousAttemptIds,attemptId].slice(-100)
+   };
+  }
+ }
+ const next={
+  subjectId:subjectRecord.id,
+  topicId:topic.id,
+  title:topic.title,
+  stages:{...safeObject(previous.stages),[stage]:true},
+  attempts:Math.max(safeNumber(previous.attempts),safeNumber(attempts)),
+  correct:Math.max(safeNumber(previous.correct),safeNumber(correct)),
+  analytics,
+  lastActivityAt:now
+ };
+ const nextState={schemaVersion:1,studentId:state.studentId||getStudentId(),updatedAt:now,topics:{...safeObject(state.topics),[key]:next}};
+ writeCanonical(nextState);
+ try{window.dispatchEvent(new CustomEvent('class9-progress-updated'))}catch{}
+ return next;
+}
 export function recordCanonicalStage({subject,chapter,stage,attempts=0,correct=0,at=null}={}){
  if(!STAGES.includes(stage))return null;
- const subjectRecord=resolveSubject(subject);const topic=resolveTopic(subjectRecord,chapter);if(!subjectRecord||!topic)return null;
- const now=at||new Date().toISOString();const state=readCanonical();const key=`${subjectRecord.id}::${topic.id}`;const previous=safeObject(state.topics[key]);
- const next={subjectId:subjectRecord.id,topicId:topic.id,title:topic.title,stages:{...safeObject(previous.stages),[stage]:true},attempts:Math.max(safeNumber(previous.attempts),safeNumber(attempts)),correct:Math.max(safeNumber(previous.correct),safeNumber(correct)),lastActivityAt:now};
- writeCanonical({schemaVersion:1,studentId:state.studentId||getStudentId(),updatedAt:now,topics:{...safeObject(state.topics),[key]:next}});
- try{window.dispatchEvent(new CustomEvent('class9-progress-updated'))}catch{}return next;
+ const resolved=resolveCanonicalTopic(subject,chapter);if(!resolved)return null;
+ return touchTopic({...resolved,stage,at,attempts,correct});
+}
+export function recordCanonicalQuizAttempt({subject,chapter,stage,attemptId,questionsAnswered=0,questionsTotal=0,correctAnswers=0,percent=0,at=null}={}){
+ if(!STAGES.includes(stage)||!attemptId)return null;
+ const resolved=resolveCanonicalTopic(subject,chapter);if(!resolved)return null;
+ return touchTopic({...resolved,stage,at,attempts:1,correct:correctAnswers,quiz:{attemptId,questionsAnswered,questionsTotal,correctAnswers,percent,at}});
 }
 function migrateAppProgress(){try{const raw=JSON.parse(localStorage.getItem(APP_KEY));const source=safeObject(raw);const repaired={xp:Number.isFinite(source.xp)?source.xp:0,streak:Number.isFinite(source.streak)?source.streak:1,dailyXp:Number.isFinite(source.dailyXp)?source.dailyXp:0,goal:Number.isFinite(source.goal)&&source.goal>0?source.goal:100,sessions:Array.isArray(source.sessions)?source.sessions:[]};localStorage.setItem(APP_KEY,JSON.stringify({...source,...repaired}));}catch{}}
 migrateAppProgress();
