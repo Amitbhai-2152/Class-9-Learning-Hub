@@ -59,9 +59,9 @@ export function XPAchievementOverlay(){
    if(!host){
     host=document.createElement('div');
     host.setAttribute('data-daily-exam-plan-host','true');
-    const progressStrip=dashboard.querySelector('.progress-strip');
-    if(progressStrip?.parentNode===dashboard)dashboard.insertBefore(host,progressStrip.nextSibling);
-    else dashboard.insertBefore(host,dashboard.firstChild);
+    const offeringGrid=dashboard.querySelector('.offering-grid');
+    if(offeringGrid?.parentNode===dashboard)dashboard.insertBefore(host,offeringGrid.nextSibling);
+    else dashboard.appendChild(host);
    }
    setDailyPlanTarget(host);
   };
