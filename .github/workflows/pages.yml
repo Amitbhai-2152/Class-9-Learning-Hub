@@ -32,15 +32,14 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Inspect Reasoning V2 parser region
+      - name: Inspect exact parser characters
         run: |
           python3 - <<'PY'
           from pathlib import Path
           s=Path('src/ReasoningLabV2.jsx').read_text(encoding='utf-8')
-          pos=14352
-          print('REASONING_V2_LENGTH=', len(s))
-          print('REASONING_V2_CONTEXT=', repr(s[pos-180:pos+260]))
-          print('REASONING_V2_LINE=', s.count('\n',0,pos)+1)
+          for a,b in [(14320,14380)]:
+            print('PARSER_WINDOW=', a, b)
+            for i,ch in enumerate(s[a:b],a): print(i, repr(ch))
           PY
 
       - name: Build application
