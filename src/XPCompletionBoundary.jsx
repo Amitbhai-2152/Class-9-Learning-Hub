@@ -2,6 +2,7 @@ import React,{useEffect,useRef} from 'react';
 import {awardSmartXP} from './engines/xp/xpRules.js';
 import {getXPState} from './engines/xp/xpStore.js';
 import {recordActivityAndRewards} from './engines/xp/xpRewards.js';
+import {XPAchievementOverlay} from './XPBadges.jsx';
 import {cbtConfig} from './cbtConfig';
 
 const STAGES=new Set(['learn','practice','challenge','test']);
@@ -69,5 +70,5 @@ export function XPCompletionBoundary({children}){
   window.addEventListener('message',onCbtMessage);
   return()=>{observer.disconnect();clearInterval(routePoll);window.removeEventListener('message',onCbtMessage)};
  },[]);
- return <div ref={rootRef}>{children}</div>;
+ return <div ref={rootRef}>{children}<XPAchievementOverlay/></div>;
 }
