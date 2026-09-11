@@ -1,1 +1,1 @@
-Temporary trigger for verified visible reasoning content patch.
+Temporary trigger for controlled reasoning timer patch.
