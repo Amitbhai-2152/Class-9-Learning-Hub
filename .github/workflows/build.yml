@@ -68,7 +68,8 @@ jobs:
         run: npm run qa:subject-runtime
       - name: Canonical legacy migration QA
         run: npm run qa:subject-legacy-migration
+      - name: Canonical subject catalog QA
+        run: npm run qa:subject-catalog
       - name: Build application
         run: npm run build
-      # English, reasoning, canonical progress, analytics, runtime coverage, and legacy migration are included in full verification.
-      # Phase 4 legacy migration is intentionally verified on every main push.
+      # English, reasoning, canonical progress, analytics, runtime coverage, legacy migration, and homepage/chapter catalog consistency are included in full verification.
