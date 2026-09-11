@@ -22,20 +22,27 @@ jobs:
           if "const pageParams=typeof window!=='undefined'?new URLSearchParams(window.location.search):null;" not in s:
               needle="const genericTopic=typeof window!=='undefined'?new URLSearchParams(window.location.search).get('topic'):null;"
               replacement=needle+"const pageParams=typeof window!=='undefined'?new URLSearchParams(window.location.search):null;if(pageParams?.get('booster')==='1'&&pageParams?.get('subject')){const boosterSubject=pageParams.get('subject');const boosterExit=()=>{const next=new URLSearchParams();next.set('page','subject');next.set('subject',boosterSubject);window.history.pushState({},'',`${window.location.pathname}?${next}${window.location.hash||''}`);window.dispatchEvent(new PopStateEvent('popstate'))};return <SubjectBoosterTest subjectId={boosterSubject} onBack={boosterExit} addXp={addXp} finishSession={finishSession}/>};"
-              s=s.replace(needle,replacement)
+              if needle not in s:
+                  raise SystemExit('genericTopic anchor not found')
+              s=s.replace(needle,replacement,1)
           if 'const boosterSubjectButton=' not in s:
               marker="const props={onBack:back,addXp,finishSession};"
               button="const boosterSubjectButton=pageParams?.get('page')==='subject'&&pageParams?.get('subject')?(()=>{const id=pageParams.get('subject');const names={math:'गणित',science:'विज्ञान',sst:'सामाजिक विज्ञान',hindi:'हिन्दी',sanskrit:'संस्कृत',english:'अंग्रेज़ी',reasoning:'तर्कशक्ति'};const launch=()=>{const next=new URLSearchParams(pageParams);next.set('booster','1');window.history.pushState({},'',`${window.location.pathname}?${next}${window.location.hash||''}`);window.dispatchEvent(new PopStateEvent('popstate'))};return <button type=\"button\" onClick={launch} aria-label=\"Subject Booster Test\" style={{position:'fixed',right:20,bottom:20,zIndex:1200,border:0,borderRadius:16,padding:'13px 18px',fontWeight:800,cursor:'pointer',boxShadow:'0 12px 28px rgba(0,0,0,.18)'}}>🚀 {names[id]||'विषय'} Booster Test</button>})():null;"
-              s=s.replace(marker,marker+button)
-          old="if(reasoningParams?.get('subject')==='reasoning'){const initialChapter=reasoningParams.get('reasoningChapter')||null;const initialMode=['practice','challenge','test'].includes(reasoningParams.get('reasoningMode'))?reasoningParams.get('reasoningMode'):null;const reasoningExit=()=>{const params=new URLSearchParams();params.set('page','classes');window.history.pushState({},'',`${window.location.pathname}?${params}${window.location.hash||''}`);window.dispatchEvent(new PopStateEvent('popstate'))};return <ReasoningHub initialChapter={initialChapter} initialMode={initialMode} onExit={reasoningExit} addXp={addXp} finishSession={finishSession}/>};"
-          new=old[:-2]+"return <><ReasoningHub initialChapter={initialChapter} initialMode={initialMode} onExit={reasoningExit} addXp={addXp} finishSession={finishSession}/>{boosterSubjectButton}</></>};"
-          if old in s and 'boosterSubjectButton}</></>' not in s:
-              s=s.replace(old,new)
-          if "return <>{boosterSubjectButton}<App/></>" not in s:
-              s=s.replace('return <App/>}', 'return <>{boosterSubjectButton}<App/></>}')
+              if marker not in s:
+                  raise SystemExit('props anchor not found')
+              s=s.replace(marker,marker+button,1)
+          old="return <ReasoningHub initialChapter={initialChapter} initialMode={initialMode} onExit={reasoningExit} addXp={addXp} finishSession={finishSession}/>};"
+          if old in s and 'boosterSubjectButton' in s and 'boosterSubjectButton</' not in s:
+              new="return <><ReasoningHub initialChapter={initialChapter} initialMode={initialMode} onExit={reasoningExit} addXp={addXp} finishSession={finishSession}/>{boosterSubjectButton}</>};"
+              s=s.replace(old,new,1)
+          if "return <>{boosterSubjectButton}<App/></>}" not in s:
+              if 'return <App/>}' not in s:
+                  raise SystemExit('App fallback anchor not found')
+              s=s.replace('return <App/>}', 'return <>{boosterSubjectButton}<App/></>}',1)
           p.write_text(s,encoding='utf-8')
           p=Path('src/StudyEngine.jsx')
-          s=p.read_text(encoding='utf-8').replace('const TEST_SECONDS=600;','const TEST_SECONDS=15*60;')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('const TEST_SECONDS=600;','const TEST_SECONDS=15*60;',1)
           p.write_text(s,encoding='utf-8')
           PY
       - name: Verify source
