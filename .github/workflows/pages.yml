@@ -39,9 +39,9 @@ jobs:
       - name: Write build version manifest
         run: echo '{"version":"'"$GITHUB_SHA"'"}' > dist/build-version.json
 
-      # GitHub Pages must serve the SPA entry point for direct route refreshes.
-      - name: Configure SPA fallback for GitHub Pages
-        run: cp dist/index.html dist/404.html
+      # public/404.html is copied by Vite and preserves the SPA query route on refresh.
+      - name: Verify Pages fallback
+        run: test -s dist/404.html && grep -q "Class-9-Learning-Hub" dist/404.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
