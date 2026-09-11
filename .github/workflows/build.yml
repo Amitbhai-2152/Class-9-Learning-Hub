@@ -62,6 +62,8 @@ jobs:
         run: npm run qa:reasoning
       - name: Canonical subject progress QA
         run: npm run qa:subject-progress
+      - name: Canonical subject analytics QA
+        run: npm run qa:subject-analytics
       - name: Build application
         run: npm run build
-      # English, reasoning, and canonical progress are included in full verification.
+      # English, reasoning, canonical progress, and analytics are included in full verification.
