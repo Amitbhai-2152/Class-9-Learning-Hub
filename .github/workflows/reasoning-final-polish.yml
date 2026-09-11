@@ -24,7 +24,7 @@ jobs:
           css=Path('src/reasoning-section.css')
           text=hub.read_text(encoding='utf-8')
 
-          direction_extra = """
+          direction_extra="""
           make('रवि पूर्व की ओर 10 m गया, फिर बाएँ मुड़ा। अब दिशा?',['उत्तर','दक्षिण','पूर्व','पश्चिम'],0,'पूर्व से बाएँ मुड़ने पर उत्तर.','अभ्यास'),
           make('सीमा पश्चिम 6 m, फिर दाएँ 4 m चली। अंतिम दिशा?',['दक्षिण-पश्चिम','उत्तर-पश्चिम','उत्तर-पूर्व','दक्षिण-पूर्व'],1,'पश्चिम से दाएँ मुड़ना उत्तर; इसलिए उत्तर-पश्चिम.','अभ्यास'),
           make('A, B का भाई है; B, C की बहन है। A का C से संबंध?',['भाई','पिता','मामा','चाचा'],0,'A और C भाई-बहन हैं; A, C का भाई है.','अभ्यास'),
@@ -38,7 +38,7 @@ jobs:
           start=text.index("'direction-blood':[")
           end=text.index("\n]};",start)
           section=text[start:end]
-          if "रवि पूर्व की ओर 10 m" not in section:
+          if 'रवि पूर्व की ओर 10 m' not in section:
               text=text[:end]+",\n"+direction_extra.strip()+text[end:]
 
           marker='<div className="lesson-box"><h3>📚 Learn</h3>'
@@ -52,6 +52,12 @@ jobs:
           if '.chapter-metrics' not in c:
               c += '''\n.chapter-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.chapter-metrics>div{background:#fff;border:1px solid #dfe8ef;border-radius:16px;padding:13px 12px;text-align:center;box-shadow:0 5px 18px rgba(19,34,56,.04)}.chapter-metrics b{display:block;font-size:22px;color:#132238}.chapter-metrics span{font-size:11px;color:#68788b}.mastery-strip{display:grid;grid-template-columns:1.1fr .9fr;gap:10px;margin:0 0 16px}.mastery-strip>div{border:1px solid #dfe8ef;border-radius:16px;background:#f9fbfd;padding:13px}.mastery-strip>div:first-child{display:flex;gap:10px;align-items:flex-start}.mastery-strip>div:first-child>span{font-size:20px}.mastery-strip b{display:block;font-size:12px;color:#132238;margin-bottom:4px}.mastery-strip small,.trap-note span{display:block;font-size:11px;line-height:1.55;color:#66758a}.trap-note{background:#fffaf2!important;border-color:#f2dfb8!important}@media(max-width:800px){.chapter-metrics{grid-template-columns:repeat(2,1fr)}.mastery-strip{grid-template-columns:1fr}}@media(max-width:500px){.chapter-metrics{gap:7px}.chapter-metrics>div{padding:10px 7px}.chapter-metrics b{font-size:19px}}\n'''
           css.write_text(c,encoding='utf-8')
+
+          # Hard validation: never push a partial patch.
+          if 'रवि पूर्व की ओर 10 m' not in hub.read_text(encoding='utf-8'):
+              raise SystemExit('Direction question patch was not applied')
+          if 'reasoning-v2-learning-path' not in hub.read_text(encoding='utf-8'):
+              raise SystemExit('V2 learning panel is missing')
 
       - name: Commit reasoning polish
         shell: bash
