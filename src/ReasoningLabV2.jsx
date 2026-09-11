@@ -1,4 +1,4 @@
-import React,{useEffect,useMemo,useState}from'react';
+import React,{useEffect,useState}from'react';
 import'./reasoning-lab-v2.css';
 
 const shuffle=(arr)=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -97,7 +97,7 @@ const chapters=[
 {id:'direction-blood',title:'दिशा एवं रक्त संबंध',icon:'🧭',kicker:'LOGICAL RELATIONS',desc:'Compass, turns और family relations को logical map में हल करें।',skills:['दिशा','दूरी','Family tree','Combined'],learn:{headline:'Direction और relation को map की तरह सोचें',example:'उत्तर 5m, फिर दाएँ।',answer:'पूर्व',why:'उत्तर से right turn = पूर्व।',trap:'Turn को अपने facing direction के हिसाब से calculate करें।',steps:['Starting direction तय करें।','हर turn का effect निकालें।','Family relation में छोटा tree बनाएँ।','Final relation/direction verify करें।'],tip:'90°, 180°, 270° turns को mentally map करें।'}}
 ];
 
-const banks={'number-series':numberBank,'alphabet-series':alphabetBank,analogy,classification,'coding-decoding':codingBank,'direction-blood':directionBank};
+const banks={'number-series':numberBank,'alphabet-series':alphabetBank,'analogy':analogyBank,'classification':classificationBank,'coding-decoding':codingBank,'direction-blood':directionBank};
 
 const prepare=(bank,count)=>shuffle(bank).slice(0,count).map((q)=>{const opts=shuffle(q.options.map((text)=>({text:String(text),correct:String(text)===q.correct})));return {...q,options:opts}});
 
