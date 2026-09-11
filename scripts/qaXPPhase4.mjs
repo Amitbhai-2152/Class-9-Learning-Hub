@@ -6,6 +6,7 @@ const app=read('src/App.jsx');
 const main=read('src/main2.jsx');
 const boundary=read('src/XPCompletionBoundary.jsx');
 const rewards=read('src/engines/xp/xpRewards.js');
+const badges=read('src/XPBadges.jsx');
 
 assert.match(app,/getXPState/);
 assert.match(app,/getRewardSummary/);
@@ -31,7 +32,12 @@ assert.match(rewards,/claimedLevelRewards/);
 assert.match(rewards,/claimedStreakRewards/);
 assert.match(rewards,/recordActivityAndRewards/);
 
+assert.match(badges,/DailyExamPlan/);
+assert.match(badges,/offeringGrid=dashboard\.querySelector\('\.offering-grid'\)/);
+assert.match(badges,/dashboard\.insertBefore\(host,offeringGrid\.nextSibling\)/);
+assert.match(badges,/createPortal\(<DailyExamPlan\/>/);
+
 const pkg=JSON.parse(read('package.json'));
 assert.equal(pkg.scripts['qa:xp:phase4'],'node scripts/qaXPPhase4.mjs');
 
-console.log('XP Phase 4 QA passed: canonical dashboard state, legacy XP write removal, global routed completion integration, Reasoning/English route support, verified CBT-origin bridge, reload-safe attempt identity, reward persistence, and CI script wiring verified.');
+console.log('XP Phase 4 QA passed: canonical dashboard state, legacy XP write removal, global routed completion integration, Reasoning/English route support, verified CBT-origin bridge, reload-safe attempt identity, reward persistence, CI script wiring, and homepage Daily Exam Plan placement verified.');
