@@ -1,52 +1,10 @@
-name: Patch Tenses UI Once
-
+name: Retired Tenses UI Patch
 on:
-  push:
-    branches: [main]
-
+  workflow_dispatch:
 permissions:
-  contents: write
-
+  contents: read
 jobs:
-  patch:
-    if: github.actor != 'github-actions[bot]'
+  retired:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Wire dedicated Tenses UI
-        shell: python
-        run: |
-          from pathlib import Path
-          p = Path('src/english/EnglishPanoramaLanguageSkills.jsx')
-          s = p.read_text(encoding='utf-8')
-          imp = "import EnglishTensesTopic from './EnglishTensesTopic.jsx';\n"
-          if imp not in s:
-              s = s.replace("import './EnglishPanoramaLanguageSkills.css';\n", "import './EnglishPanoramaLanguageSkills.css';\n" + imp, 1)
-          marker = "if(!topic)return <div className=\"english-language-skills\">"
-          insert = "if(topicId==='tenses')return <EnglishTensesTopic onBack={onBack} addXp={addXp} finishSession={finishSession}/>;\n "
-          if insert.strip() not in s:
-              s = s.replace(marker, insert + marker, 1)
-          p.write_text(s, encoding='utf-8')
-
-      - name: Validate wiring
-        shell: bash
-        run: |
-          grep -q "EnglishTensesTopic" src/english/EnglishPanoramaLanguageSkills.jsx
-          grep -q "topicId==='tenses'" src/english/EnglishPanoramaLanguageSkills.jsx
-          test -f src/english/EnglishTensesTopic.jsx
-          test -f src/english/EnglishTensesTopic.css
-
-      - name: Commit and push
-        shell: bash
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src/english/EnglishPanoramaLanguageSkills.jsx src/english/EnglishTensesTopic.jsx src/english/EnglishTensesTopic.css
-          if git diff --cached --quiet; then
-            echo 'Already patched.'
-            exit 0
-          fi
-          git commit -m 'fix(english): route Tenses to dedicated learning UI'
-          git push
+      - run: echo "Retired legacy Tenses auto-patch workflow."
