@@ -1,5 +1,5 @@
 import {SUBJECT_REGISTRY,STAGES,resolveSubject,resolveTopic} from './subjectProgressRegistry';
-import {getCanonicalProgress,recordCanonicalStage,CANONICAL_KEY} from './engines/progress/progressStore';
+import {getCanonicalProgress,recordCanonicalStage,recordCanonicalQuizAttempt,CANONICAL_KEY} from './engines/progress/progressStore';
 
 const ANON_ID_KEY='class9-anonymous-student-id';
 const STYLE_ID='class9-subject-progress-styles';
@@ -11,6 +11,7 @@ function getStudentId(){try{return localStorage.getItem(ANON_ID_KEY)||''}catch{r
 function canonicalTopicKey(subjectId,topicId){return `${subjectId}::${topicId}`;}
 function readCanonicalTopics(){return safeObject(getCanonicalProgress()?.topics);}
 function alreadyRecorded(subject,chapter,stage){const topic=resolveTopic(subject,chapter);const subjectRecord=resolveSubject(subject);if(!subjectRecord||!topic)return true;return Boolean(readCanonicalTopics()[canonicalTopicKey(subjectRecord.id,topic.id)]?.stages?.[stage]);}
+function sessionIdentity(session){return [session?.at??'',session?.subject??'',session?.chapter??'',session?.mode??'',session?.score??session?.correct??'',session?.total??'',session?.percent??'',session?.attempted??''].join('|');}
 
 function syncLegacyProgress(){
  const generic=readJson('class9-learning-progress',{});
@@ -19,8 +20,18 @@ function syncLegacyProgress(){
   const subject=parts.shift()||'';const chapter=parts.join('::');const row=safeObject(value);
   STAGES.forEach(stage=>{if(row[stage]&&!alreadyRecorded(subject,chapter,stage))recordCanonicalStage({subject,chapter,stage,attempts:safeNum(row.attempts),correct:safeNum(row.correct),at:row.lastActivityAt||new Date().toISOString()});});
  });
- const sessions=[];const app=readJson('class9-progress',{});if(Array.isArray(app?.sessions))sessions.push(...app.sessions);const engine=readJson('class9-sessions',[]);if(Array.isArray(engine))sessions.push(...engine);
- sessions.forEach(session=>{if(!session?.completed)return;const stage=STAGES.includes(session.mode)?session.mode:null;if(!stage||!session.subject||session.chapter==null)return;if(!alreadyRecorded(session.subject,session.chapter,stage))recordCanonicalStage({subject:session.subject,chapter:session.chapter,stage,attempts:1,correct:safeNum(session.correct),at:session.at?new Date(session.at).toISOString():new Date().toISOString()});});
+ const allSessions=[];const app=readJson('class9-progress',{});if(Array.isArray(app?.sessions))allSessions.push(...app.sessions);const engine=readJson('class9-sessions',[]);if(Array.isArray(engine))allSessions.push(...engine);
+ const seen=new Set();
+ allSessions.forEach(session=>{
+  if(!session?.completed)return;
+  const stage=STAGES.includes(session.mode)?session.mode:null;if(!stage||!session.subject||session.chapter==null)return;
+  const identity=sessionIdentity(session);if(seen.has(identity))return;seen.add(identity);
+  const correctAnswers=safeNum(session.correct??session.score);
+  const questionsTotal=Math.max(safeNum(session.total),correctAnswers);
+  const questionsAnswered=Math.max(0,Math.min(questionsTotal,safeNum(session.attempted??session.total)));
+  const percent=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):safeNum(session.percent);
+  recordCanonicalQuizAttempt({subject:session.subject,chapter:session.chapter,stage,attemptId:identity,questionsAnswered,questionsTotal,correctAnswers,percent,at:session.at?new Date(session.at).toISOString():new Date().toISOString()});
+ });
  const hindi=readJson('class9-hindi-chapter-progress-v1',{});
  Object.entries(safeObject(hindi?.modes)).forEach(([id,modes])=>Object.entries(safeObject(modes)).forEach(([stage,done])=>{if(done&&!alreadyRecorded('हिन्दी',id,stage)&&!alreadyRecorded('हिन्दी',hindi?.completed?.[id]||id,stage))recordCanonicalStage({subject:'हिन्दी',chapter:id,stage,at:new Date().toISOString()});}));
  return getCanonicalProgress();
@@ -36,9 +47,14 @@ export function getSubjectProgress(){
   const fullyCompleted=rows.filter(row=>STAGES.every(stage=>row?.stages?.[stage])).length;
   const attempts=rows.reduce((sum,row)=>sum+safeNum(row?.attempts),0);
   const correct=rows.reduce((sum,row)=>sum+safeNum(row?.correct),0);
+  const analytics=rows.map(row=>safeObject(row?.analytics));
+  const quizAttempts=analytics.reduce((sum,a)=>sum+safeNum(a.quizAttempts),0);
+  const questionsAnswered=analytics.reduce((sum,a)=>sum+safeNum(a.questionsAnswered),0);
+  const correctAnswers=analytics.reduce((sum,a)=>sum+safeNum(a.correctAnswers),0);
+  const accuracy=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):0;
   const percent=Math.round((completedStages/(subject.topics.length*STAGES.length))*100);
   const updatedAt=rows.reduce((latest,row)=>row?.lastActivityAt&&(!latest||row.lastActivityAt>latest)?row.lastActivityAt:latest,null);
-  return [subject.id,{id:subject.id,name:subject.name,total:subject.topics.length,completedStages,chapterStarted,fullyCompleted,attempts,correct,percent,updatedAt,topics:subject.topics.map(topic=>({id:topic.id,title:topic.title,order:topic.order,progress:Math.round((STAGES.filter(stage=>topics[canonicalTopicKey(subject.id,topic.id)]?.stages?.[stage]).length/STAGES.length)*100)}))}];
+  return [subject.id,{id:subject.id,name:subject.name,total:subject.topics.length,completedStages,chapterStarted,fullyCompleted,attempts,correct,quizAttempts,questionsAnswered,correctAnswers,accuracy,percent,updatedAt,topics:subject.topics.map(topic=>({id:topic.id,title:topic.title,order:topic.order,progress:Math.round((STAGES.filter(stage=>topics[canonicalTopicKey(subject.id,topic.id)]?.stages?.[stage]).length/STAGES.length)*100)}))}];
  }));
 }
 
@@ -54,7 +70,7 @@ function render(){
  const dashboard=document.querySelector('.app-shell .dashboard');const offering=document.querySelector('.app-shell .offering-grid');if(!dashboard||!offering)return;
  installStyles();let panel=document.getElementById('class9-subject-progress');if(!panel){panel=document.createElement('section');panel.id='class9-subject-progress';panel.className='spui-panel';offering.insertAdjacentElement('afterend',panel)}
  const subjects=getSubjectProgress();
- const html=`<div class="spui-head"><div><span class="spui-eyebrow">YOUR PREPARATION</span><h2>विषयवार प्रगति</h2><p>हर विषय में सीखने, अभ्यास, चुनौती और टेस्ट की प्रगति एक जगह देखें।</p></div><span class="spui-live">● LIVE</span></div><div class="spui-grid">${SUBJECT_REGISTRY.map(subject=>{const row=subjects[subject.id];return `<button type="button" class="spui-card" data-subject="${subject.id}" aria-label="${subject.name} progress ${row.percent}%"><span class="spui-icon">${subject.id==='math'?'∑':subject.id==='science'?'⚗':subject.id==='hindi'?'अ':subject.id==='sanskrit'?'ॐ':subject.id==='sst'?'◎':subject.id==='english'?'A':'?'}</span><span class="spui-main"><span class="spui-title"><strong>${subject.name}</strong><b>${row.percent}%</b></span><span class="spui-bar"><i style="width:${row.percent}%"></i></span><span class="spui-meta"><span>${row.chapterStarted}/${row.total} topics started</span><em>${row.fullyCompleted} complete</em></span></span><span class="spui-arrow">→</span></button>`}).join('')}</div><div class="spui-footer"><span>📊 Live from saved learning activity</span><span>Canonical • Supabase-ready</span></div>`;
+ const html=`<div class="spui-head"><div><span class="spui-eyebrow">YOUR PREPARATION</span><h2>विषयवार प्रगति</h2><p>हर विषय में सीखने, अभ्यास, चुनौती और टेस्ट की प्रगति एक जगह देखें।</p></div><span class="spui-live">● LIVE</span></div><div class="spui-grid">${SUBJECT_REGISTRY.map(subject=>{const row=subjects[subject.id];const analyticsLabel=row.quizAttempts?`${row.quizAttempts} quiz attempts • ${row.accuracy}% accuracy`:`${row.chapterStarted}/${row.total} topics started`;return `<button type="button" class="spui-card" data-subject="${subject.id}" aria-label="${subject.name} progress ${row.percent}%"><span class="spui-icon">${subject.id==='math'?'∑':subject.id==='science'?'⚗':subject.id==='hindi'?'अ':subject.id==='sanskrit'?'ॐ':subject.id==='sst'?'◎':subject.id==='english'?'A':'?'}</span><span class="spui-main"><span class="spui-title"><strong>${subject.name}</strong><b>${row.percent}%</b></span><span class="spui-bar"><i style="width:${row.percent}%"></i></span><span class="spui-meta"><span>${analyticsLabel}</span><em>${row.fullyCompleted} complete</em></span></span><span class="spui-arrow">→</span></button>`}).join('')}</div><div class="spui-footer"><span>📊 Live from saved learning activity</span><span>Progress + quiz analytics • Canonical</span></div>`;
  if(panel.innerHTML!==html)panel.innerHTML=html;
  panel.querySelectorAll('[data-subject]').forEach(button=>button.onclick=()=>{const id=button.getAttribute('data-subject');history.pushState({},'',`${location.pathname}?page=subject&subject=${encodeURIComponent(id)}`);window.dispatchEvent(new PopStateEvent('popstate'))});
 }
