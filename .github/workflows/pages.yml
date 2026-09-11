@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Patch visible Reasoning learning content
+      - name: Patch visible Reasoning learning content and timers
         shell: bash
         run: |
           cat > /tmp/patch_reasoning_ui.py <<'PY'
@@ -47,8 +47,49 @@ jobs:
               insert=marker+"<div style={{marginTop:18,display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(210px,1fr))',gap:12}}>{learningModules[active.id].concepts.map((c,i)=><article key={c} style={{padding:'14px 16px',border:'1px solid #e2eaf1',borderRadius:14,background:'#fff'}}><b style={{display:'block',fontSize:12,color:'#287a9f',letterSpacing:'.06em'}}>CONCEPT {i+1}</b><span style={{display:'block',marginTop:7,lineHeight:1.5}}>{c}</span></article>)}</div><div style={{marginTop:18,padding:'18px 20px',border:'1px solid #dbe5ef',borderRadius:16,background:'#ffffff'}}><div style={{fontSize:12,fontWeight:800,letterSpacing:'.08em',color:'#287a9f'}}>QUESTION BANK PREVIEW • {bank.length}+ ITEMS</div><p style={{margin:'7px 0 14px',lineHeight:1.6}}>{learningModules[active.id].focus}</p>{bank.slice(0,8).map((q,i)=><div key={q.question} style={{padding:'11px 0',borderTop:i?'1px solid #edf2f6':'none'}}><div style={{fontSize:11,fontWeight:800,color:'#6c7b88'}}>Q{i+1} • {q.difficulty}</div><div style={{marginTop:4,lineHeight:1.45}}>{q.question}</div></div>)}<button type=\"button\" onClick={()=>begin('practice')} style={{marginTop:10,border:0,borderRadius:12,padding:'11px 14px',fontWeight:800,cursor:'pointer'}}>✍️ 20 Questions Practice खोलें</button></div><div style={{marginTop:18,padding:'18px 20px',border:'1px solid #dbe5ef',borderRadius:16,background:'#f8fbff'}}><div style={{fontSize:12,fontWeight:800,letterSpacing:'.08em',color:'#287a9f'}}>SOLVING METHOD</div><ol style={{margin:'8px 0 0',paddingLeft:20,lineHeight:1.7}}>{learningModules[active.id].method.map(m=><li key={m}>{m}</li>)}</ol></div>"
               if marker not in s: raise SystemExit('Reasoning learn marker not found')
               s=s.replace(marker,insert,1)
+
+          prep="const prepare=(bank,count)=>shuffle(bank).slice(0,Math.min(count,bank.length)).map(q=>({...q,options:shuffle(q.options.map(text=>({text:String(text),correct:String(text)===q.correct})))}));"
+          timer="const TIMER_CONFIG={practice:{seconds:15*60,perQuestion:'45 sec/question',label:'15:00'},challenge:{seconds:20*60,perQuestion:'60 sec/question',label:'20:00'},test:{seconds:30*60,perQuestion:'60 sec/question',label:'30:00'}};"
+          if 'const TIMER_CONFIG=' not in s:
+              if prep not in s: raise SystemExit('Reasoning prepare anchor not found')
+              s=s.replace(prep,timer+'\n'+prep,1)
+
+          old="const[chapterId,setChapterId]=useState(chapterInitial);const[mode,setMode]=useState(modeInitial);const[session,setSession]=useState(null);const[answers,setAnswers]=useState({});const[score,setScore]=useState(0);const[completed,setCompleted]=useState(false);const[testStarted,setTestStarted]=useState(false);const[timeLeft,setTimeLeft]=useState(15*60);"
+          new="const[chapterId,setChapterId]=useState(chapterInitial);const[mode,setMode]=useState(modeInitial);const[session,setSession]=useState(null);const[answers,setAnswers]=useState({});const[score,setScore]=useState(0);const[completed,setCompleted]=useState(false);const[testStarted,setTestStarted]=useState(false);const[timeLeft,setTimeLeft]=useState(TIMER_CONFIG.practice.seconds);"
+          if old in s: s=s.replace(old,new,1)
+
+          old_begin="const begin=nextMode=>{setMode(nextMode);setAnswers({});setScore(0);setCompleted(false);if(nextMode==='test'){setSession(null);setTimeLeft(15*60);setTestStarted(false)}else{setSession(prepare(bank,counts[nextMode]));setTestStarted(true)}};"
+          new_begin="const begin=nextMode=>{setMode(nextMode);setAnswers({});setScore(0);setCompleted(false);if(nextMode==='test'){setSession(null);setTimeLeft(TIMER_CONFIG.test.seconds);setTestStarted(false)}else if(TIMER_CONFIG[nextMode]){setSession(prepare(bank,counts[nextMode]));setTimeLeft(TIMER_CONFIG[nextMode].seconds);setTestStarted(true)}else{setSession(null);setTestStarted(false)}};"
+          if old_begin not in s: raise SystemExit('Reasoning begin anchor not found')
+          s=s.replace(old_begin,new_begin,1)
+
+          old_testfn="const startTest=()=>{setAnswers({});setScore(0);setCompleted(false);setSession(prepare(bank,30));setTimeLeft(15*60);setTestStarted(true)};"
+          new_testfn="const startTest=()=>{setAnswers({});setScore(0);setCompleted(false);setSession(prepare(bank,30));setTimeLeft(TIMER_CONFIG.test.seconds);setTestStarted(true)};"
+          if old_testfn not in s: raise SystemExit('Reasoning startTest anchor not found')
+          s=s.replace(old_testfn,new_testfn,1)
+
+          old_effect="useEffect(()=>{if(mode!=='test'||!testStarted||!session)return;const id=setInterval(()=>{setTimeLeft(t=>{if(t<=1){clearInterval(id);finish(true);return 0}return t-1})},1000);return()=>clearInterval(id)},[mode,testStarted,session]);"
+          new_effect="useEffect(()=>{if(!TIMER_CONFIG[mode]||!testStarted||!session)return;const id=setInterval(()=>{setTimeLeft(t=>{if(t<=1){clearInterval(id);finish(true);return 0}return t-1})},1000);return()=>clearInterval(id)},[mode,testStarted,session]);"
+          if old_effect not in s: raise SystemExit('Reasoning timer effect anchor not found')
+          s=s.replace(old_effect,new_effect,1)
+
+          old_practice="{(mode==='practice'||mode==='challenge')&&!session&&<section className=\"rlab-start\"><div className=\"start-icon\">{mode==='practice'?'✍️':'🔥'}</div><h2>{mode==='practice'?'Guided Practice':'Challenge Mode'}</h2><p>{mode==='practice'?'20 questions with instant explanation.':'20 higher-difficulty questions with mixed patterns.'}</p><button type=\"button\" onClick={()=>begin(mode)}>Start {mode==='practice'?'Practice':'Challenge'} →</button></section>}"
+          new_practice="{(mode==='practice'||mode==='challenge')&&!session&&<section className=\"rlab-start\"><div className=\"start-icon\">{mode==='practice'?'✍️':'🔥'}</div><div className=\"timer-preview\">{TIMER_CONFIG[mode].label}</div><h2>{mode==='practice'?'Guided Practice':'Challenge Mode'}</h2><p>{mode==='practice'?'20 questions • 15 minutes • 45 sec/question.':'20 questions • 20 minutes • 60 sec/question.'}</p><div className=\"test-rules\"><span>⏱️ Auto-submit on timeout</span><span>🔀 Random options</span><span>📊 Instant explanation</span></div><button type=\"button\" onClick={()=>begin(mode)}>Start {mode==='practice'?'Practice':'Challenge'} →</button></section>}"
+          if old_practice not in s: raise SystemExit('Reasoning practice UI anchor not found')
+          s=s.replace(old_practice,new_practice,1)
+
+          old_test="{mode==='test'&&!testStarted&&<section className=\"rlab-start test-start\"><div className=\"start-icon\">🎯</div><div className=\"timer-preview\">15:00</div><h2>Final Test</h2><p>30 प्रश्न • 15 मिनट • प्रत्येक attempt में options randomised होंगे।</p>"
+          new_test="{mode==='test'&&!testStarted&&<section className=\"rlab-start test-start\"><div className=\"start-icon\">🎯</div><div className=\"timer-preview\">{TIMER_CONFIG.test.label}</div><h2>Final Test</h2><p>30 प्रश्न • 30 मिनट • mixed + challenge level • 60 sec/question.</p>"
+          if old_test not in s: raise SystemExit('Reasoning final test UI anchor not found')
+          s=s.replace(old_test,new_test,1)
+
+          old_count="{mode==='test'&&<div className={`countdown ${timeLeft<=60?'danger':''}`}>⏱️ {mm}:{ss}</div>}"
+          new_count="{TIMER_CONFIG[mode]&&<div className={`countdown ${timeLeft<=60?'danger':''}`}>⏱️ {mm}:{ss}</div>}"
+          if old_count not in s: raise SystemExit('Reasoning quiz countdown anchor not found')
+          s=s.replace(old_count,new_count,1)
+
           p.write_text(s,encoding='utf-8')
-          print('REASONING_UI_PATCH_OK')
+          print('REASONING_UI_TIMERS_PATCH_OK')
           PY
           python3 /tmp/patch_reasoning_ui.py
       - name: Setup Node
