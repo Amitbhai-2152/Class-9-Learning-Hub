@@ -15,6 +15,7 @@ import EnglishMessageWritingTopic from './english/EnglishMessageWritingTopic.jsx
 import EnglishMessageWritingAssessment from './english/EnglishMessageWritingAssessment.jsx';
 import { AppErrorBoundary } from './AppErrorBoundary.jsx';
 import SSTRoot from './sst/SSTRoot.jsx';
+import TestCentrePlanner from './TestCentrePlanner.jsx';
 import './scienceModeRouter.js';
 import './subject-overrides.css';
 import './science-navigation.css';
@@ -41,6 +42,7 @@ function exitLanguageSkills(){const params=new URLSearchParams();params.set('pag
 
 function RootRouter(){const[route,setRoute]=useState(readRoute);useEffect(()=>{const sync=()=>setRoute(readRoute());window.addEventListener('popstate',sync);window.addEventListener('hashchange',sync);const timer=setInterval(sync,250);sync();return()=>{window.removeEventListener('popstate',sync);window.removeEventListener('hashchange',sync);clearInterval(timer)}},[]);
  const isSST=route.subject==='sst'||route.page.startsWith('sst-');if(isSST)return <SSTRoot/>;
+ if(route.page==='cbt')return <TestCentrePlanner/>;
  const sharedProps={onBack:exitLanguageSkills,addXp:()=>{},finishSession:()=>{}};
  if(route.languageSkills&&route.topic==='composition')return <EnglishCompositionTopic onBack={exitLanguageSkills}/>;
  if(route.languageSkills&&route.topic==='paragraph-essay')return <EnglishCompositionTopic onBack={exitLanguageSkills}/>;
