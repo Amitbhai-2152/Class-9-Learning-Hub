@@ -23,6 +23,7 @@ jobs:
           hub = Path('src/ReasoningHub.jsx')
           css = Path('src/reasoning-section.css')
           index = Path('index.html')
+          premium = Path('src/ReasoningHubPremium.jsx')
 
           text = hub.read_text(encoding='utf-8')
           marker = '<div className="mode-grid">'
@@ -41,6 +42,19 @@ jobs:
           i = i.replace('    <script src="./reasoning-visible-upgrade.js"></script>\n', '')
           index.write_text(i, encoding='utf-8')
 
+          # Premium Reasoning Lab: make mode buttons explicit buttons so they cannot
+          # be swallowed by a parent form/navigation click handler.
+          p = premium.read_text(encoding='utf-8')
+          old = "<button key={k} className={k==='learn'?'active':''} onClick={()=>setMode(k)}><b>{m.icon} {m.label}</b>"
+          new = "<button type=\"button\" key={k} className={k==='learn'?'active':''} onClick={e=>{e.preventDefault();e.stopPropagation();setMode(k)}}><b>{m.icon} {m.label}</b>"
+          if old in p:
+              p = p.replace(old, new, 1)
+          old2 = "<button onClick={()=>setMode('practice')}>Practice शुरू करें →</button>"
+          new2 = "<button type=\"button\" onClick={e=>{e.preventDefault();e.stopPropagation();setMode('practice')}}>Practice शुरू करें →</button>"
+          if old2 in p:
+              p = p.replace(old2, new2, 1)
+          premium.write_text(p, encoding='utf-8')
+
       - name: Commit patched UI
         shell: bash
         run: |
@@ -50,6 +64,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/ReasoningHub.jsx src/reasoning-section.css index.html
-          git commit -m "fix: reasoning-ui-patched direct chapter 1-2 UI"
+          git add src/ReasoningHub.jsx src/reasoning-section.css src/ReasoningHubPremium.jsx index.html
+          git commit -m "fix: reasoning-ui-patched direct chapter and test UI"
           git push
