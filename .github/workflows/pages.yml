@@ -34,6 +34,8 @@ jobs:
         run: echo '{"version":"'"$GITHUB_SHA"'"}' > dist/build-version.json
       - name: Verify Pages fallback
         run: test -s dist/404.html && grep -q "Class-9-Learning-Hub" dist/404.html
+      - name: Verify production entry
+        run: test -s dist/index.html && grep -q "assets/" dist/index.html
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload Pages artifact
