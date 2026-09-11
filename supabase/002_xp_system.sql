@@ -91,3 +91,6 @@ begin
   return v_wallet;
 end;
 $$;
+
+revoke all on function public.award_xp(text,integer,text,text,text,text,timestamptz,jsonb) from public;
+grant execute on function public.award_xp(text,integer,text,text,text,text,timestamptz,jsonb) to authenticated;
