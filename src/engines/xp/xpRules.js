@@ -21,7 +21,7 @@ export function calculateStageXP(stage,result={},attemptNumber=0){
  let base=0;
  if(stage==='learn')base=XP_RULE_BASE.learn;
  if(stage==='practice')base=XP_RULE_BASE.practice+Math.min(20,Math.max(0,int(r.correctAnswers))*2);
- if(stage==='challenge')base=XP_RULE_BASE.challenge+Math.min(20,Math.max(0,int(r.correctAnswers))*2)+(scorePercent>=90?15:scorePercent>=80?10:scorePercent>=70?5:0);
+ if(stage==='challenge')base=XP_RULE_BASE.challenge+Math.min(20,Math.max(0,int(r.correctAnswers))*2)+(scorePercent>=90?10:scorePercent>=80?5:0);
  if(stage==='test')base=XP_RULE_BASE.test+Math.min(20,Math.max(0,int(r.correctAnswers)))+(scorePercent>=100?20:scorePercent>=90?15:scorePercent>=80?10:scorePercent>=70?5:0);
  const multiplier=stage==='learn'?(attemptNumber===0?1:0):multiplierFor(attemptNumber);
  const amount=Math.min(100,Math.floor(base*multiplier));
