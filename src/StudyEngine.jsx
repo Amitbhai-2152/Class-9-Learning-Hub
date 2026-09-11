@@ -3,7 +3,7 @@ import {getPracticeQuestions} from './practiceData';
 import {markStageComplete} from './engines/progress/progressStore';
 import './engine.css';
 
-const TEST_SECONDS=600;
+const TEST_SECONDS=15*60;
 const mistakeKey='class9-mistakes';
 const sessionKey='class9-sessions';
 
