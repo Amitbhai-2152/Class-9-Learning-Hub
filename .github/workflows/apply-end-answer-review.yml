@@ -1,0 +1,83 @@
+name: Apply end-only answer review fix
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, 'end-only answer review fix') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch quiz engines
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          def replace_once(text, old, new, label):
+              if old not in text:
+                  raise SystemExit(f'Missing expected pattern for {label}')
+              return text.replace(old, new, 1)
+
+          # ---------------- StudyEngine ----------------
+          p = Path('src/StudyEngine.jsx')
+          s = p.read_text()
+          s = replace_once(s, "const TEST_SECONDS=15*60;\n", "const TEST_SECONDS=15*60;\nconst TIMER_PER_QUESTION={practice:45,challenge:60,test:60};\nconst timerSeconds=(mode,count)=>Math.max(1,(count||1)*TIMER_PER_QUESTION[mode]);\n", 'StudyEngine timer constants')
+          s = replace_once(s, " const isTest=mode==='test';\n const stage=mode==='challenge'?'challenge':mode==='test'?'test':'practice';\n const[index,setIndex]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[mistakes,setMistakes]=useState([]),[earned,setEarned]=useState(0),[remaining,setRemaining]=useState(TEST_SECONDS),[showReview,setShowReview]=useState(false);\n useEffect(()=>{if(!isTest||done)return;const id=setInterval(()=>setRemaining(s=>{if(s<=1){clearInterval(id);setDone(true);return 0}return s-1}),1000);return()=>clearInterval(id)},[isTest,done]);\n", " const isTest=mode==='test';\n const timedMode=true;\n const stage=mode==='challenge'?'challenge':mode==='test'?'test':'practice';\n const[index,setIndex]=useState(0),[selected,setSelected]=useState(null),[answers,setAnswers]=useState({}),[score,setScore]=useState(0),[done,setDone]=useState(false),[mistakes,setMistakes]=useState([]),[earned,setEarned]=useState(0),[remaining,setRemaining]=useState(timerSeconds(mode,questions.length)),[showReview,setShowReview]=useState(false);\n useEffect(()=>{if(!timedMode||done)return;setRemaining(timerSeconds(mode,questions.length));const id=setInterval(()=>setRemaining(s=>{if(s<=1){clearInterval(id);setDone(true);return 0}return s-1}),1000);return()=>clearInterval(id)},[timedMode,mode,questions.length]);\n", 'StudyEngine state/timer')
+          s = replace_once(s, " const choose=i=>{if(selected!==null||done||!current)return;setSelected(i);if(i===current.answer){setScore(s=>s+1);if(!isTest){setEarned(e=>e+points);addXp?.(points)}}else{setMistakes(m=>m.includes(index)?m:[...m,index]);saveMistake(current,subject?.name||'अज्ञात',chapter,i)}};\n", " const choose=i=>{if(selected!==null||done||!current)return;setSelected(i);setAnswers(a=>({...a,[index]:i}));if(i===current.answer){setScore(s=>s+1);if(!isTest){setEarned(e=>e+points);addXp?.(points)}}else{setMistakes(m=>m.includes(index)?m:[...m,index]);saveMistake(current,subject?.name||'अज्ञात',chapter,i)}};\n", 'StudyEngine answer history')
+          s = replace_once(s, " const restart=()=>{setIndex(0);setSelected(null);setScore(0);setDone(false);setMistakes([]);setEarned(0);setRemaining(TEST_SECONDS);setShowReview(false)};\n", " const restart=()=>{setIndex(0);setSelected(null);setAnswers({});setScore(0);setDone(false);setMistakes([]);setEarned(0);setRemaining(timerSeconds(mode,questions.length));setShowReview(false)};\n", 'StudyEngine restart')
+          s = replace_once(s, "<header className=\"page-header\"><button className=\"pressable\" onClick={onBack}>← अध्याय</button><div className=\"lesson-top\"><span className=\"badge\">{subject?.name} • {chapter}</span>{isTest?<span className=\"timer-pill\">⏱ {mm}:{ss}</span>:<span>{index+1} / {questions.length}</span>}</div>", "<header className=\"page-header\"><button className=\"pressable\" onClick={onBack}>← अध्याय</button><div className=\"lesson-top\"><span className=\"badge\">{subject?.name} • {chapter}</span>{timedMode?<span className=\"timer-pill\">⏱ {mm}:{ss}</span>:<span>{index+1} / {questions.length}</span>}</div>", 'StudyEngine timer display')
+          s = replace_once(s, "{current.options.map((option,i)=><button key={option} disabled={selected!==null} className={`answer-option pressable ${selected!==null?(i===current.answer?'correct':i===selected?'wrong':'muted'):''}`} onClick={()=>choose(i)}>", "{current.options.map((option,i)=><button key={option} disabled={selected!==null} className={`answer-option pressable ${selected===i?'selected':''}`} onClick={()=>choose(i)}>", 'StudyEngine answer classes')
+          s = replace_once(s, "{selected!==null&&<div className={`answer-feedback ${selected===current.answer?'good':'bad'}`}><strong>{isTest?'✓ उत्तर दर्ज':selected===current.answer?'✓ सही उत्तर':'✗ गलत उत्तर'}</strong><p>{isTest?'टेस्ट पूरा होने पर सही उत्तर और explanation review में दिखाई जाएगी।':current.explain}</p></div>}", "{selected!==null&&<div className=\"answer-feedback\"><strong>✓ उत्तर दर्ज हो गया</strong><p>सही उत्तर, अंक और explanation टेस्ट/अभ्यास पूरा होने के बाद दिखेंगे।</p></div>}", 'StudyEngine feedback')
+          s = replace_once(s, "<span>{isTest?'टेस्ट मोड • सही उत्तर अंत में':selected===null?'उत्तर चुनें':`स्कोर: ${score}/${index+1}`}</span>", "<span>{selected===null?'उत्तर चुनें':'उत्तर दर्ज • परिणाम अंत में'}</span>", 'StudyEngine inline score')
+          marker = "<div className=\"result-stats\"><span>✅ {score} सही</span><span>❌ {questions.length-score} गलत</span><span>🎯 {percent}%</span></div>"
+          review = marker + "<div className=\"answer-key\"><h3>📋 उत्तर और समाधान</h3>{questions.map((q,i)=>{const picked=answers[i];const ok=picked===q.answer;return <article key={i} className=\"answer-key-item\"><strong>प्रश्न {i+1}</strong><div>{q.q}</div><div>{picked===undefined?'आपका उत्तर: —':`आपका उत्तर: ${q.options[picked]} ${ok?'✓':'✗'}`}</div><div>सही उत्तर: {q.options[q.answer]}</div>{q.explain&&<p>💡 {q.explain}</p>}</article>})}</div>"
+          s = replace_once(s, marker, review, 'StudyEngine final answer key')
+          p.write_text(s)
+
+          # ---------------- ReasoningLabV2 ----------------
+          p = Path('src/ReasoningLabV2.jsx')
+          r = p.read_text()
+          r = replace_once(r, "const wrap26=n=>", "const TIMER_CONFIG={practice:{minutes:15,perQuestion:45},challenge:{minutes:20,perQuestion:60},test:{minutes:30,perQuestion:60}};\nconst wrap26=n=>", 'Reasoning timer config')
+          r = replace_once(r, "const counts=useMemo(()=>({practice:20,challenge:20}),[]);", "const counts=useMemo(()=>({practice:20,challenge:20}),[]);\n const timedSeconds=(kind,total)=>Math.max(1,(total||1)*(TIMER_CONFIG[kind]?.perQuestion||60));", 'Reasoning timedSeconds')
+          r = r.replace("useState(15*60)", "useState(timedSeconds(modeInitial,20))", 1)
+          r = r.replace("setTimeLeft(15*60)", "setTimeLeft(nextMode==='test'?TIMER_CONFIG.test.minutes*60:timedSeconds(nextMode,counts[nextMode]))", 1)
+          r = r.replace("setTimeLeft(15*60);setTestStarted(true)", "setTimeLeft(TIMER_CONFIG.test.minutes*60);setTestStarted(true)", 1)
+          r = replace_once(r, "useEffect(()=>{if(mode!=='test'||!testStarted||!session)return;", "useEffect(()=>{if(!testStarted||!session)return;", 'Reasoning all-mode timer')
+          r = r.replace("<div className=\"timer-preview\">15:00</div>", "<div className=\"timer-preview\">30:00</div>")
+          r = r.replace("30 प्रश्न • 15 मिनट", "30 प्रश्न • 30 मिनट")
+          r = r.replace("20 questions with instant explanation.", "20 questions • answers and explanations at the end.")
+          r = re.sub(r"\{\(mode==='practice'\|\|mode==='challenge'\)\&\&answers\[i\]\&\&<div className=\"answer-feedback[\s\S]*?</div>\}\n?", "{(mode==='practice'||mode==='challenge')&&answers[i]&&<div className=\"answer-feedback\"><b>✓ Answer recorded</b><div>सही उत्तर और explanation results में दिखेंगे।</div></div>}\n", r, count=1)
+          r = r.replace("{mode==='test'&&<div className=", "{testStarted&&<div className=")
+          # Add end-of-quiz answer review just before the existing retake controls in completed result.
+          anchor = "<button className=\"primary-btn pressable\""
+          if "<h3>📋 Answer Review</h3>" not in r:
+              r = r.replace(anchor, "<section className=\"answer-key\"><h3>📋 Answer Review</h3>{session.map((q,i)=>{const picked=answers[i];const ok=picked===q.correct;return <article key={i} className=\"answer-key-item\"><strong>Q{i+1}</strong><div>{q.question}</div><div>Your answer: {picked===undefined?'—':String(picked)}</div><div>Correct answer: {q.correct}</div>{q.explanation&&<p>💡 {q.explanation}</p>}</article>})}</section>{anchor}", 1)
+          p.write_text(r)
+
+          print('Quiz engine patch applied.')
+          PY
+
+      - name: Build and validate
+        run: |
+          npm install --legacy-peer-deps
+          npm run build
+          git diff --check
+
+      - name: Commit patched engines
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f .github/workflows/apply-end-answer-review.yml
+          git add src/StudyEngine.jsx src/ReasoningLabV2.jsx
+          git commit -m "feat: answers and marks shown only at the end"
+          git push
