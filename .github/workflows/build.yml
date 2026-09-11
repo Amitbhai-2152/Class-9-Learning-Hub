@@ -78,6 +78,8 @@ jobs:
         run: npm run qa:xp
       - name: XP Phase 2 Smart Rules QA
         run: npm run qa:xp:phase2
+      - name: XP Phase 3 Levels Streaks Rewards QA
+        run: npm run qa:xp:phase3
       - name: Build application
         run: npm run build
       # English, reasoning, canonical progress, analytics, runtime coverage, legacy migration, homepage/chapter catalog, Supabase contract, preparation meter, and XP integrity are included in full verification.
