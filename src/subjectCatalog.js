@@ -1,4 +1,4 @@
-import {SUBJECT_REGISTRY} from './subjectProgressRegistry';
+import {SUBJECT_REGISTRY} from './subjectProgressRegistry.js';
 
 const meta={
  math:{name:'गणित',icon:'∑',desc:'संख्या, बीजगणित, ज्यामिति और तर्क'},
