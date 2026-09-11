@@ -28,18 +28,21 @@ assert.equal(first.awarded,25);
 assert.equal(first.duplicate,false);
 assert.equal(first.state.totalXp,300);
 assert.equal(first.state.dailyXp,65);
+assert.equal(first.event.eventId,eventId);
 assert.equal(getXPLedger().length,1);
 
 const replay=awardXP({amount:25,eventId,source:'practice',subjectId:'math',topicId:'math-01',stage:'practice'});
 assert.equal(replay.awarded,0);
 assert.equal(replay.duplicate,true);
 assert.equal(replay.conflict,false);
+assert.equal(replay.event.eventId,eventId);
 assert.equal(getXPState().totalXp,300);
 
 const conflict=awardXP({amount:20,eventId,source:'practice',subjectId:'math',topicId:'math-01',stage:'practice'});
 assert.equal(conflict.awarded,0);
 assert.equal(conflict.duplicate,true);
 assert.equal(conflict.conflict,true);
+assert.equal(conflict.event.eventId,eventId);
 assert.equal(getXPState().totalXp,300);
 
 const rejected=awardXP({amount:125,eventId:'xp:math:math-01:practice:attempt-002',source:'practice',subjectId:'math',topicId:'math-01',stage:'practice'});
