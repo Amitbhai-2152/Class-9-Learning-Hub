@@ -1,15 +1,89 @@
-name: Pages redeploy trigger
+name: One-Time Reasoning Content Repair
 
 on:
   push:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
+  actions: write
 
 jobs:
-  trigger:
+  repair:
+    if: github.event.head_commit.message != 'feat: expose reasoning content and bank preview'
     runs-on: ubuntu-latest
     steps:
-      - name: Confirm latest main commit
-        run: echo "Pages redeploy trigger for $GITHUB_SHA"
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch canonical Reasoning UI
+        shell: bash
+        run: |
+          cat > /tmp/patch_reasoning.py <<'PY'
+          from pathlib import Path
+          p = Path('src/ReasoningLabV2.jsx')
+          s = p.read_text(encoding='utf-8')
+
+          anchor = "const deepDive={'number-series':"
+          if "const learningModules=" not in s:
+              idx = s.index(anchor)
+              modules = '''const learningModules={
+          'number-series':{focus:'Sequence को केवल last two terms से guess मत करें।',concepts:['Equal difference: d constant हो तो arithmetic pattern।','Second difference: differences भी regular हों तो hidden pattern पकड़ें।','Mixed rule: ×/÷ के साथ +/− alternate हो सकता है।'],method:['पहले differences लिखो','फिर ratio / multiplication check करो','अंत में पूरे sequence पर rule verify करो']},
+          'alphabet-series':{focus:'Letters को A=1…Z=26 positions में बदलना सबसे reliable तरीका है।',concepts:['Forward jump और backward jump अलग-अलग पहचानें।','Increasing jumps जैसे +2,+3,+4 को track करें।','Wrap-around में Z के बाद फिर A की position cycle देखें।'],method:['Letters को positions में बदलो','हर jump लिखो','कम-से-कम 3 transitions verify करो']},
+          'analogy':{focus:'सही answer वही है जो पहली pair का exact relation दूसरी pair में भी बनाए।',concepts:['Function relation: वस्तु और उसका काम।','Part–whole तथा category relation।','Square, cube और numerical operation relation।'],method:['पहली pair का relation एक वाक्य में बोलो','वही relation दूसरे pair पर लगाओ','हर option से cross-check करो']},
+          'classification':{focus:'Odd one out निकालने के लिए common property चारों items पर समान होनी चाहिए।',concepts:['Parity, prime, square/cube जैसे numerical rules।','Category: fruit, vehicle, unit, profession आदि।','Alphabet/word structure में common pattern।'],method:['तीन items की common property खोजो','चौथे पर वही rule test करो','strongest consistent rule चुनो']},
+          'coding-decoding':{focus:'Code को character-by-character transformation में तोड़ो।',concepts:['Fixed letter shift जैसे +1, +2, −2।','A=1…Z=26 position coding।','Reverse या combined transformation को अलग steps में पढ़ें।'],method:['दिए pair में बदलाव खोजो','हर character पर वही change लगाओ','पूरा code फिर से verify करो']},
+          'direction-blood':{focus:'Current facing direction track करना ही direction और family questions की key है।',concepts:['90°, 180°, 270° clockwise turns।','Distance के साथ final relative direction।','Generation-by-generation family tree और relation mapping।'],method:['starting direction तय करो','हर turn के बाद नई दिशा लिखो','family relation में छोटा tree बनाओ']}
+          };
+          '''
+              s = s[:idx] + modules + s[idx:]
+
+          marker = "<div style={{marginTop:18,padding:'18px 20px',border:'1px solid #dbe5ef',borderRadius:16,background:'#f8fbff'}}><div style={{fontSize:12,fontWeight:800,letterSpacing:'.08em',color:'#287a9f'}}>DEEP DIVE • EXTRA CONTENT</div><p style={{margin:'8px 0 0',lineHeight:1.65}}>{deepDive[active.id]}</p></div>"
+          if 'QUESTION BANK PREVIEW' not in s:
+              insert = marker + "<div style={{marginTop:18,display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(210px,1fr))',gap:12}}>{learningModules[active.id].concepts.map((c,i)=><article key={c} style={{padding:'14px 16px',border:'1px solid #e2eaf1',borderRadius:14,background:'#fff'}}><b style={{display:'block',fontSize:12,color:'#287a9f',letterSpacing:'.06em'}}>CONCEPT {i+1}</b><span style={{display:'block',marginTop:7,lineHeight:1.5}}>{c}</span></article>)}</div><div style={{marginTop:18,padding:'18px 20px',border:'1px solid #dbe5ef',borderRadius:16,background:'#ffffff'}}><div style={{fontSize:12,fontWeight:800,letterSpacing:'.08em',color:'#287a9f'}}>QUESTION BANK PREVIEW • {bank.length}+ ITEMS</div><p style={{margin:'7px 0 14px',lineHeight:1.6}}>{learningModules[active.id].focus}</p>{bank.slice(0,6).map((q,i)=><div key={q.question} style={{padding:'11px 0',borderTop:i?'1px solid #edf2f6':'none'}}><div style={{fontSize:11,fontWeight:800,color:'#6c7b88'}}>Q{i+1} • {q.difficulty}</div><div style={{marginTop:4,lineHeight:1.45}}>{q.question}</div></div>)}<button type=\"button\" onClick={()=>begin('practice')} style={{marginTop:10,border:0,borderRadius:12,padding:'11px 14px',fontWeight:800,cursor:'pointer'}}>✍️ 20 Questions Practice खोलें</button></div><div style={{marginTop:18,padding:'18px 20px',border:'1px solid #dbe5ef',borderRadius:16,background:'#f8fbff'}}><div style={{fontSize:12,fontWeight:800,letterSpacing:'.08em',color:'#287a9f'}}>SOLVING METHOD</div><ol style={{margin:'8px 0 0',paddingLeft:20,lineHeight:1.7}}>{learningModules[active.id].method.map(m=><li key={m}>{m}</li>)}</ol></div>"
+              if marker not in s:
+                  raise SystemExit('learn marker not found')
+              s = s.replace(marker, insert, 1)
+
+          p.write_text(s, encoding='utf-8')
+          print('REASONING_VISIBLE_CONTENT_PATCHED')
+          PY
+          python3 /tmp/patch_reasoning.py
+
+      - name: Validate source
+        shell: bash
+        run: |
+          grep -q "const learningModules=" src/ReasoningLabV2.jsx
+          grep -q "QUESTION BANK PREVIEW" src/ReasoningLabV2.jsx
+          grep -q "CONCEPT 1" src/ReasoningLabV2.jsx
+          grep -q "SOLVING METHOD" src/ReasoningLabV2.jsx
+
+      - name: Build application
+        run: |
+          npm install --legacy-peer-deps
+          npm run build
+          git diff --check
+
+      - name: Commit content patch and retire temporary repair workflows
+        shell: bash
+        run: |
+          rm -f \
+            .github/workflows/redeploy-pages-trigger.yml \
+            .github/workflows/one-time-reasoning-content-ui.yml \
+            .github/workflows/debug-reasoning-current.yml \
+            .github/workflows/fix-booster-runtime-once.yml \
+            REASONING_CONTENT_TRIGGER.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/ReasoningLabV2.jsx .github/workflows/ REASONING_CONTENT_TRIGGER.txt
+          git commit -m 'feat: expose reasoning content and bank preview'
+          git push
+
+      - name: Dispatch canonical Pages deployment
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main
