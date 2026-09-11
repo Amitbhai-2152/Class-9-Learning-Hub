@@ -2,6 +2,7 @@ import React,{useEffect,useRef} from 'react';
 import {awardSmartXP} from './engines/xp/xpRules.js';
 import {getXPState} from './engines/xp/xpStore.js';
 import {recordActivityAndRewards} from './engines/xp/xpRewards.js';
+import {cbtConfig} from './cbtConfig';
 
 const STAGES=new Set(['learn','practice','challenge','test']);
 const textOf=node=>String(node?.textContent||'').replace(/\s+/g,' ').trim();
@@ -26,9 +27,16 @@ const scoreFromRoot=root=>{
  const pm=textOf(root?.querySelector('.result-percent')).match(/(\d+(?:\.\d+)?)\s*%/);
  return pm?{correctAnswers:0,questionsTotal:0,scorePercent:Number(pm[1])}:{correctAnswers:0,questionsTotal:0,scorePercent:0};
 };
+const awardCompleted=({stage,activityId,attemptId,subjectId,topicId,result})=>{
+ const before=getXPState().totalXp;
+ const awarded=awardSmartXP({stage,activityId,attemptId,subjectId,topicId,result});
+ const after=getXPState().totalXp;
+ const rewards=recordActivityAndRewards({previousXp:before,currentXp:after,subjectId});
+ return {awarded,rewards,totalXp:after};
+};
 
 export function XPCompletionBoundary({children}){
- const rootRef=useRef(null),serials=useRef({}),wasComplete=useRef(false),previousXp=useRef(getXPState().totalXp);
+ const rootRef=useRef(null),serials=useRef({}),wasComplete=useRef(false);
  useEffect(()=>{
   const root=rootRef.current;if(!root)return undefined;
   const settle=()=>{
@@ -38,19 +46,28 @@ export function XPCompletionBoundary({children}){
    if(wasComplete.current)return;
    wasComplete.current=true;
    serials.current[context.activityId]=(serials.current[context.activityId]||0)+1;
-   const attemptId=`attempt-${serials.current[context.activityId]}`;
    const result=context.stage==='learn'?{completed:true}:{...scoreFromRoot(root),completed:true};
-   const before=previousXp.current;
-   const awarded=awardSmartXP({stage:context.stage,activityId:context.activityId,attemptId,subjectId:context.subjectId,topicId:context.topicId,result});
-   const after=getXPState().totalXp;previousXp.current=after;
-   const rewards=recordActivityAndRewards({previousXp:before,currentXp:after,subjectId:context.subjectId});
-   const payload={...context,attemptId,result,awarded,rewards,totalXp:after};
-   try{window.dispatchEvent(new CustomEvent('class9-xp-completion',{detail:payload}));}catch{}
+   const outcome=awardCompleted({stage:context.stage,activityId:context.activityId,attemptId:`attempt-${serials.current[context.activityId]}`,subjectId:context.subjectId,topicId:context.topicId,result});
+   try{window.dispatchEvent(new CustomEvent('class9-xp-completion',{detail:{...context,result,...outcome}}));}catch{}
   };
   settle();
   const observer=new MutationObserver(settle);observer.observe(root,{childList:true,subtree:true,characterData:true});
   const routePoll=setInterval(settle,250);
-  return()=>{observer.disconnect();clearInterval(routePoll)};
+  const onCbtMessage=event=>{
+   if(event.origin!==new URL(cbtConfig.url).origin)return;
+   const data=event.data;
+   if(!data||data.type!=='class9-cbt-result')return;
+   const correctAnswers=Number(data.correctAnswers),questionsTotal=Number(data.questionsTotal);
+   if(!Number.isSafeInteger(correctAnswers)||!Number.isSafeInteger(questionsTotal)||correctAnswers<0||questionsTotal<1||correctAnswers>questionsTotal)return;
+   const activityId=String(data.activityId||'cbt-bseb').replace(/[^A-Za-z0-9._:-]+/g,'-').slice(0,120);
+   const attemptId=String(data.attemptId||`external-${Date.now()}`).replace(/[^A-Za-z0-9._:-]+/g,'-').slice(0,80);
+   const subjectId=String(data.subjectId||'class9').slice(0,160);
+   const topicId=String(data.topicId||'test-centre').slice(0,160);
+   const outcome=awardCompleted({stage:'test',activityId,attemptId,subjectId,topicId,result:{completed:true,correctAnswers,questionsTotal,scorePercent:Math.round(correctAnswers/questionsTotal*100)}});
+   try{window.dispatchEvent(new CustomEvent('class9-xp-completion',{detail:{stage:'test',activityId,attemptId,subjectId,topicId,result:{completed:true,correctAnswers,questionsTotal},...outcome}}));}catch{}
+  };
+  window.addEventListener('message',onCbtMessage);
+  return()=>{observer.disconnect();clearInterval(routePoll);window.removeEventListener('message',onCbtMessage)};
  },[]);
  return <div ref={rootRef}>{children}</div>;
 }
