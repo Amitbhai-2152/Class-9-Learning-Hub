@@ -20,20 +20,30 @@ assert.equal(calculateMilestoneXP({completed:true,milestoneId:''}).eligible,fals
 assert.equal(buildSmartXPRequest({stage:'practice',activityId:'a1',subjectId:'math',topicId:'math-1',result:{completed:true,correctAnswers:5,questionsTotal:10}}).amount,15);
 assert.equal(buildSmartXPRequest({stage:'practice',activityId:'',result:{completed:true}}).eligible,false);
 
-const first=awardSmartXP({stage:'practice',activityId:'attempt-1',subjectId:'math',topicId:'math-1',result:{completed:true,correctAnswers:10,questionsTotal:10}});
+const first=awardSmartXP({stage:'practice',activityId:'practice-topic-1',attemptId:'run-1',subjectId:'math',topicId:'math-1',result:{completed:true,correctAnswers:10,questionsTotal:10}});
 assert.equal(first.awarded,25);
-const second=awardSmartXP({stage:'practice',activityId:'attempt-1',subjectId:'math',topicId:'math-1',result:{completed:true,correctAnswers:10,questionsTotal:10}});
-assert.equal(second.awarded,0);
-assert.equal(second.duplicate,true);
-const secondAttempt=awardSmartXP({stage:'practice',activityId:'attempt-2',subjectId:'math',topicId:'math-1',result:{completed:true,correctAnswers:10,questionsTotal:10}});
-assert.equal(secondAttempt.awarded,25);
+const replay=awardSmartXP({stage:'practice',activityId:'practice-topic-1',attemptId:'run-1',subjectId:'math',topicId:'math-1',result:{completed:true,correctAnswers:10,questionsTotal:10}});
+assert.equal(replay.awarded,0);
+assert.equal(replay.duplicate,true);
+const second=awardSmartXP({stage:'practice',activityId:'practice-topic-1',attemptId:'run-2',subjectId:'math',topicId:'math-1',result:{completed:true,correctAnswers:10,questionsTotal:10}});
+assert.equal(second.awarded,12);
+const third=awardSmartXP({stage:'practice',activityId:'practice-topic-1',attemptId:'run-3',subjectId:'math',topicId:'math-1',result:{completed:true,correctAnswers:10,questionsTotal:10}});
+assert.equal(third.awarded,6);
+const fourth=awardSmartXP({stage:'practice',activityId:'practice-topic-1',attemptId:'run-4',subjectId:'math',topicId:'math-1',result:{completed:true,correctAnswers:10,questionsTotal:10}});
+assert.equal(fourth.awarded,0);
+assert.equal(fourth.rule?.reason,'repeat limit reached');
+
+const uniqueNoAttempt=awardSmartXP({stage:'challenge',activityId:'challenge-topic-1',subjectId:'math',topicId:'math-1',result:{completed:true,correctAnswers:8,questionsTotal:10}});
+assert.equal(uniqueNoAttempt.awarded,31);
+
 const milestone=awardMilestoneXP({milestoneId:'math:chapter-1',subjectId:'math',topicId:'math-1',completed:true});
 assert.equal(milestone.awarded,20);
 const milestoneReplay=awardMilestoneXP({milestoneId:'math:chapter-1',subjectId:'math',topicId:'math-1',completed:true});
 assert.equal(milestoneReplay.awarded,0);
 assert.equal(milestoneReplay.duplicate,true);
-assert.equal(getXPState().totalXp,70);
-assert.equal(getXPLedger().length,3);
+assert.equal(getXPState().totalXp,94);
+assert.equal(getXPLedger().length,5);
 assert.equal(getXPLedger().every(e=>e.metadata?.ruleVersion===1),true);
 assert.equal(getXPLedger().every(e=>e.amount<=100),true);
-console.log('XP Phase 2 QA passed: stage rules, performance bonuses, completion gating, repeat-attempt decay, milestone idempotency, bounded rewards, and rule-version traceability verified.');
+assert.equal(getXPLedger().filter(e=>e.metadata?.activityId==='practice-topic-1').map(e=>e.amount).join(','),'25,12,6');
+console.log('XP Phase 2 QA passed: stage rules, performance bonuses, completion gating, attempt-aware repeat decay, replay idempotency, milestone idempotency, bounded rewards, and rule-version traceability verified.');
