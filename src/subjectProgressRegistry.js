@@ -1,8 +1,6 @@
 export const STAGES=['learn','practice','challenge','test'];
-
 const topic=(id,title,aliases=[])=>({id,title,aliases});
 const list=(subjectId,topics)=>topics.map((item,index)=>({...item,subjectId,order:index+1}));
-
 const math=list('math',[
  topic('math-01','संख्या पद्धति',['Number System']),topic('math-02','बहुपद',['Polynomials']),topic('math-03','निर्देशांक ज्यामिति',['Coordinate Geometry']),topic('math-04','दो चरों वाले रैखिक समीकरण',['Linear Equations in Two Variables']),topic('math-05','यूक्लिड की ज्यामिति का परिचय',['Introduction to Euclid’s Geometry','Introduction to Euclids Geometry']),topic('math-06','रेखाएँ और कोण',['Lines and Angles']),topic('math-07','त्रिभुज',['Triangles']),topic('math-08','चतुर्भुज',['Quadrilaterals']),topic('math-09','समान्तर चतुर्भुजों और त्रिभुजों के क्षेत्रफल',['Areas of Parallelograms and Triangles']),topic('math-10','वृत्त',['Circles']),topic('math-11','रचनाएँ',['Constructions']),topic('math-12','हीरोन का सूत्र',['Heron’s Formula','Herons Formula']),topic('math-13','पृष्ठीय क्षेत्रफल एवं आयतन',['Surface Areas and Volumes']),topic('math-14','सांख्यिकी',['Statistics']),topic('math-15','प्रायिकता',['Probability'])
 ]);
@@ -22,7 +20,7 @@ const sst=list('sst',[
  topic('sst-h1','भौगोलिक खोजें'),topic('sst-h2','अमेरिकी स्वतंत्रता संग्राम'),topic('sst-h3','फ्रांस की क्रांति'),topic('sst-h4','विश्व युद्धों का इतिहास'),topic('sst-h5','नाजीवाद'),topic('sst-h6','वन्य समाज और उपनिवेशवाद'),topic('sst-h7','शांति के प्रयास'),topic('sst-h8','कृषि और खेतीहर और समाज'),
  topic('sst-g1','स्थिति एवं विस्तार'),topic('sst-g2','भौतिक स्वरूप : संरचना एवं उच्चावच'),topic('sst-g3','अपवाह स्वरूप'),topic('sst-g4','जलवायु'),topic('sst-g5','प्राकृतिक वनस्पति एवं वन्य प्राणी'),topic('sst-g6','जनसंख्या'),topic('sst-g7','भारत के पड़ोसी देश'),topic('sst-g8','मानचित्र अध्ययन'),topic('sst-g9','क्षेत्रीय अध्ययन'),topic('sst-g10','आपदा प्रबंधन : एक परिचय'),topic('sst-g11','मानवी गलतियों के कारण घटित आपदाएं : नाभिकीय/जैविक/रासायनिक'),topic('sst-g12','सामान्य आपदाएँ : निवारण एवं नियंत्रण'),topic('sst-g13','समुदाय आधारित आपदा प्रबंधन'),
  topic('sst-c1','लोकतंत्र का क्रमिक विकास'),topic('sst-c2','लोकतंत्र क्या और क्यों?'),topic('sst-c3','संविधान निर्माण'),topic('sst-c4','चुनावी राजनीति'),topic('sst-c5','संसदीय लोकतंत्र की संस्थाएं'),topic('sst-c6','लोकतांत्रिक अधिकार'),
- topic('sst-e1','बिहार के एक गाँव की कहानी'),topic('sst-e2','मानव एक संसाधन'),topic('sst-e3','गरीबी'),topic('sst-e4','बेकारी'),topic('sst-e5','कृषि'),topic('sst-e6','खाद्यान्न सुरक्षा एवं गुणवत्ता'),topic('sst-e7','कृषक मजदूर')
+ topic('sst-e1','बिहार के एक गाँव की कहानी'),topic('sst-e2','मानव एक संसाधन'),topic('sst-e3','गरीबी'),topic('sst-e4','बेकारी'),topic('sst-e5','कृषि, खाद्यान्न सुरक्षा एवं गुणवत्ता'),topic('sst-e6','कृषक मजदूर')
 ]);
 const english=list('english',[
  topic('english-reader-01','I’m going to dance again'),topic('english-reader-02','Scaling Great Heights'),topic('english-reader-03','Saint Kabir'),topic('english-reader-04','The eyes are not here'),topic('english-reader-05','Ismat Chughtai: A woman with a difference'),topic('english-reader-06','The accidental tourist'),topic('english-reader-07','Saint Ravidas'),topic('english-reader-08','Bharathipura'),
@@ -33,7 +31,6 @@ const english=list('english',[
 const reasoning=list('reasoning',[
  topic('reasoning-01','Number Series'),topic('reasoning-02','Alphabet Series'),topic('reasoning-03','Analogy'),topic('reasoning-04','Classification'),topic('reasoning-05','Coding-Decoding'),topic('reasoning-06','Direction & Blood Relations',['Direction and Blood Relations'])
 ]);
-
 export const SUBJECT_REGISTRY=[
  {id:'math',name:'गणित',shortName:'Maths',topics:math},
  {id:'science',name:'विज्ञान',shortName:'Science',topics:science},
@@ -43,40 +40,11 @@ export const SUBJECT_REGISTRY=[
  {id:'english',name:'अंग्रेज़ी',shortName:'English',topics:english},
  {id:'reasoning',name:'तर्कशक्ति',shortName:'Reasoning',topics:reasoning}
 ];
-
 const fold=value=>String(value??'').normalize('NFKC').toLowerCase().replace(/[–—−]/g,'-').replace(/[’‘]/g,"'").replace(/[“”]/g,'"').replace(/[\u2000-\u200B]/g,' ').replace(/\s+/g,' ').trim().replace(/[.。,;:!?]+$/g,'');
 const compact=value=>fold(value).replace(/[^\p{L}\p{N}]+/gu,'');
-const subjectsById=new Map(SUBJECT_REGISTRY.map(s=>[s.id,s]));
 const subjectsByName=new Map(SUBJECT_REGISTRY.flatMap(s=>[[fold(s.name),s],[fold(s.shortName),s],[fold(s.id),s]]));
-
-export function resolveSubject(value){
- const key=fold(value);if(!key)return null;
- if(subjectsByName.has(key))return subjectsByName.get(key);
- const compactKey=compact(key);
- return SUBJECT_REGISTRY.find(s=>compact(s.name)===compactKey||compact(s.shortName)===compactKey||compact(s.id)===compactKey||
-  (s.id==='sst'&&['socialscience','socialstudies','samaajikvigyan'].includes(compactKey))||
-  (s.id==='reasoning'&&['reasoning','tarkshakti','aptitude'].includes(compactKey))||
-  (s.id==='english'&&compactKey.includes('english'))||
-  (s.id==='math'&&['math','mathematics','ganit'].includes(compactKey))||
-  (s.id==='science'&&['science','vigyan'].includes(compactKey))||
-  (s.id==='hindi'&&['hindi','hindii'].includes(compactKey))||
-  (s.id==='sanskrit'&&['sanskrit','sanskritam'].includes(compactKey))
- )||null;
-}
-
-export function resolveTopic(subjectValue,chapterValue){
- const subject=typeof subjectValue==='string'?resolveSubject(subjectValue):subjectValue;
- if(!subject)return null;
- const key=fold(chapterValue);if(!key)return null;
- const exact=subject.topics.find(t=>[t.title,t.id,...t.aliases].some(x=>fold(x)===key||compact(x)===compact(key)));
- if(exact)return exact;
- const numeric=key.match(/^(?:chapter|ch|अध्याय)?\s*(\d{1,2})$/i);
- if(numeric){const index=Number(numeric[1]);return subject.topics[index-1]||null;}
- const ordinal=key.match(/(?:chapter|अध्याय)[\s_-]*(\d{1,2})/i);
- if(ordinal){const index=Number(ordinal[1]);return subject.topics[index-1]||null;}
- return subject.topics.find(t=>compact(t.title)===compact(key)||t.aliases.some(a=>compact(a)===compact(key)))||null;
-}
-
+export function resolveSubject(value){const key=fold(value);if(!key)return null;if(subjectsByName.has(key))return subjectsByName.get(key);const compactKey=compact(key);return SUBJECT_REGISTRY.find(s=>compact(s.name)===compactKey||compact(s.shortName)===compactKey||compact(s.id)===compactKey||(s.id==='sst'&&['socialscience','socialstudies','samaajikvigyan'].includes(compactKey))||(s.id==='reasoning'&&['reasoning','tarkshakti','aptitude'].includes(compactKey))||(s.id==='english'&&compactKey.includes('english'))||(s.id==='math'&&['math','mathematics','ganit'].includes(compactKey))||(s.id==='science'&&['science','vigyan'].includes(compactKey))||(s.id==='hindi'&&['hindi','hindii'].includes(compactKey))||(s.id==='sanskrit'&&['sanskrit','sanskritam'].includes(compactKey)))||null;}
+export function resolveTopic(subjectValue,chapterValue){const subject=typeof subjectValue==='string'?resolveSubject(subjectValue):subjectValue;if(!subject)return null;const key=fold(chapterValue);if(!key)return null;const exact=subject.topics.find(t=>[t.title,t.id,...t.aliases].some(x=>fold(x)===key||compact(x)===compact(key)));if(exact)return exact;const numeric=key.match(/^(?:chapter|ch|अध्याय)?\s*(\d{1,2})$/i);if(numeric)return subject.topics[Number(numeric[1])-1]||null;const ordinal=key.match(/(?:chapter|अध्याय)[\s_-]*(\d{1,2})/i);if(ordinal)return subject.topics[Number(ordinal[1])-1]||null;return null;}
 export function registrySnapshot(){return Object.fromEntries(SUBJECT_REGISTRY.map(s=>[s.id,{id:s.id,name:s.name,total:s.topics.length,topics:s.topics.map(({id,title,order})=>({id,title,order}))}]));}
 export const SUBJECT_IDS=SUBJECT_REGISTRY.map(s=>s.id);
 export const TOTAL_TOPICS=SUBJECT_REGISTRY.reduce((n,s)=>n+s.topics.length,0);
