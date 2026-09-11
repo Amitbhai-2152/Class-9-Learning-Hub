@@ -2,10 +2,6 @@ name: Legacy Pages Patch Guard
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths-ignore:
-      - '.github/workflows/fix-pages-legacy-patch.yml'
 
 permissions:
   contents: read
