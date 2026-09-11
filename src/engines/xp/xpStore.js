@@ -65,4 +65,17 @@ export function makeXPEventId({activityId,subjectId=null,topicId=null,stage=null
  return ['xp',subjectId,topicId,stage,a].filter(v=>v!==null&&v!==undefined&&String(v)!=='').join(':').slice(0,160);
 }
 export function calculateXPLevel(totalXp){const xp=Math.max(0,safeInt(totalXp));const level=Math.floor(xp/XP_LEVEL_BASE)+1;const inLevel=xp%XP_LEVEL_BASE;return {level,inLevel,nextLevelXp:XP_LEVEL_BASE,percent:Math.round((inLevel/XP_LEVEL_BASE)*100)}}
-export function xpStateToSupabaseSnapshot(state=getXPState(),studentId=null){const safe=safeObject(state);return {schemaVersion:XP_SCHEMA_VERSION,studentId:String(studentId||safe.studentId||'anonymous'),wallet:{total_xp:Math.max(0,safeInt(safe.totalXp)),lifetime_xp:Math.max(0,safeInt(safe.lifetimeXp)),daily_xp:Math.max(0,safeInt(safe.dailyXp)),daily_goal:Math.max(1,safeInt(safe.dailyGoal)||100),day:normalizeDate(safe.day),streak:Math.max(1,safeInt(safe.streak)||1)},events:getXPLedger().map(row=>({...row}))}};
+export function xpStateToSupabaseSnapshot(state=getXPState(),studentId=null){
+ const safe=safeObject(state);
+ const events=getXPLedger().map(row=>({
+  event_id:String(row.eventId||''),
+  amount:Math.max(0,safeInt(row.amount)),
+  source:String(row.source||''),
+  subject_id:row.subjectId===null||row.subjectId===undefined?null:String(row.subjectId),
+  topic_id:row.topicId===null||row.topicId===undefined?null:String(row.topicId),
+  stage:row.stage===null||row.stage===undefined?null:String(row.stage),
+  awarded_at:row.awardedAt||null,
+  metadata:safeObject(row.metadata)
+ }));
+ return {schemaVersion:XP_SCHEMA_VERSION,studentId:String(studentId||safe.studentId||'anonymous'),wallet:{total_xp:Math.max(0,safeInt(safe.totalXp)),lifetime_xp:Math.max(0,safeInt(safe.lifetimeXp)),daily_xp:Math.max(0,safeInt(safe.dailyXp)),daily_goal:Math.max(1,safeInt(safe.dailyGoal)||100),day:normalizeDate(safe.day),streak:Math.max(1,safeInt(safe.streak)||1)},events};
+}
