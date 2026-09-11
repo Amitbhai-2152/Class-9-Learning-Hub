@@ -1,0 +1,44 @@
+name: Make Pages Reasoning patch idempotent
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Guard legacy Reasoning patch
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/pages.yml')
+          s=p.read_text(encoding='utf-8')
+          needle="          if 'const TIMER_CONFIG=' not in s:\n"
+          guard="          if 'const TIMER_CONFIG=' in s and '30 प्रश्न • 30 मिनट' in s:\n              p.write_text(s,encoding='utf-8')\n              print('Reasoning source already has current timers; skipping legacy timer replacements')\n              raise SystemExit(0)\n\n          if 'const TIMER_CONFIG=' not in s:\n"
+          if "Reasoning source already has current timers" not in s:
+              if needle not in s:
+                  raise SystemExit('Expected pages.yml TIMER_CONFIG guard anchor not found')
+              s=s.replace(needle,guard,1)
+              p.write_text(s,encoding='utf-8')
+              print('PAGES_GUARD_ADDED')
+          else:
+              print('PAGES_GUARD_ALREADY_PRESENT')
+          PY
+      - name: Commit Pages workflow fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/pages.yml
+          if git diff --cached --quiet; then
+            echo "No Pages workflow change needed."
+            exit 0
+          fi
+          git commit -m "fix: make Pages Reasoning patch idempotent"
+          git push
