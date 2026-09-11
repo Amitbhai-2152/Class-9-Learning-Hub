@@ -11,15 +11,7 @@
     <style>html.hub-booting body{visibility:hidden}html.hub-booting{background:#fff}</style>
     <script>
       (function(){
-        var expected='%VITE_BUILD_VERSION%';
-        var path='./build-version.json?preboot='+Date.now();
-        fetch(path,{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){
-          var remote=String((d&&d.version)||'');
-          if(remote && expected && remote!==expected){
-            var u=new URL(window.location.href);u.searchParams.set('__hub_refresh',remote);window.location.replace(u.toString());return;
-          }
-          document.documentElement.classList.remove('hub-booting');
-        }).catch(function(){document.documentElement.classList.remove('hub-booting')});
+        document.documentElement.classList.remove('hub-booting');
       })();
     </script>
     <script>
@@ -44,6 +36,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main2.jsx"></script>
+    <script type="module" src="/Class-9-Learning-Hub/assets/index.js"></script>
   </body>
 </html>
