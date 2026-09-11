@@ -43,6 +43,7 @@ function RootRouter(){const[route,setRoute]=useState(readRoute);useEffect(()=>{c
  const isSST=route.subject==='sst'||route.page.startsWith('sst-');if(isSST)return <SSTRoot/>;
  const sharedProps={onBack:exitLanguageSkills,addXp:()=>{},finishSession:()=>{}};
  if(route.languageSkills&&route.topic==='composition')return <EnglishCompositionTopic onBack={exitLanguageSkills}/>;
+ if(route.languageSkills&&route.topic==='paragraph-essay')return <EnglishCompositionTopic onBack={exitLanguageSkills}/>;
  if(route.languageSkills&&route.topic==='translation')return <EnglishTranslationTopicComplete onBack={exitLanguageSkills}/>;
  if(route.languageSkills&&route.topic==='formal-letter')return <EnglishFormalLetterTopic {...sharedProps}/>;
  if(route.languageSkills&&route.topic==='informal-letter')return <EnglishInformalLetterTopic {...sharedProps}/>;
