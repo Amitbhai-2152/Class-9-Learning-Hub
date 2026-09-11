@@ -60,6 +60,8 @@ jobs:
         run: npm run qa:english:language-skills-quality
       - name: Reasoning content and wiring QA
         run: npm run qa:reasoning
+      - name: Canonical subject progress QA
+        run: npm run qa:subject-progress
       - name: Build application
         run: npm run build
-      # English and reasoning modules included in full verification.
+      # English, reasoning, and canonical progress are included in full verification.
