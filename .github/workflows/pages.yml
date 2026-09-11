@@ -22,32 +22,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-
       - name: Build application
         run: npm run build
-
       - name: Write build version manifest
         run: echo '{"version":"'"$GITHUB_SHA"'"}' > dist/build-version.json
-
       - name: Verify Pages fallback
         run: test -s dist/404.html && grep -q "Class-9-Learning-Hub" dist/404.html
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
-
   deploy:
     environment:
       name: github-pages
