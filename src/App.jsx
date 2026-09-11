@@ -71,19 +71,12 @@ import {scienceChapter14Learning} from './scienceChapter14Learning';
 import {scienceChapter15Learning} from './scienceChapter15Learning';
 import {MathSectionHero,MathChapterDecor} from './MathSectionVisuals';
 import {cbtConfig} from './cbtConfig';
+import {subjects} from './subjectCatalog';
 import './styles.css';
 import './math-section.css';
 import './hindi-section.css';
 
-const subjects=[
-{id:'math',name:'गणित',icon:'∑',desc:'संख्या, बीजगणित, ज्यामिति और तर्क',chapters:['संख्या पद्धति','बहुपद','निर्देशांक ज्यामिति','दो चरों वाले रैखिक समीकरण','यूक्लिड की ज्यामिति का परिचय','रेखाएँ और कोण','त्रिभुज','चतुर्भुज','समान्तर चतुर्भुजों और त्रिभुजों का क्षेत्रफल','वृत्त','रचनाएँ','हीरोन का सूत्र','पृष्ठीय क्षेत्रफल एवं आयतन','सांख्यिकी','प्रायिकता']},
-{id:'science',name:'विज्ञान',icon:'⚗',desc:'भौतिकी, रसायन और जीव विज्ञान',chapters:['हमारे आसपास के पदार्थ','क्या हमारे आसपास के पदार्थ शुद्ध हैं?','परमाणु एवं अणु','परमाणु की संरचना','जीवन की मौलिक इकाई — कोशिका','ऊतक','गति','बल तथा गति के नियम','गुरुत्वाकर्षण','कार्य तथा ऊर्जा','ध्वनि','खाद्य संसाधनों में सुधार','हम बीमार क्यों होते हैं','प्राकृतिक संसाधन','हमारा पर्यावरण']},
-{id:'hindi',name:'हिन्दी',icon:'अ',desc:'गद्य, पद्य, भाषा और लेखन',chapters:['कहानी का प्लॉट']},
-{id:'sst',name:'सामाजिक विज्ञान',icon:'◎',desc:'इतिहास, भूगोल, नागरिक शास्त्र और अर्थशास्त्र',chapters:['भौगोलिक खोजें–भाग 1']},
-{id:'sanskrit',name:'संस्कृत',icon:'ॐ',desc:'पाठ, व्याकरण और परीक्षा अभ्यास',chapters:['ईशस्तुति:','लोभविष्टः चक्रधरः','यक्ष-युधिष्ठिर संवाद','चत्वारो वेदाः','संस्कृतस्य महिमा','संस्कृतसाहित्ये पर्यावरणम्','ज्ञानं भारः क्रियां विना','नीतिपधानिः','बिहारस्य संस्कृतिकं वैभवम्','ईद-महोत्सवः','ग्राम्यजीवनम्','वीर कूँवर सिंहः','किशोराणां मनोविज्ञानम्','राष्ट्रबोधः','विश्ववन्दिता वैशाली']},
-{id:'english',name:'अंग्रेज़ी',icon:'A',desc:'The Panorama + English Reader • Literature, language and exam practice',chapters:["Reader • 1 I’m going to dance again","Reader • 2 Scaling Great Heights","Reader • 3 Saint Kabir","Reader • 4 The eyes are not here","Reader • 5 Ismat Chughtai: A woman with a difference","Reader • 6 The accidental tourist","Reader • 7 Saint Ravidas","Reader • 8 Bharathipura","Panorama • Prose 1 Dharam Juddha","Panorama • Prose 2 Yayati","Panorama • Prose 3 A Silent Revolution","Panorama • Prose 4 Too Many People, Too Few Trees","Panorama • Prose 5 Echo and Narcissus","Panorama • Prose 6 The Shehnai of Bismillah Khan","Panorama • Prose 7 Kathmandu","Panorama • Prose 8 My Childhood","Panorama • Prose 9 The Gift of the Magi","Panorama • Poetry 10 The Grandmother","Panorama • Poetry 11 On His Blindness","Panorama • Poetry 12 Blow, Blow, Thou Winter Wind","Panorama • Poetry 13 To Daffodils","Panorama • Poetry 14 Sound","Panorama • Poetry 15 Self Introduction","Panorama • Poetry 16 I Am Like Grass","Panorama • Poetry 17 Abraham Lincoln’s Letter to His Son’s Teacher","Panorama • Read, Think & Enjoy 1 The Secret of Work","Panorama • Read, Think & Enjoy 2 Gandhiji’s Passion for Nursing","Panorama • Read, Think & Enjoy 3 With the Photographer"]},
-{id:'reasoning',name:'तर्कशक्ति',icon:'?',desc:'तर्क, पैटर्न और समस्या समाधान',chapters:['उन्नत तर्कशक्ति']}
-];
+
 
 const initial={xp:0,streak:1,dailyXp:0,goal:100,sessions:[]};
 const LEVEL_XP=250;
