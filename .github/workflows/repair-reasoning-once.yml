@@ -1,0 +1,91 @@
+name: One-Time Reasoning Content Repair
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  repair:
+    if: ${{ github.event.head_commit.message != 'chore: retire one-time repair workflow' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Repair stable routing and expand reasoning
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          # 1) Remove the unsafe booster routing that was being injected into the main router.
+          p = Path('src/AppWithChapter5.jsx')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace("import SubjectBoosterTest from './SubjectBoosterTest.jsx';\n", "", 1)
+          marker = "const boosterSubjectButton="
+          if marker in s:
+              start = s.index(marker)
+              end = s.index(";const genericTopic", start)
+              s = s[:start] + "const genericTopic" + s[end + len(";const genericTopic"):]
+          page_marker = "const pageParams=typeof window!=='undefined'?new URLSearchParams(window.location.search):null;if(pageParams?.get('booster')==='1'"
+          if page_marker in s:
+              start = s.index(page_marker)
+              end = s.index(";const mode=routeMode()", start)
+              s = s[:start] + s[end + 1:]
+          s = s.replace("return <><ReasoningHub initialChapter={initialChapter} initialMode={initialMode} onExit={reasoningExit} addXp={addXp} finishSession={finishSession}/>{boosterSubjectButton}</>};", "return <ReasoningHub initialChapter={initialChapter} initialMode={initialMode} onExit={reasoningExit} addXp={addXp} finishSession={finishSession}/>};", 1)
+          s = s.replace("return <>{boosterSubjectButton}<App/></>}", "return <App/>}", 1)
+          p.write_text(s, encoding='utf-8')
+
+          # 2) Expand the canonical Reasoning V2 bank from ~60/70 to 100+ per chapter,
+          #    and increase Practice/Challenge/Final Test sizes.
+          p = Path('src/ReasoningLabV2.jsx')
+          s = p.read_text(encoding='utf-8')
+          anchor = "const chapters=["
+          if anchor not in s:
+              raise SystemExit('Reasoning chapters anchor not found')
+          extras = r'''const extraNumberBank=Array.from({length:40},(_,i)=>{const a=11+i;const d=2+(i%6);const vals=[a,a+d,a+3*d,a+6*d];const ans=a+10*d;return make(`${vals.join(', ')}, ?`,ans,[ans-d,ans+d,ans+2*d],`बढ़ता अंतर +${d}, +${2*d}, +${3*d}; अगला +${4*d}।`,i<15?'चैलेंज':'कठिन')});
+          const extraAlphabetBank=Array.from({length:40},(_,i)=>{const a=1+(i%18);const j=[2,3,4,5][i%4];const seq=[a,a+j,a+2*j,a+3*j].map(letter);return make(`${seq.join(', ')}, ?`,letter(a+4*j),[letter(a+4*j+1),letter(a+4*j-1),letter(a+4*j+2)],`हर बार +${j} positions।`,i<15?'चैलेंज':'कठिन')});
+          const extraAnalogyBank=Array.from({length:40},(_,i)=>{const a=11+i;const type=i%3;if(type===0)return make(`${a} : ${a*a} :: ${a+1} : ?`,(a+1)*(a+1),[(a+1)*2,(a+1)*3,(a+1)*4],`वर्ग संबंध: ${a}²।`,'कठिन');if(type===1)return make(`${a} : ${a*a*a} :: ${a+1} : ?`,(a+1)*(a+1)*(a+1),[(a+1)*(a+1),(a+1)*2,(a+1)*4],`घन संबंध: ${a}³।`,'कठिन');return make(`${a} : ${a+5} :: ${a+10} : ?`,a+15,[a+12,a+20,a+25],'पहली जोड़ी में +5, वही दूसरी जोड़ी में भी।','चैलेंज')});
+          const extraClassificationBank=Array.from({length:40},(_,i)=>{const base=7+i;const nums=[base*2,base*3,base*4,base*5+1];return make(`अलग संख्या: ${nums.join(', ')}`,String(nums[3]),[String(base*5),String(base*6),String(base*7)],`पहली तीन ${base} के गुणज हैं; ${nums[3]} नहीं।`,i<15?'चैलेंज':'कठिन')});
+          const extraCodingBank=Array.from({length:30},(_,i)=>{const words=['APPLE','TRAIN','SCHOOL','CHAIR','BRICK','MUSIC','LIGHT','PLANT','HOUSE','CLOUD'];const word=words[i%words.length];const step=(i%4)+2;const c=wordShift(word,step);return make(`${word} को +${step} code करें: ?`,c,[wordShift(word,step-1),wordShift(word,step+1),word],`हर अक्षर +${step} position shift होता है।`,i<12?'चैलेंज':'कठिन')});
+          const extraDirectionBank=Array.from({length:40},(_,i)=>{const dirs=['उत्तर','पूर्व','दक्षिण','पश्चिम'];const d=dirs[i%4];const turns=[90,180,270][i%3];const order={उत्तर:0,पूर्व:1,दक्षिण:2,पश्चिम:3};const idx=(order[d]+Math.round(turns/90))%4;const ans=dirs[idx];const distract=dirs.filter(x=>x!==ans).slice(0,3);return make(`${d} की ओर मुख है; ${turns}° दाएँ मुड़ने पर दिशा?`,ans,distract,`${d} से ${turns}° clockwise turn = ${ans}।`,i<15?'चैलेंज':'कठिन')});
+          numberBank.push(...extraNumberBank);alphabetBank.push(...extraAlphabetBank);analogyBank.push(...extraAnalogyBank);classificationBank.push(...extraClassificationBank);codingBank.push(...extraCodingBank);directionBank.push(...extraDirectionBank);
+          
+          const deepDive={
+            'number-series':'Advanced: first difference, second difference, ratio और alternating rule को क्रम से test करो; केवल एक transition देखकर निष्कर्ष मत निकालो।',
+            'alphabet-series':'Advanced: हर letter को position में बदलो और jump sequence लिखो; mixed forward/backward jumps में पूरा cycle verify करो।',
+            'analogy':'Advanced: relation को एक exact operation या category में बदलो; direction, function, part-whole और power relations को अलग-अलग पहचानो।',
+            'classification':'Advanced: common property को सभी candidates पर समान रूप से लागू करो; सबसे मजबूत mathematical/category rule चुनो।',
+            'coding-decoding':'Advanced: shift, reverse, position और combined rules को अलग करो; transformation को हर character पर verify करो।',
+            'direction-blood':'Advanced: compass turns को clockwise/anticlockwise map करो और family questions में generation-by-generation relation track करो।'
+          };
+          note = "      <div style={{marginTop:18,padding:'18px 20px',border:'1px solid #dbe5ef',borderRadius:16,background:'#f8fbff'}}><div style={{fontSize:12,fontWeight:800,letterSpacing:'.08em',color:'#287a9f'}}>DEEP DIVE • EXTRA CONTENT</div><p style={{margin:'8px 0 0',lineHeight:1.65}}>{deepDive[active.id]}</p></div>"
+          needle = "</div><div className=\"ready\">"
+          if "DEEP DIVE • EXTRA CONTENT" not in s:
+              s = s.replace(needle, "</div>" + note + "<div className=\"ready\">", 1)
+          s = s.replace("const counts={practice:15,challenge:15,test:25};", "const counts={practice:20,challenge:20,test:30};", 1)
+          s = s.replace("setSession(prepare(bank,25));", "setSession(prepare(bank,30));", 1)
+          s = s.replace("<p>25 प्रश्न • 15 मिनट • प्रत्येक attempt में options randomised होंगे।</p>", "<p>30 प्रश्न • 15 मिनट • प्रत्येक attempt में options randomised होंगे।</p>", 1)
+          s = s.replace("<strong>25</strong><span>FINAL TEST</span>", "<strong>30</strong><span>FINAL TEST</span>", 1)
+          s = s.replace("<div><strong>15</strong><span>PRACTICE</span></div><div><strong>15</strong><span>CHALLENGE</span></div>", "<div><strong>20</strong><span>PRACTICE</span></div><div><strong>20</strong><span>CHALLENGE</span></div>", 1)
+          s = s.replace("{score} / {mode==='test'?25:score}", "{score} / {mode==='test'?30:score}", 1)
+          s = s.replace("(mode==='test'?25:15)*0.8", "(mode==='test'?30:20)*0.8", 1)
+          s = s.replace("(mode==='test'?25:15)*0.6", "(mode==='test'?30:20)*0.6", 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Verify source and production build
+        run: |
+          test ! $(grep -c "SubjectBoosterTest" src/AppWithChapter5.jsx)
+          test ! $(grep -c "const boosterSubjectButton" src/AppWithChapter5.jsx)
+          grep -q "const counts={practice:20,challenge:20,test:30};" src/ReasoningLabV2.jsx
+          grep -q "<strong>30</strong><span>FINAL TEST</span>" src/ReasoningLabV2.jsx
+          grep -q "30 प्रश्न • 15 मिनट" src/ReasoningLabV2.jsx
+          npm install --legacy-peer-deps
+          npm run build
+      - name: Commit repair and remove helper workflow
+        run: |
+          rm -f .github/workflows/repair-reasoning-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/AppWithChapter5.jsx src/ReasoningLabV2.jsx .github/workflows/repair-reasoning-once.yml
+          git commit -m "chore: restore stable routing and expand reasoning content"
+          git push
