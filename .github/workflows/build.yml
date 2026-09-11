@@ -71,3 +71,4 @@ jobs:
       - name: Build application
         run: npm run build
       # English, reasoning, canonical progress, analytics, runtime coverage, and legacy migration are included in full verification.
+      # Phase 4 legacy migration is intentionally verified on every main push.
