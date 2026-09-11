@@ -3,7 +3,18 @@ import {awardSmartXP} from './engines/xp/xpRules.js';
 import {getXPState} from './engines/xp/xpStore.js';
 import {recordActivityAndRewards} from './engines/xp/xpRewards.js';
 
+const STAGES=new Set(['learn','practice','challenge','test']);
 const textOf=node=>String(node?.textContent||'').replace(/\s+/g,' ').trim();
+const resolveContext=()=>{
+ if(typeof window==='undefined')return null;
+ const params=new URLSearchParams(window.location.search);
+ const page=params.get('page');
+ const stage=params.get('mode');
+ const subjectId=String(params.get('subject')||'').trim();
+ const chapterIndex=String(params.get('chapter')||'').trim();
+ if(page!=='chapter'||!STAGES.has(stage)||!subjectId||!/^\d+$/.test(chapterIndex))return null;
+ return {stage,subjectId,chapterIndex,activityId:`hub:${subjectId}:chapter:${chapterIndex}:stage:${stage}`,topicId:`chapter:${chapterIndex}`};
+};
 const scoreFromRoot=root=>{
  const raw=textOf(root?.querySelector('.result-score'));
  const match=raw.match(/(\d+)\s*\/\s*(\d+)/);
@@ -12,28 +23,30 @@ const scoreFromRoot=root=>{
  return pm?{correctAnswers:0,questionsTotal:0,scorePercent:Number(pm[1])}:{correctAnswers:0,questionsTotal:0,scorePercent:0};
 };
 
-export function XPCompletionBoundary({stage,activityId,subjectId=null,topicId=null,children,onAwarded}){
- const rootRef=useRef(null),completionSerial=useRef(0),wasComplete=useRef(false),previousXp=useRef(getXPState().totalXp);
+export function XPCompletionBoundary({children}){
+ const rootRef=useRef(null),serials=useRef({}),wasComplete=useRef(false),previousXp=useRef(getXPState().totalXp);
  useEffect(()=>{
   const root=rootRef.current;if(!root)return undefined;
   const settle=()=>{
+   const context=resolveContext();
    const complete=!!root.querySelector('.result-card,.completion-hero,.completion-grid .result-score');
-   if(!complete){wasComplete.current=false;return;}
+   if(!context||!complete){wasComplete.current=false;return;}
    if(wasComplete.current)return;
-   wasComplete.current=true;completionSerial.current+=1;
-   const attemptId=`attempt-${completionSerial.current}`;
-   const result=stage==='learn'?{completed:true}:{...scoreFromRoot(root),completed:true};
+   wasComplete.current=true;
+   serials.current[context.activityId]=(serials.current[context.activityId]||0)+1;
+   const attemptId=`attempt-${serials.current[context.activityId]}`;
+   const result=context.stage==='learn'?{completed:true}:{...scoreFromRoot(root),completed:true};
    const before=previousXp.current;
-   const awarded=awardSmartXP({stage,activityId,attemptId,subjectId,topicId,result});
+   const awarded=awardSmartXP({stage:context.stage,activityId:context.activityId,attemptId,subjectId:context.subjectId,topicId:context.topicId,result});
    const after=getXPState().totalXp;previousXp.current=after;
-   const rewards=recordActivityAndRewards({previousXp:before,currentXp:after,subjectId});
-   const payload={stage,activityId,attemptId,result,awarded,rewards,totalXp:after};
-   onAwarded?.(payload);
-   try{root.dispatchEvent(new CustomEvent('class9-xp-completion',{detail:payload,bubbles:true}));}catch{}
+   const rewards=recordActivityAndRewards({previousXp:before,currentXp:after,subjectId:context.subjectId});
+   const payload={...context,attemptId,result,awarded,rewards,totalXp:after};
+   try{window.dispatchEvent(new CustomEvent('class9-xp-completion',{detail:payload}));}catch{}
   };
   settle();
   const observer=new MutationObserver(settle);observer.observe(root,{childList:true,subtree:true,characterData:true});
-  return()=>observer.disconnect();
- },[stage,activityId,subjectId,topicId,onAwarded]);
- return <div ref={rootRef} data-xp-activity={activityId} data-xp-stage={stage}>{children}</div>;
+  const routePoll=setInterval(settle,250);
+  return()=>{observer.disconnect();clearInterval(routePoll)};
+ },[]);
+ return <div ref={rootRef}>{children}</div>;
 }
