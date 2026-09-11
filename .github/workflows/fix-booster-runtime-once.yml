@@ -1,38 +1,10 @@
-name: Fix Subject Booster Runtime
+name: Retired Subject Booster Runtime Repair
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
 permissions:
-  contents: write
+  contents: read
 jobs:
-  fix:
+  retired:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Repair AppWithChapter5 ordering
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('src/AppWithChapter5.jsx')
-          s=p.read_text(encoding='utf-8')
-          bad="const props={onBack:back,addXp,finishSession};const boosterSubjectButton=pageParams?.get('page')==='subject'&&pageParams?.get('subject')?"
-          good="const props={onBack:back,addXp,finishSession};const pageParams=typeof window!=='undefined'?new URLSearchParams(window.location.search):null;const boosterSubjectButton=pageParams?.get('page')==='subject'&&pageParams?.get('subject')?"
-          if bad in s:
-              s=s.replace(bad,good,1)
-              old=";const genericTopic=typeof window!=='undefined'?new URLSearchParams(window.location.search).get('topic'):null;const pageParams=typeof window!=='undefined'?new URLSearchParams(window.location.search):null;if(pageParams?.get('booster')==='1'"
-              new=";const genericTopic=typeof window!=='undefined'?new URLSearchParams(window.location.search).get('topic'):null;if(pageParams?.get('booster')==='1'"
-              s=s.replace(old,new,1)
-          p.write_text(s,encoding='utf-8')
-          PY
-          npm install --legacy-peer-deps
-          npm run build
-          git diff --check
-      - name: Commit fix
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/AppWithChapter5.jsx
-          git diff --cached --quiet && exit 0
-          git commit -m "fix: repair subject booster runtime ordering"
-          git push
+      - run: echo "Retired legacy auto-repair workflow."
