@@ -89,7 +89,7 @@ make('M, N का पुत्र है और N, P की माँ है। 
 ];
 
 const chapters=[
-{id:'number-series',title:'संख्या श्रृंखला',icon:'🔢',kicker:'PATTERN DETECTION',desc:'संख्याओं के बीच छिपा rule पहचानें और अगला पद निकालें।',skills:['समान अंतर','गुणा–भाग','बढ़ते अंतर','वर्ग / घन','मिश्रित नियम'],learn:{headline:'पहले अंतर, फिर operation, फिर pattern',example:'2, 6, 12, 20, 30, ?',answer:'42',why:'अंतर 4,6,8,10 हैं; अगला 12 → 30+12=42।',trap:'सिर्फ आखिरी दो numbers देखकर rule तय न करें।',steps:['Consecutive differences निकालें।','×, ÷, +, − और ratios देखें।','Square, cube, alternating या second difference जाँचें।','Rule को पूरे sequence पर verify करें।'],tip:'कम-से-कम 3 transitions verify करके answer चुनें।'},
+{id:'number-series',title:'संख्या श्रृंखला',icon:'🔢',kicker:'PATTERN DETECTION',desc:'संख्याओं के बीच छिपा rule पहचानें और अगला पद निकालें।',skills:['समान अंतर','गुणा–भाग','बढ़ते अंतर','वर्ग / घन','मिश्रित नियम'],learn:{headline:'पहले अंतर, फिर operation, फिर pattern',example:'2, 6, 12, 20, 30, ?',answer:'42',why:'अंतर 4,6,8,10 हैं; अगला 12 → 30+12=42।',trap:'सिर्फ आखिरी दो numbers देखकर rule तय न करें।',steps:['Consecutive differences निकालें।','×, ÷, +, − और ratios देखें।','Square, cube, alternating या second difference जाँचें।','Rule को पूरे sequence पर verify करें।'],tip:'कम-से-कम 3 transitions verify करके answer चुनें।'}},
 {id:'alphabet-series',title:'अक्षर श्रृंखला',icon:'🔤',kicker:'LETTER PATTERNS',desc:'A=1…Z=26 की मदद से jump और sequence समझें।',skills:['Position','Forward jump','Backward jump','Increasing jump','Mixed'],learn:{headline:'Letters को positions में बदलकर rule पढ़ें',example:'A, D, G, J, ?',answer:'M',why:'हर बार +3 positions: J+3=M।',trap:'Letter देखकर guess करने की बजाय position check करें।',steps:['A=1…Z=26 लिखें।','हर transition का jump निकालें।','Forward / backward movement पहचानें।','पूरे sequence में logic verify करें।'],tip:'Position लिखने से mixed jump जल्दी पकड़ में आता है।'}},
 {id:'analogy',title:'समानता (Analogy)',icon:'🔗',kicker:'RELATION MAPPING',desc:'पहली जोड़ी का exact relation पहचानकर दूसरी जोड़ी पर लगाएँ।',skills:['कार्य','विपरीत','भाग–पूर्ण','संख्या relation'],learn:{headline:'Relation को एक छोटे rule में बदलें',example:'2 : 4 :: 7 : ?',answer:'49',why:'पहली जोड़ी में square relation है; 7²=49।',trap:'सिर्फ शब्द समान दिखने पर नहीं, relation पर ध्यान दें।',steps:['पहली जोड़ी का relation बोलें।','Relation type तय करें।','वही rule दूसरी जोड़ी पर लागू करें।','Options से verify करें।'],tip:'Relation को एक वाक्य में बोल पाने पर answer लगभग तय हो जाता है।'}},
 {id:'classification',title:'वर्गीकरण / Odd One Out',icon:'🧩',kicker:'ODD ONE OUT',desc:'Common property खोजकर अलग element चुनें।',skills:['संख्या','शब्द','अक्षर','इकाई'],learn:{headline:'पहले common property, फिर odd item',example:'4, 9, 16, 18',answer:'18',why:'4,9,16 पूर्ण वर्ग हैं; 18 नहीं।',trap:'एक से अधिक possible properties दिखें तो strongest common rule चुनें।',steps:['तीनों/अधिक elements की common property खोजें।','संख्या, unit, category या spelling देखें।','Odd item को isolate करें।','Explanation से rule verify करें।'],tip:'हर option को एक ही rule से test करें।'}},
@@ -107,11 +107,58 @@ export default function ReasoningLabV2({initialChapter=null,initialMode=null,onE
  const [session,setSession]=useState(null);const [answers,setAnswers]=useState({});const [score,setScore]=useState(0);const [completed,setCompleted]=useState(false);const [testStarted,setTestStarted]=useState(false);const [timeLeft,setTimeLeft]=useState(15*60);
  const active=chapters.find(c=>c.id===chapterId)||chapters[0];const bank=banks[active.id];
  const counts={practice:15,challenge:15,test:25};
- const begin=(nextMode)=>{setMode(nextMode);setAnswers({});setScore(0);setCompleted(false);if(nextMode==='test'){setSession(prepare(bank,counts.test));setTimeLeft(15*60);setTestStarted(false)}else{setSession(prepare(bank,counts[nextMode]));setTestStarted(true)}};
- const startTest=()=>{setAnswers({});setScore(0);setCompleted(false);setSession(prepare(bank,25));setTimeLeft(15*60);setTestStarted(true)};
- const finish=(timedOut=false)=>{if(!session)return;const correct=session.reduce((n,q,i)=>n+(answers[i]?.correct?1:0),0);setScore(correct);setCompleted(true);finishSession({subject:'reasoning',chapter:active.id,mode,correct,total:session.length,timedOut,at:new Date().toISOString()});addXp(correct);setTestStarted(false);if(timedOut)window.setTimeout(()=>{},0)};
- useEffect(()=>{if(mode!=='test'||!testStarted||!session)return;const id=setInterval(()=>setTimeLeft(t=>{if(t<=1){clearInterval(id);finish(true);return 0}return t-1}),1000);return()=>clearInterval(id)},[mode,testStarted,session,answers]);
- useEffect(()=>{setSession(null);setTestStarted(false);setAnswers({});setScore(0);setCompleted(false)},[chapterId]);
+ const begin=(nextMode)=>{
+  setMode(nextMode);
+  setAnswers({});
+  setScore(0);
+  setCompleted(false);
+  if(nextMode==='test'){
+   setSession(prepare(bank,25));
+   setTimeLeft(15*60);
+   setTestStarted(false);
+  }else{
+   setSession(prepare(bank,counts[nextMode]));
+   setTestStarted(true);
+  }
+ };
+ const startTest=()=>{
+  setAnswers({});
+  setScore(0);
+  setCompleted(false);
+  setSession(prepare(bank,25));
+  setTimeLeft(15*60);
+  setTestStarted(true);
+ };
+ const finish=(timedOut=false)=>{
+  if(!session)return;
+  const correct=session.reduce((n,q,i)=>n+(answers[i] && answers[i].correct ? 1 : 0),0);
+  setScore(correct);
+  setCompleted(true);
+  finishSession({subject:'reasoning',chapter:active.id,mode,correct,total:session.length,timedOut,at:new Date().toISOString()});
+  addXp(correct);
+  setTestStarted(false);
+ };
+ useEffect(()=>{
+  if(mode!=='test'||!testStarted||!session)return;
+  const id=setInterval(()=>{
+   setTimeLeft(t=>{
+    if(t<=1){
+     clearInterval(id);
+     finish(true);
+     return 0;
+    }
+    return t-1;
+   });
+  },1000);
+  return()=>clearInterval(id);
+ },[mode,testStarted,session]);
+ useEffect(()=>{
+  setSession(null);
+  setTestStarted(false);
+  setAnswers({});
+  setScore(0);
+  setCompleted(false);
+ },[chapterId]);
  const mm=String(Math.floor(timeLeft/60)).padStart(2,'0'),ss=String(timeLeft%60).padStart(2,'0');
  const choose=(i,opt)=>{if(mode==='test'&&!testStarted)return;setAnswers(a=>({...a,[i]:opt}));};
  return <div className="rlab-shell">
