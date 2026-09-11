@@ -15,7 +15,7 @@ import EnglishMessageWritingTopic from './english/EnglishMessageWritingTopic.jsx
 import EnglishMessageWritingAssessment from './english/EnglishMessageWritingAssessment.jsx';
 import { AppErrorBoundary } from './AppErrorBoundary.jsx';
 import SSTRoot from './sst/SSTRoot.jsx';
-import TestCentrePlanner from './TestCentrePlanner.jsx';
+import TestCentrePlanner from './TestCentrePlannerV2.jsx';
 import './scienceModeRouter.js';
 import './subject-overrides.css';
 import './science-navigation.css';
