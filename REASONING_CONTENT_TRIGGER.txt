@@ -1,1 +1,1 @@
-Temporary trigger for visible reasoning content patch.
+Temporary trigger for visible reasoning content patch, second pass.
