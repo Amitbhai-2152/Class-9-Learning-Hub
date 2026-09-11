@@ -1,5 +1,7 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {createPortal} from 'react-dom';
 import {getXPState} from './engines/xp/xpStore.js';
+import {DailyExamPlan} from './DailyExamPlan.jsx';
 import './xp-badges.css';
 
 export const XP_BADGE_MILESTONES=Object.freeze([
@@ -46,8 +48,28 @@ export function XPBadgeSection({xp=0}){
 
 export function XPAchievementOverlay(){
  const[achievement,setAchievement]=useState(null);
+ const[dailyPlanTarget,setDailyPlanTarget]=useState(null);
  const previousXp=useRef(getXPState().totalXp);
  const timer=useRef(null);
+ useEffect(()=>{
+  const findDailyPlanTarget=()=>{
+   const dashboard=document.querySelector('.dashboard');
+   if(!dashboard){setDailyPlanTarget(null);return;}
+   let host=dashboard.querySelector('[data-daily-exam-plan-host]');
+   if(!host){
+    host=document.createElement('div');
+    host.setAttribute('data-daily-exam-plan-host','true');
+    const progressStrip=dashboard.querySelector('.progress-strip');
+    if(progressStrip?.parentNode===dashboard)dashboard.insertBefore(host,progressStrip.nextSibling);
+    else dashboard.insertBefore(host,dashboard.firstChild);
+   }
+   setDailyPlanTarget(host);
+  };
+  findDailyPlanTarget();
+  const observer=new MutationObserver(findDailyPlanTarget);
+  observer.observe(document.body,{childList:true,subtree:true});
+  return()=>{observer.disconnect();setDailyPlanTarget(null)};
+ },[]);
  useEffect(()=>{
   const onXp=event=>{
    const before=previousXp.current;
@@ -69,13 +91,15 @@ export function XPAchievementOverlay(){
   window.addEventListener('class9-xp-updated',onXp);
   return()=>{window.removeEventListener('class9-xp-updated',onXp);if(timer.current)window.clearTimeout(timer.current)};
  },[]);
- if(!achievement)return null;
- return <div className="xp-achievement-layer" aria-live="polite"><div className="xp-achievement-card">
-  <div className="xp-achievement-sparkles" aria-hidden="true">✦ ✧ ✦</div>
-  <div className="xp-achievement-medal">{achievement.icon}</div>
-  <div className="xp-achievement-kicker">BADGE UNLOCKED</div>
-  <h2>{achievement.name}</h2>
-  <p>{achievement.label} पूरा हुआ · कुल {formatXP(achievement.displayXp)} XP</p>
-  <span>🎉 शानदार उपलब्धि!</span>
- </div></div>;
+ return <>
+  {dailyPlanTarget&&createPortal(<DailyExamPlan/>,dailyPlanTarget)}
+  {achievement&&<div className="xp-achievement-layer" aria-live="polite"><div className="xp-achievement-card">
+   <div className="xp-achievement-sparkles" aria-hidden="true">✦ ✧ ✦</div>
+   <div className="xp-achievement-medal">{achievement.icon}</div>
+   <div className="xp-achievement-kicker">BADGE UNLOCKED</div>
+   <h2>{achievement.name}</h2>
+   <p>{achievement.label} पूरा हुआ · कुल {formatXP(achievement.displayXp)} XP</p>
+   <span>🎉 शानदार उपलब्धि!</span>
+  </div></div>}
+ </>;
 }
