@@ -10,17 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Isolate exact parser token
+      - name: Parse Reasoning V2 with Babel
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          s=Path('src/ReasoningLabV2.jsx').read_text(encoding='utf-8')
-          for start,end in [(9850,10150),(9950,10030),(10030,10120)]:
-              print(f'WINDOW {start}:{end}')
-              print(repr(s[start:end]))
-          print('CODEPOINTS')
-          for i,ch in enumerate(s[9960:10020],9960):
-              print(i,repr(ch),hex(ord(ch)))
-          PY
+          npm install --no-save --legacy-peer-deps @babel/parser
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {parse} from '@babel/parser';
+          const s=fs.readFileSync('src/ReasoningLabV2.jsx','utf8');
+          try{
+            parse(s,{sourceType:'module',plugins:['jsx']});
+            console.log('BABEL_PARSE_OK');
+          }catch(e){
+            console.log('BABEL_PARSE_ERROR',e.message);
+            console.log('LOC',e.loc);
+            const lines=s.split(/\n/); const l=e.loc?.line||1;
+            console.log('SOURCE_LINE',lines[l-1]);
+          }
+          NODE
           npm install --legacy-peer-deps
           npm run build
