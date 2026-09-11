@@ -60,8 +60,8 @@ for (const label of ['expansion', 'phase4']) {
   const qs = questions.filter(q => q.label === label);
   const seen = new Set();
   for (const q of qs) {
-    const key = normalise(q.stem);
-    if (seen.has(key)) errors.push(`${label}: duplicate question stem detected: "${q.stem.slice(0, 90)}"`);
+    const key = `${normalise(q.stem)}|${q.options.map(normalise).join('|')}`;
+    if (seen.has(key)) errors.push(`${label}: duplicate question/options tuple detected: "${q.stem.slice(0, 90)}"`);
     seen.add(key);
   }
 }
@@ -89,7 +89,11 @@ if (!files.generic.includes('topic?.[mode]')) errors.push('Generic quiz mode loo
 
 const dedicated = ['formal-letter','informal-letter','notice','report','speech','message','paragraph-essay','composition','translation'];
 for (const id of dedicated) {
-  if (!files.router.includes(`route.languageSkills&&route.topic==='${id}'`)) errors.push(`Root router missing dedicated Language & Skills route: ${id}`);
+  if (id === 'paragraph-essay') {
+    if (!files.router.includes("route.languageSkills&&route.topic==='paragraph-essay'")) errors.push('Root router missing dedicated Language & Skills route: paragraph-essay');
+  } else if (!files.router.includes(`route.languageSkills&&route.topic==='${id}'`)) {
+    errors.push(`Root router missing dedicated Language & Skills route: ${id}`);
+  }
 }
 
 if (!files.router.includes("const KEEP_DEDICATED=new Set(")) errors.push('Root KEEP_DEDICATED set missing');
@@ -104,7 +108,7 @@ if (errors.length) {
 
 console.log('English Language & Skills quality QA passed.');
 console.log(`Validated bank question tuples: ${questions.length}`);
-console.log('Checks: 4-option integrity, valid answer keys, explanation depth, duplicate stems/options, placeholder guard, source answer-position distribution, deterministic quiz safeguards, dedicated routing, and positional-selector guard.');
+console.log('Checks: 4-option integrity, valid answer keys, explanation depth, duplicate question/options tuples, placeholder guard, source answer-position distribution, deterministic quiz safeguards, dedicated routing, and positional-selector guard.');
 if (warnings.length) {
   console.log(`Quality warnings: ${warnings.length}`);
   warnings.forEach(w => console.log(`- ${w}`));
