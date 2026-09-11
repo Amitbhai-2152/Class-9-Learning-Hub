@@ -10,15 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect current V2 around build error
+      - name: Inspect exact Vite error offset
         run: |
           python3 - <<'PY'
           from pathlib import Path
           s=Path('src/ReasoningLabV2.jsx').read_text(encoding='utf-8')
+          b=s.encode('utf-8')
           pos=14344
-          print('LENGTH', len(s))
-          print('LINE', s.count(chr(10),0,pos)+1)
-          print('WINDOW', repr(s[pos-220:pos+300]))
-          print('CHARS')
-          for i,ch in enumerate(s[pos-30:pos+40],pos-30): print(i,repr(ch))
+          print('CHAR_LENGTH',len(s),'BYTE_LENGTH',len(b))
+          print('BYTE_SLICE',repr(b[pos-250:pos+300]))
+          print('DECODED_SLICE',repr(b[pos-250:pos+300].decode('utf-8','replace')))
+          print('BYTE_HEX',b[pos-40:pos+80].hex())
+          print('CHAR_INDEX_FOR_BYTE',len(b[:pos].decode('utf-8','replace')))
+          ci=len(b[:pos].decode('utf-8','replace'))
+          print('CHAR_WINDOW',repr(s[ci-200:ci+250]))
+          print('LINE_AT_CHAR',s.count(chr(10),0,ci)+1)
           PY
