@@ -31,10 +31,11 @@ for(const subject of SUBJECT_REGISTRY){
       if(expectedQuizStages.has(stage)){
         const before=recordCanonicalStage({subject:subject.id,chapter:topic.id,stage,at});
         const beforeAttempts=before?.analytics?.quizAttempts||0;
+        const beforeAnswered=before?.analytics?.questionsAnswered||0;
         const attemptId=`runtime-${subject.id}-${topic.id}-${stage}`;
         const quiz=recordCanonicalQuizAttempt({subject:subject.id,chapter:topic.id,stage,attemptId,questionsAnswered:15,questionsTotal:15,correctAnswers:stage==='practice'?9:stage==='challenge'?11:12,percent:stage==='practice'?60:stage==='challenge'?73:80,at});
         assert.equal(quiz?.analytics?.quizAttempts,beforeAttempts+1,`Quiz analytics increment failed: ${subject.id}/${topic.id}/${stage}`);
-        assert.equal(quiz?.analytics?.questionsAnswered,before?.analytics?.questionsAnswered||0+15);
+        assert.equal(quiz?.analytics?.questionsAnswered,beforeAnswered+15,`Quiz answered-count accumulation failed: ${subject.id}/${topic.id}/${stage}`);
         quizPaths++;
       }
     }
