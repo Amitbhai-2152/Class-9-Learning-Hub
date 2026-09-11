@@ -1,5 +1,6 @@
 name: Deploy Learning Hub to GitHub Pages
 
+# Canonical Pages build; touched to redeploy the repaired Reasoning V2.
 on:
   push:
     branches: [main]
