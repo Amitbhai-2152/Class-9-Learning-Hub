@@ -19,16 +19,13 @@ jobs:
           from pathlib import Path
           p=Path('src/ReasoningLabV2.jsx')
           s=p.read_text(encoding='utf-8')
+          anchor="const[timeLeft,setTimeLeft]=useState(TIMER_CONFIG.practice.minutes*60);"
           if 'const[questionIndex,setQuestionIndex]' not in s:
-              anchor="const[timeLeft,setTimeLeft]=useState(TIMER_CONFIG.practice.minutes*60);"
               if anchor not in s: raise SystemExit('state anchor not found')
               s=s.replace(anchor,anchor+"const[questionIndex,setQuestionIndex]=useState(0);const[reviewFilter,setReviewFilter]=useState('all');",1)
-              anchor2="const resetQuiz=()=>{setSession(null);setAnswers({});answersRef.current={};setScore(0);setCompleted(false);setTestStarted(false)};"
-              if anchor2 not in s: raise SystemExit('reset anchor not found')
-              s=s.replace(anchor2,"const resetQuiz=()=>{setSession(null);setAnswers({});answersRef.current={};setScore(0);setCompleted(false);setTestStarted(false);setQuestionIndex(0);setReviewFilter('all')};",1)
-              anchor3="const finish=timedOut=>{if(!session)return;const current=answersRef.current;const correct=session.reduce((n,q,i)=>n+(current[i]?.correct?1:0),0);setScore(correct);setCompleted(true);finishSession({subject:'reasoning',chapter:active.id,mode,correct,total:session.length,timedOut:Boolean(timedOut),at:new Date().toISOString()});addXp(correct);setTestStarted(false)};"
-              if anchor3 in s:
-                  s=s.replace(anchor3,"const finish=timedOut=>{if(!session)return;const current=answersRef.current;const correct=session.reduce((n,q,i)=>n+(current[i]?.correct?1:0),0);setScore(correct);setCompleted(true);setQuestionIndex(0);setReviewFilter('all');finishSession({subject:'reasoning',chapter:active.id,mode,correct,total:session.length,timedOut:Boolean(timedOut),at:new Date().toISOString()});addXp(correct);setTestStarted(false)};",1)
+          old_reset="const resetQuiz=()=>{setSession(null);setAnswers({});answersRef.current={};setScore(0);setCompleted(false);setTestStarted(false)};"
+          new_reset="const resetQuiz=()=>{setSession(null);setAnswers({});answersRef.current={};setScore(0);setCompleted(false);setTestStarted(false);setQuestionIndex(0);setReviewFilter('all')};"
+          if old_reset in s: s=s.replace(old_reset,new_reset,1)
           qstart=s.index('{session&&testStarted&&<section className="rlab-quiz">')
           rstart=s.index('{completed&&<section className="rlab-result">',qstart)
           quiz='''{session&&testStarted&&<section className="rlab-quiz"><div className="quiz-top"><div><b>{mode==='test'?'FINAL TEST':mode==='practice'?'PRACTICE':'CHALLENGE'}</b><span>Question {questionIndex+1} of {session.length} • {Object.keys(answers).length} answered</span></div><div className={`countdown ${timeLeft<=60?'danger':''}`}>⏱️ {mm}:{ss}</div></div><div className="progressbar"><span style={{width:`${((questionIndex+1)/session.length)*100}%`}}/></div>{session[questionIndex]&&<div className="question-card"><div className="q-meta">Q{questionIndex+1} <span>{session[questionIndex].difficulty}</span></div><h3>{session[questionIndex].question}</h3><div className="options">{session[questionIndex].options.map((o,j)=><button type="button" key={j} className={answers[questionIndex]?.text===o.text?'selected':''} onClick={()=>choose(questionIndex,o)}><span>{String.fromCharCode(65+j)}</span>{o.text}</button>)}</div></div>}<div className="quiz-navigation"><button type="button" className="nav-btn" disabled={questionIndex===0} onClick={()=>setQuestionIndex(i=>Math.max(0,i-1))}>← Previous</button><div className="question-dots">{session.map((_,i)=><button type="button" key={i} className={`${i===questionIndex?'active':''} ${answers[i]?'done':''}`} onClick={()=>setQuestionIndex(i)}>{i+1}</button>)}</div><button type="button" className="nav-btn" disabled={questionIndex===session.length-1} onClick={()=>setQuestionIndex(i=>Math.min(session.length-1,i+1))}>Next →</button></div><div className="submit-panel"><div><b>{Object.keys(answers).length}/{session.length} answered</b><span>{Object.keys(answers).length===session.length?'All questions answered. Ready to submit.':'Unanswered questions will be marked as skipped.'}</span></div><button type="button" className="submit-main" onClick={()=>finish(false)}>Submit {mode==='test'?'Final Test':mode==='practice'?'Practice':'Challenge'} ✓</button></div></section>}'''
@@ -37,7 +34,12 @@ jobs:
           rend=s.index('</main>',rstart)
           result='''{completed&&<section className="rlab-result"><div className="result-hero"><div><span>RESULT • {mode==='test'?'FINAL TEST':mode==='practice'?'PRACTICE':'CHALLENGE'}</span><h2>Attempt Complete</h2></div><div className="result-score"><strong>{score}/{session?.length||0}</strong><small>{session?.length?Math.round(score/session.length*100):0}%</small></div></div><div className="result-metrics"><div><strong>{score}</strong><span>Correct</span></div><div><strong>{Math.max(0,Object.keys(answers).length-score)}</strong><span>Wrong</span></div><div><strong>{Math.max(0,(session?.length||0)-Object.keys(answers).length)}</strong><span>Skipped</span></div></div><div className="review-head"><div><h3>📋 Answer Review</h3><p>Review every question with your answer, the correct answer and the explanation.</p></div><div className="review-filters">{[['all','All'],['correct','✓ Correct'],['wrong','✗ Wrong'],['skipped','— Skipped']].map(([f,l])=><button type="button" className={reviewFilter===f?'active':''} onClick={()=>setReviewFilter(f)} key={f}>{l}</button>)}</div></div><div className="review-list">{session.map((q,i)=>{const picked=answers[i];const status=!picked?'skipped':picked.correct?'correct':'wrong';if(reviewFilter!=='all'&&reviewFilter!==status)return null;return <article key={i} className={`review-card ${status}`}><div className="review-top"><b>Q{i+1}</b><span>{status==='correct'?'✓ Correct':status==='wrong'?'✗ Wrong':'— Skipped'}</span></div><h4>{q.question}</h4><div className="review-answer"><div><small>Your answer</small><strong>{picked?picked.text:'Not answered'}</strong></div><div><small>Correct answer</small><strong>{q.correct}</strong></div></div>{q.explanation&&<div className="review-explain">💡 {q.explanation}</div>}</article>})}</div><div className="result-actions"><button type="button" onClick={()=>{resetQuiz();setMode('learn')}}>← Back to Chapter</button><button type="button" onClick={()=>begin(mode)}>↻ Try Again</button></div></section>}'''
           s=s[:rstart]+result+s[rend:]
+          s=s.replace('Reasoning Lab V2 Patch Marker','Reasoning Lab V2 Patch Marker',0)
           p.write_text(s,encoding='utf-8')
+          text=p.read_text(encoding='utf-8')
+          required=['questionIndex','reviewFilter','quiz-navigation','submit-main','result-metrics','review-filters','review-card']
+          missing=[x for x in required if x not in text]
+          if missing: raise SystemExit('Required UI markers missing: '+', '.join(missing))
           PY
       - name: Build
         run: |
@@ -45,9 +47,11 @@ jobs:
           npm run build
       - name: Commit repair
         run: |
+          git status --short
+          git add -f src/ReasoningLabV2.jsx
+          git diff --cached --stat
+          git diff --cached --quiet && { echo 'No source diff detected'; exit 1; }
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src/ReasoningLabV2.jsx
-          git diff --cached --quiet && exit 0
           git commit -m 'fix: add reasoning submit button and result review'
           git push
