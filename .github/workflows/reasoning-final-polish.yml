@@ -1,0 +1,67 @@
+name: Reasoning Final Polish
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    if: ${{ !contains(github.event.head_commit.message, 'reasoning-final-polished') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch reasoning content and UI
+        shell: python
+        run: |
+          from pathlib import Path
+
+          hub=Path('src/ReasoningHub.jsx')
+          css=Path('src/reasoning-section.css')
+          text=hub.read_text(encoding='utf-8')
+
+          direction_extra = """
+          make('रवि पूर्व की ओर 10 m गया, फिर बाएँ मुड़ा। अब दिशा?',['उत्तर','दक्षिण','पूर्व','पश्चिम'],0,'पूर्व से बाएँ मुड़ने पर उत्तर.','अभ्यास'),
+          make('सीमा पश्चिम 6 m, फिर दाएँ 4 m चली। अंतिम दिशा?',['दक्षिण-पश्चिम','उत्तर-पश्चिम','उत्तर-पूर्व','दक्षिण-पूर्व'],1,'पश्चिम से दाएँ मुड़ना उत्तर; इसलिए उत्तर-पश्चिम.','अभ्यास'),
+          make('A, B का भाई है; B, C की बहन है। A का C से संबंध?',['भाई','पिता','मामा','चाचा'],0,'A और C भाई-बहन हैं; A, C का भाई है.','अभ्यास'),
+          make('P, Q की माँ है; Q, R का भाई है। P का R से संबंध?',['माँ','बहन','दादी','चाची'],0,'Q और R भाई-बहन हैं; P, Q की माँ है, इसलिए P, R की भी माँ है.','अभ्यास'),
+          make('नेहा उत्तर 3 m और फिर पूर्व 4 m जाती है। दिशा?',['उत्तर-पश्चिम','उत्तर-पूर्व','दक्षिण-पूर्व','दक्षिण-पश्चिम'],1,'उत्तर + पूर्व = उत्तर-पूर्व.','चैलेंज'),
+          make('अमित दक्षिण 5 m, फिर पश्चिम 5 m गया। दिशा?',['दक्षिण-पश्चिम','उत्तर-पश्चिम','दक्षिण-पूर्व','उत्तर-पूर्व'],0,'दक्षिण + पश्चिम = दक्षिण-पश्चिम.','चैलेंज'),
+          make('R, S का पिता है; T, S की माँ है। R का T से संबंध?',['भाई','पति','पुत्र','चाचा'],1,'R और T, S के माता-पिता हैं; R, T का पति है.','कठिन'),
+          make('यदि आप उत्तर की ओर हैं और 180° घूमते हैं, तो दिशा?',['पूर्व','पश्चिम','दक्षिण','उत्तर'],2,'180° पर विपरीत दिशा: दक्षिण.','कठिन')
+          """
+
+          start=text.index("'direction-blood':[")
+          end=text.index("\n]\n};",start)
+          section=text[start:end]
+          if "रवि पूर्व की ओर 10 m" not in section:
+              text=text[:end]+",\n"+direction_extra.strip()+text[end:]
+
+          marker='<div className="lesson-box"><h3>📚 Learn</h3>'
+          if 'chapter-metrics' not in text and marker in text:
+              metrics='''<section className="chapter-metrics"><div><b>{(active.id==='number-series'||active.id==='alphabet-series')?'36':'16'}</b><span>कुल प्रश्न</span></div><div><b>{(active.id==='number-series'||active.id==='alphabet-series')?'10':'8'}</b><span>Practice</span></div><div><b>{(active.id==='number-series'||active.id==='alphabet-series')?'10':'8'}</b><span>Challenge</span></div><div><b>{(active.id==='number-series'||active.id==='alphabet-series')?'15':'12'}</b><span>Final Test</span></div></section><section className="mastery-strip"><div><span>🎓</span><div><b>इस अध्याय में mastery</b><small>{active.lessons.map(x=>x).join(' • ')}</small></div></div><div className="trap-note"><b>⚠️ Common Trap</b><span>{active.id==='number-series'?'केवल आखिरी दो संख्याएँ देखकर rule न मानें; पूरे sequence पर verify करें।':active.id==='alphabet-series'?'अक्षर को position में बदलकर jump की दिशा और size दोनों जाँचें।':'हर question में relation को तीन अलग उदाहरणों पर लागू करके देखें।'}</span></div></section>'''
+              text=text.replace(marker,metrics+marker,1)
+
+          hub.write_text(text,encoding='utf-8')
+
+          c=css.read_text(encoding='utf-8')
+          if '.chapter-metrics' not in c:
+              c += '''\n.chapter-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.chapter-metrics>div{background:#fff;border:1px solid #dfe8ef;border-radius:16px;padding:13px 12px;text-align:center;box-shadow:0 5px 18px rgba(19,34,56,.04)}.chapter-metrics b{display:block;font-size:22px;color:#132238}.chapter-metrics span{font-size:11px;color:#68788b}.mastery-strip{display:grid;grid-template-columns:1.1fr .9fr;gap:10px;margin:0 0 16px}.mastery-strip>div{border:1px solid #dfe8ef;border-radius:16px;background:#f9fbfd;padding:13px}.mastery-strip>div:first-child{display:flex;gap:10px;align-items:flex-start}.mastery-strip>div:first-child>span{font-size:20px}.mastery-strip b{display:block;font-size:12px;color:#132238;margin-bottom:4px}.mastery-strip small,.trap-note span{display:block;font-size:11px;line-height:1.55;color:#66758a}.trap-note{background:#fffaf2!important;border-color:#f2dfb8!important}@media(max-width:800px){.chapter-metrics{grid-template-columns:repeat(2,1fr)}.mastery-strip{grid-template-columns:1fr}}@media(max-width:500px){.chapter-metrics{gap:7px}.chapter-metrics>div{padding:10px 7px}.chapter-metrics b{font-size:19px}}\n'''
+          css.write_text(c,encoding='utf-8')
+
+      - name: Commit reasoning polish
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/ReasoningHub.jsx src/reasoning-section.css
+          git commit -m "fix: reasoning-final-polished UI content questions"
+          git push
