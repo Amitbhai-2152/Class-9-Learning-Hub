@@ -1,6 +1,5 @@
 name: Deploy Learning Hub to GitHub Pages
 
-# Deploy every main-branch update so the live hub stays in sync.
 on:
   push:
     branches: [main]
@@ -23,34 +22,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-
-      - name: Inspect exact parser characters
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          s=Path('src/ReasoningLabV2.jsx').read_text(encoding='utf-8')
-          for a,b in [(14320,14380)]:
-            print('PARSER_WINDOW=', a, b)
-            for i,ch in enumerate(s[a:b],a): print(i, repr(ch))
-          PY
-
       - name: Build application
         run: npm run build
-
       - name: Write build version manifest
         run: echo '{"version":"'"$GITHUB_SHA"'"}' > dist/build-version.json
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
