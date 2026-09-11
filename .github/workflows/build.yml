@@ -72,7 +72,9 @@ jobs:
         run: npm run qa:subject-catalog
       - name: Supabase progress contract QA
         run: npm run qa:supabase-contract
+      - name: Preparation meter QA
+        run: npm run qa:preparation-meter
       - name: Build application
         run: npm run build
-      # English, reasoning, canonical progress, analytics, runtime coverage, legacy migration, homepage/chapter catalog, and Supabase contract are included in full verification.
+      # English, reasoning, canonical progress, analytics, runtime coverage, legacy migration, homepage/chapter catalog, Supabase contract, and preparation meter are included in full verification.
       # Phase 6 only defines the backend contract; the browser remains local-first until a Supabase client is intentionally enabled.
