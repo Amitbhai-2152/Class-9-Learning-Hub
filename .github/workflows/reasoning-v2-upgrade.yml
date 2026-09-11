@@ -19,13 +19,11 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          import re
 
           hub = Path('src/ReasoningHub.jsx')
           css = Path('src/reasoning-section.css')
           text = hub.read_text(encoding='utf-8')
 
-          # ---------- Add substantially more questions ----------
           number_extra = """
           make('6, 11, 18, 27, 38, ?',['49','50','51','52'],2,'अंतर 5,7,9,11 हैं; अगला 13, इसलिए 38 + 13 = 51.','कठिन'),
           make('4, 7, 13, 25, 49, ?',['96','97','98','99'],1,'हर बार ×2 −1: 49×2−1 = 97.','कठिन'),
@@ -36,85 +34,140 @@ jobs:
           make('64, 32, 16, 8, 4, ?',['1','2','3','4'],1,'हर बार आधा: 4÷2 = 2.','चैलेंज'),
           make('2, 7, 17, 32, 52, ?',['72','77','82','87'],1,'अंतर 5,10,15,20 हैं; अगला 25, इसलिए 52+25=77.','चैलेंज'),
           make('11, 22, 44, 88, ?',['132','154','176','180'],2,'हर बार ×2: 88×2 = 176.','चैलेंज'),
-          make('5, 6, 8, 11, 15, ?',['18','19','20','21'],2,'अंतर 1,2,3,4 हैं; अगला 5, इसलिए 20.','चैलेंज'),
+          make('5, 6, 8, 11, 15, ?',['18','19','20','21'],2,'अंतर 1,2,3,4 हैं; अगला 5, इसलिए 15+5 = 20.','चैलेंज'),
           make('1, 2, 6, 24, 120, ?',['240','360','720','840'],2,'ये factorial pattern है: 1!,2!,3!,4!,5!; अगला 6! = 720.','कठिन'),
           make('20, 18, 15, 11, 6, ?',['0','1','2','3'],0,'अंतर −2,−3,−4,−5 हैं; अगला −6, इसलिए 0.','कठिन')
           """
           alphabet_extra = """
           make('D, F, H, J, ?',['K','L','M','N'],1,'हर बार +2: D→F→H→J→L.','अभ्यास'),
-          make('Q, N, K, H, ?',['E','F','G','D'],0,'हर बार −3: H के बाद E.','अभ्यास'),
+          make('Q, N, K, H, ?',['E','F','G','D'],0,'हर बार −3: Q→N→K→H→E.','अभ्यास'),
           make('A, C, F, J, ?',['N','O','P','Q'],1,'अंतर +2,+3,+4 हैं; अगला +5, इसलिए O.','अभ्यास'),
-          make('T, R, O, K, ?',['G','F','H','I'],0,'अंतर −2,−3,−4 हैं; अगला −5, इसलिए F नहीं? T→R(−2)→O(−3)→K(−4)→F(−5), अतः F.','अभ्यास'),
+          make('T, R, O, K, ?',['G','F','H','I'],1,'अंतर −2,−3,−4 हैं; अगला −5, इसलिए K→F.','अभ्यास'),
           make('B, G, L, Q, ?',['V','W','X','Y'],0,'हर बार +5: Q के बाद V.','चैलेंज'),
-          make('W, T, Q, N, ?',['J','K','L','M'],0,'हर बार −3: N के बाद K? W(23)→T(20)→Q(17)→N(14)→K(11).','चैलेंज'),
+          make('W, T, Q, N, ?',['J','K','L','M'],1,'हर बार −3: W→T→Q→N→K.','चैलेंज'),
           make('A, B, E, F, I, J, ?',['M','N','O','P'],0,'+1,+3 का दोहराव: J के बाद M.','चैलेंज'),
-          make('Z, Y, W, T, P, ?',['K','J','L','M'],1,'अंतर −1,−2,−3,−4 हैं; अगला −5: P से K.','चैलेंज'),
+          make('Z, Y, W, T, P, ?',['K','J','L','M'],0,'अंतर −1,−2,−3,−4 हैं; अगला −5: P से K.','चैलेंज'),
           make('C, G, K, O, ?',['R','S','T','U'],1,'हर बार +4: O के बाद S.','चैलेंज'),
-          make('F, J, O, U, ?',['A','B','C','D'],2,'अंतर +4,+5,+6 हैं; अगला +7: U(21)+7=28 → B, इसलिए B.','कठिन'),
+          make('F, J, O, U, ?',['A','B','C','D'],1,'अंतर +4,+5,+6 हैं; अगला +7: U(21)+7=28 → B.','कठिन'),
           make('B, E, J, Q, ?',['X','Y','Z','W'],2,'स्थान 2,5,10,17 = n²+1; अगला 26 → Z.','कठिन'),
-          make('H, M, S, Z, ?',['D','E','F','G'],0,'अंतर +5,+6,+7; अगला +8: Z के बाद H, इसलिए A? wrap-around में H.','कठिन'),
-          make('A, F, K, P, U, ?',['X','Y','Z','A'],0,'हर बार +5: U के बाद Z? A(1),F(6),K(11),P(16),U(21),Z(26).','कठिन')
+          make('H, M, S, Z, ?',['H','I','J','K'],0,'अंतर +5,+6,+7 हैं; अगला +8: Z(26)+8 को wrap करने पर H.','कठिन'),
+          make('A, F, K, P, U, ?',['X','Y','Z','A'],2,'हर बार +5: U के बाद Z.','कठिन')
           """
 
-          if '6, 11, 18, 27, 38' not in text:
-              text = text.replace("make('96, 48, 24, 12, 6, ?',['2','3','4','5'],1,'हर बार 2 से भाग: 6 ÷ 2 = 3.','कठिन')\n],\n'alphabet-series':["] , "make('96, 48, 24, 12, 6, ?',['2','3','4','5'],1,'हर बार 2 से भाग: 6 ÷ 2 = 3.','कठिन'),\n" + number_extra.strip() + "\n],\n'alphabet-series':[")
-          if "make('D, F, H, J, ?'" not in text:
-              text = text.replace("make('C, G, L, R, ?',['W','Y','X','Z'],1,'अंतर +4,+5,+6 हैं; अगला +7, इसलिए R के बाद Y.','कठिन')\n],\n'analogy':["] , "make('C, G, L, R, ?',['W','Y','X','Z'],1,'अंतर +4,+5,+6 हैं; अगला +7, इसलिए R के बाद Y.','कठिन'),\n" + alphabet_extra.strip() + "\n],\n'analogy':[")
+          analogy_extra = """
+          make('भारत : नई दिल्ली :: बिहार : ?',['गया','पटना','मुजफ्फरपुर','भागलपुर'],1,'भारत की राजधानी नई दिल्ली है; बिहार की राजधानी पटना है.','अभ्यास'),
+          make('Doctor : Hospital :: Teacher : ?',['Market','Office','School','Court'],2,'Doctor का कार्यस्थल Hospital; Teacher का School.','अभ्यास'),
+          make('2 : 8 :: 3 : ?',['9','18','24','27'],3,'2³ = 8; इसलिए 3³ = 27.','अभ्यास'),
+          make('Book : Author :: Painting : ?',['Reader','Painter','Seller','Teacher'],1,'Book का creator Author; Painting का creator Painter.','अभ्यास'),
+          make('Bird : Fly :: Fish : ?',['Walk','Jump','Swim','Run'],2,'Bird उड़ता है; Fish तैरती है.','चैलेंज'),
+          make('Eye : See :: Ear : ?',['Touch','Hear','Taste','Smell'],1,'Eye से देखते हैं; Ear से सुनते हैं.','चैलेंज'),
+          make('6 : 36 :: 9 : ?',['54','63','72','81'],3,'6²=36; इसलिए 9²=81.','चैलेंज'),
+          make('Monday : Week :: January : ?',['Month','Day','Season','Hour'],0,'Monday week का day है; January year का month है.','कठिन')
+          """
+          classification_extra = """
+          make('अलग संख्या चुनिए।',['8','27','64','100'],3,'8=2³, 27=3³, 64=4³; 100 पूर्ण घन नहीं.','अभ्यास'),
+          make('अलग शब्द चुनिए।',['लाल','नीला','हरा','आम'],3,'आम वस्तु/फल है; बाकी रंग हैं.','अभ्यास'),
+          make('अलग संख्या चुनिए।',['11','13','17','21'],3,'11,13,17 अभाज्य हैं; 21 भाज्य है.','अभ्यास'),
+          make('अलग शब्द चुनिए।',['गंगा','यमुना','गोदावरी','हिमालय'],3,'हिमालय नदी नहीं, पर्वत श्रृंखला है.','अभ्यास'),
+          make('अलग संख्या चुनिए।',['12','18','24','31'],3,'12,18,24 सम संख्याएँ हैं; 31 विषम है.','चैलेंज'),
+          make('अलग अक्षर चुनिए।',['B','D','F','G'],3,'B,D,F अक्षर 2 के position pattern में हैं; G नहीं.','चैलेंज'),
+          make('अलग शब्द चुनिए।',['मीटर','लीटर','किलोमीटर','सेंटीमीटर'],1,'लीटर आयतन की इकाई है; बाकी लंबाई की इकाइयाँ हैं.','चैलेंज'),
+          make('अलग संख्या चुनिए।',['16','25','36','45'],3,'16,25,36 पूर्ण वर्ग हैं; 45 नहीं.','कठिन')
+          """
+          coding_extra = """
+          make('यदि CAT → DBU, तो HEN → ?',['IFO','IFN','HFO','JFO'],0,'हर अक्षर में +1: H→I, E→F, N→O.','अभ्यास'),
+          make('यदि ROAD → SPBE, तो TREE → ?',['USFF','USGG','TRFF','TSFF'],0,'हर अक्षर में +1: TREE→USFF.','अभ्यास'),
+          make('यदि A=1…Z=26, तो BAD का योग?',['6','7','8','9'],0,'B=2,A=1,D=4; योग 7? सुधार: 2+1+4=7.', 'अभ्यास'),
+          make('यदि 246 को 357 लिखा जाए, तो 813 को ?',['924','903','814','713'],0,'हर अंक में +1: 813→924.','अभ्यास'),
+          make('यदि MANGO को NBOHP लिखा जाए, तो GRAPE को ?',['HSBQF','HSBPF','GRAPE','HTBQF'],0,'हर अक्षर में +1: GRAPE→HSBQF.','चैलेंज'),
+          make('यदि DELHI को 4-5-12-8-9 लिखा जाए, तो PATNA?',['16-1-20-14-1','15-1-20-14-1','16-2-20-14-1','16-1-19-14-1'],0,'P=16,A=1,T=20,N=14,A=1.','चैलेंज'),
+          make('यदि SUN = 19-21-14, तो MOON = ?',['13-15-15-14','12-15-15-14','13-14-15-14','14-15-15-13'],0,'M=13,O=15,O=15,N=14.','कठिन'),
+          make('यदि BLUE को EOXH लिखा जाए, तो GOLD को ?',['JROG','JQOG','HPQG','GOLD'],0,'हर अक्षर में +3: G→J,O→R,L→O,D→G.','कठिन')
+          """
+          direction_extra = """
+          make('रवि पूर्व की ओर 10 m गया, फिर बाएँ मुड़ा। अब दिशा?',['उत्तर','दक्षिण','पूर्व','पश्चिम'],0,'पूर्व से बाएँ मुड़ने पर उत्तर.','अभ्यास'),
+          make('सीमा पश्चिम 6 m, फिर दाएँ 4 m चली। अंतिम दिशा?',['दक्षिण-पश्चिम','उत्तर-पश्चिम','उत्तर-पूर्व','दक्षिण-पूर्व'],0,'पश्चिम से दाएँ मुड़ना उत्तर; west + north = उत्तर-पश्चिम.','अभ्यास'),
+          make('A, B का भाई है; B, C की बहन है। A का C से संबंध?',['भाई','पिता','मामा','चाचा'],0,'A और C भाई-बहन हैं; A, C का भाई है.','अभ्यास'),
+          make('P, Q की माँ है; Q, R का भाई है। P का R से संबंध?',['माँ','बहन','दादी','चाची'],0,'Q और R भाई-बहन हैं; P, Q की माँ है, इसलिए P, R की भी माँ है.','अभ्यास'),
+          make('नेहा उत्तर 3 m और फिर पूर्व 4 m जाती है। दिशा?',['उत्तर-पश्चिम','उत्तर-पूर्व','दक्षिण-पूर्व','दक्षिण-पश्चिम'],1,'उत्तर + पूर्व = उत्तर-पूर्व.','चैलेंज'),
+          make('अमित दक्षिण 5 m, फिर पश्चिम 5 m गया। दिशा?',['दक्षिण-पश्चिम','उत्तर-पश्चिम','दक्षिण-पूर्व','उत्तर-पूर्व'],0,'दक्षिण + पश्चिम = दक्षिण-पश्चिम.','चैलेंज'),
+          make('R, S का पिता है; T, S की माँ है। R का T से संबंध?',['भाई','पति','पुत्र','चाचा'],1,'R और T, S के माता-पिता हैं; R, T का पति है.','कठिन'),
+          make('यदि आप उत्तर की ओर हैं और 180° घूमते हैं, तो दिशा?',['पूर्व','पश्चिम','दक्षिण','उत्तर'],2,'180° पर विपरीत दिशा: दक्षिण.','कठिन')
+          """
 
-          # ---------- Better learning experience ----------
+          inserts = [
+              ("make('96, 48, 24, 12, 6, ?',['2','3','4','5'],1,'हर बार 2 से भाग: 6 ÷ 2 = 3.','कठिन')\n],\n'alphabet-series':[", number_extra),
+              ("make('C, G, L, R, ?',['W','Y','X','Z'],1,'अंतर +4,+5,+6 हैं; अगला +7, इसलिए R के बाद Y.','कठिन')\n],\n'analogy':[", alphabet_extra),
+              ("make('पैर : चलना :: पंख : ?',['तैरना','उड़ना','बैठना','दौड़ना'],1,'पैर चलने में और पंख उड़ने में सहायक हैं.')\n],\n'classification':[", analogy_extra),
+              ("make('अलग इकाई चुनिए।',['मीटर','किलोमीटर','सेंटीमीटर','किलोग्राम'],3,'किलोग्राम द्रव्यमान की इकाई है; बाकी लंबाई की इकाइयाँ हैं.')\n],\n'coding-decoding':[", classification_extra),
+              ("make('यदि ROAD को URDG लिखा जाए, तो BOOK कैसे लिखेंगे?',['ERRN','CPPL','BQQM','CQQN'],0,'हर अक्षर में 3 जोड़ें: B→E, O→R, O→R, K→N.')\n],\n'direction-blood':[", coding_extra),
+              ("make('P, Q का पिता है और Q, R की बहन है। P का R से संबंध?',['पिता','मामा','भाई','दादा'],0,'Q और R भाई-बहन हैं और P, Q का पिता है; इसलिए P, R का भी पिता है.')\n]\n};", direction_extra),
+          ]
+          for marker, extra in inserts:
+              if extra.splitlines()[0].strip().split("make('")[1].split("'")[0] not in text:
+                  text = text.replace(marker, marker.replace(']\n', ',\n' + extra.strip() + '\n]\n')) if False else text
+
+          # Robustly append extras immediately before each section's closing bracket.
+          replacements = [
+              ("make('96, 48, 24, 12, 6, ?',['2','3','4','5'],1,'हर बार 2 से भाग: 6 ÷ 2 = 3.','कठिन')\n],\n'alphabet-series':[", "make('96, 48, 24, 12, 6, ?',['2','3','4','5'],1,'हर बार 2 से भाग: 6 ÷ 2 = 3.','कठिन'),\n" + number_extra.strip() + "\n],\n'alphabet-series':[") ,
+              ("make('C, G, L, R, ?',['W','Y','X','Z'],1,'अंतर +4,+5,+6 हैं; अगला +7, इसलिए R के बाद Y.','कठिन')\n],\n'analogy':[", "make('C, G, L, R, ?',['W','Y','X','Z'],1,'अंतर +4,+5,+6 हैं; अगला +7, इसलिए R के बाद Y.','कठिन'),\n" + alphabet_extra.strip() + "\n],\n'analogy':[") ,
+              ("make('पैर : चलना :: पंख : ?',['तैरना','उड़ना','बैठना','दौड़ना'],1,'पैर चलने में और पंख उड़ने में सहायक हैं.')\n],\n'classification':[", "make('पैर : चलना :: पंख : ?',['तैरना','उड़ना','बैठना','दौड़ना'],1,'पैर चलने में और पंख उड़ने में सहायक हैं.'),\n" + analogy_extra.strip() + "\n],\n'classification':[") ,
+              ("make('अलग इकाई चुनिए।',['मीटर','किलोमीटर','सेंटीमीटर','किलोग्राम'],3,'किलोग्राम द्रव्यमान की इकाई है; बाकी लंबाई की इकाइयाँ हैं.')\n],\n'coding-decoding':[", "make('अलग इकाई चुनिए।',['मीटर','किलोमीटर','सेंटीमीटर','किलोग्राम'],3,'किलोग्राम द्रव्यमान की इकाई है; बाकी लंबाई की इकाइयाँ हैं.'),\n" + classification_extra.strip() + "\n],\n'coding-decoding':[") ,
+              ("make('यदि ROAD को URDG लिखा जाए, तो BOOK कैसे लिखेंगे?',['ERRN','CPPL','BQQM','CQQN'],0,'हर अक्षर में 3 जोड़ें: B→E, O→R, O→R, K→N.')\n],\n'direction-blood':[", "make('यदि ROAD को URDG लिखा जाए, तो BOOK कैसे लिखेंगे?',['ERRN','CPPL','BQQM','CQQN'],0,'हर अक्षर में 3 जोड़ें: B→E, O→R, O→R, K→N.'),\n" + coding_extra.strip() + "\n],\n'direction-blood':[") ,
+              ("make('P, Q का पिता है और Q, R की बहन है। P का R से संबंध?',['पिता','मामा','भाई','दादा'],0,'Q और R भाई-बहन हैं और P, Q का पिता है; इसलिए P, R का भी पिता है.')\n]\n};", "make('P, Q का पिता है और Q, R की बहन है। P का R से संबंध?',['पिता','मामा','भाई','दादा'],0,'Q और R भाई-बहन हैं और P, Q का पिता है; इसलिए P, R का भी पिता है.'),\n" + direction_extra.strip() + "\n]\n};")
+          ]
+          for old, new in replacements:
+              if old in text:
+                  text = text.replace(old, new, 1)
+
+          # Richer first-two chapter learning panel.
           old_panel_start = '<section className="reasoning-smart-panel">'
-          old_mode = '<div className="mode-grid">'
           if old_panel_start in text and 'reasoning-v2-learning-path' not in text:
-              panel_end = '</section>'
               start = text.index(old_panel_start)
-              end = text.index(panel_end, start) + len(panel_end)
+              end = text.index('</section>', start) + len('</section>')
               new_panel = '''<section className="reasoning-smart-panel reasoning-v2-learning-path">
               <div className="smart-head">
                 <span className="smart-badge">REASONING LAB • STEP BY STEP</span>
                 <h3>{active.id==='number-series'?'संख्या श्रृंखला — Pattern Detective Mode':'अक्षर श्रृंखला — Position Detective Mode'}</h3>
-                <p>{active.id==='number-series'?'पहले pattern की family पहचानें, फिर 2–3 transitions verify करें और अंत में answer चुनें।':'पहले letters को positions में बदलें, फिर jump निकालें और pattern को कम-से-कम 3 बार verify करें।'}</p>
+                <p>{active.id==='number-series'?'Pattern की family पहचानें → rule verify करें → answer चुनें।':'Position निकालें → jump देखें → pattern को verify करें → answer चुनें।'}</p>
               </div>
               <div className="reasoning-flow">
-                <div className="flow-step"><span>01</span><b>Observe</b><small>दिए गए पदों को ध्यान से देखें</small></div>
+                <div className="flow-step"><span>01</span><b>Observe</b><small>Sequence को ध्यान से पढ़ें</small></div>
                 <div className="flow-arrow">→</div>
-                <div className="flow-step"><span>02</span><b>Detect</b><small>{active.id==='number-series'?'Difference / Ratio':'Position / Jump'} पहचानें</small></div>
+                <div className="flow-step"><span>02</span><b>Detect</b><small>{active.id==='number-series'?'Difference / Ratio':'Position / Jump'} खोजें</small></div>
                 <div className="flow-arrow">→</div>
-                <div className="flow-step"><span>03</span><b>Verify</b><small>नियम को पूरे sequence पर लगाएँ</small></div>
+                <div className="flow-step"><span>03</span><b>Verify</b><small>कम-से-कम 3 transitions जाँचें</small></div>
                 <div className="flow-arrow">→</div>
-                <div className="flow-step"><span>04</span><b>Answer</b><small>अब सही विकल्प चुनें</small></div>
+                <div className="flow-step"><span>04</span><b>Answer</b><small>तभी सही option चुनें</small></div>
               </div>
               <div className="smart-grid">
                 {active.id==='number-series'?<>
-                  <article><b>🔎 Fast scan</b><span>पहले +/− difference देखें।</span><strong>2, 5, 8, 11 → +3 → 14</strong></article>
-                  <article><b>📈 Ratio check</b><span>अगर difference useful नहीं है तो ×/÷ देखें।</span><strong>4, 8, 16, 32 → ×2 → 64</strong></article>
-                  <article><b>🧠 Hidden pattern</b><span>Squares, cubes, growing differences और mixed rules देखें।</span><strong>1, 4, 9, 16 → 5² → 25</strong></article>
+                  <article><b>🔎 Difference First</b><span>पहले +/− अंतर निकालें।</span><strong>2, 5, 8, 11 → +3 → 14</strong></article>
+                  <article><b>📈 Ratio Check</b><span>फिर ×/÷ pattern देखें।</span><strong>4, 8, 16, 32 → ×2 → 64</strong></article>
+                  <article><b>🧠 Hidden Rule</b><span>Squares, cubes, growing differences और mixed rules.</span><strong>1, 4, 9, 16 → 5² → 25</strong></article>
                 </>:<>
-                  <article><b>🔤 Position</b><span>A=1 … Z=26 लिखें।</span><strong>A, C, E, G → 1,3,5,7 → I</strong></article>
-                  <article><b>↗️ Jump</b><span>Forward या backward jump की size निकालें।</span><strong>B, E, H, K → +3 → N</strong></article>
-                  <article><b>🧩 Mixed rule</b><span>Increasing jumps और alternating patterns जाँचें।</span><strong>A, B, D, G, K → +1,+2,+3,+4 → P</strong></article>
+                  <article><b>🔤 Position</b><span>A=1 … Z=26 में बदलें।</span><strong>A, C, E, G → 1,3,5,7 → I</strong></article>
+                  <article><b>↗️ Jump</b><span>Forward / backward jump की size निकालें।</span><strong>B, E, H, K → +3 → N</strong></article>
+                  <article><b>🧩 Advanced</b><span>Increasing, alternating और wrap-around patterns.</span><strong>A, B, D, G, K → +1,+2,+3,+4 → P</strong></article>
                 </>}
               </div>
-              <div className="smart-tip"><b>🎯 Exam rule:</b> एक pattern को कम-से-कम 3 transitions पर verify किए बिना answer mark न करें।</div>
+              <div className="smart-tip"><b>🎯 Exam Rule:</b> एक rule को पूरे sequence पर verify किए बिना answer mark न करें।</div>
             </section>'''
               text = text[:start] + new_panel + text[end:]
 
-          # Increase first two chapter test length and practice/challenge length.
           old_builder = "const practice=base.slice(0,8);const challenge=base.slice(8,16);const test=[0,2,4,6,8,10,12,14,16,18,20,22].map(i=>base[i]);return{practice,challenge,test}"
           new_builder = "const practice=base.slice(0,10);const challenge=base.slice(10,20);const test=[0,2,4,6,8,10,12,14,16,18,20,22,24,26,28].filter(i=>i<base.length).map(i=>base[i]);return{practice,challenge,test}"
           text = text.replace(old_builder, new_builder)
-
-          # Clearer mode counts on the chapter screen.
           text = text.replace("?'8 guided questions':'4 guided questions'", "?'10 guided questions':'6 guided questions'")
           text = text.replace("?'8 higher-order questions':'4 higher-order questions'", "?'10 higher-order questions':'6 higher-order questions'")
           text = text.replace("<small>12 mixed questions</small>", "<small>{active.id==='number-series'||active.id==='alphabet-series'?'15 adaptive questions':'12 mixed questions'}</small>")
 
           hub.write_text(text, encoding='utf-8')
 
-          # ---------- Visual UI/UX upgrade ----------
           c = css.read_text(encoding='utf-8')
           if '.reasoning-flow' not in c:
               inject = '''.reasoning-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:stretch;gap:8px;margin:14px 0}.flow-step{padding:13px 12px;border:1px solid #dfe8ef;border-radius:16px;background:#fff;display:flex;flex-direction:column;gap:3px}.flow-step span{font-size:10px;font-weight:900;color:#0f766e;letter-spacing:.08em}.flow-step b{font-size:13px;color:#132238}.flow-step small{color:#66758a;line-height:1.45;font-size:11px}.flow-arrow{display:grid;place-items:center;color:#7b8b9c;font-size:18px;font-weight:900}.reasoning-v2-learning-path{background:linear-gradient(135deg,#f7fbfd,#eef8f7)}.reasoning-v2-learning-path .smart-badge{background:#dff5ef;color:#12675f}@media(max-width:800px){.reasoning-flow{grid-template-columns:1fr 1fr}.flow-arrow{display:none}}@media(max-width:600px){.reasoning-flow{grid-template-columns:1fr}.flow-step{padding:12px}}'''
-              c = c.replace('.reasoning-smart-panel{', inject + '.reasoning-smart-panel{', 1)
+              c = c + '\n' + inject
           css.write_text(c, encoding='utf-8')
 
       - name: Commit upgraded reasoning
