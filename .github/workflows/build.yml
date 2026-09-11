@@ -74,9 +74,11 @@ jobs:
         run: npm run qa:supabase-contract
       - name: Preparation meter QA
         run: npm run qa:preparation-meter
-      - name: XP system QA
+      - name: XP Phase 1 QA
         run: npm run qa:xp
+      - name: XP Phase 2 Smart Rules QA
+        run: npm run qa:xp:phase2
       - name: Build application
         run: npm run build
       # English, reasoning, canonical progress, analytics, runtime coverage, legacy migration, homepage/chapter catalog, Supabase contract, preparation meter, and XP integrity are included in full verification.
-      # Phase 6 only defines the backend contract; the browser remains local-first until a Supabase client is intentionally enabled.
+      # XP remains local-first; the Supabase XP files define the backend contract only until a client is intentionally enabled.
