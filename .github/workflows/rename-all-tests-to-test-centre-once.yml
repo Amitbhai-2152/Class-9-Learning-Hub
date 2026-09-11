@@ -1,0 +1,38 @@
+name: Rename All Tests to Test Centre once
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  rename:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Replace homepage label
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('src/App.jsx')
+          text = p.read_text(encoding='utf-8')
+          old = '<strong>सभी टेस्ट</strong>'
+          new = '<strong>Test Centre</strong>'
+          if old not in text:
+              raise SystemExit('Target label not found')
+          p.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit and push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/rename-all-tests-to-test-centre-once.yml
+          git add src/App.jsx
+          git commit -m "ui: rename all tests to Test Centre"
+          git push origin HEAD:main
