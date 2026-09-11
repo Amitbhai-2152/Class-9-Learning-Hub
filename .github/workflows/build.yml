@@ -36,14 +36,8 @@ jobs:
         run: npm run qa:civics
       - name: Economics content QA
         run: npm run qa:economics
-      - name: SST structure QA
-        run: npm run qa:sst:structure
-      - name: SST data QA
-        run: npm run qa:sst:data
-      - name: SST engine QA
-        run: npm run qa:sst:engines
-      - name: SST wiring QA
-        run: npm run qa:sst:wiring
+      - name: SST full audit QA
+        run: npm run qa:sst
       - name: History subjective QA
         run: node scripts/qaHistorySubjective.mjs
       - name: Sanskrit content QA
