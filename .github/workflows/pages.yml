@@ -23,7 +23,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Build the committed source directly; no build-time source patching.
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -38,7 +37,6 @@ jobs:
       - name: Write build version manifest
         run: echo '{"version":"'"$GITHUB_SHA"'"}' > dist/build-version.json
 
-      # public/404.html is copied by Vite and preserves the SPA query route on refresh.
       - name: Verify Pages fallback
         run: test -s dist/404.html && grep -q "Class-9-Learning-Hub" dist/404.html
 
