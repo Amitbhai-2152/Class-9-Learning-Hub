@@ -1,0 +1,37 @@
+name: One-time Repair Reasoning V2
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Repair Reasoning V2 and QA
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('src/ReasoningLabV2.jsx')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("import React,{useEffect,useMemo,useState}from'react';","import React,{useEffect,useState}from'react';")
+          s=s.replace("const banks={'number-series':numberBank,'alphabet-series':alphabetBank,analogy,classification,'coding-decoding':codingBank,'direction-blood':directionBank};","const banks={'number-series':numberBank,'alphabet-series':alphabetBank,'analogy':analogyBank,'classification':classificationBank,'coding-decoding':codingBank,'direction-blood':directionBank};")
+          p.write_text(s,encoding='utf-8')
+
+          q=Path('scripts/qaReasoning.mjs')
+          q.write_text("""import fs from 'node:fs';\nimport path from 'node:path';\nconst root=process.cwd();\nconst v2=fs.readFileSync(path.join(root,'src','ReasoningLabV2.jsx'),'utf8');\nconst router=fs.readFileSync(path.join(root,'src','AppWithChapter5.jsx'),'utf8');\nconst css=fs.readFileSync(path.join(root,'src','reasoning-lab-v2.css'),'utf8');\nconst ids=['number-series','alphabet-series','analogy','classification','coding-decoding','direction-blood'];\nfor(const id of ids){if(!v2.includes(`id:'${id}'`))throw new Error(`Missing V2 chapter: ${id}`)}\nif(!router.includes("import ReasoningHub from'./ReasoningLabV2.jsx'"))throw new Error('V2 Reasoning import is missing from router.');\nif(!router.includes("get('subject')==='reasoning'"))throw new Error('Reasoning route guard is missing.');\nif(!v2.includes("const banks={'number-series':numberBank,'alphabet-series':alphabetBank,'analogy':analogyBank,'classification':classificationBank,'coding-decoding':codingBank,'direction-blood':directionBank};"))throw new Error('Reasoning bank registry is invalid.');\nif(!v2.includes('const prepare=(bank,count)'))throw new Error('Reasoning quiz preparation is missing.');\nif(!v2.includes('shuffle(q.options.map'))throw new Error('Randomized options are missing.');\nif(!v2.includes('setTimeLeft(15*60)'))throw new Error('15-minute timer is missing.');\nif(!v2.includes('prepare(bank,25)'))throw new Error('25-question final test is missing.');\nif(!v2.includes('setCompleted(true)'))throw new Error('Test result completion state is missing.');\nif(!css.includes('.rlab-tabs')||!css.includes('.countdown'))throw new Error('Reasoning V2 styles are incomplete.');\nconsole.log('Reasoning V2 QA passed.');\n""",encoding='utf-8')
+          PY
+      - name: Commit repaired files and remove one-time workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/fix-reasoning-v2.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/ReasoningLabV2.jsx scripts/qaReasoning.mjs .github/workflows/fix-reasoning-v2.yml
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'fix: repair Reasoning Lab V2 build and QA'
+          git push
