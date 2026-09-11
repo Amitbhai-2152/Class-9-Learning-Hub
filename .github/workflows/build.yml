@@ -73,3 +73,4 @@ jobs:
       - name: Build application
         run: npm run build
       # English, reasoning, canonical progress, analytics, runtime coverage, legacy migration, and homepage/chapter catalog consistency are included in full verification.
+      # Phase 5 canonical subject catalog verification is intentionally triggered by this commit.
