@@ -1,0 +1,84 @@
+name: One-Time Answer Reveal Patch
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ github.event.head_commit.message != 'feat: keep answers and marks for final review' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch engines
+        shell: python
+        run: |
+          from pathlib import Path
+
+          # Generic StudyEngine: timers for every mode + no correctness reveal while answering.
+          p=Path('src/StudyEngine.jsx')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("const TEST_SECONDS=15*60;", "const TIMER_PER_QUESTION={practice:45,challenge:60,test:60};\nconst timerSeconds=(mode,count)=>Math.max(60,(TIMER_PER_QUESTION[mode]||60)*Math.max(1,count));", 1)
+          s=s.replace("const isTest=mode==='test';", "const isTest=mode==='test';\n const timedMode=Boolean(TIMER_PER_QUESTION[mode]);", 1)
+          s=s.replace("[earned,setEarned]=useState(0),[remaining,setRemaining]=useState(TEST_SECONDS),[showReview", "[earned,setEarned]=useState(0),[remaining,setRemaining]=useState(timerSeconds(mode,questions.length)),[showReview", 1)
+          s=s.replace("useEffect(()=>{if(!isTest||done)return;", "useEffect(()=>{if(!timedMode||done)return;", 1)
+          s=s.replace("},[isTest,done]);", "},[timedMode,done]);", 1)
+          s=s.replace("setRemaining(TEST_SECONDS);setShowReview(false)", "setRemaining(timerSeconds(mode,questions.length));setShowReview(false)", 1)
+          s=s.replace("{isTest?<span className=\"timer-pill\">⏱ {mm}:{ss}</span>:<span>{index+1} / {questions.length}</span>}", "{timedMode?<span className=\"timer-pill\">⏱ {mm}:{ss}</span>:<span>{index+1} / {questions.length}</span>}", 1)
+          s=s.replace("<h1>{isTest?'🎯 समयबद्ध टेस्ट':label}</h1>", "<h1>{isTest?'🎯 समयबद्ध टेस्ट':label}</h1>", 1)
+          old_class="className={`answer-option pressable ${selected!==null?(i===current.answer?'correct':i===selected?'wrong':'muted'):''}`}`
+          new_class="className={`answer-option pressable ${selected===i?'selected':''}`}`
+          if old_class in s: s=s.replace(old_class,new_class,1)
+          old_feedback="{selected!==null&&<div className={`answer-feedback ${selected===current.answer?'good':'bad'}`}><strong>{isTest?'✓ उत्तर दर्ज':selected===current.answer?'✓ सही उत्तर':'✗ गलत उत्तर'}</strong><p>{isTest?'टेस्ट पूरा होने पर सही उत्तर और explanation review में दिखाई जाएगी।':current.explain}</p></div>}"
+          new_feedback="{selected!==null&&<div className=\"answer-feedback\"><strong>✓ उत्तर दर्ज हो गया</strong><p>सही उत्तर और समाधान अंत में दिखेंगे।</p></div>}"
+          if old_feedback not in s: raise SystemExit('StudyEngine feedback block not found')
+          s=s.replace(old_feedback,new_feedback,1)
+          old_action="<span>{isTest?'टेस्ट मोड • सही उत्तर अंत में':selected===null?'उत्तर चुनें':`स्कोर: ${score}/${index+1}`}</span>"
+          new_action="<span>{selected===null?'उत्तर चुनें':'उत्तर दर्ज • परिणाम अंत में'}</span>"
+          if old_action not in s: raise SystemExit('StudyEngine action label not found')
+          s=s.replace(old_action,new_action,1)
+          # Never expose score/answer progress during an active timed attempt.
+          s=s.replace("<span className=\"lesson-type\">प्रश्न {index+1} / {questions.length}{!isTest&&` • +${points} XP`}</span>", "<span className=\"lesson-type\">प्रश्न {index+1} / {questions.length}{timedMode?' • समयबद्ध अभ्यास':''}</span>", 1)
+          p.write_text(s,encoding='utf-8')
+
+          # Canonical ReasoningLabV2: practice/challenge answers also stay hidden until results.
+          p=Path('src/ReasoningLabV2.jsx')
+          s=p.read_text(encoding='utf-8')
+          timer="const TIMER_CONFIG={practice:{seconds:15*60,perQuestion:'45 sec/question',label:'15:00'},challenge:{seconds:20*60,perQuestion:'60 sec/question',label:'20:00'},test:{seconds:30*60,perQuestion:'60 sec/question',label:'30:00'}};"
+          if 'const TIMER_CONFIG=' not in s:
+              anchor="const deepDive={'number-series':"
+              idx=s.index(anchor)
+              s=s[:idx]+timer+s[idx:]
+          s=s.replace("const[chapterId,setChapterId]=useState(chapterInitial);const[mode,setMode]=useState(modeInitial);const[session,setSession]=useState(null);const[answers,setAnswers]=useState({});const[score,setScore]=useState(0);const[completed,setCompleted]=useState(false);const[testStarted,setTestStarted]=useState(false);const[timeLeft,setTimeLeft]=useState(15*60);", "const[chapterId,setChapterId]=useState(chapterInitial);const[mode,setMode]=useState(modeInitial);const[session,setSession]=useState(null);const[answers,setAnswers]=useState({});const[score,setScore]=useState(0);const[completed,setCompleted]=useState(false);const[testStarted,setTestStarted]=useState(false);const[timeLeft,setTimeLeft]=useState(TIMER_CONFIG.practice.seconds);", 1)
+          s=s.replace("const begin=nextMode=>{setMode(nextMode);setAnswers({});setScore(0);setCompleted(false);if(nextMode==='test'){setSession(null);setTimeLeft(15*60);setTestStarted(false)}else{setSession(prepare(bank,counts[nextMode]));setTestStarted(true)}};", "const begin=nextMode=>{setMode(nextMode);setAnswers({});setScore(0);setCompleted(false);if(nextMode==='test'){setSession(null);setTimeLeft(TIMER_CONFIG.test.seconds);setTestStarted(false)}else if(TIMER_CONFIG[nextMode]){setSession(prepare(bank,counts[nextMode]));setTimeLeft(TIMER_CONFIG[nextMode].seconds);setTestStarted(true)}else{setSession(null);setTestStarted(false)}};", 1)
+          s=s.replace("const startTest=()=>{setAnswers({});setScore(0);setCompleted(false);setSession(prepare(bank,30));setTimeLeft(15*60);setTestStarted(true)};", "const startTest=()=>{setAnswers({});setScore(0);setCompleted(false);setSession(prepare(bank,30));setTimeLeft(TIMER_CONFIG.test.seconds);setTestStarted(true)};", 1)
+          s=s.replace("useEffect(()=>{if(mode!=='test'||!testStarted||!session)return;", "useEffect(()=>{if(!TIMER_CONFIG[mode]||!testStarted||!session)return;", 1)
+          s=s.replace("{mode==='test'&&<div className={`countdown ${timeLeft<=60?'danger':''}`}>⏱️ {mm}:{ss}</div>}", "{TIMER_CONFIG[mode]&&<div className={`countdown ${timeLeft<=60?'danger':''}`}>⏱️ {mm}:{ss}</div>}", 1)
+          feedback="{mode!=='test'&&answers[i]&&<div style={{marginTop:12,padding:'10px 12px',borderRadius:12,background:'#f7fafc'}}><b>{answers[i].correct?'✓ Correct':'✕ Review'}</b><div style={{marginTop:4}}>{q.explanation}</div></div>}"
+          safe="{answers[i]&&<div style={{marginTop:12,padding:'10px 12px',borderRadius:12,background:'#f7fafc'}}><b>✓ Answer recorded</b><div style={{marginTop:4}}>सही उत्तर और explanation results में दिखेंगे।</div></div>}"
+          if feedback not in s: raise SystemExit('Reasoning feedback block not found')
+          s=s.replace(feedback,safe,1)
+          s=s.replace("<div className=\"timer-preview\">15:00</div>", "<div className=\"timer-preview\">30:00</div>", 1)
+          s=s.replace("<p>30 प्रश्न • 15 मिनट • प्रत्येक attempt में options randomised होंगे।</p>", "<p>30 प्रश्न • 30 मिनट • mixed + challenge level • 60 sec/question.</p>", 1)
+          p.write_text(s,encoding='utf-8')
+
+          required=[('StudyEngine',Path('src/StudyEngine.jsx'),'TIMER_PER_QUESTION'),('Reasoning',Path('src/ReasoningLabV2.jsx'),'Answer recorded')]
+          for name,path,needle in required:
+              text=path.read_text(encoding='utf-8')
+              if needle not in text: raise SystemExit(f'{name} patch verification failed: {needle}')
+          print('ANSWER_REVEAL_PATCH_OK')
+
+      - name: Verify build
+        run: |
+          npm install --legacy-peer-deps
+          npm run build
+          git diff --check
+      - name: Commit and remove patcher
+        shell: bash
+        run: |
+          rm -f .github/workflows/patch-final-answer-reveal-once.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/StudyEngine.jsx src/ReasoningLabV2.jsx .github/workflows/patch-final-answer-reveal-once.yml
+          git commit -m 'feat: keep answers and marks for final review'
+          git push
