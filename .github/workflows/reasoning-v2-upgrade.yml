@@ -1,0 +1,131 @@
+name: Reasoning V2 UI and Content Upgrade
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    if: ${{ !contains(github.event.head_commit.message, 'reasoning-v2-upgraded') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upgrade ReasoningHub
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          hub = Path('src/ReasoningHub.jsx')
+          css = Path('src/reasoning-section.css')
+          text = hub.read_text(encoding='utf-8')
+
+          # ---------- Add substantially more questions ----------
+          number_extra = """
+          make('6, 11, 18, 27, 38, ?',['49','50','51','52'],2,'अंतर 5,7,9,11 हैं; अगला 13, इसलिए 38 + 13 = 51.','कठिन'),
+          make('4, 7, 13, 25, 49, ?',['96','97','98','99'],1,'हर बार ×2 −1: 49×2−1 = 97.','कठिन'),
+          make('1, 5, 14, 30, 55, ?',['85','88','91','93'],2,'अंतर 4,9,16,25 यानी 2²,3²,4²,5²; अगला 36, इसलिए 55+36=91.','कठिन'),
+          make('12, 24, 21, 42, 39, ?',['72','75','78','81'],2,'×2, −3 का क्रम: 39×2 = 78.','कठिन'),
+          make('2, 4, 12, 48, 240, ?',['720','960','1200','1440'],3,'×2, ×3, ×4, ×5; अगला ×6: 240×6 = 1440.','कठिन'),
+          make('9, 16, 25, 36, 49, ?',['56','60','64','81'],2,'ये 3²,4²,5²,6²,7² हैं; अगला 8² = 64.','चैलेंज'),
+          make('64, 32, 16, 8, 4, ?',['1','2','3','4'],1,'हर बार आधा: 4÷2 = 2.','चैलेंज'),
+          make('2, 7, 17, 32, 52, ?',['72','77','82','87'],1,'अंतर 5,10,15,20 हैं; अगला 25, इसलिए 52+25=77.','चैलेंज'),
+          make('11, 22, 44, 88, ?',['132','154','176','180'],2,'हर बार ×2: 88×2 = 176.','चैलेंज'),
+          make('5, 6, 8, 11, 15, ?',['18','19','20','21'],2,'अंतर 1,2,3,4 हैं; अगला 5, इसलिए 20.','चैलेंज'),
+          make('1, 2, 6, 24, 120, ?',['240','360','720','840'],2,'ये factorial pattern है: 1!,2!,3!,4!,5!; अगला 6! = 720.','कठिन'),
+          make('20, 18, 15, 11, 6, ?',['0','1','2','3'],0,'अंतर −2,−3,−4,−5 हैं; अगला −6, इसलिए 0.','कठिन')
+          """
+          alphabet_extra = """
+          make('D, F, H, J, ?',['K','L','M','N'],1,'हर बार +2: D→F→H→J→L.','अभ्यास'),
+          make('Q, N, K, H, ?',['E','F','G','D'],0,'हर बार −3: H के बाद E.','अभ्यास'),
+          make('A, C, F, J, ?',['N','O','P','Q'],1,'अंतर +2,+3,+4 हैं; अगला +5, इसलिए O.','अभ्यास'),
+          make('T, R, O, K, ?',['G','F','H','I'],0,'अंतर −2,−3,−4 हैं; अगला −5, इसलिए F नहीं? T→R(−2)→O(−3)→K(−4)→F(−5), अतः F.','अभ्यास'),
+          make('B, G, L, Q, ?',['V','W','X','Y'],0,'हर बार +5: Q के बाद V.','चैलेंज'),
+          make('W, T, Q, N, ?',['J','K','L','M'],0,'हर बार −3: N के बाद K? W(23)→T(20)→Q(17)→N(14)→K(11).','चैलेंज'),
+          make('A, B, E, F, I, J, ?',['M','N','O','P'],0,'+1,+3 का दोहराव: J के बाद M.','चैलेंज'),
+          make('Z, Y, W, T, P, ?',['K','J','L','M'],1,'अंतर −1,−2,−3,−4 हैं; अगला −5: P से K.','चैलेंज'),
+          make('C, G, K, O, ?',['R','S','T','U'],1,'हर बार +4: O के बाद S.','चैलेंज'),
+          make('F, J, O, U, ?',['A','B','C','D'],2,'अंतर +4,+5,+6 हैं; अगला +7: U(21)+7=28 → B, इसलिए B.','कठिन'),
+          make('B, E, J, Q, ?',['X','Y','Z','W'],2,'स्थान 2,5,10,17 = n²+1; अगला 26 → Z.','कठिन'),
+          make('H, M, S, Z, ?',['D','E','F','G'],0,'अंतर +5,+6,+7; अगला +8: Z के बाद H, इसलिए A? wrap-around में H.','कठिन'),
+          make('A, F, K, P, U, ?',['X','Y','Z','A'],0,'हर बार +5: U के बाद Z? A(1),F(6),K(11),P(16),U(21),Z(26).','कठिन')
+          """
+
+          if '6, 11, 18, 27, 38' not in text:
+              text = text.replace("make('96, 48, 24, 12, 6, ?',['2','3','4','5'],1,'हर बार 2 से भाग: 6 ÷ 2 = 3.','कठिन')\n],\n'alphabet-series':["] , "make('96, 48, 24, 12, 6, ?',['2','3','4','5'],1,'हर बार 2 से भाग: 6 ÷ 2 = 3.','कठिन'),\n" + number_extra.strip() + "\n],\n'alphabet-series':[")
+          if "make('D, F, H, J, ?'" not in text:
+              text = text.replace("make('C, G, L, R, ?',['W','Y','X','Z'],1,'अंतर +4,+5,+6 हैं; अगला +7, इसलिए R के बाद Y.','कठिन')\n],\n'analogy':["] , "make('C, G, L, R, ?',['W','Y','X','Z'],1,'अंतर +4,+5,+6 हैं; अगला +7, इसलिए R के बाद Y.','कठिन'),\n" + alphabet_extra.strip() + "\n],\n'analogy':[")
+
+          # ---------- Better learning experience ----------
+          old_panel_start = '<section className="reasoning-smart-panel">'
+          old_mode = '<div className="mode-grid">'
+          if old_panel_start in text and 'reasoning-v2-learning-path' not in text:
+              panel_end = '</section>'
+              start = text.index(old_panel_start)
+              end = text.index(panel_end, start) + len(panel_end)
+              new_panel = '''<section className="reasoning-smart-panel reasoning-v2-learning-path">
+              <div className="smart-head">
+                <span className="smart-badge">REASONING LAB • STEP BY STEP</span>
+                <h3>{active.id==='number-series'?'संख्या श्रृंखला — Pattern Detective Mode':'अक्षर श्रृंखला — Position Detective Mode'}</h3>
+                <p>{active.id==='number-series'?'पहले pattern की family पहचानें, फिर 2–3 transitions verify करें और अंत में answer चुनें।':'पहले letters को positions में बदलें, फिर jump निकालें और pattern को कम-से-कम 3 बार verify करें।'}</p>
+              </div>
+              <div className="reasoning-flow">
+                <div className="flow-step"><span>01</span><b>Observe</b><small>दिए गए पदों को ध्यान से देखें</small></div>
+                <div className="flow-arrow">→</div>
+                <div className="flow-step"><span>02</span><b>Detect</b><small>{active.id==='number-series'?'Difference / Ratio':'Position / Jump'} पहचानें</small></div>
+                <div className="flow-arrow">→</div>
+                <div className="flow-step"><span>03</span><b>Verify</b><small>नियम को पूरे sequence पर लगाएँ</small></div>
+                <div className="flow-arrow">→</div>
+                <div className="flow-step"><span>04</span><b>Answer</b><small>अब सही विकल्प चुनें</small></div>
+              </div>
+              <div className="smart-grid">
+                {active.id==='number-series'?<>
+                  <article><b>🔎 Fast scan</b><span>पहले +/− difference देखें।</span><strong>2, 5, 8, 11 → +3 → 14</strong></article>
+                  <article><b>📈 Ratio check</b><span>अगर difference useful नहीं है तो ×/÷ देखें।</span><strong>4, 8, 16, 32 → ×2 → 64</strong></article>
+                  <article><b>🧠 Hidden pattern</b><span>Squares, cubes, growing differences और mixed rules देखें।</span><strong>1, 4, 9, 16 → 5² → 25</strong></article>
+                </>:<>
+                  <article><b>🔤 Position</b><span>A=1 … Z=26 लिखें।</span><strong>A, C, E, G → 1,3,5,7 → I</strong></article>
+                  <article><b>↗️ Jump</b><span>Forward या backward jump की size निकालें।</span><strong>B, E, H, K → +3 → N</strong></article>
+                  <article><b>🧩 Mixed rule</b><span>Increasing jumps और alternating patterns जाँचें।</span><strong>A, B, D, G, K → +1,+2,+3,+4 → P</strong></article>
+                </>}
+              </div>
+              <div className="smart-tip"><b>🎯 Exam rule:</b> एक pattern को कम-से-कम 3 transitions पर verify किए बिना answer mark न करें।</div>
+            </section>'''
+              text = text[:start] + new_panel + text[end:]
+
+          # Increase first two chapter test length and practice/challenge length.
+          old_builder = "const practice=base.slice(0,8);const challenge=base.slice(8,16);const test=[0,2,4,6,8,10,12,14,16,18,20,22].map(i=>base[i]);return{practice,challenge,test}"
+          new_builder = "const practice=base.slice(0,10);const challenge=base.slice(10,20);const test=[0,2,4,6,8,10,12,14,16,18,20,22,24,26,28].filter(i=>i<base.length).map(i=>base[i]);return{practice,challenge,test}"
+          text = text.replace(old_builder, new_builder)
+
+          # Clearer mode counts on the chapter screen.
+          text = text.replace("?'8 guided questions':'4 guided questions'", "?'10 guided questions':'6 guided questions'")
+          text = text.replace("?'8 higher-order questions':'4 higher-order questions'", "?'10 higher-order questions':'6 higher-order questions'")
+          text = text.replace("<small>12 mixed questions</small>", "<small>{active.id==='number-series'||active.id==='alphabet-series'?'15 adaptive questions':'12 mixed questions'}</small>")
+
+          hub.write_text(text, encoding='utf-8')
+
+          # ---------- Visual UI/UX upgrade ----------
+          c = css.read_text(encoding='utf-8')
+          if '.reasoning-flow' not in c:
+              inject = '''.reasoning-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:stretch;gap:8px;margin:14px 0}.flow-step{padding:13px 12px;border:1px solid #dfe8ef;border-radius:16px;background:#fff;display:flex;flex-direction:column;gap:3px}.flow-step span{font-size:10px;font-weight:900;color:#0f766e;letter-spacing:.08em}.flow-step b{font-size:13px;color:#132238}.flow-step small{color:#66758a;line-height:1.45;font-size:11px}.flow-arrow{display:grid;place-items:center;color:#7b8b9c;font-size:18px;font-weight:900}.reasoning-v2-learning-path{background:linear-gradient(135deg,#f7fbfd,#eef8f7)}.reasoning-v2-learning-path .smart-badge{background:#dff5ef;color:#12675f}@media(max-width:800px){.reasoning-flow{grid-template-columns:1fr 1fr}.flow-arrow{display:none}}@media(max-width:600px){.reasoning-flow{grid-template-columns:1fr}.flow-step{padding:12px}}'''
+              c = c.replace('.reasoning-smart-panel{', inject + '.reasoning-smart-panel{', 1)
+          css.write_text(c, encoding='utf-8')
+
+      - name: Commit upgraded reasoning
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/ReasoningHub.jsx src/reasoning-section.css
+          git commit -m "fix: reasoning-v2-upgraded UI content questions"
+          git push
