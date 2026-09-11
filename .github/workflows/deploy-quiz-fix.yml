@@ -1,0 +1,104 @@
+name: Deploy quiz answer-review fix
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-quiz-fix
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch quiz behavior
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('src/ReasoningLabV2.jsx')
+          s = p.read_text(encoding='utf-8')
+
+          # Fix the timer initializer so it does not reference timedSeconds before declaration.
+          s = s.replace(
+              "const[chapterId,setChapterId]=useState(chapterInitial);const[mode,setMode]=useState(modeInitial);const[session,setSession]=useState(null);const[answers,setAnswers]=useState({});const[score,setScore]=useState(0);const[completed,setCompleted]=useState(false);const[testStarted,setTestStarted]=useState(false);const[timeLeft,setTimeLeft]=useState(timedSeconds(modeInitial,20));",
+              "const[chapterId,setChapterId]=useState(chapterInitial);const[mode,setMode]=useState(modeInitial);const[session,setSession]=useState(null);const[answers,setAnswers]=useState({});const[score,setScore]=useState(0);const[completed,setCompleted]=useState(false);const[testStarted,setTestStarted]=useState(false);const[timeLeft,setTimeLeft]=useState(TIMER_CONFIG.practice.minutes*60);",
+              1,
+          )
+
+          # Never reveal correctness/explanation while answering.
+          old_feedback = "{mode!=='test'&&answers[i]&&<div style={{marginTop:12,padding:'10px 12px',borderRadius:12,background:'#f7fafc'}}><b>{answers[i].correct?'✓ Correct':'✕ Review'}</b><div style={{marginTop:4}}>{q.explanation}</div></div>}"
+          new_feedback = "{answers[i]&&<div style={{marginTop:12,padding:'10px 12px',borderRadius:12,background:'#f7fafc'}}><b>✓ Answer recorded</b><div style={{marginTop:4}}>सही उत्तर, अंक और explanation results के अंत में दिखेंगे।</div></div>}"
+          if old_feedback in s:
+              s = s.replace(old_feedback, new_feedback, 1)
+
+          # Add a full answer review to the final Reasoning result.
+          marker = "<button type=\"button\" onClick={()=>begin(mode==='test'?'test':mode)}>Retake →</button>"
+          review = "<section className=\"answer-key\" style={{marginTop:20}}><h3>📋 Answer Review</h3>{session.map((q,i)=>{const picked=answers[i];const ok=Boolean(picked&&picked.correct);return <article key={`${q.question}-${i}`} className=\"answer-key-item\" style={{textAlign:'left',marginTop:10}}><strong>Q{i+1}</strong><div style={{marginTop:5}}>{q.question}</div><div style={{marginTop:5}}>Your answer: {picked?picked.text:'—'} {picked?(ok?'✓':'✗'):''}</div><div style={{marginTop:4}}>Correct answer: {q.correct}</div>{q.explanation&&<p style={{marginTop:5}}>💡 {q.explanation}</p>}</article>})}</section>" + marker
+          if "<h3>📋 Answer Review</h3>" not in s and marker in s:
+              s = s.replace(marker, review, 1)
+
+          # Make the Practice/Challenge rules explicitly end-only.
+          s = s.replace("<p>{mode==='practice'?'20 questions • answers and explanations at the end.':'20 higher-difficulty questions with mixed patterns.'}</p>", "<p>{mode==='practice'?'20 questions • 15 minutes • answers and marks at the end.':'20 higher-difficulty questions • 20 minutes • answers and marks at the end.'}</p>", 1)
+
+          p.write_text(s, encoding='utf-8')
+          print('REASONING_FINAL_REVIEW_PATCH_OK')
+          PY
+
+      - name: Validate
+        run: |
+          npm install --legacy-peer-deps
+          npm run build
+          git diff --check
+
+      - name: Commit source fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/ReasoningLabV2.jsx
+          if git diff --cached --quiet; then
+            echo "No source changes to commit."
+          else
+            git commit -m "feat: show reasoning answers and marks only at end"
+            git push
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Write build version
+        run: echo '{"version":"'"$GITHUB_SHA"'"}' > public-build-version.json
+
+      - name: Prepare build version for dist
+        shell: bash
+        run: |
+          npm run build
+          echo '{"version":"'"$GITHUB_SHA"'"}' > dist/build-version.json
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
