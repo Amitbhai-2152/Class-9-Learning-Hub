@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+# Ensures the repaired premium reasoning bundle reaches Pages after generated commits.
 jobs:
   repair:
     runs-on: ubuntu-latest
