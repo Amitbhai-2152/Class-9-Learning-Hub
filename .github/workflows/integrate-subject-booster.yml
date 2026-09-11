@@ -1,0 +1,55 @@
+name: Integrate Subject Booster
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  integrate:
+    if: github.event.head_commit.message != 'chore: integrate subject booster routing'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Patch AppWithChapter5 and StudyEngine
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('src/AppWithChapter5.jsx')
+          s=p.read_text(encoding='utf-8')
+          imp="import SubjectBoosterTest from './SubjectBoosterTest.jsx';\n"
+          if imp not in s:
+              s=s.replace("import{EnglishReaderChapter8}from'./english/EnglishReaderChapter8.jsx';\n", "import{EnglishReaderChapter8}from'./english/EnglishReaderChapter8.jsx';\n"+imp)
+          needle="const reasoningParams=typeof window!=='undefined'?new URLSearchParams(window.location.search):null;"
+          patch="""const pageParams=typeof window!=='undefined'?new URLSearchParams(window.location.search):null;\nif(pageParams?.get('booster')==='1'&&pageParams?.get('subject')){const boosterSubject=pageParams.get('subject');const boosterExit=()=>{const next=new URLSearchParams();next.set('page','subject');next.set('subject',boosterSubject);window.history.pushState({},'',`${window.location.pathname}?${next}${window.location.hash||''}`);window.dispatchEvent(new PopStateEvent('popstate'))};const boosterNames={math:'गणित',science:'विज्ञान',sst:'सामाजिक विज्ञान',hindi:'हिन्दी',sanskrit:'संस्कृत',english:'अंग्रेज़ी',reasoning:'तर्कशक्ति'};return <SubjectBoosterTest subjectId={boosterSubject} onBack={boosterExit} addXp={addXp} finishSession={finishSession}/>};\nconst reasoningParams=typeof window!=='undefined'?new URLSearchParams(window.location.search):null;"""
+          if needle in s and "pageParams?.get('booster')==='1'" not in s:
+              s=s.replace(needle,patch)
+          button="""const boosterSubjectButton=pageParams?.get('page')==='subject'&&pageParams?.get('subject')?(()=>{const id=pageParams.get('subject');const names={math:'गणित',science:'विज्ञान',sst:'सामाजिक विज्ञान',hindi:'हिन्दी',sanskrit:'संस्कृत',english:'अंग्रेज़ी',reasoning:'तर्कशक्ति'};const launch=()=>{const next=new URLSearchParams(pageParams);next.set('page','subject');next.set('booster','1');window.history.pushState({},'',`${window.location.pathname}?${next}${window.location.hash||''}`);window.dispatchEvent(new PopStateEvent('popstate'))};return <button type=\"button\" onClick={launch} aria-label=\"Subject Booster Test\" style={{position:'fixed',right:20,bottom:20,zIndex:1200,border:0,borderRadius:16,padding:'13px 18px',fontWeight:800,cursor:'pointer',boxShadow:'0 12px 28px rgba(0,0,0,.18)'}}>🚀 {names[id]||'विषय'} Booster Test</button>})():null;\n"""
+          marker="const props={onBack:back,addXp,finishSession};"
+          if marker in s and 'const boosterSubjectButton=' not in s:
+              s=s.replace(marker,marker+button)
+          s=s.replace("return <ReasoningHub initialChapter={initialChapter} initialMode={initialMode} onExit={reasoningExit} addXp={addXp} finishSession={finishSession}/>};", "return <><ReasoningHub initialChapter={initialChapter} initialMode={initialMode} onExit={reasoningExit} addXp={addXp} finishSession={finishSession}/>{boosterSubjectButton}</>};")
+          s=s.replace("return <App/>}", "return <>{boosterSubjectButton}<App/></>}")
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('src/StudyEngine.jsx')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('const TEST_SECONDS=600;','const TEST_SECONDS=15*60;')
+          s=s.replace("{isTest?'🎯 समयबद्ध测试'", "{isTest?'🎯 समयबद्ध टेस्ट'")
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Verify
+        run: |
+          grep -q "SubjectBoosterTest" src/AppWithChapter5.jsx
+          grep -q "15\*60" src/StudyEngine.jsx
+          npm install --legacy-peer-deps
+          npm run build
+      - name: Commit integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/AppWithChapter5.jsx src/StudyEngine.jsx
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: integrate subject booster routing"
+          git push
