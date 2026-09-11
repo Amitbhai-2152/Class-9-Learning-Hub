@@ -1,0 +1,45 @@
+name: Fix Reasoning V2 parser once
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: github.actor == 'Amitbhai-2152'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace parser-sensitive Reasoning V2 state block
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path('src/ReasoningLabV2.jsx')
+          s = p.read_text(encoding='utf-8')
+          pattern = r" const begin=\(nextMode\)=>.*?\n const mm="
+          replacement = """ const begin=(nextMode)=>{\n  setMode(nextMode);\n  setAnswers({});\n  setScore(0);\n  setCompleted(false);\n  if(nextMode==='test'){\n   setSession(prepare(bank,25));\n   setTimeLeft(15*60);\n   setTestStarted(false);\n  }else{\n   setSession(prepare(bank,counts[nextMode]));\n   setTestStarted(true);\n  }\n };\n const startTest=()=>{\n  setAnswers({});\n  setScore(0);\n  setCompleted(false);\n  setSession(prepare(bank,25));\n  setTimeLeft(15*60);\n  setTestStarted(true);\n };\n const finish=(timedOut=false)=>{\n  if(!session)return;\n  const correct=session.reduce((n,q,i)=>n+(answers[i] && answers[i].correct ? 1 : 0),0);\n  setScore(correct);\n  setCompleted(true);\n  finishSession({subject:'reasoning',chapter:active.id,mode,correct,total:session.length,timedOut,at:new Date().toISOString()});\n  addXp(correct);\n  setTestStarted(false);\n };\n useEffect(()=>{\n  if(mode!=='test'||!testStarted||!session)return;\n  const id=setInterval(()=>{\n   setTimeLeft(t=>{\n    if(t<=1){\n     clearInterval(id);\n     finish(true);\n     return 0;\n    }\n    return t-1;\n   });\n  },1000);\n  return()=>clearInterval(id);\n },[mode,testStarted,session]);\n useEffect(()=>{\n  setSession(null);\n  setTestStarted(false);\n  setAnswers({});\n  setScore(0);\n  setCompleted(false);\n },[chapterId]);\n const mm="""
+          out, n = re.subn(pattern, replacement, s, count=1, flags=re.S)
+          if n != 1:
+              raise SystemExit(f'Expected one state block, found {n}')
+          p.write_text(out, encoding='utf-8')
+          print('patched', n)
+          PY
+
+      - name: Verify Reasoning V2 source and production build
+        run: |
+          npm install --legacy-peer-deps
+          npm run build
+
+      - name: Commit fix
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/ReasoningLabV2.jsx
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix: repair Reasoning V2 parser block'
+          git push
