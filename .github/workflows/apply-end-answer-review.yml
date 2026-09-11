@@ -9,7 +9,6 @@ permissions:
 
 jobs:
   patch:
-    if: ${{ !contains(github.event.head_commit.message, 'end-only answer review fix') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,7 +26,6 @@ jobs:
                   raise SystemExit(f'Missing expected pattern for {label}')
               return text.replace(old, new, 1)
 
-          # ---------------- StudyEngine ----------------
           p = Path('src/StudyEngine.jsx')
           s = p.read_text()
           s = replace_once(s, "const TEST_SECONDS=15*60;\n", "const TEST_SECONDS=15*60;\nconst TIMER_PER_QUESTION={practice:45,challenge:60,test:60};\nconst timerSeconds=(mode,count)=>Math.max(1,(count||1)*TIMER_PER_QUESTION[mode]);\n", 'StudyEngine timer constants')
@@ -43,7 +41,6 @@ jobs:
           s = replace_once(s, marker, review, 'StudyEngine final answer key')
           p.write_text(s)
 
-          # ---------------- ReasoningLabV2 ----------------
           p = Path('src/ReasoningLabV2.jsx')
           r = p.read_text()
           r = replace_once(r, "const wrap26=n=>", "const TIMER_CONFIG={practice:{minutes:15,perQuestion:45},challenge:{minutes:20,perQuestion:60},test:{minutes:30,perQuestion:60}};\nconst wrap26=n=>", 'Reasoning timer config')
@@ -57,12 +54,10 @@ jobs:
           r = r.replace("20 questions with instant explanation.", "20 questions • answers and explanations at the end.")
           r = re.sub(r"\{\(mode==='practice'\|\|mode==='challenge'\)\&\&answers\[i\]\&\&<div className=\"answer-feedback[\s\S]*?</div>\}\n?", "{(mode==='practice'||mode==='challenge')&&answers[i]&&<div className=\"answer-feedback\"><b>✓ Answer recorded</b><div>सही उत्तर और explanation results में दिखेंगे।</div></div>}\n", r, count=1)
           r = r.replace("{mode==='test'&&<div className=", "{testStarted&&<div className=")
-          # Add end-of-quiz answer review just before the existing retake controls in completed result.
           anchor = "<button className=\"primary-btn pressable\""
           if "<h3>📋 Answer Review</h3>" not in r:
               r = r.replace(anchor, "<section className=\"answer-key\"><h3>📋 Answer Review</h3>{session.map((q,i)=>{const picked=answers[i];const ok=picked===q.correct;return <article key={i} className=\"answer-key-item\"><strong>Q{i+1}</strong><div>{q.question}</div><div>Your answer: {picked===undefined?'—':String(picked)}</div><div>Correct answer: {q.correct}</div>{q.explanation&&<p>💡 {q.explanation}</p>}</article>})}</section>{anchor}", 1)
           p.write_text(r)
-
           print('Quiz engine patch applied.')
           PY
 
@@ -76,7 +71,7 @@ jobs:
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+actions@users.noreply.github.com"
           git rm -f .github/workflows/apply-end-answer-review.yml
           git add src/StudyEngine.jsx src/ReasoningLabV2.jsx
           git commit -m "feat: answers and marks shown only at the end"
