@@ -34,10 +34,10 @@ function touchTopic({subjectRecord,topic,stage,at,attempts=0,correct=0,quiz=null
 }
 export function recordCanonicalStage({subject,chapter,stage,attempts=0,correct=0,at=null}={}){if(!STAGES.includes(stage))return null;const resolved=resolveCanonicalTopic(subject,chapter);if(!resolved)return null;return touchTopic({...resolved,stage,at,attempts,correct});}
 export function recordCanonicalQuizAttempt({subject,chapter,stage,attemptId,questionsAnswered=0,questionsTotal=0,correctAnswers=0,percent=0,at=null}={}){if(!STAGES.includes(stage)||!attemptId)return null;const resolved=resolveCanonicalTopic(subject,chapter);if(!resolved)return null;return touchTopic({...resolved,stage,at,attempts:1,correct:correctAnswers,quiz:{attemptId,questionsAnswered,questionsTotal,correctAnswers,percent,at}});}
-function sessionIdentity(session,index,source){
+function sessionIdentity(session){
  const explicit=session?.attemptId||session?.id||session?.sessionId;
  if(explicit)return String(explicit);
- return [source,index,session?.at??'',session?.subject??'',session?.chapter??'',session?.mode??'',session?.score??session?.correct??'',session?.total??'',session?.percent??'',session?.attempted??''].join('|');
+ return [session?.at??'',session?.subject??'',session?.chapter??'',session?.mode??'',session?.score??session?.correct??'',session?.total??'',session?.percent??'',session?.attempted??''].join('|');
 }
 function readLegacy(key,fallback){try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):fallback}catch{return fallback;}}
 function migrateLegacyProgress(){
@@ -50,12 +50,14 @@ function migrateLegacyProgress(){
   STAGES.forEach(stage=>{if(row[stage])recordCanonicalStage({subject,chapter,stage,attempts:safeNumber(row.attempts),correct:safeNumber(row.correct),at:row.lastActivityAt||new Date().toISOString()});});
  });
  const sessions=[];
- const app=readLegacy(APP_KEY,{});if(Array.isArray(app?.sessions))sessions.push(['app',app.sessions]);
- const engine=readLegacy('class9-sessions',[]);if(Array.isArray(engine))sessions.push(['engine',engine]);
- sessions.forEach(([source,items])=>items.forEach((session,index)=>{
+ const app=readLegacy(APP_KEY,{});if(Array.isArray(app?.sessions))sessions.push(app.sessions);
+ const engine=readLegacy('class9-sessions',[]);if(Array.isArray(engine))sessions.push(engine);
+ const seen=new Set();
+ sessions.forEach(items=>items.forEach(session=>{
   if(!session?.completed)return;const stage=STAGES.includes(session.mode)?session.mode:null;if(!stage||!session.subject||session.chapter==null)return;
+  const attemptId=sessionIdentity(session);if(seen.has(attemptId))return;seen.add(attemptId);
   const correctAnswers=safeNumber(session.correct??session.score);const questionsTotal=Math.max(safeNumber(session.total),correctAnswers);const questionsAnswered=Math.max(0,Math.min(questionsTotal,safeNumber(session.attempted??session.total)));const percent=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):safePercent(session.percent);
-  recordCanonicalQuizAttempt({subject:session.subject,chapter:session.chapter,stage,attemptId:sessionIdentity(session,index,source),questionsAnswered,questionsTotal,correctAnswers,percent,at:session.at?new Date(session.at).toISOString():new Date().toISOString()});
+  recordCanonicalQuizAttempt({subject:session.subject,chapter:session.chapter,stage,attemptId,questionsAnswered,questionsTotal,correctAnswers,percent,at:session.at?new Date(session.at).toISOString():new Date().toISOString()});
  }));
  const hindi=safeObject(readLegacy('class9-hindi-chapter-progress-v1',{}));
  Object.entries(safeObject(hindi.modes)).forEach(([id,modes])=>Object.entries(safeObject(modes)).forEach(([stage,done])=>{if(done)recordCanonicalStage({subject:'हिन्दी',chapter:id,stage,at:new Date().toISOString()});}));
