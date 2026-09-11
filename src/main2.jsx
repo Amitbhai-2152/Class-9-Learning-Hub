@@ -22,6 +22,7 @@ import './home-premium.css';
 import './science-navigation.css';
 import './science-learn-navigator-fix.css';
 import './sst/sst-section.css';
+import './subject-progress-ui.js';
 
 const APP_BUILD_VERSION=import.meta.env.VITE_BUILD_VERSION||'';
 const BASE_URL=import.meta.env.BASE_URL||'/';
