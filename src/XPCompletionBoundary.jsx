@@ -5,15 +5,19 @@ import {recordActivityAndRewards} from './engines/xp/xpRewards.js';
 
 const STAGES=new Set(['learn','practice','challenge','test']);
 const textOf=node=>String(node?.textContent||'').replace(/\s+/g,' ').trim();
+const hash=raw=>{let h=2166136261;for(let i=0;i<raw.length;i++){h^=raw.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16)};
 const resolveContext=()=>{
  if(typeof window==='undefined')return null;
  const params=new URLSearchParams(window.location.search);
- const page=params.get('page');
- const stage=params.get('mode');
+ const page=params.get('page')||'';
+ const stageCandidate=params.get('mode')||params.get('reasoningMode')||'';
+ const stage=STAGES.has(stageCandidate)?stageCandidate:null;
  const subjectId=String(params.get('subject')||'').trim();
- const chapterIndex=String(params.get('chapter')||'').trim();
- if(page!=='chapter'||!STAGES.has(stage)||!subjectId||!/^\d+$/.test(chapterIndex))return null;
- return {stage,subjectId,chapterIndex,activityId:`hub:${subjectId}:chapter:${chapterIndex}:stage:${stage}`,topicId:`chapter:${chapterIndex}`};
+ if(!stage||!subjectId||page==='cbt'||page==='meter'||page==='home'||page==='classes'||page==='subject')return null;
+ const contextEntries=[...params.entries()].filter(([k])=>k!=='page'&&k!=='mode'&&k!=='reasoningMode').sort(([a],[b])=>a.localeCompare(b));
+ const context=contextEntries.map(([k,v])=>`${k}=${v}`).join('&');
+ const contextHash=hash(context||subjectId);
+ return {stage,subjectId,activityId:`hub:${subjectId}:context:${contextHash}:stage:${stage}`,topicId:`context:${contextHash}`};
 };
 const scoreFromRoot=root=>{
  const raw=textOf(root?.querySelector('.result-score'));
