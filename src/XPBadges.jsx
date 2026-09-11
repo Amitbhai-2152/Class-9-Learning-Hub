@@ -46,11 +46,8 @@ export function XPBadgeSection({xp=0}){
  </section>;
 }
 
-export function XPAchievementOverlay(){
- const[achievement,setAchievement]=useState(null);
+export function DailyExamPlanMount(){
  const[dailyPlanTarget,setDailyPlanTarget]=useState(null);
- const previousXp=useRef(getXPState().totalXp);
- const timer=useRef(null);
  useEffect(()=>{
   const findDailyPlanTarget=()=>{
    const dashboard=document.querySelector('.dashboard');
@@ -70,6 +67,13 @@ export function XPAchievementOverlay(){
   observer.observe(document.body,{childList:true,subtree:true});
   return()=>{observer.disconnect();setDailyPlanTarget(null)};
  },[]);
+ return dailyPlanTarget?createPortal(<DailyExamPlan/>,dailyPlanTarget):null;
+}
+
+export function XPAchievementOverlay(){
+ const[achievement,setAchievement]=useState(null);
+ const previousXp=useRef(getXPState().totalXp);
+ const timer=useRef(null);
  useEffect(()=>{
   const onXp=event=>{
    const before=previousXp.current;
@@ -91,15 +95,12 @@ export function XPAchievementOverlay(){
   window.addEventListener('class9-xp-updated',onXp);
   return()=>{window.removeEventListener('class9-xp-updated',onXp);if(timer.current)window.clearTimeout(timer.current)};
  },[]);
- return <>
-  {dailyPlanTarget&&createPortal(<DailyExamPlan/>,dailyPlanTarget)}
-  {achievement&&<div className="xp-achievement-layer" aria-live="polite"><div className="xp-achievement-card">
+ return achievement&&<div className="xp-achievement-layer" aria-live="polite"><div className="xp-achievement-card">
    <div className="xp-achievement-sparkles" aria-hidden="true">✦ ✧ ✦</div>
    <div className="xp-achievement-medal">{achievement.icon}</div>
    <div className="xp-achievement-kicker">BADGE UNLOCKED</div>
    <h2>{achievement.name}</h2>
    <p>{achievement.label} पूरा हुआ · कुल {formatXP(achievement.displayXp)} XP</p>
    <span>🎉 शानदार उपलब्धि!</span>
-  </div></div>}
- </>;
+  </div></div>;
 }
