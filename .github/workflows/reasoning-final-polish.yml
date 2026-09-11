@@ -36,7 +36,7 @@ jobs:
           """
 
           start=text.index("'direction-blood':[")
-          end=text.index("\n]\n};",start)
+          end=text.index("\n]};",start)
           section=text[start:end]
           if "रवि पूर्व की ओर 10 m" not in section:
               text=text[:end]+",\n"+direction_extra.strip()+text[end:]
