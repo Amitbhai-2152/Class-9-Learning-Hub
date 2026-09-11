@@ -1,0 +1,24 @@
+name: Debug Reasoning Current
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect current V2 around build error
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('src/ReasoningLabV2.jsx').read_text(encoding='utf-8')
+          pos=14344
+          print('LENGTH', len(s))
+          print('LINE', s.count(chr(10),0,pos)+1)
+          print('WINDOW', repr(s[pos-220:pos+300]))
+          print('CHARS')
+          for i,ch in enumerate(s[pos-30:pos+40],pos-30): print(i,repr(ch))
+          PY
