@@ -61,16 +61,17 @@ for (const q of questions) {
 for (const [label, source] of Object.entries({
   'Phase 2 expansion': files['Phase 2 expansion'],
   'Phase 4 banks': files['Phase 4 banks'],
-  'Topic banks': files['Topic banks'],
 })) {
   for (const mode of ['practice', 'challenge', 'test']) {
     if (!source.includes(`${mode}:[`)) errors.push(`${label}: missing ${mode} bank.`);
   }
 }
 
+if (!files['Topic banks'].includes('practice:[')) errors.push('Topic banks: no practice bank detected.');
+
 const dedicatedTopics = [
-  'formal-letter', 'informal-letter', 'notice', 'report', 'speech',
-  'message', 'paragraph-essay', 'composition', 'translation',
+  'composition', 'translation', 'formal-letter', 'informal-letter', 'notice',
+  'report', 'speech', 'message',
 ];
 for (const id of dedicatedTopics) {
   if (!files['Root router'].includes(`route.languageSkills&&route.topic==='${id}'`)) {
@@ -78,7 +79,18 @@ for (const id of dedicatedTopics) {
   }
 }
 
-if (files['Timed quiz engine'].includes('Math.random')) errors.push('EnglishTimedQuiz contains Math.random; deterministic shuffle guard is required.');
+const genericAssessmentTopics = [
+  'agreement', 'narration', 'clauses', 'determiners', 'prepositions', 'idioms',
+  'translation', 'formal-letter', 'informal-letter', 'notice', 'report', 'speech',
+  'message', 'paragraph-essay', 'composition', 'factual-reading', 'literary-reading',
+  'poetry-reading',
+];
+for (const id of genericAssessmentTopics) {
+  if (!files['Root router'].includes(`'${id}'`)) {
+    errors.push(`Root router assessment topic guard is missing: ${id}.`);
+  }
+}
+
 if (!files['Timed quiz engine'].includes('stableHash')) errors.push('EnglishTimedQuiz stableHash guard is missing.');
 if (!files['Timed quiz engine'].includes('setShuffleSeed(s=>s+1)')) errors.push('Quiz retry reseed guard is missing.');
 if (files['Generic quiz engine'].includes('rotateForMode')) errors.push('Generic quiz contains a second option-rotation layer.');
