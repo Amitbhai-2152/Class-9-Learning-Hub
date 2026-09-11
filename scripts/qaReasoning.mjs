@@ -14,7 +14,11 @@ for(const id of ids){
 if(!router.includes("import ReasoningHub from'./ReasoningLabV2.jsx'")) throw new Error('Canonical Reasoning import is missing from router.');
 if(!router.includes("get('subject')==='reasoning'")) throw new Error('Reasoning route guard is missing.');
 if(!v2.includes("const banks={'number-series':numberBank,'alphabet-series':alphabetBank,'analogy':analogyBank,'classification':classificationBank,'coding-decoding':codingBank,'direction-blood':directionBank};")) throw new Error('Reasoning bank registry is invalid.');
-if(!v2.includes("const prepare=(bank,count,mode='practice')=>")) throw new Error('Mode-aware quiz preparation is missing.');
+if(!v2.includes("import{recordCanonicalStage}from'./engines/progress/progressStore';")) throw new Error('Canonical progress writer import is missing from Reasoning.');
+if(!v2.includes("const at=new Date().toISOString();setScore(correct);setCompleted(true);finishSession({subject:'reasoning'")) throw new Error('Reasoning result completion handler is missing.');
+if(!v2.includes("recordCanonicalStage({subject:'तर्कशक्ति',chapter:active.id,stage:mode,attempts:1,correct,at});")) throw new Error('Practice/Challenge/Test canonical completion write is missing.');
+if(!v2.includes("const completeLearn=()=>{recordCanonicalStage({subject:'तर्कशक्ति',chapter:active.id,stage:'learn'")) throw new Error('Reasoning Learn canonical completion write is missing.');
+if(!v2.includes('const prepare=(bank,count,mode=\'practice\')=>')) throw new Error('Mode-aware quiz preparation is missing.');
 if(!v2.includes('shuffle(q.options.map')) throw new Error('Randomized options are missing.');
 if(!v2.includes('practice:{minutes:15,perQuestion:45}')) throw new Error('Practice timer is missing.');
 if(!v2.includes('challenge:{minutes:20,perQuestion:60}')) throw new Error('Challenge timer is missing.');
@@ -23,18 +27,12 @@ if(!v2.includes("prepare(bank,30,'test')")) throw new Error('30-question final t
 if(!v2.includes('setCompleted(true)')) throw new Error('Test result completion state is missing.');
 if(!css.includes('.rlab-tabs')||!css.includes('.countdown')) throw new Error('Reasoning V2 styles are incomplete.');
 
-const retired=[
-  'ReasoningSection.jsx',
-  'reasoning-section.css'
-];
+const retired=['ReasoningSection.jsx','reasoning-section.css'];
 for(const name of retired){
   if(fs.existsSync(path.join(root,'src',name))) throw new Error(`Retired duplicate Reasoning file still exists: ${name}`);
 }
-for(const file of [
-  path.join(root,'reasoning-visible-upgrade.js'),
-  path.join(root,'public','reasoning-visible-upgrade.js')
-]){
+for(const file of [path.join(root,'reasoning-visible-upgrade.js'),path.join(root,'public','reasoning-visible-upgrade.js')]){
   if(fs.existsSync(file)) throw new Error(`Retired Reasoning DOM patch still exists: ${path.relative(root,file)}`);
 }
 
-console.log('Canonical Reasoning V2 QA passed.');
+console.log('Canonical Reasoning V2 QA passed: content, routing, quiz architecture, and canonical progress stage writes verified.');
