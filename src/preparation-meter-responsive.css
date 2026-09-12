@@ -1,0 +1,59 @@
+/* Preparation Meter responsive layer. The page keeps its existing inline design tokens; this layer only changes layout at smaller widths. */
+.preparation-meter-page{overflow-x:hidden}
+.preparation-meter-content{box-sizing:border-box;width:100%}
+.preparation-meter-hero-card{min-width:0}
+.preparation-meter-hero-copy{min-width:0}
+.preparation-meter-grid{min-width:0}
+.preparation-meter-card,.preparation-meter-action{min-width:0}
+.preparation-meter-action-title,.preparation-meter-action-body{overflow-wrap:anywhere;word-break:break-word}
+.preparation-meter-stat-grid{min-width:0}
+.preparation-meter-stat-grid>div{min-width:0}
+
+@media(max-width:900px){
+ .preparation-meter-content{padding-left:18px!important;padding-right:18px!important}
+ .preparation-meter-hero-card{grid-template-columns:150px minmax(0,1fr)!important;gap:20px!important;padding:22px!important}
+ .preparation-meter-grid{grid-template-columns:minmax(0,1fr)!important}
+ .preparation-meter-action{order:2}
+ .preparation-meter-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+@media(max-width:640px){
+ .preparation-meter-hero{padding:18px 16px 28px!important}
+ .preparation-meter-back{margin-bottom:17px!important}
+ .preparation-meter-hero .preparation-meter-hero-copy{width:100%}
+ .preparation-meter-content{padding:20px 14px 48px!important}
+ .preparation-meter-hero-card{grid-template-columns:1fr!important;text-align:center;padding:18px!important;border-radius:20px!important;gap:16px!important}
+ .preparation-meter-hero-card .ringWrap{margin:0 auto}
+ .preparation-meter-hero-card .preparation-meter-hero-copy{display:flex;flex-direction:column;align-items:center}
+ .preparation-meter-hero-card .preparation-meter-hero-copy p{max-width:100%}
+ .preparation-meter-hero-card .preparation-meter-hero-copy .pills{justify-content:center}
+ .preparation-meter-grid{gap:14px!important;margin-top:14px!important}
+ .preparation-meter-card,.preparation-meter-action{padding:17px!important;border-radius:18px!important}
+ .preparation-meter-cardTitle{font-size:1.08rem}
+ .preparation-meter-card .cardHead{gap:10px!important;margin-bottom:14px!important}
+ .preparation-meter-card .live{flex:0 0 auto}
+ .preparation-meter-card .rowTop{font-size:.84rem!important}
+ .preparation-meter-card .meta{font-size:.61rem!important;flex-wrap:wrap}
+ .preparation-meter-card .subjectRow{align-items:flex-start}
+ .preparation-meter-card .subjectIcon{width:38px!important;height:38px!important;border-radius:11px!important}
+ .preparation-meter-action-title{font-size:1.08rem!important}
+ .preparation-meter-action-body{font-size:.78rem!important}
+ .preparation-meter-action .weakRow{font-size:.8rem!important;grid-template-columns:25px minmax(0,1fr) auto!important}
+ .preparation-meter-stat-grid{grid-template-columns:1fr!important;gap:9px!important;margin-top:14px!important}
+ .preparation-meter-stat-grid>div{padding:13px!important}
+}
+
+@media(max-width:400px){
+ .preparation-meter-content{padding-left:10px!important;padding-right:10px!important}
+ .preparation-meter-hero{padding-left:12px!important;padding-right:12px!important}
+ .preparation-meter-hero h1{font-size:2rem!important}
+ .preparation-meter-hero-card{padding:15px!important}
+ .preparation-meter-card,.preparation-meter-action{padding:14px!important}
+ .preparation-meter-card .meta span{width:100%}
+ .preparation-meter-hero-card .pills{gap:6px!important}
+ .preparation-meter-hero-card .pills span{font-size:.7rem!important;padding:7px 9px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+ .preparation-meter-page *{scroll-behavior:auto!important}
+}
