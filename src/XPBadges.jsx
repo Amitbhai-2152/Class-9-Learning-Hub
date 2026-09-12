@@ -104,3 +104,38 @@ export function XPAchievementOverlay(){
    <span>🎉 शानदार उपलब्धि!</span>
   </div></div>;
 }
+
+export function ChapterCompletionOverlay(){
+ const[completion,setCompletion]=useState(null);
+ const timer=useRef(null);
+ useEffect(()=>{
+  const onCompletion=event=>{
+   const detail=event?.detail||{};
+   if(String(detail.stage||'')!=='test')return;
+   const topicId=String(detail.topicId||'').trim();
+   const subjectId=String(detail.subjectId||'').trim();
+   if(!topicId||!subjectId)return;
+   const result=detail.result||{};
+   const xp=Math.max(0,Number(detail.awarded)||0);
+   setCompletion({subjectId,topicId,xp,score:Number(result.scorePercent)||0});
+   if(timer.current)window.clearTimeout(timer.current);
+   timer.current=window.setTimeout(()=>setCompletion(null),3600);
+  };
+  window.addEventListener('class9-xp-completion',onCompletion);
+  return()=>{window.removeEventListener('class9-xp-completion',onCompletion);if(timer.current)window.clearTimeout(timer.current)};
+ },[]);
+ if(!completion)return null;
+ return <div className="chapter-completion-layer" role="status" aria-live="polite">
+  <div className="chapter-confetti" aria-hidden="true">✦ • ✧ • ✦ • ✧ • ✦</div>
+  <div className="chapter-completion-card">
+   <div className="chapter-completion-ring"><span>✓</span></div>
+   <div className="chapter-completion-kicker">CHAPTER COMPLETED</div>
+   <h2>अध्याय पूरा हो गया! 🎉</h2>
+   <p>बहुत बढ़िया! आपका chapter completion दर्ज हो गया है।</p>
+   <div className="chapter-completion-stats">
+    <span><strong>{formatXP(completion.xp)}</strong> XP earned</span>
+    {completion.score>0&&<span><strong>{Math.round(completion.score)}%</strong> test score</span>}
+   </div>
+  </div>
+ </div>;
+}
