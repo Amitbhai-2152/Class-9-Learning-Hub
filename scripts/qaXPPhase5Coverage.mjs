@@ -18,15 +18,15 @@ const counts=Object.fromEntries(blocks.map(match=>[match[1],(match[2].match(/\bt
 assert.deepEqual(counts,expected);
 assert.equal(Object.values(counts).reduce((a,b)=>a+b,0),174);
 
-for(const stage of ['learn','practice','challenge','test'])assert.match(boundary,new RegExp(`['"]${stage}['"]`));
+for(const stage of ['learn','practice','challenge','test'])assert.match(boundary,new RegExp(`['\"]${stage}['\"]`));
 assert.match(boundary,/class9-progress-updated/);
 assert.match(boundary,/\.etq-result-card/);
-assert.match(boundary,/\[class\*="result-card"\]/);
+assert.match(boundary,/\[class\*=\"result-card\"\]/);
 assert.match(boundary,/routeKey/);
 assert.match(boundary,/event=>/);
 assert.match(boundary,/detail\.subjectId/);
 assert.match(boundary,/detail\.topicId/);
-assert.match(timedQuiz,/className="etq-result-card"/);
+assert.match(timedQuiz,/className=\"etq-result-card\"/);
 assert.match(timedQuiz,/setSubmitted\(true\)/);
 assert.match(appWithChapter5,/const addXp=\(\)=>\{\};/);
 assert.match(appWithChapter5,/reasoning/);
@@ -38,10 +38,11 @@ assert.match(progress,/detail:\{subjectId:subjectRecord\.id,topicId:topic\.id,st
 assert.match(sstRoot,/recordCanonicalStage/,'SST must bridge local chapter completion into canonical progress');
 assert.match(sstRoot,/sst-progress-updated/,'SST XP bridge must observe SST completion events');
 assert.match(sstRoot,/topicIdFor/,'SST must map every track/chapter to canonical topic ids');
-assert.match(sstRoot,/sst-h\$\{chapter\}/);
-assert.match(sstRoot,/sst-g\$\{chapter\}/);
-assert.match(sstRoot,/sst-c\$\{chapter\}/);
-assert.match(sstRoot,/sst-e\$\{chapter\}/);
+assert.match(sstRoot,/history:'h'/,'SST history track must map to canonical h topic ids');
+assert.match(sstRoot,/geography:'g'/,'SST geography track must map to canonical g topic ids');
+assert.match(sstRoot,/civics:'c'/,'SST civics track must map to canonical c topic ids');
+assert.match(sstRoot,/economics:'e'/,'SST economics track must map to canonical e topic ids');
+assert.match(sstRoot,/`sst-\$\{prefix\}\$\{chapter\}`/,'SST canonical topic id must include track prefix and chapter number');
 assert.match(sstRoot,/modeFromText/);
 assert.match(sstRoot,/p\.set\('topic',topic\)/);
 assert.match(sstRoot,/p\.set\('mode',mode\)/);
