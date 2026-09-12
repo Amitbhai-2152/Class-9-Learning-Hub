@@ -73,9 +73,9 @@ export function HistoryReviewQuiz({data,mode,onComplete}){
  return <div className="history-quiz-card">
   <div className="history-quiz-top"><span>{mode==='practice'?'PRACTICE':mode==='challenge'?'CHALLENGE':'FINAL TEST'}</span><div className="history-quiz-meta"><strong>{index+1} / {questions.length}</strong><span className={`history-timer ${timerClass}`} aria-live="polite">⏱ {formatTime(timeLeft)}</span></div></div>
   <div className="history-quiz-track"><span style={{width:`${((index+1)/questions.length)*100}%`}}/></div>
-  <p className="history-timer-note">कुल समय {formatTime(totalSeconds)} • उत्तर जमा करने के बाद सही/गलत नहीं दिखाया जाएगा</p>
+  <p className="history-timer-note">कुल समय {formatTime(totalSeconds)} • सही/गलत उत्तर केवल अंत की समीक्षा में दिखेंगे</p>
   <h2>{q[0]}</h2>
-  <div className="history-options">{q[1].map((option,choice)=><button type="button" key={`${index}-${choice}-${option}`} className={selected===choice?'selected':''} aria-pressed={selected===choice} onClick={()=>setAnswers(previous=>{const next=previous.slice();next[index]=choice;return next;})}><span>{String.fromCharCode(65+choice)}</span>{option}</button>)}</div>
+  <div className="history-options">{q[1].map((option,choice)=><button type="button" key={`${index}-${choice}-${option}`} className={selected===choice?'selected':''} aria-pressed={selected===choice} disabled={answered} onClick={()=>setAnswers(previous=>{const next=previous.slice();next[index]=choice;return next;})}><span>{String.fromCharCode(65+choice)}</span>{option}</button>)}</div>
   <div className="history-quiz-footer"><small>{answered?'उत्तर सेव हो गया • समीक्षा अंत में':'एक विकल्प चुनें'}</small><button type="button" className="history-primary" disabled={!answered} onClick={()=>index<questions.length-1?setIndex(value=>value+1):finish(answers)}>{index===questions.length-1?'उत्तर जमा करें':'अगला प्रश्न →'}</button></div>
  </div>;
 }
