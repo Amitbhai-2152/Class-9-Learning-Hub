@@ -2,6 +2,7 @@ import React,{useEffect,useState} from 'react';
 import {scienceChapter3Learning} from './scienceChapter3Learning';
 import {ScienceChapter3Engine as ScienceChapter3Core} from './ScienceChapter3EngineFixed';
 import './science3-learn.css';
+import './science-mode-card-fix.css';
 
 const typeLabel={intro:'परिचय',concept:'अवधारणा',example:'उदाहरण',check:'त्वरित जाँच',compare:'तुलना'};
 
