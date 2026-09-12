@@ -1,0 +1,32 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const read=(path)=>fs.readFileSync(path,'utf8');
+const client=read('src/lib/supabaseClient.js');
+const context=read('src/auth/AuthContext.jsx');
+const page=read('src/auth/AuthPage.jsx');
+const css=read('src/auth/auth.css');
+const router=read('src/main2.jsx');
+const pkg=JSON.parse(read('package.json'));
+
+assert.equal(pkg.dependencies['@supabase/supabase-js'],'latest','Supabase JS dependency must be declared');
+assert.match(client,/VITE_SUPABASE_URL/,'Supabase URL env contract missing');
+assert.match(client,/VITE_SUPABASE_PUBLISHABLE_KEY/,'publishable key env contract missing');
+assert.doesNotMatch(client,/service_role/i,'service_role must never be shipped to the browser');
+assert.match(context,/onAuthStateChange/,'auth state listener missing');
+assert.match(context,/persistSession:true/,'session persistence must be enabled');
+assert.match(context,/autoRefreshToken:true/,'automatic token refresh must be enabled');
+assert.match(page,/signInWithPassword/,'password sign-in flow missing');
+assert.match(page,/signUp/,'signup flow missing');
+assert.match(page,/resetPasswordForEmail/,'password recovery flow missing');
+assert.match(page,/updateUser\(\{password\}/,'password update flow missing');
+assert.match(page,/PASSWORD_RECOVERY/,'password recovery event handling missing');
+assert.match(page,/emailRedirectTo/,'signup verification redirect missing');
+assert.match(page,/auth-primary-button/,'premium auth action styling hook missing');
+assert.match(css,/@keyframes authReveal/,'auth reveal animation missing');
+assert.match(css,/@keyframes authCardFloat/,'auth floating visual animation missing');
+assert.match(css,/prefers-reduced-motion/,'reduced-motion accessibility guard missing');
+assert.match(router,/page==='account'/,'account route missing');
+assert.match(router,/AuthProvider/,'AuthProvider must wrap the application');
+assert.match(router,/GlobalAuthEntry/,'global account entry missing');
+console.log('Supabase Auth UI QA passed.');
