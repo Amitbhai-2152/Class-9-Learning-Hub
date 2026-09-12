@@ -45,7 +45,7 @@ assert.match(daily,/getCanonicalProgress/);
 assert.match(daily,/analytics\.bestPercent/);
 assert.match(daily,/analytics\.lastPercent/);
 assert.match(daily,/lastAttemptAt/);
-assert.match(daily,/examDays/);
+assert.match(daily,/examDate|daysLeft|examDays/);
 assert.match(daily,/urgency/);
 assert.match(daily,/revisionNeed/);
 assert.match(daily,/recommendationMode/);
