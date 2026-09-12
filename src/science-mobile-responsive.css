@@ -1,0 +1,117 @@
+/* Shared mobile layer for all 15 Science chapters. Content and assessment logic are untouched. */
+.science-chapter-page,
+.science-chapter-page .page-content,
+.sc3-learn-page,
+main[class^="sc10-"],main[class^="sc11-"],main[class^="sc12-"],main[class^="sc13-"],main[class^="sc14-"],main[class^="sc15-"],
+.sc3-core-assessment{
+  min-width:0;
+  max-width:100%;
+  overflow-x:hidden;
+}
+.science-chapter-page *,
+.sc3-learn-page *,
+.sc3-core-assessment *,
+main[class^="sc10-"] *,main[class^="sc11-"] *,main[class^="sc12-"] *,main[class^="sc13-"] *,main[class^="sc14-"] *,main[class^="sc15-"] *{
+  box-sizing:border-box;
+  min-width:0;
+}
+.science-chapter-page img,.science-chapter-page svg,.science-chapter-page canvas,
+.sc3-learn-page img,.sc3-learn-page svg,.sc3-learn-page canvas,
+.sc3-core-assessment img,.sc3-core-assessment svg,.sc3-core-assessment canvas{
+  max-width:100%;
+  height:auto;
+}
+.science-chapter-page .page-header h1,
+.science-chapter-page .page-header p,
+.science-launch h2,.science-launch p,
+.science-launch span,
+.science-chapter-page .chapter-hero-card strong,
+.science-chapter-page .chapter-hero-card small{
+  overflow-wrap:anywhere;
+}
+.science-chapter-page .science-launch,
+.science-chapter-page .chapter-hero-card,
+.science-chapter-page .science-mode-grid,
+.science-chapter-page .mode-grid{
+  width:100%;
+  max-width:980px;
+  margin-left:auto;
+  margin-right:auto;
+  min-width:0;
+}
+.science-chapter-page .science-mode-grid .mode-card,
+.science-chapter-page .mode-grid .mode-card{
+  min-width:0;
+  max-width:100%;
+}
+.sc3-core-assessment{width:100%;max-width:100%;}
+.sc3-core-assessment button,.sc3-core-assessment input,.sc3-core-assessment select,.sc3-core-assessment textarea{max-width:100%;}
+
+/* Chapter 10–15 engines use chapter-prefixed page roots. Keep their internal grids fluid. */
+main[class^="sc10-"] section,main[class^="sc11-"] section,main[class^="sc12-"] section,
+main[class^="sc13-"] section,main[class^="sc14-"] section,main[class^="sc15-"] section,
+main[class^="sc10-"] article,main[class^="sc11-"] article,main[class^="sc12-"] article,
+main[class^="sc13-"] article,main[class^="sc14-"] article,main[class^="sc15-"] article{
+  min-width:0;
+  max-width:100%;
+}
+[class^="sc10-"] img,[class^="sc11-"] img,[class^="sc12-"] img,[class^="sc13-"] img,[class^="sc14-"] img,[class^="sc15-"] img,
+[class^="sc10-"] svg,[class^="sc11-"] svg,[class^="sc12-"] svg,[class^="sc13-"] svg,[class^="sc14-"] svg,[class^="sc15-"] svg,
+[class^="sc10-"] canvas,[class^="sc11-"] canvas,[class^="sc12-"] canvas,[class^="sc13-"] canvas,[class^="sc14-"] canvas,[class^="sc15-"] canvas{
+  max-width:100%;height:auto;
+}
+
+@media(max-width:760px){
+  .science-chapter-page .page-header{min-height:0;padding:22px 14px 30px;}
+  .science-chapter-page .page-header h1{font-size:clamp(1.9rem,8vw,3rem);line-height:1.15;}
+  .science-chapter-page .page-header p{font-size:.9rem;line-height:1.55;}
+  .science-chapter-page .page-content{padding:18px 12px 34px;}
+  .science-chapter-page .science-launch{grid-template-columns:1fr!important;gap:14px;padding:16px!important;border-radius:18px;}
+  .science-chapter-page .science-launch-art{height:120px!important;min-height:120px!important;width:100%;max-width:260px;margin:0 auto;}
+  .science-chapter-page .science-mode-grid,
+  .science-chapter-page .mode-grid{grid-template-columns:1fr!important;gap:10px!important;}
+  .science-chapter-page .science-mode-grid .mode-card,
+  .science-chapter-page .mode-grid .mode-card{min-height:0!important;padding:16px!important;}
+  .science-chapter-page .chapter-hero-card{width:100%;max-width:100%;padding:16px!important;}
+  .sc3-core-assessment{padding:0!important;}
+  .sc3-core-assessment [style*="grid-template-columns"]{grid-template-columns:1fr!important;}
+  .sc3-core-assessment pre,.sc3-core-assessment code{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;}
+  .sc3-learn-page .sc3-learn-hero,.sc3-learn-page .sc3-learn-layout{width:100%;max-width:100%;}
+  main[class^="sc10-"] .sc10-layout,main[class^="sc11-"] .sc11-layout,main[class^="sc12-"] .sc12-layout,
+  main[class^="sc13-"] .sc13-layout,main[class^="sc14-"] .sc14-layout,main[class^="sc15-"] .sc15-layout{grid-template-columns:1fr!important;}
+  main[class^="sc10-"] .sc10-sidebar,main[class^="sc11-"] .sc11-sidebar,main[class^="sc12-"] .sc12-sidebar,
+  main[class^="sc13-"] .sc13-sidebar,main[class^="sc14-"] .sc14-sidebar,main[class^="sc15-"] .sc15-sidebar{position:relative;top:auto;max-height:230px;}
+  main[class^="sc10-"] .sc10-card,main[class^="sc11-"] .sc11-card,main[class^="sc12-"] .sc12-card,
+  main[class^="sc13-"] .sc13-card,main[class^="sc14-"] .sc14-card,main[class^="sc15-"] .sc15-card{width:100%;max-width:100%;}
+}
+@media(max-width:560px){
+  .science-chapter-page .page-header{padding-left:10px;padding-right:10px;}
+  .science-chapter-page .page-header>button{max-width:100%;min-height:40px;padding:8px 11px!important;font-size:.78rem;}
+  .science-chapter-page .page-header .badge{max-width:100%;white-space:normal;line-height:1.35;}
+  .science-chapter-page .page-content{padding-left:10px;padding-right:10px;}
+  .science-chapter-page .science-launch{padding:13px!important;}
+  .science-chapter-page .science-launch-art{height:108px!important;min-height:108px!important;max-width:220px;}
+  .science-chapter-page .science-flask{font-size:46px!important;}
+  .science-chapter-page .science-orbit{width:82px;height:82px;}
+  .science-chapter-page .science-mode-grid .mode-card,
+  .science-chapter-page .mode-grid .mode-card{padding:14px!important;}
+  .sc3-core-assessment{font-size:.92rem;}
+  .sc3-core-assessment table{display:block;max-width:100%;overflow-x:auto;}
+  .sc3-core-assessment button{white-space:normal;line-height:1.35;}
+  main[class^="sc10-"] .sc10-nav,main[class^="sc11-"] .sc11-nav,main[class^="sc12-"] .sc12-nav,
+  main[class^="sc13-"] .sc13-nav,main[class^="sc14-"] .sc14-nav,main[class^="sc15-"] .sc15-nav{height:58px;padding:8px 9px;}
+  main[class^="sc10-"] .sc10-wrap,main[class^="sc11-"] .sc11-wrap,main[class^="sc12-"] .sc12-wrap,
+  main[class^="sc13-"] .sc13-wrap,main[class^="sc14-"] .sc14-wrap,main[class^="sc15-"] .sc15-wrap{width:100%;max-width:100%;}
+  main[class^="sc10-"] .sc10-card,main[class^="sc11-"] .sc11-card,main[class^="sc12-"] .sc12-card,
+  main[class^="sc13-"] .sc13-card,main[class^="sc14-"] .sc14-card,main[class^="sc15-"] .sc15-card{padding:17px;border-radius:17px;}
+}
+@media(max-width:430px){
+  .science-chapter-page .page-header h1{font-size:clamp(1.65rem,9vw,2.35rem);}
+  .science-chapter-page .science-launch{padding:12px!important;}
+  .science-chapter-page .science-mode-grid .mode-card,
+  .science-chapter-page .mode-grid .mode-card{padding:13px!important;}
+  .science-chapter-page .chapter-hero-card{padding:13px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  .science-mobile-responsive *{scroll-behavior:auto!important;animation:none!important;transition:none!important;}
+}
