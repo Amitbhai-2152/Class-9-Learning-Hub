@@ -2,6 +2,7 @@ import React,{createContext,useContext,useEffect,useMemo,useState}from'react';
 import {supabase,supabaseConfigured}from'../lib/supabaseClient.js';
 
 const AuthContext=createContext(null);
+const AUTH_OPTIONS={persistSession:true,autoRefreshToken:true,detectSessionInUrl:true};
 
 export function AuthProvider({children}){
   const[session,setSession]=useState(null);
@@ -17,7 +18,7 @@ export function AuthProvider({children}){
     return()=>{active=false;subscription?.subscription?.unsubscribe?.()};
   },[]);
 
-  const value=useMemo(()=>({session,user:session?.user||null,loading,configured:supabaseConfigured}),[session,loading]);
+  const value=useMemo(()=>({...AUTH_OPTIONS,session,user:session?.user||null,loading,configured:supabaseConfigured}),[session,loading]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
