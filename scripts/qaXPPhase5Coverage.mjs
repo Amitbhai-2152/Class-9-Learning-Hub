@@ -54,7 +54,8 @@ for(const token of expectedEnglishRoutes)assert.match(appWithChapter5,new RegExp
 
 assert.match(badges,/export function ChapterCompletionOverlay\(\)/,'chapter completion animation component must exist');
 assert.match(badges,/class9-xp-completion/,'chapter animation must consume the XP completion event');
-assert.match(badges,/stage\|\|'\)!=='test'/,'chapter animation is tied to completed final test');
+assert.match(badges,/detail\.stage\|\|''/,'chapter animation must read the completion stage');
+assert.match(badges,/!==['\"]test['\"]/,'chapter animation must be tied to completed final test');
 assert.match(badges,/chapter-completion-layer/,'chapter completion visual layer must exist');
 assert.match(badges,/chapter-confetti/,'chapter completion animation must include confetti/sparkles');
 assert.match(badges,/chapter-completion-ring/,'chapter completion animation must include success ring');
@@ -62,5 +63,6 @@ assert.match(badges,/completion\.xp/,'chapter animation must display awarded XP'
 assert.match(boundary,/class9-xp-completion/,'completion boundary must publish the chapter completion event');
 assert.match(main,/ChapterCompletionOverlay/,'chapter completion animation must be imported globally');
 assert.match(main,/<ChapterCompletionOverlay\/>/,'chapter completion animation must be mounted globally');
+assert.doesNotMatch(boundary,/ChapterCompletionOverlay/,'completion overlay must have a single global mount to avoid duplicate popups');
 
-console.log('XP Phase 5 QA passed: all 174 canonical topics are represented across Math, Science, Hindi, Sanskrit, SST, English, and Reasoning; all four XP stages are covered; SST tracks bridge local completion into canonical progress; English routes are covered; the global completion boundary publishes the XP completion event; and the animated chapter-completion popup is globally mounted and displays awarded XP for completed final tests.');
+console.log('XP Phase 5 QA passed: all 174 canonical topics are represented across Math, Science, Hindi, Sanskrit, SST, English, and Reasoning; all four XP stages are covered; SST tracks bridge local completion into canonical progress; English routes are covered; the global completion boundary publishes the XP completion event; and the animated chapter-completion popup is mounted exactly once globally and displays awarded XP for completed final tests.');
