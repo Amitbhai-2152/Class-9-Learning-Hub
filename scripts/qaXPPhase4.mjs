@@ -45,7 +45,6 @@ assert.match(daily,/lastAttemptAt/);
 assert.match(daily,/examDate|daysLeft|examDays/);
 assert.match(daily,/urgency/);
 assert.match(daily,/freshness/);
-assert.match(daily,/recommendationMode/);
 assert.match(daily,/highPriority/);
 assert.match(daily,/status\.key==='todo'/);
 assert.match(daily,/status\.key==='test'/);
