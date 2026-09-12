@@ -1,6 +1,7 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {HISTORY_CHAPTER_8} from './historyChapter8Data';
 import {HISTORY_SUBJECTIVE_CHAPTER_8} from './historyChapter8SubjectiveData';
+import {HistoryReviewQuiz} from './HistoryReviewQuiz';
 import './historyChapter.css';
 
 const progressKey='sst-history-ch8-progress';
@@ -56,7 +57,7 @@ function QuizView({mode,onComplete}){
  const [picked,setPicked]=useState(null);
  const [score,setScore]=useState(0);
  const [done,setDone]=useState(false);
- const [timeLeft,setTimeLeft]=useState(questions.length*timePerQuestion(mode));
+ const [timeLeft,setTimeLeft]=useState(()=>questions.length*timePerQuestion(mode));
  const scoreRef=useRef(0);
  const pickedRef=useRef(null);
  const doneRef=useRef(false);
@@ -79,7 +80,7 @@ function QuizView({mode,onComplete}){
  if(!q)return <div className="history-result-card"><h2>इस चरण का प्रश्न बैंक उपलब्ध नहीं है।</h2></div>;
  if(done)return <div className="history-result-card">
   <div className="history-result-ring">{score}<small>/{questions.length}</small></div>
-  <span className="history-result-label">{mode==='practice'?'PRACTICE COMPLETE':mode==='challenge'?'CHALLENGE COMPLETE':'FINAL TEST COMPLETE'}</span>
+  <span className="history-result-label">{mode==='practice'?'PRACTICE COMPLETE':'CHALLENGE COMPLETE'}</span>
   <h2>{score/questions.length>=.8?'बहुत बढ़िया!':score/questions.length>=.6?'अच्छी तैयारी!':'एक बार फिर दोहराएँ।'}</h2>
   <p>आपका स्कोर {score} / {questions.length} है।</p>
   {mode==='test'&&<div className="history-chapter-finish">✓ अध्याय पूरा हुआ — यह chapter completed के रूप में सेव है।</div>}
@@ -131,7 +132,7 @@ export function HistoryChapter8Engine({onBack}){
   </header>
   <section className="history-content">
    <div className="history-chapter-intro"><div><span>अध्याय का लक्ष्य</span><p>{data.goal}</p></div><div className="history-chip-row"><span>{data.lessons.length} lessons</span><span>{data.practice.length} practice</span><span>{data.challenge.length} challenge</span><span>{data.finalTest.length} test</span><span>12 subjective</span></div></div>
-   {!mode?<div className="history-mode-grid">{MODES.map(item=><button type="button" key={item.id} className={`history-mode-card ${item.id!=='subjective'&&progress[item.id]?'completed':''}`} onClick={()=>setMode(item.id)}><span className="history-mode-icon">{item.icon}</span><strong>{item.title}</strong><p>{item.desc}</p><em>{item.id!=='subjective'&&progress[item.id]?`✓ ${progress[item.id].score}/${progress[item.id].total}`:'शुरू करें →'}</em></button>)}</div>:<div className="history-workspace"><button type="button" className="history-mode-back" onClick={()=>setMode(null)}>← stages पर वापस</button>{mode==='learn'?<LearnView onComplete={complete}/>:mode==='subjective'?<SubjectiveView/>:<QuizView mode={mode} onComplete={complete}/>}</div>}
+   {!mode?<div className="history-mode-grid">{MODES.map(item=><button type="button" key={item.id} className={`history-mode-card ${item.id!=='subjective'&&progress[item.id]?'completed':''}`} onClick={()=>setMode(item.id)}><span className="history-mode-icon">{item.icon}</span><strong>{item.title}</strong><p>{item.desc}</p><em>{item.id!=='subjective'&&progress[item.id]?`✓ ${progress[item.id].score}/${progress[item.id].total}`:'शुरू करें →'}</em></button>)}</div>:<div className="history-workspace"><button type="button" className="history-mode-back" onClick={()=>setMode(null)}>← stages पर वापस</button>{mode==='learn'?<LearnView onComplete={complete}/>:mode==='subjective'?<SubjectiveView/>:<HistoryReviewQuiz data={data} mode={mode} onComplete={complete}/>}</div>}
   </section>
  </main>;
 }
