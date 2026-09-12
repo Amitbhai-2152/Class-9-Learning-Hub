@@ -35,8 +35,9 @@ export function AuthProvider({children}){
 
   useEffect(()=>{
     if(!user?.id)return undefined;
-    const onProgress=event=>{if(event?.detail?.cloudSync)return;setSyncStatus('syncing');scheduleAuthenticatedSync(user)};
-    const onXP=event=>{if(event?.detail?.cloudSync)return;setSyncStatus('syncing');scheduleAuthenticatedSync(user)};
+    const syncNow=()=>{setSyncStatus('syncing');syncAuthenticatedUser(user).catch(()=>{})};
+    const onProgress=event=>{if(event?.detail?.cloudSync)return;syncNow()};
+    const onXP=event=>{if(event?.detail?.cloudSync)return;syncNow()};
     window.addEventListener('class9-progress-updated',onProgress);
     window.addEventListener('class9-xp-updated',onXP);
     return()=>{window.removeEventListener('class9-progress-updated',onProgress);window.removeEventListener('class9-xp-updated',onXP)};
