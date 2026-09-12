@@ -10,6 +10,8 @@ const badges=read('src/XPBadges.jsx');
 const daily=read('src/dailyExamPlanner.js');
 const dailyUI=read('src/DailyExamPlan.jsx');
 const dailyCss=read('src/daily-exam-plan.css');
+const testCentre=read('src/TestCentreSafe.jsx');
+const responsive=read('src/test-centre-responsive.css');
 
 assert.match(app,/getXPState/);
 assert.match(app,/getRewardSummary/);
@@ -17,10 +19,8 @@ assert.match(app,/const addXp=\(\)=>\{\};/);
 assert.doesNotMatch(app,/localStorage\.setItem\(['"]class9-progress['"]/);
 assert.doesNotMatch(app,/xp:safe\.xp\+/);
 assert.match(app,/Performance-based XP/);
-
 assert.match(main,/XPCompletionBoundary/);
 assert.match(main,/<XPCompletionBoundary><RootRouter\/><\/XPCompletionBoundary>/);
-
 assert.match(boundary,/awardSmartXP/);
 assert.match(boundary,/recordActivityAndRewards/);
 assert.match(boundary,/reasoningMode/);
@@ -29,17 +29,14 @@ assert.match(boundary,/new URL\(cbtConfig\.url\)\.origin/);
 assert.match(boundary,/newAttemptId/);
 assert.match(boundary,/randomUUID/);
 assert.doesNotMatch(boundary,/page==='classes'/);
-
 assert.match(rewards,/XP_ROUTINE_KEY='class9-xp-routine-v1'/);
 assert.match(rewards,/claimedLevelRewards/);
 assert.match(rewards,/claimedStreakRewards/);
 assert.match(rewards,/recordActivityAndRewards/);
-
 assert.match(badges,/DailyExamPlan/);
 assert.match(badges,/offeringGrid=dashboard\.querySelector\('\.offering-grid'\)/);
 assert.match(badges,/dashboard\.insertBefore\(host,offeringGrid\.nextSibling\)/);
 assert.match(badges,/createPortal\(<DailyExamPlan\/>/);
-
 assert.match(daily,/TOTAL|fullSyllabus/);
 assert.match(daily,/getCanonicalProgress/);
 assert.match(daily,/analytics\.bestPercent/);
@@ -47,14 +44,13 @@ assert.match(daily,/analytics\.lastPercent/);
 assert.match(daily,/lastAttemptAt/);
 assert.match(daily,/examDate|daysLeft|examDays/);
 assert.match(daily,/urgency/);
-assert.match(daily,/revisionNeed/);
+assert.match(daily,/freshness/);
 assert.match(daily,/recommendationMode/);
 assert.match(daily,/highPriority/);
 assert.match(daily,/status\.key==='todo'/);
 assert.match(daily,/status\.key==='test'/);
 assert.match(daily,/test\.phase==='weak'/);
 assert.match(daily,/test\.phase==='readiness'/);
-
 assert.match(dailyUI,/ADAPTIVE PRIORITY/);
 assert.match(dailyUI,/priorityLabel/);
 assert.match(dailyUI,/item\.reason/);
@@ -62,8 +58,16 @@ assert.match(dailyUI,/item\.action/);
 assert.match(dailyUI,/item\.score/);
 assert.match(dailyCss,/daily-recommendation-priority/);
 assert.match(dailyCss,/priority-critical/);
+assert.match(testCentre,/const SUBJECTS=\[/);
+assert.match(testCentre,/const TESTS=\[/);
+assert.match(testCentre,/13 Sep 2026/);
+assert.match(testCentre,/28 Feb 2027/);
+assert.match(responsive,/@media\(max-width:760px\)/);
+assert.match(responsive,/@media\(max-width:480px\)/);
+assert.match(responsive,/overflow-x:auto/);
+assert.match(main,/subject-overrides\.css/);
 
 const pkg=JSON.parse(read('package.json'));
 assert.equal(pkg.scripts['qa:xp:phase4'],'node scripts/qaXPPhase4.mjs');
 
-console.log('XP Phase 4 QA passed: canonical dashboard state, global completion integration, reward persistence, homepage Daily Exam Plan placement, syllabus-backed adaptive scoring, urgency/weakness/retention signals, phase-aware recommendations, and visible recommendation rationale verified.');
+console.log('XP Phase 4 QA passed: canonical dashboard state, global completion integration, reward persistence, homepage Daily Exam Plan placement, adaptive scoring, phase-aware recommendations, Test Centre planner contract, and mobile responsive safeguards verified.');
