@@ -25,6 +25,7 @@ import {AuthProvider} from './auth/AuthContext.jsx';
 import AuthPage,{AccountNavControl} from './auth/AuthPage.jsx';
 import MobileHomeNav from './mobileHomeNav.jsx';
 import './auth/auth-global.css';
+import './auth/auth-navigation-fix.js';
 import './scienceModeRouter.js';
 import './subject-overrides.css';
 import './home-premium.css';
