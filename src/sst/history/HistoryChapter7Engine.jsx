@@ -1,6 +1,7 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {HISTORY_CHAPTER_7} from './historyChapter7Data';
 import {HISTORY_SUBJECTIVE_CHAPTER_7} from './historyChapter7SubjectiveData';
+import {HistoryReviewQuiz} from './HistoryReviewQuiz';
 import './historyChapter.css';
 
 const storageKey='sst-history-ch7-progress';
@@ -91,11 +92,11 @@ function QuizView({mode,onComplete}){
  const totalSeconds=questions.length*secondsPerQuestion(mode);
  const timerClass=timeLeft<=Math.max(10,Math.floor(totalSeconds*.25))?'danger':timeLeft<=Math.floor(totalSeconds*.5)?'warning':'';
  return <div className="history-quiz-card">
-  <div className="history-quiz-top"><span>{mode==='practice'?'PRACTICE':mode==='challenge'?'CHALLENGE':'FINAL TEST'}</span><div className="history-quiz-meta"><strong>{index+1} / {questions.length}</strong><span className={`history-timer ${timerClass}`}>⏱ {formatTime(timeLeft)}</span></div></div>
+  <div className="history-quiz-top"><span>{mode==='practice'?'PRACTICE':'CHALLENGE'}</span><div className="history-quiz-meta"><strong>{index+1} / {questions.length}</strong><span className={`history-timer ${timerClass}`}>⏱ {formatTime(timeLeft)}</span></div></div>
   <div className="history-quiz-track"><span style={{width:`${((index+1)/questions.length)*100}%`}}/></div>
   <p className="history-timer-note">हर प्रश्न के लिए {secondsPerQuestion(mode)} सेकंड • कुल समय {formatTime(totalSeconds)}</p>
   <h2>{q[0]}</h2>
-  <div className="history-options">{q[1].map((option,choice)=><button key={option} className={answered?(choice===q[2]?'correct':choice===picked?'wrong':''):''} disabled={answered} onClick={()=>{if(!answered)setPicked(choice)}}><span>{String.fromCharCode(65+choice)}</span>{option}</button>)}</div>
+  <div className="history-options">{q[1].map((option,choice)=><button type="button" key={option} className={answered?(choice===q[2]?'correct':choice===picked?'wrong':''):''} disabled={answered} onClick={()=>{if(!answered)setPicked(choice)}}><span>{String.fromCharCode(65+choice)}</span>{option}</button>)}</div>
   {answered&&<div className={`history-explain ${picked===q[2]?'ok':'no'}`}><strong>{picked===q[2]?'✓ सही उत्तर':'✕ ध्यान दें'}</strong><p>{q[3]}</p></div>}
   <div className="history-quiz-footer"><small>{answered?'उत्तर lock हो गया है':'एक विकल्प चुनें'}</small><button className="history-primary" disabled={!answered} onClick={()=>{const nextScore=score+(picked===q[2]?1:0);if(index<questions.length-1){setScore(nextScore);setIndex(v=>v+1);setPicked(null)}else{setScore(nextScore);doneRef.current=true;setDone(true);onComplete(mode,nextScore,questions.length)}}}>{index===questions.length-1?'परिणाम देखें':'अगला प्रश्न →'}</button></div>
  </div>;
@@ -135,7 +136,7 @@ export function HistoryChapter7Engine({onBack}){
   </header>
   <section className="history-content">
    <div className="history-chapter-intro"><div><span>अध्याय का लक्ष्य</span><p>{data.goal}</p></div><div className="history-chip-row"><span>{data.lessons.length} lessons</span><span>{data.practice.length} practice</span><span>{data.challenge.length} challenge</span><span>{data.finalTest.length} test</span><span>12 subjective</span></div></div>
-   {!mode?<div className="history-mode-grid">{MODES.map(item=><button key={item.id} className={`history-mode-card ${item.id!=='subjective'&&progress[item.id]?'completed':''}`} onClick={()=>setMode(item.id)}><span className="history-mode-icon">{item.icon}</span><strong>{item.title}</strong><p>{item.desc}</p><em>{item.id!=='subjective'&&progress[item.id]?`✓ ${progress[item.id].score}/${progress[item.id].total}`:'शुरू करें →'}</em></button>)}</div>:<div className="history-workspace"><button className="history-mode-back" onClick={()=>setMode(null)}>← stages पर वापस</button>{mode==='learn'?<LearnView onComplete={complete}/>:mode==='subjective'?<SubjectiveView/>:<QuizView mode={mode} onComplete={complete}/>}</div>}
+   {!mode?<div className="history-mode-grid">{MODES.map(item=><button key={item.id} className={`history-mode-card ${item.id!=='subjective'&&progress[item.id]?'completed':''}`} onClick={()=>setMode(item.id)}><span className="history-mode-icon">{item.icon}</span><strong>{item.title}</strong><p>{item.desc}</p><em>{item.id!=='subjective'&&progress[item.id]?`✓ ${progress[item.id].score}/${progress[item.id].total}`:'शुरू करें →'}</em></button>)}</div>:<div className="history-workspace"><button className="history-mode-back" onClick={()=>setMode(null)}>← stages पर वापस</button>{mode==='learn'?<LearnView onComplete={complete}/>:mode==='subjective'?<SubjectiveView/>:<HistoryReviewQuiz data={data} mode={mode} onComplete={complete}/>}</div>}
   </section>
  </main>;
 }
