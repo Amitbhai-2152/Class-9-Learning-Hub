@@ -23,6 +23,7 @@ import {XPBadgeSection} from './XPBadges.jsx';
 import {getXPState} from './engines/xp/xpStore.js';
 import {AuthProvider} from './auth/AuthContext.jsx';
 import AuthPage,{AccountNavControl} from './auth/AuthPage.jsx';
+import './auth/auth-global.css';
 import './scienceModeRouter.js';
 import './subject-overrides.css';
 import './home-premium.css';
