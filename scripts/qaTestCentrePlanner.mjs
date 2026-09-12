@@ -18,12 +18,13 @@ const required=[
   "n:'12',date:'2027-02-14',stage:'Final Readiness',purpose:'final readiness'",
   "n:'Final',date:'2027-02-28',stage:'Final Examination',purpose:'complete eligible website-built syllabus'",
   'सभी 174 eligible components',
-  'All 174 eligible components from the master inventory',
   'Previous performance chapter weighting तय करती है: weak > average > strong.',
   'Full syllabus + difficult mixed questions + weak-area targeting.',
   'Complete eligible website-built syllabus.'
 ];
 for(const value of required)assert.ok(source.includes(value),`Missing Test Centre planner contract: ${value}`);
+const countValues=[...source.matchAll(/count:(\d+)/g)].map(match=>Number(match[1]));
+assert.equal(countValues.reduce((sum,value)=>sum+value,0),174,'Test Centre subject scope must total exactly 174 eligible components');
 const testCount=(source.match(/\{n:'/g)||[]).length;
 assert.equal(testCount,13,'Test Centre must define exactly 13 scheduled assessments including Final');
 assert.match(source,/const SUBJECTS=\[/,'Subject scope registry missing');
