@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {calculatePreparationMeter} from '../src/preparationMeter.js';
 import {STAGES} from '../src/subjectProgressRegistry.js';
 
@@ -57,5 +58,19 @@ const multi=calculatePreparationMeter({...base,topics:multiTopics});
 assert.equal(multi.subjectBreakdown.length,7);
 assert.deepEqual(multi.subjectBreakdown.map(row=>row.subjectId),subjectIds);
 assert.ok(multi.subjectBreakdown.every(row=>row.totalTopics===1&&row.topicsStarted===1&&row.performancePercent===70));
+
+const pageSource=readFileSync(new URL('../src/PreparationMeterPage.jsx',import.meta.url),'utf8');
+const responsiveSource=readFileSync(new URL('../src/preparation-meter-responsive.css',import.meta.url),'utf8');
+assert.match(pageSource,/NEXT BEST ACTION/);
+assert.match(pageSource,/पहले कुछ chapters में Learn और Practice पूरा करें/);
+assert.match(pageSource,/primaryWeak\.subject\.name/);
+assert.match(pageSource,/सबसे कम readiness अभी/);
+assert.match(pageSource,/preparation-meter-page/);
+assert.match(pageSource,/preparation-meter-action/);
+assert.match(responsiveSource,/@media\(max-width:900px\)/);
+assert.match(responsiveSource,/@media\(max-width:640px\)/);
+assert.match(responsiveSource,/@media\(max-width:400px\)/);
+assert.match(responsiveSource,/grid-template-columns:1fr!important/);
+assert.match(responsiveSource,/overflow-x:hidden/);
 
 console.log(`Preparation Meter QA passed: readiness=${result.readiness}, coverage=${result.coveragePercent}, performance=${result.performancePercent}, subjects=${multi.subjectBreakdown.length}`);
