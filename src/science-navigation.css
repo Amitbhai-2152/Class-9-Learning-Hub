@@ -1,3 +1,5 @@
+@import './science-mobile-responsive.css';
+
 :root{--science-ink:#143747;--science-muted:#5f7581;--science-mint:#63d7b7;--science-blue:#6caaf4;--science-purple:#8b7cf2}
 
 /* Chapter-engine navigation */
