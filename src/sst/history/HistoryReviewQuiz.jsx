@@ -37,7 +37,7 @@ export function HistoryReviewQuiz({data,mode,onComplete}){
    return value-1;
   }),1000);
   return()=>clearInterval(timer);
- },[done,questions.length,mode]);
+ },[done,questions.length,mode,answers]);
  if(!questions.length)return <div className="history-result-card"><h2>इस चरण का प्रश्न बैंक उपलब्ध नहीं है।</h2></div>;
  if(done){
   const score=scoreAnswers(questions,answers);
