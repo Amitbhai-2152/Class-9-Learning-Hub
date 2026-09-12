@@ -4,6 +4,8 @@ import fs from 'node:fs';
 const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
 const registry=read('src/subjectProgressRegistry.js');
 const boundary=read('src/XPCompletionBoundary.jsx');
+const badges=read('src/XPBadges.jsx');
+const main=read('src/main2.jsx');
 const timedQuiz=read('src/english/EnglishTimedQuiz.jsx');
 const appWithChapter5=read('src/AppWithChapter5.jsx');
 const reasoning=read('src/ReasoningLabV2.jsx');
@@ -49,4 +51,15 @@ assert.match(sstRoot,/progressKeyFor/);
 const expectedEnglishRoutes=['panorama5','panorama6','panorama7','panorama8','panorama9','panoramaPoetry1','panoramaPoetry2','panoramaPoetry3','panoramaPoetry4','panoramaPoetry5','panoramaPoetry6','panoramaPoetry7','panoramaPoetry8','reader1','reader2','reader3','reader4','reader5','reader6','reader7','reader8','languageSkills'];
 for(const token of expectedEnglishRoutes)assert.match(appWithChapter5,new RegExp(`get\\('`+token+`'\\)`));
 
-console.log('XP Phase 5 QA passed: all 174 canonical topics are represented across Math, Science, Hindi, Sanskrit, SST, English, and Reasoning; all four XP stages are covered; SST tracks now bridge local completion events into canonical subject/topic/stage progress with canonical route context; generic result surfaces include English timed quizzes; and SPA route changes reset the XP completion guard.');
+assert.match(badges,/export function ChapterCompletionOverlay\(\)/,'chapter completion animation component must exist');
+assert.match(badges,/class9-xp-completion/,'chapter animation must consume the XP completion event');
+assert.match(badges,/stage\|\|'\)!=='test'/,'chapter animation is tied to completed final test');
+assert.match(badges,/chapter-completion-layer/,'chapter completion visual layer must exist');
+assert.match(badges,/chapter-confetti/,'chapter completion animation must include confetti/sparkles');
+assert.match(badges,/chapter-completion-ring/,'chapter completion animation must include success ring');
+assert.match(badges,/completion\.xp/,'chapter animation must display awarded XP');
+assert.match(boundary,/class9-xp-completion/,'completion boundary must publish the chapter completion event');
+assert.match(main,/ChapterCompletionOverlay/,'chapter completion animation must be imported globally');
+assert.match(main,/<ChapterCompletionOverlay\/>/,'chapter completion animation must be mounted globally');
+
+console.log('XP Phase 5 QA passed: all 174 canonical topics are represented across Math, Science, Hindi, Sanskrit, SST, English, and Reasoning; all four XP stages are covered; SST tracks bridge local completion into canonical progress; English routes are covered; the global completion boundary publishes the XP completion event; and the animated chapter-completion popup is globally mounted and displays awarded XP for completed final tests.');
