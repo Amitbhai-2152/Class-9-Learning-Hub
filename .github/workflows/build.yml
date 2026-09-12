@@ -72,6 +72,8 @@ jobs:
         run: npm run qa:subject-catalog
       - name: Supabase progress contract QA
         run: npm run qa:supabase-contract
+      - name: Supabase Auth UI QA
+        run: npm run qa:supabase-auth
       - name: Preparation meter QA
         run: npm run qa:preparation-meter
       - name: XP Phase 1 QA
@@ -86,5 +88,5 @@ jobs:
         run: npm run qa:test-centre-planner
       - name: Build application
         run: npm run build
-      # English, reasoning, canonical progress, analytics, runtime coverage, legacy migration, homepage/chapter catalog, Supabase contract, preparation meter, Test Centre planner, and full XP integrity are included in full verification.
+      # English, reasoning, canonical progress, analytics, runtime coverage, legacy migration, homepage/chapter catalog, Supabase contract, Auth UI, preparation meter, Test Centre planner, and full XP integrity are included in full verification.
       # XP remains local-first; the Supabase XP files define the backend contract only until a client is intentionally enabled.
