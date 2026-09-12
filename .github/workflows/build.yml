@@ -85,6 +85,8 @@ jobs:
         run: npm run qa:xp:phase3
       - name: XP Phase 4 Application Integration QA
         run: npm run qa:xp:phase4
+      - name: XP Phase 5 Subject Coverage QA
+        run: npm run qa:xp:phase5
       - name: Test Centre planner QA
         run: npm run qa:test-centre-planner
       - name: Build application
