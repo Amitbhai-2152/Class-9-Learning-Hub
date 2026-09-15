@@ -19,6 +19,14 @@ function normalizeQuestions(source,mode){
   return (Array.isArray(source)?source:[]).slice(0,count).map(item=>({...item,options:[...(item.options||[])],answer:Number.isInteger(Number(item.answer))?Number(item.answer):0})).filter(item=>item.options.length>=2&&item.answer>=0&&item.answer<item.options.length);
 }
 
+function shuffleQuestionOptions(question,seed){
+  const options=question.options.map((text,index)=>({text,correct:index===question.answer}));
+  let state=(Math.floor((seed+1)*2654435761)>>>0)||1;
+  const random=()=>{state=(state+0x6D2B79F5)|0;let t=Math.imul(state^state>>>15,1|state);t^=t+Math.imul(t^t>>>7,61|t);return((t^t>>>14)>>>0)/4294967296;};
+  for(let i=options.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[options[i],options[j]]=[options[j],options[i]];}
+  return {...question,options:options.map(item=>item.text),answer:options.findIndex(item=>item.correct)};
+}
+
 function QuestionPalette({list,index,answers,onSelect,mode}){
   const attempted=Object.keys(answers).length;
   return <section className={`hindi-question-palette hindi-question-palette-${mode}`} aria-label={`${modeMeta[mode].label} प्रश्न नेविगेशन`}>
@@ -56,7 +64,7 @@ function ResultSummary({score,attempted,total,mode}){
 }
 
 function Assessment({id,questions,mode,onBack,onComplete}){
-  const list=useMemo(()=>normalizeQuestions(questions,mode),[questions,mode]);
+  const list=useMemo(()=>normalizeQuestions(questions,mode).map((question,index)=>shuffleQuestionOptions(question,index+Date.now()/1e9)),[questions,mode]);
   const timing=HINDI_MODE_TIMING[mode];
   const durationSeconds=timing?timing.minutes*60:null;
   const [index,setIndex]=useState(0);
