@@ -8,7 +8,6 @@ permissions:
 
 jobs:
   patch:
-    if: contains(github.event.head_commit.message, 'fix: randomize Hindi') || contains(github.event.head_commit.message, 'chore: add one-time Hindi option fix job')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,9 +25,10 @@ jobs:
             text = text.replace(old_helper, new_helper, 1)
           old_use = "const list=useMemo(()=>normalizeQuestions(questions,mode),[questions,mode]);"
           new_use = "const list=useMemo(()=>normalizeQuestions(questions,mode).map((question,index)=>shuffleQuestionOptions(question,index)),[questions,mode]);"
-          if old_use not in text and new_use not in text:
+          if old_use in text:
+            text = text.replace(old_use, new_use, 1)
+          elif new_use not in text:
             raise SystemExit('Expected active Assessment list expression not found; aborting.')
-          text = text.replace(old_use, new_use, 1)
           p.write_text(text, encoding='utf-8')
       - name: Validate patch
         run: |
