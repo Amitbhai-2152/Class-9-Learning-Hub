@@ -64,7 +64,8 @@ function ResultSummary({score,attempted,total,mode}){
 }
 
 function Assessment({id,questions,mode,onBack,onComplete}){
-  const list=useMemo(()=>normalizeQuestions(questions,mode).map((question,index)=>shuffleQuestionOptions(question,index+Date.now()/1e9)),[questions,mode]);
+  const [shuffleSeed,setShuffleSeed]=useState(()=>Math.random());
+  const list=useMemo(()=>normalizeQuestions(questions,mode).map((question,index)=>shuffleQuestionOptions(question,shuffleSeed+index)),[questions,mode,shuffleSeed]);
   const timing=HINDI_MODE_TIMING[mode];
   const durationSeconds=timing?timing.minutes*60:null;
   const [index,setIndex]=useState(0);
@@ -84,7 +85,7 @@ function Assessment({id,questions,mode,onBack,onComplete}){
     <div className="hindi-result-hero"><span>{modeMeta[mode].icon}</span><div><small>{modeMeta[mode].label} पूरा</small><strong>{score}/{list.length}</strong><p>{mode==='test'?'यह आपका अंतिम टेस्ट परिणाम है। नीचे हर प्रश्न की समीक्षा और समझ देखें।':mode==='challenge'?'चुनौती पूरी हुई। गलतियों से पहचानिए कि कहाँ तर्क मजबूत करना है।':'अभ्यास पूरा हुआ। गलत प्रश्नों के कारण को देखकर दोहराएँ।'}</p></div></div>
     <ResultSummary score={score} attempted={attempted} total={list.length} mode={mode}/>
     <div className="hindi-review"><div className="hindi-review-head"><div><span className="hindi-palette-kicker">विस्तृत समीक्षा</span><h3>हर प्रश्न की समीक्षा</h3></div><span>{attempted}/{list.length} प्रश्न किए</span></div>{list.map((item,i)=><article className={`hindi-review-item ${answers[i]===item.answer?'ok':'wrong'}`} key={`${item.q}-${i}`}><div className="hindi-review-num">{i+1}</div><div><strong>{item.q}</strong><p><b>आपका उत्तर:</b> {answers[i]!=null?item.options[answers[i]]:'उत्तर नहीं दिया'}</p><p><b>सही उत्तर:</b> {item.options[item.answer]}</p><span>{item.explain||'सही उत्तर पाठ की मुख्य अवधारणा से जुड़ा है।'}</span></div></article>)}</div>
-    <div className="hindi-actions"><button type="button" className="secondary-btn pressable" onClick={()=>{setSubmitted(false);setConfirmSubmit(false);setIndex(0);setAnswers({});setSeconds(durationSeconds)}}>↻ फिर से दें</button><button type="button" className="primary-btn pressable" onClick={onBack}>← अध्याय पर लौटें</button></div>
+    <div className="hindi-actions"><button type="button" className="secondary-btn pressable" onClick={()=>{setShuffleSeed(Math.random());setSubmitted(false);setConfirmSubmit(false);setIndex(0);setAnswers({});setSeconds(durationSeconds)}}>↻ फिर से दें</button><button type="button" className="primary-btn pressable" onClick={onBack}>← अध्याय पर लौटें</button></div>
   </div>;
   const canSubmit=mode==='test'||attempted>0;
   return <div className={`hindi-assessment hindi-assessment-${mode}`}>
