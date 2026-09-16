@@ -48,26 +48,27 @@ jobs:
       - name: Build web application
         run: npm run build
       - name: Add Android platform
-        run: npx cap --config capacitor.config.json add android
+        run: npx cap add android
       - name: Apply Class 9 Learning Hub app icon
         run: |
           set -euo pipefail
           test -s public/app-icon.png
           sudo apt-get update -qq
           sudo apt-get install -y -qq imagemagick
+          command -v convert
           mkdir -p android/app/src/main/res/mipmap-hdpi android/app/src/main/res/mipmap-mdpi android/app/src/main/res/mipmap-xhdpi android/app/src/main/res/mipmap-xxhdpi android/app/src/main/res/mipmap-xxxhdpi
-          magick public/app-icon.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          magick public/app-icon.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          magick public/app-icon.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          magick public/app-icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          magick public/app-icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          convert public/app-icon.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          convert public/app-icon.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          convert public/app-icon.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          convert public/app-icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          convert public/app-icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           cp android/app/src/main/res/mipmap-mdpi/ic_launcher.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-xhdpi/ic_launcher.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
       - name: Sync Capacitor
-        run: npx cap --config capacitor.config.json sync android
+        run: npx cap sync android
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
@@ -89,3 +90,5 @@ jobs:
           else
             gh release create android-latest "$APK#Class-9-Learning-Hub.apk" --title "Class 9 Learning Hub — Android APK" --notes "Direct APK installation build. This is not a Play Store release." --latest=false
           fi
+
+# Android APK verification trigger revision.
