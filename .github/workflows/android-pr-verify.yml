@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: android-pr-${{ github.event.pull_request.number }}
@@ -21,44 +21,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-
       - name: Setup Android SDK
         run: |
           set -euo pipefail
           SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
-          if [ ! -x "$SDKMANAGER" ]; then
-            SDKMANAGER="${ANDROID_HOME}/cmdline-tools/12.0/bin/sdkmanager"
-          fi
+          if [ ! -x "$SDKMANAGER" ]; then SDKMANAGER="${ANDROID_HOME}/cmdline-tools/12.0/bin/sdkmanager"; fi
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-
       - name: Verify Capacitor JSON config
         run: |
           set -euo pipefail
           test -s capacitor.config.json
           test ! -e capacitor.config.ts
           node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('capacitor.config.json','utf8')); if(c.appId!=='com.class9learninghub.app'||c.webDir!=='dist') process.exit(1); console.log('Capacitor JSON config OK')"
-
       - name: Build web application
         run: npm run build
-
       - name: Add Android platform
         run: npx cap --config capacitor.config.json add android
-
       - name: Apply Class 9 Learning Hub app icon
         run: |
           set -euo pipefail
@@ -76,14 +66,11 @@ jobs:
           cp android/app/src/main/res/mipmap-xhdpi/ic_launcher.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-
       - name: Sync Capacitor
         run: npx cap --config capacitor.config.json sync android
-
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
-
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
         with:
@@ -91,3 +78,14 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7
+      - name: Publish direct APK download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          if gh release view android-latest >/dev/null 2>&1; then
+            gh release upload android-latest "$APK#Class-9-Learning-Hub.apk" --clobber
+          else
+            gh release create android-latest "$APK#Class-9-Learning-Hub.apk" --title "Class 9 Learning Hub — Android APK" --notes "Direct APK installation build. This is not a Play Store release." --latest=false
+          fi
