@@ -120,4 +120,4 @@ jobs:
           echo "## Android APK" >> "$GITHUB_STEP_SUMMARY"
           echo "[Download Class 9 Learning Hub APK](https://github.com/${GITHUB_REPOSITORY}/releases/download/android-latest/Class-9-Learning-Hub.apk)" >> "$GITHUB_STEP_SUMMARY"
 
-# Android build pipeline uses the stable Ubuntu ImageMagick `convert` command for the exact uploaded app icon.
+# CI trigger revision 2: stable Android icon generation and direct APK release.
