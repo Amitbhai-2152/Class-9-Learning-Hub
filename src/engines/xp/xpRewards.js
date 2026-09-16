@@ -19,6 +19,14 @@ const diffDays=(from,to)=>{const a=parseDay(from),b=parseDay(to);if(!a||!b)retur
 const validHistory=value=>Array.isArray(value)?Array.from(new Set(value.map(v=>parseDay(v)?String(v):null).filter(Boolean))).sort().slice(-XP_STREAK_HISTORY_DAYS):[];
 const defaultRoutine=()=>({schemaVersion:XP_REWARDS_SCHEMA_VERSION,currentStreak:0,bestStreak:0,lastActiveDay:null,activeDays:0,activeDayHistory:[],claimedLevelRewards:[],claimedStreakRewards:[],updatedAt:null});
 
+function consecutiveStreak(history){
+ const days=validHistory(history);
+ if(!days.length)return 0;
+ let streak=1;
+ for(let i=days.length-1;i>0;i--){if(diffDays(days[i-1],days[i])!==1)break;streak+=1;}
+ return streak;
+}
+
 export function getXPRoutine(){
  const raw=safeObject(readJson(XP_ROUTINE_KEY,null));
  const base=defaultRoutine();
@@ -39,6 +47,36 @@ export function getXPRoutine(){
  };
 }
 
+export function mergeXPRoutines(localRoutine=null,cloudRoutine=null){
+ const local={...defaultRoutine(),...safeObject(localRoutine)};
+ const cloud=safeObject(cloudRoutine);
+ const history=validHistory([...(Array.isArray(local.activeDayHistory)?local.activeDayHistory:[]),...(Array.isArray(cloud.active_day_history)?cloud.active_day_history:[]) ]);
+ const last=history.length?history[history.length-1]:(parseDay(local.lastActiveDay)?local.lastActiveDay:(parseDay(cloud.last_active_day)?String(cloud.last_active_day):null));
+ const computed=history.length?consecutiveStreak(history):0;
+ const localCurrent=Math.max(0,int(local.currentStreak));
+ const cloudCurrent=Math.max(0,int(cloud.current_streak??cloud.streak));
+ const localBest=Math.max(0,int(local.bestStreak));
+ const cloudBest=Math.max(0,int(cloud.best_streak));
+ const updatedCandidates=[local.updatedAt,cloud.updated_at].filter(Boolean).sort((a,b)=>Date.parse(b)-Date.parse(a));
+ return {
+  schemaVersion:XP_REWARDS_SCHEMA_VERSION,
+  currentStreak:history.length?computed:Math.max(localCurrent,cloudCurrent),
+  bestStreak:Math.max(localBest,cloudBest,computed),
+  lastActiveDay:last,
+  activeDays:Math.max(Math.max(0,int(local.activeDays)),Math.max(0,int(cloud.active_days)),history.length),
+  activeDayHistory:history,
+  claimedLevelRewards:Array.from(new Set([...(Array.isArray(local.claimedLevelRewards)?local.claimedLevelRewards:[]),...(Array.isArray(cloud.claimed_level_rewards)?cloud.claimed_level_rewards:[])].map(int).filter(v=>v>0))).sort((a,b)=>a-b),
+  claimedStreakRewards:Array.from(new Set([...(Array.isArray(local.claimedStreakRewards)?local.claimedStreakRewards:[]),...(Array.isArray(cloud.claimed_streak_rewards)?cloud.claimed_streak_rewards:[])].map(int).filter(v=>v>0))).sort((a,b)=>a-b),
+  updatedAt:updatedCandidates[0]||null,
+ };
+}
+
+export function restoreXPRoutine(routine){
+ const merged=mergeXPRoutines(defaultRoutine(),routine);
+ writeJson(XP_ROUTINE_KEY,merged);
+ return merged;
+}
+
 export function recordXPActivity({at=null}={}){
  const today=dayFrom(at);
  if(!today)return {updated:false,error:'invalid activity date',routine:getXPRoutine()};
@@ -50,6 +88,8 @@ export function recordXPActivity({at=null}={}){
  const history=validHistory([...routine.activeDayHistory,today]);
  const next={...routine,currentStreak:nextStreak,bestStreak:Math.max(routine.bestStreak,nextStreak),lastActiveDay:today,activeDays:Math.max(routine.activeDays+1,history.length),activeDayHistory:history,updatedAt:new Date().toISOString()};
  if(!writeJson(XP_ROUTINE_KEY,next))return {updated:false,rejected:true,error:'unable to persist streak state',routine};
+ const xp=getXPState();
+ writeJson('class9-xp-v1',{...xp,streak:nextStreak,updatedAt:next.updatedAt});
  return {updated:true,duplicate:false,routine:next};
 }
 
