@@ -1,0 +1,50 @@
+name: Verify Learning Hub PWA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.js'
+      - '.github/workflows/pwa-verify.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  pwa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build web application
+        run: npm run build
+
+      - name: Verify PWA assets and APK removal from learner UI
+        run: |
+          set -euo pipefail
+          test -s dist/index.html
+          test -s dist/manifest.webmanifest
+          test -s dist/app-icon.png
+          grep -q 'app-icon.png' dist/manifest.webmanifest
+          if grep -R -n -E 'android-latest|app-debug\.apk|Download Android App' src index.html; then
+            echo 'APK download UI reference found in learner-facing source.'
+            exit 1
+          fi
+          grep -q 'Install Learning Hub' src/DownloadAppButton.jsx
+          grep -q 'beforeinstallprompt' src/DownloadAppButton.jsx
+          echo 'Targeted PWA verification passed.'
