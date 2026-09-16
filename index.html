@@ -2,8 +2,15 @@
 <html lang="hi" class="hub-booting">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="कक्षा 9 लर्निंग हब — सीखें, अभ्यास करें, चुनौती लें और टेस्ट दें।" />
+    <meta name="theme-color" content="#111827" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Class 9 Hub" />
+    <link rel="manifest" href="/Class-9-Learning-Hub/manifest.webmanifest" />
+    <link rel="icon" href="/Class-9-Learning-Hub/pwa-icon.svg" type="image/svg+xml" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -31,6 +38,15 @@
           window.history.pushState({},'',url.toString());
           window.dispatchEvent(new PopStateEvent('popstate'));
         },true);
+      })();
+    </script>
+    <script>
+      (function(){
+        if(!('serviceWorker' in navigator))return;
+        window.addEventListener('load',function(){
+          navigator.serviceWorker.register('/Class-9-Learning-Hub/sw.js',{scope:'/Class-9-Learning-Hub/'})
+            .catch(function(){ /* PWA is optional; the web app remains fully functional. */ });
+        });
       })();
     </script>
   </head>
