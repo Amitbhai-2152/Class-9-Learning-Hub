@@ -1,0 +1,50 @@
+name: Fix English Canonical Progress Once
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[english-progress-fixed]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Patch active English routes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p=Path('src/main2.jsx')
+          text=p.read_text(encoding='utf-8')
+          if "from './engines/progress/progressStore.js'" not in text:
+              marker="import {getXPState} from './engines/xp/xpStore.js';"
+              if marker not in text: raise SystemExit('main2 import marker not found')
+              text=text.replace(marker,marker+"\nimport {recordCanonicalQuizAttempt} from './engines/progress/progressStore.js';",1)
+          old="const sharedProps={onBack:exitLanguageSkills,addXp:()=>{},finishSession:()=>{}};"
+          new="const sharedProps={onBack:exitLanguageSkills,addXp:()=>{},finishSession:meta=>{const subject='अंग्रेज़ी';const stage=meta?.mode;const chapter=meta?.chapter||meta?.title||meta?.topic;if(!['learn','practice','challenge','test'].includes(stage)||!chapter)return;const total=Math.max(0,Number(meta?.total??meta?.questionsTotal??meta?.attempted??0));const correct=Math.max(0,Number(meta?.correct??meta?.score??meta?.correctAnswers??0));const answered=Math.max(0,Math.min(total,Number(meta?.attempted??total)));recordCanonicalQuizAttempt({subject,chapter,stage,attemptId:String(meta?.attemptId||`english-${chapter}-${stage}-${meta?.at||Date.now()}`),questionsAnswered:answered,questionsTotal:total,correctAnswers:correct,percent:meta?.percent??(total?Math.round(correct*100/total):0),at:meta?.at&&Number.isFinite(Date.parse(meta.at))?new Date(meta.at).toISOString():new Date().toISOString()});}};"
+          if old not in text:
+              if '[english-progress-fixed]' not in text and 'finishSession:meta=>' not in text:
+                  raise SystemExit('main2 sharedProps marker not found')
+          else:
+              text=text.replace(old,new,1)
+          p.write_text(text,encoding='utf-8')
+          print('main2 English progress bridge patched')
+          PY
+      - name: Validate English progress bridge
+        run: |
+          grep -q "recordCanonicalQuizAttempt" src/main2.jsx
+          grep -q "finishSession:meta" src/main2.jsx
+      - name: Commit and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main2.jsx .github/workflows/fix-english-progress-once.yml
+          git rm .github/workflows/fix-english-progress-once.yml
+          git commit -m "fix: unify English canonical progress [english-progress-fixed]"
+          git push
