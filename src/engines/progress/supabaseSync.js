@@ -1,6 +1,7 @@
 import {supabase,supabaseConfigured}from '../../lib/supabaseClient.js';
 import {getCanonicalProgress,CANONICAL_KEY}from './progressStore.js';
 import {XP_KEY,XP_LEDGER_KEY,getXPState,getXPLedger,xpStateToSupabaseSnapshot}from '../xp/xpStore.js';
+import {getXPRoutine,mergeXPRoutines,restoreXPRoutine}from '../xp/xpRewards.js';
 
 const safeObject=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
 const safeNum=v=>Number.isFinite(Number(v))?Number(v):0;
@@ -33,10 +34,25 @@ async function pushProgress(studentId,state){
  if(attemptRows.length){const sanitized=attemptRows.filter(r=>r.attempt_key.length>0&&['practice','challenge','test'].includes(r.stage));if(sanitized.length){const {error}=await supabase.from('quiz_attempts').upsert(sanitized,{onConflict:'student_id,attempt_key',ignoreDuplicates:true});if(error)throw error;}}
 }
 
-async function pushXP(studentId){const snapshot=xpStateToSupabaseSnapshot(getXPState(),studentId);const {error:walletError}=await supabase.from('xp_wallets').upsert({student_id:studentId,...snapshot.wallet,updated_at:new Date().toISOString()},{onConflict:'student_id'});if(walletError)throw walletError;const events=snapshot.events.map(e=>({student_id:studentId,...e}));if(events.length){const {error}=await supabase.from('xp_events').upsert(events,{onConflict:'student_id,event_id',ignoreDuplicates:true});if(error)throw error;}}
+async function pushXP(studentId,routine=getXPRoutine()){
+ const current=getXPState();
+ const snapshot=xpStateToSupabaseSnapshot(current,studentId);
+ snapshot.wallet={...snapshot.wallet,
+  streak:Math.max(0,safeNum(routine.currentStreak)),
+  best_streak:Math.max(0,safeNum(routine.bestStreak)),
+  last_active_day:routine.lastActiveDay||null,
+  active_days:Math.max(0,safeNum(routine.activeDays)),
+  active_day_history:Array.isArray(routine.activeDayHistory)?routine.activeDayHistory.slice(-180):[],
+  claimed_level_rewards:Array.isArray(routine.claimedLevelRewards)?routine.claimedLevelRewards:[],
+  claimed_streak_rewards:Array.isArray(routine.claimedStreakRewards)?routine.claimedStreakRewards:[],
+  updated_at:new Date().toISOString()
+ };
+ const {error:walletError}=await supabase.from('xp_wallets').upsert({student_id:studentId,...snapshot.wallet},{onConflict:'student_id'});if(walletError)throw walletError;
+ const events=snapshot.events.map(e=>({student_id:studentId,...e}));if(events.length){const {error}=await supabase.from('xp_events').upsert(events,{onConflict:'student_id,event_id',ignoreDuplicates:true});if(error)throw error;}
+}
 
-function mergeLocalXP(cloudWallet,cloudEvents){const local=getXPState(),events=getXPLedger(),byId=new Map(events.map(e=>[String(e.eventId),e]));for(const e of cloudEvents||[])if(e.event_id)byId.set(String(e.event_id),{eventId:String(e.event_id),amount:safeNum(e.amount),source:String(e.source||'system'),subjectId:e.subject_id||null,topicId:e.topic_id||null,stage:e.stage||null,awardedAt:e.awarded_at||null,metadata:safeObject(e.metadata)});const c=safeObject(cloudWallet),sameDay=String(c.day||'')===local.day;const merged={...local,totalXp:Math.max(local.totalXp,safeNum(c.total_xp)),lifetimeXp:Math.max(local.lifetimeXp,safeNum(c.lifetime_xp)),dailyGoal:Math.max(1,safeNum(c.daily_goal)||local.dailyGoal),dailyXp:sameDay?Math.max(local.dailyXp,safeNum(c.daily_xp)):local.dailyXp,streak:Math.max(local.streak,safeNum(c.streak)),updatedAt:Date.parse(c.updated_at||'')>Date.parse(local.updatedAt||'')?c.updated_at:local.updatedAt};write(XP_KEY,merged);write(XP_LEDGER_KEY,Array.from(byId.values()).slice(-1000));try{window.dispatchEvent(new CustomEvent('class9-xp-updated',{detail:{cloudSync:true}}))}catch{}}
+function mergeLocalXP(cloudWallet,cloudEvents,routine=getXPRoutine()){const local=getXPState(),events=getXPLedger(),byId=new Map(events.map(e=>[String(e.eventId),e]));for(const e of cloudEvents||[])if(e.event_id)byId.set(String(e.event_id),{eventId:String(e.event_id),amount:safeNum(e.amount),source:String(e.source||'system'),subjectId:e.subject_id||null,topicId:e.topic_id||null,stage:e.stage||null,awardedAt:e.awarded_at||null,metadata:safeObject(e.metadata)});const c=safeObject(cloudWallet),sameDay=String(c.day||'')===local.day;const merged={...local,totalXp:Math.max(local.totalXp,safeNum(c.total_xp)),lifetimeXp:Math.max(local.lifetimeXp,safeNum(c.lifetime_xp)),dailyGoal:Math.max(1,safeNum(c.daily_goal)||local.dailyGoal),dailyXp:sameDay?Math.max(local.dailyXp,safeNum(c.daily_xp)):local.dailyXp,streak:Math.max(0,safeNum(routine.currentStreak)),updatedAt:Date.parse(c.updated_at||'')>Date.parse(local.updatedAt||'')?c.updated_at:local.updatedAt};write(XP_KEY,merged);write(XP_LEDGER_KEY,Array.from(byId.values()).slice(-1000));try{window.dispatchEvent(new CustomEvent('class9-xp-updated',{detail:{cloudSync:true}}))}catch{}}
 
-export async function syncAuthenticatedUser(user){if(!supabaseConfigured||!supabase||!user?.id)return {ok:false,reason:'not-configured'};if(syncPromise)return syncPromise;syncPromise=(async()=>{const student=await ensureStudent(user);const cloud=await pullCloud(student.id);const local=getCanonicalProgress();const merged=mergeCanonical(local,cloud.progressRows,cloud.attempts);write(CANONICAL_KEY,merged);await pushProgress(student.id,merged);mergeLocalXP(cloud.xpWallet,cloud.xpEvents);await pushXP(student.id);try{window.dispatchEvent(new CustomEvent('class9-cloud-sync-complete',{detail:{studentId:student.id}}));window.dispatchEvent(new CustomEvent('class9-progress-updated',{detail:{cloudSync:true}}))}catch{}return {ok:true,studentId:student.id,topics:Object.keys(merged.topics||{}).length};})().catch(error=>{try{window.dispatchEvent(new CustomEvent('class9-cloud-sync-error',{detail:{message:String(error?.message||error)}}))}catch{};throw error}).finally(()=>{syncPromise=null});return syncPromise;}
+export async function syncAuthenticatedUser(user){if(!supabaseConfigured||!supabase||!user?.id)return {ok:false,reason:'not-configured'};if(syncPromise)return syncPromise;syncPromise=(async()=>{const student=await ensureStudent(user);const cloud=await pullCloud(student.id);const local=getCanonicalProgress();const merged=mergeCanonical(local,cloud.progressRows,cloud.attempts);write(CANONICAL_KEY,merged);const routine=mergeXPRoutines(getXPRoutine(),cloud.xpWallet);restoreXPRoutine(routine);await pushProgress(student.id,merged);mergeLocalXP(cloud.xpWallet,cloud.xpEvents,routine);await pushXP(student.id,routine);try{window.dispatchEvent(new CustomEvent('class9-cloud-sync-complete',{detail:{studentId:student.id}}));window.dispatchEvent(new CustomEvent('class9-progress-updated',{detail:{cloudSync:true}}))}catch{}return {ok:true,studentId:student.id,topics:Object.keys(merged.topics||{}).length};})().catch(error=>{try{window.dispatchEvent(new CustomEvent('class9-cloud-sync-error',{detail:{message:String(error?.message||error)}}))}catch{};throw error}).finally(()=>{syncPromise=null});return syncPromise;}
 
 export function scheduleAuthenticatedSync(user,delay=900){if(!user?.id||!supabaseConfigured)return()=>{};const timer=setTimeout(()=>{syncAuthenticatedUser(user).catch(()=>{})},delay);return()=>clearTimeout(timer)}
