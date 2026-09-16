@@ -1,0 +1,55 @@
+name: Fix Progress Accuracy QA Once
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: ${{ !contains(github.event.head_commit.message, '[accuracy-qa-fixed]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preserve aggregate analytics when no attempt records exist
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p=Path('src/subject-progress-ui.js')
+          text=p.read_text(encoding='utf-8')
+          pattern=r"const filteredAnalytics=analytics\.map\(a=>\{const records=.*?\}\);const quizAttempts=filteredAnalytics\.reduce\(\(sum,a\)=>sum\+safeNum\(a\.quizAttempts\),0\);const questionsAnswered=filteredAnalytics\.reduce\(\(sum,a\)=>sum\+safeNum\(a\.questionsAnswered\),0\);const questionsTotal=filteredAnalytics\.reduce\(\(sum,a\)=>sum\+safeNum\(a\.questionsTotal\),0\);const correctAnswers=filteredAnalytics\.reduce\(\(sum,a\)=>sum\+safeNum\(a\.correctAnswers\),0\);const accuracy="
+          replacement="const filteredAnalytics=analytics.map(a=>{const records=Array.isArray(a.attemptRecords)?a.attemptRecords.filter(record=>isCanonicalAccuracyRecord(subject.id,record)):[];if(records.length)return records.reduce((acc,record)=>({...acc,quizAttempts:acc.quizAttempts+1,questionsAnswered:acc.questionsAnswered+safeNum(record.questionsAnswered),questionsTotal:acc.questionsTotal+safeNum(record.questionsTotal),correctAnswers:acc.correctAnswers+safeNum(record.correctAnswers)},{quizAttempts:0,questionsAnswered:0,questionsTotal:0,correctAnswers:0});if(Array.isArray(a.attemptRecords))return {quizAttempts:0,questionsAnswered:0,questionsTotal:0,correctAnswers:0};return {quizAttempts:safeNum(a.quizAttempts),questionsAnswered:safeNum(a.questionsAnswered),questionsTotal:safeNum(a.questionsTotal),correctAnswers:safeNum(a.correctAnswers)};});const quizAttempts=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.quizAttempts),0);const questionsAnswered=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.questionsAnswered),0);const questionsTotal=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.questionsTotal),0);const correctAnswers=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.correctAnswers),0);const accuracy="
+          text,n=re.subn(pattern,replacement,text,count=1,flags=re.S)
+          if n!=1: raise SystemExit('subject analytics block not found')
+          p.write_text(text,encoding='utf-8')
+
+          p=Path('src/preparationMeter.js')
+          text=p.read_text(encoding='utf-8')
+          pattern=r"const filteredRecords=analytics\.flatMap\(item=>Array\.isArray\(item\.attemptRecords\)\?item\.attemptRecords:\[\]\)\.filter\(record=>record\?\.source==='canonical'\|\|\(\['math','science','english'\]\.some\(id=>String\(record\?\.attemptId\|\|'\'\)\.startsWith\(`\$\{id\}-`\)\)\)\);\n  const quizAttempts=filteredRecords\.length;\n  const questionsAnswered=filteredRecords\.reduce\(\(sum,item\)=>sum\+\(Number\.isFinite\(Number\(item\.questionsAnswered\)\)\?Number\(item\.questionsAnswered\):0\),0\);\n  const questionsTotal=filteredRecords\.reduce\(\(sum,item\)=>sum\+\(Number\.isFinite\(Number\(item\.questionsTotal\)\)\?Number\(item\.questionsTotal\):0\),0\);\n  const correctAnswers=filteredRecords\.reduce\(\(sum,item\)=>sum\+\(Number\.isFinite\(Number\(item\.correctAnswers\)\)\?Number\(item\.correctAnswers\):0\),0\);"
+          replacement="const filteredRecords=analytics.flatMap(item=>Array.isArray(item.attemptRecords)?item.attemptRecords:[]).filter(record=>record?.source==='canonical'||(['math','science','english'].some(id=>String(record?.attemptId||'').startsWith(`${id}-`)));\n  const hasAttemptRecords=analytics.some(item=>Array.isArray(item.attemptRecords));\n  const aggregateQuizAttempts=analytics.reduce((sum,item)=>sum+(Number.isFinite(Number(item.quizAttempts))?Number(item.quizAttempts):0),0);\n  const aggregateQuestionsAnswered=analytics.reduce((sum,item)=>sum+(Number.isFinite(Number(item.questionsAnswered))?Number(item.questionsAnswered):0),0);\n  const aggregateQuestionsTotal=analytics.reduce((sum,item)=>sum+(Number.isFinite(Number(item.questionsTotal))?Number(item.questionsTotal):0),0);\n  const aggregateCorrectAnswers=analytics.reduce((sum,item)=>sum+(Number.isFinite(Number(item.correctAnswers))?Number(item.correctAnswers):0),0);\n  const quizAttempts=hasAttemptRecords?filteredRecords.length:aggregateQuizAttempts;\n  const questionsAnswered=hasAttemptRecords?filteredRecords.reduce((sum,item)=>sum+(Number.isFinite(Number(item.questionsAnswered))?Number(item.questionsAnswered):0),0):aggregateQuestionsAnswered;\n  const questionsTotal=hasAttemptRecords?filteredRecords.reduce((sum,item)=>sum+(Number.isFinite(Number(item.questionsTotal))?Number(item.questionsTotal):0),0):aggregateQuestionsTotal;\n  const correctAnswers=hasAttemptRecords?filteredRecords.reduce((sum,item)=>sum+(Number.isFinite(Number(item.correctAnswers))?Number(item.correctAnswers):0),0):aggregateCorrectAnswers;"
+          text,n=re.subn(pattern,replacement,text,count=1,flags=re.S)
+          if n!=1: raise SystemExit('preparation analytics block not found')
+          old="const bestPercent=storedTopics.flatMap(topic=>Array.isArray(topic?.analytics?.attemptRecords)?topic.analytics.attemptRecords:[]).filter(record=>record?.source==='canonical'||(['math','science','english'].some(id=>String(record?.attemptId||'').startsWith(`${id}-`)))).reduce((best,item)=>Math.max(best,clampPercent(item.percent)),0);"
+          new="const allAttemptRecords=storedTopics.flatMap(topic=>Array.isArray(topic?.analytics?.attemptRecords)?topic.analytics.attemptRecords:[]);const bestPercent=allAttemptRecords.length?allAttemptRecords.filter(record=>record?.source==='canonical'||(['math','science','english'].some(id=>String(record?.attemptId||'').startsWith(`${id}-`)))).reduce((best,item)=>Math.max(best,clampPercent(item.percent)),0):storedTopics.map(topic=>safeObject(topic?.analytics)).reduce((best,item)=>Math.max(best,clampPercent(item.bestPercent)),0);"
+          if old not in text: raise SystemExit('bestPercent block not found')
+          text=text.replace(old,new,1)
+          p.write_text(text,encoding='utf-8')
+          print('accuracy QA fixture compatibility repaired')
+          PY
+      - name: Validate
+        run: |
+          grep -q "hasAttemptRecords" src/preparationMeter.js
+          grep -q "Array.isArray(a.attemptRecords)" src/subject-progress-ui.js
+      - name: Commit and remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/subject-progress-ui.js src/preparationMeter.js .github/workflows/fix-progress-accuracy-qa-once.yml
+          git rm .github/workflows/fix-progress-accuracy-qa-once.yml
+          git commit -m "fix: preserve progress aggregate compatibility [accuracy-qa-fixed]"
+          git push
