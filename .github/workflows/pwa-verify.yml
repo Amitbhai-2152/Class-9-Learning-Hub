@@ -7,6 +7,8 @@ on:
     paths:
       - 'src/**'
       - 'public/**'
+      - 'supabase/**'
+      - 'scripts/qaCrossDeviceSync.mjs'
       - 'index.html'
       - 'package.json'
       - 'package-lock.json'
@@ -31,6 +33,9 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Cross-device XP and streak QA
+        run: npm run qa:cross-device-sync
+
       - name: Build web application
         run: npm run build
 
@@ -47,4 +52,4 @@ jobs:
           fi
           grep -q 'Install Learning Hub' src/DownloadAppButton.jsx
           grep -q 'beforeinstallprompt' src/DownloadAppButton.jsx
-          echo 'Targeted PWA verification passed.'
+          echo 'Targeted PWA and cross-device verification passed.'
