@@ -51,7 +51,31 @@ async function pushXP(studentId,routine=getXPRoutine()){
  const events=snapshot.events.map(e=>({student_id:studentId,...e}));if(events.length){const {error}=await supabase.from('xp_events').upsert(events,{onConflict:'student_id,event_id',ignoreDuplicates:true});if(error)throw error;}
 }
 
-function mergeLocalXP(cloudWallet,cloudEvents,routine=getXPRoutine()){const local=getXPState(),events=getXPLedger(),byId=new Map(events.map(e=>[String(e.eventId),e]));for(const e of cloudEvents||[])if(e.event_id)byId.set(String(e.event_id),{eventId:String(e.event_id),amount:safeNum(e.amount),source:String(e.source||'system'),subjectId:e.subject_id||null,topicId:e.topic_id||null,stage:e.stage||null,awardedAt:e.awarded_at||null,metadata:safeObject(e.metadata)});const c=safeObject(cloudWallet),sameDay=String(c.day||'')===local.day;const merged={...local,totalXp:Math.max(local.totalXp,safeNum(c.total_xp)),lifetimeXp:Math.max(local.lifetimeXp,safeNum(c.lifetime_xp)),dailyGoal:Math.max(1,safeNum(c.daily_goal)||local.dailyGoal),dailyXp:sameDay?Math.max(local.dailyXp,safeNum(c.daily_xp)):local.dailyXp,streak:Math.max(0,safeNum(routine.currentStreak)),updatedAt:Date.parse(c.updated_at||'')>Date.parse(local.updatedAt||'')?c.updated_at:local.updatedAt};write(XP_KEY,merged);write(XP_LEDGER_KEY,Array.from(byId.values()).slice(-1000));try{window.dispatchEvent(new CustomEvent('class9-xp-updated',{detail:{cloudSync:true}}))}catch{}}
+function mergeLocalXP(cloudWallet,cloudEvents,routine=getXPRoutine()){
+ const local=getXPState(),events=getXPLedger(),byId=new Map(events.map(e=>[String(e.eventId),e]));
+ for(const e of cloudEvents||[])if(e.event_id)byId.set(String(e.event_id),{eventId:String(e.event_id),amount:safeNum(e.amount),source:String(e.source||'system'),subjectId:e.subject_id||null,topicId:e.topic_id||null,stage:e.stage||null,awardedAt:e.awarded_at||null,metadata:safeObject(e.metadata)});
+ const c=safeObject(cloudWallet);
+ const localDay=String(local.day||'');
+ const cloudDay=String(c.day||'');
+ const dayChoice=cloudDay>localDay?cloudDay:localDay;
+ const dailyXp=dayChoice===cloudDay&&dayChoice===localDay
+  ?Math.max(local.dailyXp,safeNum(c.daily_xp))
+  :dayChoice===cloudDay
+    ?safeNum(c.daily_xp)
+    :local.dailyXp;
+ const merged={...local,
+  totalXp:Math.max(local.totalXp,safeNum(c.total_xp)),
+  lifetimeXp:Math.max(local.lifetimeXp,safeNum(c.lifetime_xp)),
+  dailyGoal:Math.max(1,safeNum(c.daily_goal)||local.dailyGoal),
+  day:dayChoice||local.day,
+  dailyXp,
+  streak:Math.max(0,safeNum(routine.currentStreak)),
+  updatedAt:Date.parse(c.updated_at||'')>Date.parse(local.updatedAt||'')?c.updated_at:local.updatedAt
+ };
+ write(XP_KEY,merged);
+ write(XP_LEDGER_KEY,Array.from(byId.values()).slice(-1000));
+ try{window.dispatchEvent(new CustomEvent('class9-xp-updated',{detail:{cloudSync:true}}))}catch{}
+}
 
 export async function syncAuthenticatedUser(user){if(!supabaseConfigured||!supabase||!user?.id)return {ok:false,reason:'not-configured'};if(syncPromise)return syncPromise;syncPromise=(async()=>{const student=await ensureStudent(user);const cloud=await pullCloud(student.id);const local=getCanonicalProgress();const merged=mergeCanonical(local,cloud.progressRows,cloud.attempts);write(CANONICAL_KEY,merged);const routine=mergeXPRoutines(getXPRoutine(),cloud.xpWallet);restoreXPRoutine(routine);await pushProgress(student.id,merged);mergeLocalXP(cloud.xpWallet,cloud.xpEvents,routine);await pushXP(student.id,routine);try{window.dispatchEvent(new CustomEvent('class9-cloud-sync-complete',{detail:{studentId:student.id}}));window.dispatchEvent(new CustomEvent('class9-progress-updated',{detail:{cloudSync:true}}))}catch{}return {ok:true,studentId:student.id,topics:Object.keys(merged.topics||{}).length};})().catch(error=>{try{window.dispatchEvent(new CustomEvent('class9-cloud-sync-error',{detail:{message:String(error?.message||error)}}))}catch{};throw error}).finally(()=>{syncPromise=null});return syncPromise;}
 
