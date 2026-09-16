@@ -1,4 +1,5 @@
-import React,{useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useState} from 'react';
+import {recordCanonicalQuizAttempt} from './engines/progress/progressStore.js';
 import {chapter4Practice} from './chapter4Practice';
 
 const challenge=[
@@ -19,6 +20,14 @@ export function LinearEquationEngine({chapter,mode,onBack,addXp}){
  const questions=useMemo(()=>mode==='challenge'?challenge:isTest?shuffle(chapter4Practice).slice(0,15):chapter4Practice,[mode]);
  const[index,setIndex]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[earned,setEarned]=useState(0);
  const current=questions[index],points=mode==='challenge'?25:15;
+
+ useEffect(()=>{
+  if(!done||!mode||!questions.length)return;
+  const total=questions.length;
+  const correct=score;
+  const attemptId=`math-${chapter}-${mode}-${Date.now()}`;
+  recordCanonicalQuizAttempt({subject:'गणित',chapter,stage:mode,attemptId,questionsAnswered:total,questionsTotal:total,correctAnswers:correct,percent:Math.round((correct/total)*100),at:new Date().toISOString()});
+ },[done,chapter,mode,score,questions.length]);
  const choose=i=>{if(selected!==null||!current)return;setSelected(i);if(i===current.answer){setScore(s=>s+1);if(!isTest){setEarned(e=>e+points);addXp?.(points)}}};
  const next=()=>{if(selected===null)return;if(index===questions.length-1)setDone(true);else{setIndex(i=>i+1);setSelected(null)}};
  const restart=()=>{setIndex(0);setSelected(null);setScore(0);setDone(false);setEarned(0)};

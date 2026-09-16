@@ -1,4 +1,5 @@
-import React,{useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useState} from 'react';
+import {recordCanonicalQuizAttempt} from './engines/progress/progressStore.js';
 import {chapter7Practice} from './chapter7Practice';
 const challenge=[
 {q:'यदि ΔABC में AB=AC और D, BC का मध्यबिंदु है, तो AD के बारे में क्या सिद्ध किया जा सकता है?',options:['AD केवल माध्यिका है','AD माध्यिका और लंब दोनों है','AD केवल ऊँचाई है','AD, BC के समानांतर है'],answer:1,explain:'AB=AC वाले समद्विबाहु त्रिभुज में आधार के मध्यबिंदु से शीर्ष तक खींची गई रेखा दोनों छोटे त्रिभुजों को भुजा-भुजा-भुजा कसौटी से सर्वांगसम सिद्ध करने में मदद करती है; इसलिए AD आधार पर लंब भी होता है।'},
@@ -18,6 +19,14 @@ export function TrianglesEngine({chapter,mode,onBack,addXp}){
  const questions=useMemo(()=>isTest?shuffle(chapter7Practice).slice(0,15):mode==='challenge'?challenge:chapter7Practice,[mode,isTest]);
  const[index,setIndex]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[earned,setEarned]=useState(0);
  const current=questions[index],points=mode==='challenge'?25:15;
+
+ useEffect(()=>{
+  if(!done||!mode||!questions.length)return;
+  const total=questions.length;
+  const correct=score;
+  const attemptId=`math-${chapter}-${mode}-${Date.now()}`;
+  recordCanonicalQuizAttempt({subject:'गणित',chapter,stage:mode,attemptId,questionsAnswered:total,questionsTotal:total,correctAnswers:correct,percent:Math.round((correct/total)*100),at:new Date().toISOString()});
+ },[done,chapter,mode,score,questions.length]);
  const choose=i=>{if(selected!==null||!current)return;setSelected(i);if(i===current.answer){setScore(s=>s+1);if(!isTest){setEarned(e=>e+points);addXp?.(points)}}};
  const next=()=>{if(selected===null)return;if(index===questions.length-1)setDone(true);else{setIndex(i=>i+1);setSelected(null)}};
  if(done)return <main className='page'><header className='page-header'><button className='pressable' onClick={onBack}>← अध्याय</button><div className='badge'>त्रिभुज • परिणाम</div><h1>{isTest?'🎯 टेस्ट परिणाम':mode==='challenge'?'🔥 चुनौती पूरी':'📝 अभ्यास पूरा'}</h1></header><section className='page-content'><div className='result-card'><div className='result-score'>{score}<small> / {questions.length}</small></div><div className='result-percent'>{Math.round(score/questions.length*100)}% सही</div><h2>{score===questions.length?'शानदार! 🎉':score>=questions.length*.7?'बहुत अच्छा! 💪':'अभी और अभ्यास करें 📚'}</h2><p>{isTest?'टेस्ट पूरा हुआ।':'आपने '+earned+' XP कमाए।'}</p><div className='result-actions'><button className='secondary-btn pressable' onClick={()=>{setIndex(0);setSelected(null);setScore(0);setDone(false);setEarned(0)}}>फिर से करें</button><button className='primary-btn pressable' onClick={onBack}>अध्याय पर जाएँ →</button></div></div></section></main>;

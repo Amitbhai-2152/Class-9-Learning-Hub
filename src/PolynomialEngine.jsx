@@ -1,4 +1,5 @@
-import React,{useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useState} from 'react';
+import {recordCanonicalQuizAttempt} from './engines/progress/progressStore.js';
 import {chapter2Practice} from './chapter2Practice';
 
 const challenge=[
@@ -22,6 +23,14 @@ export function PolynomialEngine({chapter,mode,onBack,addXp}){
  const questions=useMemo(()=>isTest?shuffle(chapter2Practice).slice(0,15):bank,[mode,isTest]);
  const [index,setIndex]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[earned,setEarned]=useState(0);
  const current=questions[index];
+
+ useEffect(()=>{
+  if(!done||!mode||!questions.length)return;
+  const total=questions.length;
+  const correct=score;
+  const attemptId=`math-${chapter}-${mode}-${Date.now()}`;
+  recordCanonicalQuizAttempt({subject:'गणित',chapter,stage:mode,attemptId,questionsAnswered:total,questionsTotal:total,correctAnswers:correct,percent:Math.round((correct/total)*100),at:new Date().toISOString()});
+ },[done,chapter,mode,score,questions.length]);
  const points=mode==='challenge'?25:15;
  const choose=i=>{if(selected!==null)return;setSelected(i);if(i===current.answer){setScore(s=>s+1);if(!isTest){setEarned(e=>e+points);addXp?.(points)}}};
  const next=()=>{if(selected===null)return;if(index===questions.length-1)setDone(true);else{setIndex(i=>i+1);setSelected(null)}};

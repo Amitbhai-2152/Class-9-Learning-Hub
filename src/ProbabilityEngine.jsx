@@ -1,4 +1,5 @@
-import React,{useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useState} from 'react';
+import {recordCanonicalQuizAttempt} from './engines/progress/progressStore.js';
 import {chapter15Practice} from './chapter15Practice';
 
 const challenge=[
@@ -15,6 +16,14 @@ export function ProbabilityEngine({chapter,mode,onBack,addXp}){
  const questions=useMemo(()=>{const practice=normalizePractice(chapter15Practice);return isTest?shuffle(practice).slice(0,15):mode==='challenge'?challenge:practice},[mode,isTest]);
  const [index,setIndex]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[earned,setEarned]=useState(0);
  const current=questions[index],points=mode==='challenge'?25:15;
+
+ useEffect(()=>{
+  if(!done||!mode||!questions.length)return;
+  const total=questions.length;
+  const correct=score;
+  const attemptId=`math-${chapter}-${mode}-${Date.now()}`;
+  recordCanonicalQuizAttempt({subject:'गणित',chapter,stage:mode,attemptId,questionsAnswered:total,questionsTotal:total,correctAnswers:correct,percent:Math.round((correct/total)*100),at:new Date().toISOString()});
+ },[done,chapter,mode,score,questions.length]);
  const choose=i=>{if(selected!==null||!current)return;setSelected(i);if(i===current.answer){setScore(s=>s+1);if(!isTest){setEarned(e=>e+points);addXp?.(points)}}};
  const next=()=>{if(selected===null||!current)return;if(index===questions.length-1)setDone(true);else{setIndex(i=>i+1);setSelected(null)}};
  if(done)return <main className="page"><header className="page-header"><button className="pressable" onClick={onBack}>← अध्याय</button><div className="badge">प्रायिकता • परिणाम</div><h1>{isTest?'🎯 टेस्ट परिणाम':mode==='challenge'?'🔥 चुनौती पूरी':'📝 अभ्यास पूरा'}</h1></header><section className="page-content"><div className="result-card"><div className="result-score">{score}<small> / {questions.length}</small></div><div className="result-percent">{Math.round(score/questions.length*100)}% सही</div><h2>{score===questions.length?'शानदार! 🎉':score>=questions.length*.7?'बहुत अच्छा! 💪':'अभी और अभ्यास करें 📚'}</h2><p>{isTest?'टेस्ट पूरा हुआ।':'आपने '+earned+' XP कमाए।'}</p><div className="result-actions"><button className="secondary-btn pressable" onClick={()=>{setIndex(0);setSelected(null);setScore(0);setDone(false);setEarned(0)}}>फिर से करें</button><button className="primary-btn pressable" onClick={onBack}>अध्याय पर जाएँ →</button></div></div></section></main>;
