@@ -11,6 +11,7 @@ const safeNum=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):f
 function getStudentId(){try{return localStorage.getItem(ANON_ID_KEY)||''}catch{return ''}}
 function canonicalTopicKey(subjectId,topicId){return `${subjectId}::${topicId}`;}
 function readCanonicalTopics(){return safeObject(getCanonicalProgress()?.topics);}
+const isCanonicalAccuracyRecord=(subjectId,record)=>{const source=record?.source;if(source==='legacy')return false;if(source==='canonical')return true;const attemptId=String(record?.attemptId||'');return ['math','science','english'].some(id=>id===subjectId&&attemptId.startsWith(`${id}-`));};
 function alreadyRecorded(subject,chapter,stage){const topic=resolveTopic(subject,chapter);const subjectRecord=resolveSubject(subject);if(!subjectRecord||!topic)return true;return Boolean(readCanonicalTopics()[canonicalTopicKey(subjectRecord.id,topic.id)]?.stages?.[stage]);}
 function sessionIdentity(session){return [session?.at??'',session?.subject??'',session?.chapter??'',session?.mode??'',session?.score??session?.correct??'',session?.total??'',session?.percent??'',session?.attempted??''].join('|');}
 
@@ -43,12 +44,7 @@ export function getSubjectProgress(){
   const fullyCompleted=rows.filter(row=>STAGES.every(stage=>row?.stages?.[stage])).length;
   const attempts=rows.reduce((sum,row)=>sum+safeNum(row?.attempts),0);
   const correct=rows.reduce((sum,row)=>sum+safeNum(row?.correct),0);
-  const analytics=rows.map(row=>safeObject(row?.analytics));
-  const quizAttempts=analytics.reduce((sum,a)=>sum+safeNum(a.quizAttempts),0);
-  const questionsAnswered=analytics.reduce((sum,a)=>sum+safeNum(a.questionsAnswered),0);
-  const questionsTotal=analytics.reduce((sum,a)=>sum+safeNum(a.questionsTotal),0);
-  const correctAnswers=analytics.reduce((sum,a)=>sum+safeNum(a.correctAnswers),0);
-  const accuracy=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):0;
+  const analytics=rows.map(row=>safeObject(row?.analytics));const filteredAnalytics=analytics.map(a=>{const records=Array.isArray(a.attemptRecords)?a.attemptRecords.filter(record=>isCanonicalAccuracyRecord(subject.id,record)):[];return records.length?records.reduce((acc,record)=>({...acc,quizAttempts:acc.quizAttempts+1,questionsAnswered:acc.questionsAnswered+safeNum(record.questionsAnswered),questionsTotal:acc.questionsTotal+safeNum(record.questionsTotal),correctAnswers:acc.correctAnswers+safeNum(record.correctAnswers)},{quizAttempts:0,questionsAnswered:0,questionsTotal:0,correctAnswers:0}):{quizAttempts:0,questionsAnswered:0,questionsTotal:0,correctAnswers:0};});const quizAttempts=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.quizAttempts),0);const questionsAnswered=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.questionsAnswered),0);const questionsTotal=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.questionsTotal),0);const correctAnswers=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.correctAnswers),0);const accuracy=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):0;
   const coverage=Math.round((completedStages/(subject.topics.length*STAGES.length))*100);
   const readiness=Math.round(coverage*0.65+accuracy*0.35);
   const updatedAt=rows.reduce((latest,row)=>row?.lastActivityAt&&(!latest||row.lastActivityAt>latest)?row.lastActivityAt:latest,null);
