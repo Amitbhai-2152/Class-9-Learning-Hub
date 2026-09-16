@@ -1,10 +1,10 @@
-const CACHE_NAME = 'class9-learning-hub-v2';
+const CACHE_NAME = 'class9-learning-hub-v3';
 const APP_SCOPE = '/Class-9-Learning-Hub/';
+const APP_ICON = `${APP_SCOPE}app-icon.png?v=20260916`;
 const APP_SHELL = [
   APP_SCOPE,
   `${APP_SCOPE}manifest.webmanifest`,
-  `${APP_SCOPE}app-icon.png`,
-  `${APP_SCOPE}pwa-icon.svg`
+  APP_ICON
 ];
 
 self.addEventListener('install', event => {
