@@ -1,9 +1,0 @@
-{
-  "appId": "com.class9learninghub.app",
-  "appName": "Class 9 Learning Hub",
-  "webDir": "dist",
-  "bundledWebRuntime": false,
-  "android": {
-    "backgroundColor": "#ffffff"
-  }
-}
