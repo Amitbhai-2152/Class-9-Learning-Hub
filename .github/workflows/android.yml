@@ -11,7 +11,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'vite.config.js'
-      - 'capacitor.config.ts'
+      - 'capacitor.config.json'
       - '.github/workflows/android.yml'
 
 permissions:
@@ -56,20 +56,18 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Verify Capacitor TypeScript config
+      - name: Verify Capacitor JSON config
         run: |
           set -euo pipefail
-          test -s capacitor.config.ts
-          test ! -e capacitor.config.json
-          test -x node_modules/.bin/tsc
-          grep -q "appId: 'com.class9learninghub.app'" capacitor.config.ts
-          grep -q "webDir: 'dist'" capacitor.config.ts
+          test -s capacitor.config.json
+          test ! -e capacitor.config.ts
+          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('capacitor.config.json','utf8')); if(c.appId!=='com.class9learninghub.app'||c.webDir!=='dist') process.exit(1); console.log('Capacitor JSON config OK')"
 
       - name: Build web application
         run: npm run build
 
       - name: Add Android platform
-        run: npx cap add android
+        run: npx cap --config capacitor.config.json add android
 
       - name: Apply Class 9 Learning Hub app icon
         run: |
@@ -90,7 +88,7 @@ jobs:
           cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
       - name: Sync Capacitor
-        run: npx cap sync android
+        run: npx cap --config capacitor.config.json sync android
 
       - name: Build debug APK
         working-directory: android
