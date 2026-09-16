@@ -1,6 +1,6 @@
 import React,{useEffect,useState}from'react';
 
-const APP_ICON_URL=`${import.meta.env.BASE_URL||'/'}app-icon.png`;
+const APP_ICON_URL=`${import.meta.env.BASE_URL||'/'}app-icon.png?v=20260916`;
 
 function isStandalone(){
   return window.matchMedia?.('(display-mode: standalone)')?.matches||window.navigator.standalone===true;
