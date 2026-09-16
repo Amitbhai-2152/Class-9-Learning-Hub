@@ -11,7 +11,7 @@ const metricForTopics=(topics)=>{
   const totalStages=rows.length*STAGES.length;
   const completedStages=rows.reduce((count,topic)=>count+stageCount(topic?.stages),0);
   const analytics=rows.map(topic=>safeObject(topic?.analytics));
-  const filteredRecords=analytics.flatMap(item=>Array.isArray(item.attemptRecords)?item.attemptRecords:[]).filter(record=>record?.source==='canonical'||(['math','science','english'].some(id=>String(record?.attemptId||'').startsWith(`${id}-`)));
+  const filteredRecords=analytics.flatMap(item=>Array.isArray(item.attemptRecords)?item.attemptRecords:[]).filter(record=>record?.source==='canonical'||['math','science','english'].some(id=>String(record?.attemptId||'').startsWith(`${id}-`)));
   const hasAttemptRecords=analytics.some(item=>Array.isArray(item.attemptRecords));
   const aggregateQuizAttempts=analytics.reduce((sum,item)=>sum+(Number.isFinite(Number(item.quizAttempts))?Number(item.quizAttempts):0),0);
   const aggregateQuestionsAnswered=analytics.reduce((sum,item)=>sum+(Number.isFinite(Number(item.questionsAnswered))?Number(item.questionsAnswered):0),0);
@@ -23,7 +23,7 @@ const metricForTopics=(topics)=>{
   const correctAnswers=hasAttemptRecords?filteredRecords.reduce((sum,item)=>sum+(Number.isFinite(Number(item.correctAnswers))?Number(item.correctAnswers):0),0):aggregateCorrectAnswers;
   const performancePercent=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):0;
   const coveragePercent=totalStages?Math.round((completedStages/totalStages)*100):0;
-  const readiness=clampPercent(Math.round(coveragePercent*0.65+performancePercent*0.35));
+  const readiness=clampPercent(Math.floor(coveragePercent*0.65+performancePercent*0.35));
   return {coveragePercent,performancePercent,readiness,completedStages,totalStages,topicsStarted:rows.filter(topic=>stageCount(topic?.stages)>0).length,totalTopics:rows.length,quizAttempts,questionsAnswered,questionsTotal,correctAnswers,hasPerformanceData:quizAttempts>0||questionsAnswered>0};
 };
 
@@ -45,7 +45,8 @@ export function calculatePreparationMeter(canonical={}){
   const topics=registryTopicStates(state);
   const metrics=metricForTopics(topics);
   const storedTopics=Object.values(safeObject(state.topics));
-  const allAttemptRecords=storedTopics.flatMap(topic=>Array.isArray(topic?.analytics?.attemptRecords)?topic.analytics.attemptRecords:[]);const bestPercent=allAttemptRecords.length?allAttemptRecords.filter(record=>record?.source==='canonical'||(['math','science','english'].some(id=>String(record?.attemptId||'').startsWith(`${id}-`)))).reduce((best,item)=>Math.max(best,clampPercent(item.percent)),0):storedTopics.map(topic=>safeObject(topic?.analytics)).reduce((best,item)=>Math.max(best,clampPercent(item.bestPercent)),0);
+  const allAttemptRecords=storedTopics.flatMap(topic=>Array.isArray(topic?.analytics?.attemptRecords)?topic.analytics.attemptRecords:[]);
+  const bestPercent=allAttemptRecords.length?allAttemptRecords.filter(record=>record?.source==='canonical'||['math','science','english'].some(id=>String(record?.attemptId||'').startsWith(`${id}-`))).reduce((best,item)=>Math.max(best,clampPercent(item.percent)),0):storedTopics.map(topic=>safeObject(topic?.analytics)).reduce((best,item)=>Math.max(best,clampPercent(item.bestPercent)),0);
   let label='अभी तैयारी शुरू करें';
   if(metrics.readiness>=90)label='परीक्षा के लिए मजबूत तैयारी';
   else if(metrics.readiness>=75)label='बहुत अच्छी तैयारी';
