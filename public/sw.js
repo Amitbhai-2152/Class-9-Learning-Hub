@@ -1,9 +1,10 @@
-const CACHE_NAME = 'class9-learning-hub-v3';
+const CACHE_NAME = 'class9-learning-hub-v4';
 const APP_SCOPE = '/Class-9-Learning-Hub/';
 const APP_ICON = `${APP_SCOPE}app-icon.png?v=20260916`;
+const APP_MANIFEST = `${APP_SCOPE}manifest.webmanifest?v=20260916`;
 const APP_SHELL = [
   APP_SCOPE,
-  `${APP_SCOPE}manifest.webmanifest`,
+  APP_MANIFEST,
   APP_ICON
 ];
 
