@@ -1,0 +1,70 @@
+name: Fix Science Canonical Progress Once
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[science-progress-fixed]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Patch Science learning completion
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('src/ScienceLearnView.jsx')
+          text=p.read_text(encoding='utf-8')
+          old="import React,{useEffect,useState} from 'react';\nimport './science3-learn.css';"
+          new="import React,{useEffect,useState} from 'react';\nimport {recordCanonicalQuizAttempt} from './engines/progress/progressStore.js';\nimport './science3-learn.css';"
+          if 'recordCanonicalQuizAttempt' not in text:
+              if old not in text: raise SystemExit('ScienceLearnView import marker not found')
+              text=text.replace(old,new,1)
+          oldblock="    addXp?.(20);\n    finishSession?.({subject:'विज्ञान',chapter,mode:'learn',attempted:safeLessons.filter(x=>x.question).length,correct,completed:true,at:Date.now()});"
+          newblock="    addXp?.(20);\n    finishSession?.({subject:'विज्ञान',chapter,mode:'learn',attempted:safeLessons.filter(x=>x.question).length,correct,completed:true,at:Date.now()});\n    recordCanonicalQuizAttempt({subject:'विज्ञान',chapter,stage:'learn',attemptId:`science-${chapter}-learn-${Date.now()}`,questionsAnswered:safeLessons.filter(x=>x.question).length,questionsTotal:safeLessons.filter(x=>x.question).length,correctAnswers:correct,percent:safeLessons.filter(x=>x.question).length?Math.round((correct/safeLessons.filter(x=>x.question).length)*100):0,at:new Date().toISOString()});"
+          if oldblock not in text: raise SystemExit('ScienceLearnView completion marker not found')
+          text=text.replace(oldblock,newblock,1)
+          p.write_text(text,encoding='utf-8')
+
+          files=[f'src/ScienceChapter{i}Engine.jsx' for i in range(2,16)] + ['src/ScienceChapter1Engine2.jsx']
+          import_react="import React,{useEffect,useState} from 'react';"
+          import_line="import {recordCanonicalQuizAttempt} from './engines/progress/progressStore.js';"
+          for name in files:
+              p=Path(name)
+              text=p.read_text(encoding='utf-8')
+              if 'recordCanonicalQuizAttempt' in text: continue
+              if import_react not in text: raise SystemExit(f'{name}: React import marker not found')
+              text=text.replace(import_react,import_react+'\n'+import_line,1)
+              marker='const current=questions[index]'
+              pos=text.find(marker)
+              if pos<0:
+                  marker='const current=questions[index],'
+                  pos=text.find(marker)
+              if pos<0: raise SystemExit(f'{name}: quiz state marker not found')
+              line_end=text.find('\n',pos)
+              if line_end<0: line_end=len(text)
+              hook="\n useEffect(()=>{\n  if(!done||!mode||!questions.length)return;\n  const total=questions.length;\n  const correct=score;\n  recordCanonicalQuizAttempt({subject:'विज्ञान',chapter,stage:mode,attemptId:`science-${chapter}-${mode}-${Date.now()}`,questionsAnswered:total,questionsTotal:total,correctAnswers:correct,percent:Math.round((correct/total)*100),at:new Date().toISOString()});\n },[done,chapter,mode,score,questions.length]);\n"
+              text=text[:line_end+1]+hook+text[line_end+1:]
+              p.write_text(text,encoding='utf-8')
+          print('Science progress patch applied')
+          PY
+      - name: Validate Science progress hooks
+        run: |
+          grep -q "recordCanonicalQuizAttempt" src/ScienceLearnView.jsx
+          for f in src/ScienceChapter1Engine2.jsx src/ScienceChapter2Engine.jsx src/ScienceChapter3Engine.jsx src/ScienceChapter4Engine.jsx src/ScienceChapter5Engine.jsx src/ScienceChapter6Engine.jsx src/ScienceChapter7Engine.jsx src/ScienceChapter8Engine.jsx src/ScienceChapter9Engine.jsx src/ScienceChapter10Engine.jsx src/ScienceChapter11Engine.jsx src/ScienceChapter12Engine.jsx src/ScienceChapter13Engine.jsx src/ScienceChapter14Engine.jsx src/ScienceChapter15Engine.jsx; do
+            grep -q "recordCanonicalQuizAttempt" "$f" || exit 1
+          done
+      - name: Commit Science progress fix and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/ScienceLearnView.jsx src/ScienceChapter*Engine*.jsx .github/workflows/fix-science-progress-once.yml
+          git rm .github/workflows/fix-science-progress-once.yml
+          git commit -m "fix: unify Science canonical progress [science-progress-fixed]"
+          git push
