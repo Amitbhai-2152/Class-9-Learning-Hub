@@ -1,4 +1,5 @@
 import React,{useEffect,useState} from 'react';
+import {recordCanonicalQuizAttempt} from './engines/progress/progressStore.js';
 import './science3-learn.css';
 import './science-learn-navigator-scroll.css';
 
@@ -39,8 +40,11 @@ export function ScienceLearnView({chapter,chapterNumber,title,lessons,onBack,add
     if(completed)return;
     setCompleted(true);
     const correct=safeLessons.reduce((n,x,i)=>n+(x.question&&Number(answers[i])===Number(x.answer)?1:0),0);
+    const attempted=safeLessons.filter(x=>x.question).length;
+    const at=new Date().toISOString();
     addXp?.(20);
-    finishSession?.({subject:'विज्ञान',chapter,mode:'learn',attempted:safeLessons.filter(x=>x.question).length,correct,completed:true,at:Date.now()});
+    finishSession?.({subject:'विज्ञान',chapter,mode:'learn',attempted,correct,completed:true,at:Date.now()});
+    recordCanonicalQuizAttempt({subject:'विज्ञान',chapter,stage:'learn',attemptId:`science-${chapter}-learn-${Date.now()}`,questionsAnswered:attempted,questionsTotal:attempted,correctAnswers:correct,percent:attempted?Math.round((correct/attempted)*100):0,at});
     window.scrollTo({top:0,left:0,behavior:'auto'});
   };
   useEffect(()=>{window.scrollTo({top:0,left:0,behavior:'auto'});},[]);
