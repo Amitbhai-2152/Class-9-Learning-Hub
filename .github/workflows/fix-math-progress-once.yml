@@ -1,0 +1,88 @@
+name: Fix Maths Canonical Progress Once
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[math-progress-fixed]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Patch active Maths engines
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          files = [
+            'src/PolynomialEngine.jsx',
+            'src/CoordinateEngine.jsx',
+            'src/LinearEquationEngine.jsx',
+            'src/EuclidEngine.jsx',
+            'src/LinesAnglesEngine.jsx',
+            'src/TrianglesEngine.jsx',
+            'src/QuadrilateralEngine.jsx',
+            'src/AreaEngine.jsx',
+            'src/CirclesEngine.jsx',
+            'src/ConstructionsEngine.jsx',
+            'src/HeronEngine.jsx',
+            'src/SurfaceVolumeEngine.jsx',
+            'src/StatisticsEngine.jsx',
+            'src/ProbabilityEngine.jsx',
+          ]
+
+          import_line = "import {recordCanonicalQuizAttempt} from './engines/progress/progressStore.js';\n"
+          hook = """\n useEffect(()=>{\n  if(!done||!mode||!questions.length)return;\n  const total=questions.length;\n  const correct=score;\n  const attemptId=`math-${chapter}-${mode}-${Date.now()}`;\n  recordCanonicalQuizAttempt({subject:'गणित',chapter,stage:mode,attemptId,questionsAnswered:total,questionsTotal:total,correctAnswers:correct,percent:Math.round((correct/total)*100),at:new Date().toISOString()});\n },[done,chapter,mode,score,questions.length]);\n"""
+
+          changed = []
+          for name in files:
+              p = Path(name)
+              text = p.read_text(encoding='utf-8')
+              original = text
+              if 'recordCanonicalQuizAttempt' in text:
+                  continue
+              text = text.replace("import React,{useMemo,useState} from 'react';", "import React,{useEffect,useMemo,useState} from 'react';", 1)
+              if 'recordCanonicalQuizAttempt' not in text:
+                  first_import_end = text.find('\n', text.find("import React"))
+                  text = text[:first_import_end+1] + import_line + text[first_import_end+1:]
+              marker = "const current=questions[index]"
+              pos = text.find(marker)
+              if pos < 0:
+                  marker = "const current=questions[index],points="
+                  pos = text.find(marker)
+              if pos < 0:
+                  raise SystemExit(f'Could not locate insertion point in {name}')
+              line_end = text.find('\n', pos)
+              if line_end < 0:
+                  line_end = len(text)
+              text = text[:line_end+1] + hook + text[line_end+1:]
+              if text != original:
+                  p.write_text(text, encoding='utf-8')
+                  changed.append(name)
+
+          if len(changed) != len(files):
+              missing = sorted(set(files) - set(changed))
+              raise SystemExit(f'Expected {len(files)} Maths engines to change; changed {len(changed)}. Missing/already-patched: {missing}')
+          print('Patched:', '\n'.join(changed))
+          PY
+      - name: Validate Maths progress hooks
+        run: |
+          for f in src/PolynomialEngine.jsx src/CoordinateEngine.jsx src/LinearEquationEngine.jsx src/EuclidEngine.jsx src/LinesAnglesEngine.jsx src/TrianglesEngine.jsx src/QuadrilateralEngine.jsx src/AreaEngine.jsx src/CirclesEngine.jsx src/ConstructionsEngine.jsx src/HeronEngine.jsx src/SurfaceVolumeEngine.jsx src/StatisticsEngine.jsx src/ProbabilityEngine.jsx; do
+            grep -q "recordCanonicalQuizAttempt" "$f" || exit 1
+          done
+          grep -q "import {recordCanonicalQuizAttempt}" src/PolynomialEngine.jsx
+          grep -q "useEffect" src/PolynomialEngine.jsx
+      - name: Commit Maths progress fix and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/*.jsx .github/workflows/fix-math-progress-once.yml
+          git rm .github/workflows/fix-math-progress-once.yml
+          git commit -m "fix: unify Maths canonical progress [math-progress-fixed]"
+          git push
