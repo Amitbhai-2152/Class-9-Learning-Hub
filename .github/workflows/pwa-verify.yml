@@ -9,6 +9,7 @@ on:
       - 'public/**'
       - 'supabase/**'
       - 'scripts/qaCrossDeviceSync.mjs'
+      - 'scripts/qaXPPhase4.mjs'
       - 'index.html'
       - 'package.json'
       - 'package-lock.json'
@@ -35,6 +36,9 @@ jobs:
 
       - name: Cross-device XP and streak QA
         run: npm run qa:cross-device-sync
+
+      - name: XP Phase 4 and normal chapter completion QA
+        run: npm run qa:xp:phase4
 
       - name: Verify cross-device sync contracts
         run: |
@@ -63,4 +67,4 @@ jobs:
           fi
           grep -q 'Install Learning Hub' src/DownloadAppButton.jsx
           grep -q 'beforeinstallprompt' src/DownloadAppButton.jsx
-          echo 'Targeted PWA, cross-device, and asset verification passed.'
+          echo 'Targeted PWA, XP, cross-device, and asset verification passed.'
