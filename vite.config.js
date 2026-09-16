@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Reasoning V2 repair verified; keep GitHub Pages deployment on the canonical Vite app.
+// Keep GitHub Pages on the canonical subpath, while allowing Capacitor to load
+// the bundled web assets from its local WebView origin.
+const isCapacitorBuild = process.env.VITE_CAPACITOR_BUILD === '1';
+
 export default defineConfig({
-  base: '/Class-9-Learning-Hub/',
+  base: isCapacitorBuild ? './' : '/Class-9-Learning-Hub/',
   plugins: [react()],
 });
