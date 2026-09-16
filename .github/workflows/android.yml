@@ -67,7 +67,7 @@ jobs:
         run: npm run build
 
       - name: Add Android platform
-        run: npx cap --config capacitor.config.json add android
+        run: npx cap add android
 
       - name: Apply Class 9 Learning Hub app icon
         run: |
@@ -88,7 +88,7 @@ jobs:
           cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
       - name: Sync Capacitor
-        run: npx cap --config capacitor.config.json sync android
+        run: npx cap sync android
 
       - name: Build debug APK
         working-directory: android
