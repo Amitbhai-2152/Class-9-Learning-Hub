@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VITE_BUILD_VERSION: ${{ github.sha }}
+      VITE_CAPACITOR_BUILD: '1'
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
       VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
     steps:
@@ -63,8 +64,16 @@ jobs:
           test ! -e capacitor.config.ts
           node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('capacitor.config.json','utf8')); if(c.appId!=='com.class9learninghub.app'||c.webDir!=='dist') process.exit(1); console.log('Capacitor JSON config OK')"
 
-      - name: Build web application
+      - name: Build web application for Capacitor
         run: npm run build
+
+      - name: Verify bundled asset paths
+        run: |
+          set -euo pipefail
+          grep -q 'href="./' dist/index.html
+          grep -q 'src="./' dist/index.html
+          test -f dist/assets/index-B8izSXYB.js || true
+          echo 'Capacitor-relative asset paths verified'
 
       - name: Add Android platform
         run: npx cap add android
@@ -120,4 +129,4 @@ jobs:
           echo "## Android APK" >> "$GITHUB_STEP_SUMMARY"
           echo "[Download Class 9 Learning Hub APK](https://github.com/${GITHUB_REPOSITORY}/releases/download/android-latest/Class-9-Learning-Hub.apk)" >> "$GITHUB_STEP_SUMMARY"
 
-# CI trigger revision 2: stable Android icon generation and direct APK release.
+# CI trigger revision 3: use relative Vite asset paths for Capacitor WebView.
