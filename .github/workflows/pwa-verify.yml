@@ -36,6 +36,17 @@ jobs:
       - name: Cross-device XP and streak QA
         run: npm run qa:cross-device-sync
 
+      - name: Verify cross-device sync contracts
+        run: |
+          set -euo pipefail
+          grep -q "getXPRoutine,mergeXPRoutines,restoreXPRoutine" src/engines/progress/supabaseSync.js
+          grep -q "best_streak" src/engines/progress/supabaseSync.js
+          grep -q "active_day_history" src/engines/progress/supabaseSync.js
+          grep -q "claimed_level_rewards" src/engines/progress/supabaseSync.js
+          grep -q "claimed_streak_rewards" src/engines/progress/supabaseSync.js
+          grep -q "add column if not exists best_streak" supabase/004_cross_device_xp_streak_sync.sql
+          grep -q "add column if not exists active_day_history" supabase/004_cross_device_xp_streak_sync.sql
+
       - name: Build web application
         run: npm run build
 
@@ -52,4 +63,4 @@ jobs:
           fi
           grep -q 'Install Learning Hub' src/DownloadAppButton.jsx
           grep -q 'beforeinstallprompt' src/DownloadAppButton.jsx
-          echo 'Targeted PWA and cross-device verification passed.'
+          echo 'Targeted PWA, cross-device, and asset verification passed.'
