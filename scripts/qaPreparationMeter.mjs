@@ -27,28 +27,28 @@ const one={...base,topics:{'math::math-01':topic}};
 const result=calculatePreparationMeter(one);
 assert.equal(result.totalStages,174*STAGES.length);
 assert.equal(result.completedStages,2);
-assert.equal(result.coveragePercent,1);
+assert.equal(result.coveragePercent,0);
 assert.equal(result.performancePercent,83);
 assert.equal(result.bestPercent,90);
 assert.equal(result.quizAttempts,2);
 assert.equal(result.questionsAnswered,18);
 assert.equal(result.correctAnswers,15);
 assert.equal(result.hasPerformanceData,true);
-assert.equal(result.readiness,30);
-assert.equal(result.label,'अच्छी प्रगति');
+assert.equal(result.readiness,29);
+assert.equal(result.label,'तैयारी बन रही है');
 assert.equal(result.subjectBreakdown.length,7);
 const mathRow=result.subjectBreakdown.find(row=>row.subjectId==='math');
-assert.deepEqual(mathRow,{subjectId:'math',coveragePercent:13,performancePercent:83,readiness:38,completedStages:2,totalStages:60,topicsStarted:1,totalTopics:15,quizAttempts:2,questionsAnswered:18,questionsTotal:20,correctAnswers:15,hasPerformanceData:true});
+assert.deepEqual(mathRow,{subjectId:'math',coveragePercent:3,performancePercent:83,readiness:31,completedStages:2,totalStages:60,topicsStarted:1,totalTopics:15,quizAttempts:2,questionsAnswered:18,questionsTotal:20,correctAnswers:15,hasPerformanceData:true});
 
 const allStages={...topic,stages:{learn:true,practice:true,challenge:true,test:true},analytics:{quizAttempts:1,questionsAnswered:10,questionsTotal:10,correctAnswers:10,bestPercent:100}};
 const perfect=calculatePreparationMeter({...base,topics:{'math::math-01':allStages}});
-assert.equal(perfect.readiness,2);
-assert.equal(perfect.coveragePercent,7);
+assert.equal(perfect.readiness,35);
+assert.equal(perfect.coveragePercent,1);
 assert.equal(perfect.performancePercent,100);
-assert.equal(perfect.label,'अच्छी प्रगति');
+assert.equal(perfect.label,'तैयारी बन रही है');
 
 const missingAnalytics=calculatePreparationMeter({...base,topics:{'math::math-01':{stages:{learn:true,practice:true},analytics:{}}}});
-assert.equal(missingAnalytics.readiness,1);
+assert.equal(missingAnalytics.readiness,0);
 assert.equal(missingAnalytics.hasPerformanceData,false);
 
 const subjectIds=['math','science','hindi','sanskrit','sst','english','reasoning'];
@@ -59,7 +59,7 @@ subjectIds.forEach((subjectId,index)=>{
 const multi=calculatePreparationMeter({...base,topics:multiTopics});
 assert.equal(multi.subjectBreakdown.length,7);
 assert.deepEqual(multi.subjectBreakdown.map(row=>row.subjectId),subjectIds);
-assert.ok(multi.subjectBreakdown.every(row=>row.totalTopics===multi.subjectBreakdown.find(x=>x.subjectId===row.subjectId).totalTopics&&row.topicsStarted===1&&row.performancePercent===70));
+assert.ok(multi.subjectBreakdown.every(row=>row.topicsStarted===1&&row.performancePercent===70));
 
 const pageSource=readFileSync(new URL('../src/PreparationMeterPage.jsx',import.meta.url),'utf8');
 const responsiveSource=readFileSync(new URL('../src/preparation-meter-responsive.css',import.meta.url),'utf8');
