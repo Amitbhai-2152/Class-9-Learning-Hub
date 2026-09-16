@@ -1,5 +1,7 @@
 name: Fix Science Canonical Progress Once
 
+# Trigger this one-time repair on the next main push.
+
 on:
   push:
     branches: [main]
