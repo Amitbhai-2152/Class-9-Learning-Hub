@@ -39,7 +39,7 @@ async function pushXP(studentId,routine=getXPRoutine()){
  const snapshot=xpStateToSupabaseSnapshot(current,studentId);
  snapshot.wallet={...snapshot.wallet,
   streak:Math.max(0,safeNum(routine.currentStreak)),
-  best_streak:Math.max(0,safeNum(routine.bestStreak)),
+  best_streak:Math.max(1,safeNum(routine.bestStreak)),
   last_active_day:routine.lastActiveDay||null,
   active_days:Math.max(0,safeNum(routine.activeDays)),
   active_day_history:Array.isArray(routine.activeDayHistory)?routine.activeDayHistory.slice(-180):[],
