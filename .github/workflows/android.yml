@@ -62,7 +62,8 @@ jobs:
           test -s capacitor.config.ts
           test ! -e capacitor.config.json
           test -x node_modules/.bin/tsc
-          node --input-type=module -e "import('./capacitor.config.ts').catch(e => { console.error(e.message); process.exit(0) })"
+          grep -q "appId: 'com.class9learninghub.app'" capacitor.config.ts
+          grep -q "webDir: 'dist'" capacitor.config.ts
 
       - name: Build web application
         run: npm run build
