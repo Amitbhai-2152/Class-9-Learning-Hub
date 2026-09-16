@@ -1,0 +1,113 @@
+name: Repair Progress Accuracy Sources Once
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: ${{ !contains(github.event.head_commit.message, '[accuracy-source-fixed]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch canonical accuracy source handling
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('src/engines/progress/progressStore.js')
+          text = p.read_text(encoding='utf-8')
+
+          old_record = "attemptRecords:[...previousAttemptRecords,{attemptId,questionsAnswered,questionsTotal,correctAnswers,percent,at:attemptedAt,stage}].slice(-100)"
+          new_record = "attemptRecords:[...previousAttemptRecords,{attemptId,questionsAnswered,questionsTotal,correctAnswers,percent,at:attemptedAt,stage,source:quiz.source||'canonical'}].slice(-100)"
+          if old_record not in text:
+              raise SystemExit('progressStore attempt record marker not found')
+          text = text.replace(old_record, new_record, 1)
+
+          old_sig = "export function recordCanonicalQuizAttempt({subject,chapter,stage,attemptId,questionsAnswered=0,questionsTotal=0,correctAnswers=0,percent=0,at=null}={})"
+          new_sig = "export function recordCanonicalQuizAttempt({subject,chapter,stage,attemptId,questionsAnswered=0,questionsTotal=0,correctAnswers=0,percent=0,at=null,source='canonical'}={})"
+          if old_sig not in text:
+              raise SystemExit('recordCanonicalQuizAttempt signature marker not found')
+          text = text.replace(old_sig, new_sig, 1)
+          old_call = "return touchTopic({...resolved,stage,at,attempts:1,correct:correctAnswers,quiz:{attemptId,questionsAnswered,questionsTotal,correctAnswers,percent,at}});"
+          new_call = "return touchTopic({...resolved,stage,at,attempts:1,correct:correctAnswers,quiz:{attemptId,questionsAnswered,questionsTotal,correctAnswers,percent,at,source}});"
+          if old_call not in text:
+              raise SystemExit('recordCanonicalQuizAttempt call marker not found')
+          text = text.replace(old_call, new_call, 1)
+
+          legacy_call = "at:session.at?new Date(session.at).toISOString():new Date().toISOString()"
+          legacy_replacement = "at:session.at?new Date(session.at).toISOString():new Date().toISOString(),source:'legacy'"
+          if legacy_call not in text:
+              raise SystemExit('legacy migration call marker not found')
+          text = text.replace(legacy_call, legacy_replacement, 1)
+          p.write_text(text, encoding='utf-8')
+
+          # Both progress views must agree on what counts as quiz accuracy.
+          helper = """
+          const isCanonicalAccuracyRecord=(subjectId,record)=>{
+           const source=record?.source;
+           if(source==='legacy')return false;
+           if(source==='canonical')return true;
+           const attemptId=String(record?.attemptId||'');
+           return new Set(['math','science','english']).has(subjectId)&&attemptId.startsWith(`${subjectId}-`);
+          };
+          """.strip()
+
+          p = Path('src/subject-progress-ui.js')
+          text = p.read_text(encoding='utf-8')
+          marker = "function alreadyRecorded(subject,chapter,stage){"
+          if helper not in text:
+              insert_at = text.index(marker)
+              text = text[:insert_at] + helper + "\n" + text[insert_at:]
+
+          old_block = "const analytics=rows.map(row=>safeObject(row?.analytics));const quizAttempts=analytics.reduce((sum,a)=>sum+safeNum(a.quizAttempts),0);const questionsAnswered=analytics.reduce((sum,a)=>sum+safeNum(a.questionsAnswered),0);const questionsTotal=analytics.reduce((sum,a)=>sum+safeNum(a.questionsTotal),0);const correctAnswers=analytics.reduce((sum,a)=>sum+safeNum(a.correctAnswers),0);const accuracy=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):0;"
+          new_block = "const analytics=rows.map(row=>safeObject(row?.analytics));const filteredAnalytics=analytics.map(a=>{const records=Array.isArray(a.attemptRecords)?a.attemptRecords.filter(record=>isCanonicalAccuracyRecord(subject.id,record)):[];return records.length?records.reduce((acc,record)=>({...acc,quizAttempts:acc.quizAttempts+1,questionsAnswered:acc.questionsAnswered+safeNum(record.questionsAnswered),questionsTotal:acc.questionsTotal+safeNum(record.questionsTotal),correctAnswers:acc.correctAnswers+safeNum(record.correctAnswers)}, {quizAttempts:0,questionsAnswered:0,questionsTotal:0,correctAnswers:0}):a.source==='canonical'?a:{quizAttempts:0,questionsAnswered:0,questionsTotal:0,correctAnswers:0};});const quizAttempts=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.quizAttempts),0);const questionsAnswered=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.questionsAnswered),0);const questionsTotal=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.questionsTotal),0);const correctAnswers=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.correctAnswers),0);const accuracy=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):0;"
+          if old_block not in text:
+              raise SystemExit('subject-progress analytics block not found')
+          text = text.replace(old_block, new_block, 1)
+          p.write_text(text, encoding='utf-8')
+
+          p = Path('src/preparationMeter.js')
+          text = p.read_text(encoding='utf-8')
+          if helper not in text:
+              marker = "const topicKey=(subjectId,topicId)=>`${subjectId}::${topicId}`;"
+              if marker not in text:
+                  raise SystemExit('preparationMeter marker not found')
+              text = text.replace(marker, marker + "\n" + helper, 1)
+
+          old_block = "const analytics=rows.map(topic=>safeObject(topic?.analytics));\n  const quizAttempts=analytics.reduce((sum,item)=>sum+(Number.isFinite(Number(item.quizAttempts))?Number(item.quizAttempts):0),0);\n  const questionsAnswered=analytics.reduce((sum,item)=>sum+(Number.isFinite(Number(item.questionsAnswered))?Number(item.questionsAnswered):0),0);\n  const questionsTotal=analytics.reduce((sum,item)=>sum+(Number.isFinite(Number(item.questionsTotal))?Number(item.questionsTotal):0),0);\n  const correctAnswers=analytics.reduce((sum,item)=>sum+(Number.isFinite(Number(item.correctAnswers))?Number(item.correctAnswers):0),0);"
+          new_block = "const analytics=rows.map(topic=>safeObject(topic?.analytics));\n  const filteredRecords=analytics.flatMap(item=>Array.isArray(item.attemptRecords)?item.attemptRecords:[]).filter(record=>{const source=record?.source;if(source==='legacy')return false;if(source==='canonical')return true;const attemptId=String(record?.attemptId||'');return ['math','science','english'].some(subjectId=>attemptId.startsWith(`${subjectId}-`));});\n  const quizAttempts=filteredRecords.length;\n  const questionsAnswered=filteredRecords.reduce((sum,item)=>sum+(Number.isFinite(Number(item.questionsAnswered))?Number(item.questionsAnswered):0),0);\n  const questionsTotal=filteredRecords.reduce((sum,item)=>sum+(Number.isFinite(Number(item.questionsTotal))?Number(item.questionsTotal):0),0);\n  const correctAnswers=filteredRecords.reduce((sum,item)=>sum+(Number.isFinite(Number(item.correctAnswers))?Number(item.correctAnswers):0),0);"
+          if old_block not in text:
+              raise SystemExit('preparationMeter analytics block not found')
+          text = text.replace(old_block, new_block, 1)
+          old_best = "const bestPercent=storedTopics.map(topic=>safeObject(topic?.analytics)).reduce((best,item)=>Math.max(best,clampPercent(item.bestPercent)),0);"
+          new_best = "const bestPercent=storedTopics.flatMap(topic=>Array.isArray(topic?.analytics?.attemptRecords)?topic.analytics.attemptRecords:[]).filter(record=>record?.source==='canonical'||(['math','science','english'].some(subjectId=>String(record?.attemptId||'').startsWith(`${subjectId}-`)))).reduce((best,item)=>Math.max(best,clampPercent(item.percent)),0);"
+          if old_best not in text:
+              raise SystemExit('preparationMeter bestPercent block not found')
+          text = text.replace(old_best, new_best, 1)
+          p.write_text(text, encoding='utf-8')
+
+          print('Canonical accuracy-source filtering patched')
+          PY
+
+      - name: Validate source isolation
+        run: |
+          grep -q "source:quiz.source||'canonical'" src/engines/progress/progressStore.js
+          grep -q "source:'legacy'" src/engines/progress/progressStore.js
+          grep -q "isCanonicalAccuracyRecord" src/subject-progress-ui.js
+          grep -q "filteredRecords" src/preparationMeter.js
+
+      - name: Commit and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/engines/progress/progressStore.js src/subject-progress-ui.js src/preparationMeter.js .github/workflows/repair-progress-accuracy-sources-once.yml
+          git rm .github/workflows/repair-progress-accuracy-sources-once.yml
+          git commit -m "fix: isolate canonical quiz accuracy sources [accuracy-source-fixed]"
+          git push
