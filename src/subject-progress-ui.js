@@ -27,7 +27,7 @@ function syncLegacyProgress(){
   if(!session?.completed)return;const stage=STAGES.includes(session.mode)?session.mode:null;if(!stage||!session.subject||session.chapter==null)return;
   const identity=sessionIdentity(session);if(seen.has(identity))return;seen.add(identity);
   const correctAnswers=safeNum(session.correct??session.score);const questionsTotal=Math.max(safeNum(session.total),correctAnswers);const questionsAnswered=Math.max(0,Math.min(questionsTotal,safeNum(session.attempted??session.total)));const percent=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):safeNum(session.percent);
-  recordCanonicalQuizAttempt({subject:session.subject,chapter:session.chapter,stage,attemptId:identity,questionsAnswered,questionsTotal,correctAnswers,percent,at:session.at?new Date(session.at).toISOString():new Date().toISOString()});
+  recordCanonicalQuizAttempt({subject:session.subject,chapter:session.chapter,stage,attemptId:identity,questionsAnswered,questionsTotal,correctAnswers,percent,at:session.at?new Date(session.at).toISOString():new Date().toISOString(),source:'legacy'});
  });
  const hindi=readJson('class9-hindi-chapter-progress-v1',{});
  Object.entries(safeObject(hindi?.modes)).forEach(([id,modes])=>Object.entries(safeObject(modes)).forEach(([stage,done])=>{if(done&&!alreadyRecorded('हिन्दी',id,stage)&&!alreadyRecorded('हिन्दी',hindi?.completed?.[id]||id,stage))recordCanonicalStage({subject:'हिन्दी',chapter:id,stage,at:new Date().toISOString()});}));
@@ -44,7 +44,14 @@ export function getSubjectProgress(){
   const fullyCompleted=rows.filter(row=>STAGES.every(stage=>row?.stages?.[stage])).length;
   const attempts=rows.reduce((sum,row)=>sum+safeNum(row?.attempts),0);
   const correct=rows.reduce((sum,row)=>sum+safeNum(row?.correct),0);
-  const analytics=rows.map(row=>safeObject(row?.analytics));const filteredAnalytics=analytics.map(a=>{const records=Array.isArray(a.attemptRecords)?a.attemptRecords.filter(record=>isCanonicalAccuracyRecord(subject.id,record)):[];if(records.length)return records.reduce((acc,record)=>({...acc,quizAttempts:acc.quizAttempts+1,questionsAnswered:acc.questionsAnswered+safeNum(record.questionsAnswered),questionsTotal:acc.questionsTotal+safeNum(record.questionsTotal),correctAnswers:acc.correctAnswers+safeNum(record.correctAnswers)},{quizAttempts:0,questionsAnswered:0,questionsTotal:0,correctAnswers:0});if(Array.isArray(a.attemptRecords))return {quizAttempts:0,questionsAnswered:0,questionsTotal:0,correctAnswers:0};return {quizAttempts:safeNum(a.quizAttempts),questionsAnswered:safeNum(a.questionsAnswered),questionsTotal:safeNum(a.questionsTotal),correctAnswers:safeNum(a.correctAnswers)};});const quizAttempts=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.quizAttempts),0);const questionsAnswered=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.questionsAnswered),0);const questionsTotal=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.questionsTotal),0);const correctAnswers=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.correctAnswers),0);const accuracy=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):0;
+  const analytics=rows.map(row=>safeObject(row?.analytics));
+  const filteredAnalytics=analytics.map(a=>{
+   const records=Array.isArray(a.attemptRecords)?a.attemptRecords.filter(record=>isCanonicalAccuracyRecord(subject.id,record)):[];
+   if(records.length)return records.reduce((acc,record)=>({...acc,quizAttempts:acc.quizAttempts+1,questionsAnswered:acc.questionsAnswered+safeNum(record.questionsAnswered),questionsTotal:acc.questionsTotal+safeNum(record.questionsTotal),correctAnswers:acc.correctAnswers+safeNum(record.correctAnswers)}),{quizAttempts:0,questionsAnswered:0,questionsTotal:0,correctAnswers:0});
+   if(Array.isArray(a.attemptRecords))return {quizAttempts:0,questionsAnswered:0,questionsTotal:0,correctAnswers:0};
+   return {quizAttempts:safeNum(a.quizAttempts),questionsAnswered:safeNum(a.questionsAnswered),questionsTotal:safeNum(a.questionsTotal),correctAnswers:safeNum(a.correctAnswers)};
+  });
+  const quizAttempts=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.quizAttempts),0);const questionsAnswered=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.questionsAnswered),0);const questionsTotal=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.questionsTotal),0);const correctAnswers=filteredAnalytics.reduce((sum,a)=>sum+safeNum(a.correctAnswers),0);const accuracy=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):0;
   const coverage=Math.round((completedStages/(subject.topics.length*STAGES.length))*100);
   const readiness=Math.round(coverage*0.65+accuracy*0.35);
   const updatedAt=rows.reduce((latest,row)=>row?.lastActivityAt&&(!latest||row.lastActivityAt>latest)?row.lastActivityAt:latest,null);
@@ -69,11 +76,17 @@ function render(){
  const accuracy=meter.hasPerformanceData?`${meter.performancePercent}%`:'—';
  const html=`<div class="spui-head"><div><span class="spui-eyebrow">YOUR PREPARATION</span><h2>तैयारी मीटर</h2><p>आपकी पूरी learning coverage और वास्तविक quiz performance से readiness का संकेत।</p></div><span class="spui-live">● LIVE</span></div><div class="spui-overview"><div class="spui-overview-score" style="--meter:${meter.readiness*3.6}deg"><strong>${meter.readiness}%</strong></div><div class="spui-overview-copy"><strong>${meter.label}</strong><p>Coverage को 65% और quiz performance को 35% weight देकर readiness निकाली जाती है।</p><div class="spui-overview-stats"><span>📚 ${meter.coveragePercent}% coverage</span><span>🎯 ${accuracy} accuracy</span><span>🧩 ${meter.completedStages}/${meter.totalStages} stages</span></div></div></div><div class="spui-grid">${SUBJECT_REGISTRY.map(subject=>{const row=subjects[subject.id];const analyticsLabel=row.quizAttempts?`${row.quizAttempts} quiz • ${row.accuracy}% accuracy`:`${row.chapterStarted}/${row.total} topics started`;return `<button type="button" class="spui-card" data-subject="${subject.id}" aria-label="${subject.name} readiness ${row.readiness}%"><span class="spui-icon">${subject.id==='math'?'∑':subject.id==='science'?'⚗':subject.id==='hindi'?'अ':subject.id==='sanskrit'?'ॐ':subject.id==='sst'?'◎':subject.id==='english'?'A':'?'}</span><span class="spui-main"><span class="spui-title"><strong>${subject.name}</strong><b>${row.readiness}%</b></span><span class="spui-bar"><i style="width:${row.readiness}%"></i></span><span class="spui-meta"><span>${analyticsLabel}</span><em>${row.fullyCompleted} complete</em></span></span><span class="spui-arrow">→</span></button>`}).join('')}</div><div class="spui-footer"><span>📊 Live from saved learning activity</span><span>Readiness + quiz analytics • Canonical</span></div>`;
  if(panel.innerHTML!==html)panel.innerHTML=html;
- panel.querySelectorAll('[data-subject]').forEach(button=>button.onclick=()=>{const id=button.getAttribute('data-subject');history.pushState({},'',`${location.pathname}?page=subject&subject=${encodeURIComponent(id)}`);window.dispatchEvent(new PopStateEvent('popstate'))});
+ panel.querySelectorAll('[data-subject]').forEach(button=>button.onclick=()=>{const subject=button.dataset.subject;const target=SUBJECT_REGISTRY.find(item=>item.id===subject);if(target&&target.homePath)window.location.hash=target.homePath;else window.dispatchEvent(new CustomEvent('class9-subject-progress-navigate',{detail:{subjectId:subject}}));});
 }
 
-let scheduled=false;function scheduleRefresh(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;render()})}
-function install(){render();const observer=new MutationObserver(scheduleRefresh);observer.observe(document.body,{childList:true,subtree:true});window.addEventListener('class9-progress-updated',scheduleRefresh);window.addEventListener('hindi-progress-updated',scheduleRefresh);window.addEventListener('storage',event=>{if(['class9-progress','class9-sessions','class9-learning-progress','class9-hindi-chapter-progress-v1',CANONICAL_KEY].includes(event.key))scheduleRefresh()})}
+export function initSubjectProgressUI(){
+ render();
+ const observer=new MutationObserver(()=>render());
+ observer.observe(document.body,{childList:true,subtree:true});
+ window.addEventListener('class9-progress-updated',render);
+ window.addEventListener('storage',render);
+ return ()=>{observer.disconnect();window.removeEventListener('class9-progress-updated',render);window.removeEventListener('storage',render)};
+}
 
-export {SUBJECT_REGISTRY,CANONICAL_KEY,getStudentId};
-if(typeof window!=='undefined'){try{syncLegacyProgress()}catch{};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install()}
+export function syncSubjectProgress(){return syncLegacyProgress();}
+export {CANONICAL_KEY,getStudentId};
