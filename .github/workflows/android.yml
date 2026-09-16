@@ -15,7 +15,7 @@ on:
       - '.github/workflows/android.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: android-build
@@ -87,10 +87,27 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
 
-      - name: Upload debug APK
+      - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: class-9-learning-hub-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish direct APK download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          if gh release view android-latest >/dev/null 2>&1; then
+            gh release upload android-latest "$APK#Class-9-Learning-Hub.apk" --clobber
+          else
+            gh release create android-latest "$APK#Class-9-Learning-Hub.apk" \
+              --title "Class 9 Learning Hub — Android APK" \
+              --notes "Direct APK installation build of Class 9 Learning Hub. This is not a Play Store release." \
+              --latest=false
+          fi
+          echo "## Android APK" >> "$GITHUB_STEP_SUMMARY"
+          echo "[Download Class 9 Learning Hub APK](https://github.com/${GITHUB_REPOSITORY}/releases/download/android-latest/Class-9-Learning-Hub.apk)" >> "$GITHUB_STEP_SUMMARY"
