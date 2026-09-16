@@ -1,4 +1,5 @@
 name: Verify Learning Hub Android APK
+# PR verification v2
 
 on:
   pull_request:
@@ -61,11 +62,7 @@ jobs:
           magick public/app-icon.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
           magick public/app-icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
           magick public/app-icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          cp android/app/src/main/res/mipmap-mdpi/ic_launcher.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xhdpi/ic_launcher.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+          for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do cp android/app/src/main/res/mipmap-$d/ic_launcher.png android/app/src/main/res/mipmap-$d/ic_launcher_round.png; done
       - name: Sync Capacitor
         run: npx cap --config capacitor.config.json sync android
       - name: Build debug APK
