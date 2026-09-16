@@ -1,0 +1,1 @@
+Force PR event for Android APK verification.
