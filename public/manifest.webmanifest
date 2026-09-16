@@ -1,0 +1,22 @@
+{
+  "name": "कक्षा 9 लर्निंग हब",
+  "short_name": "Class 9 Hub",
+  "description": "कक्षा 9 लर्निंग हब — सीखें, अभ्यास करें, चुनौती लें और टेस्ट दें।",
+  "lang": "hi",
+  "dir": "ltr",
+  "start_url": "/Class-9-Learning-Hub/?source=pwa",
+  "scope": "/Class-9-Learning-Hub/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#111827",
+  "background_color": "#ffffff",
+  "categories": ["education", "learning"],
+  "icons": [
+    {
+      "src": "/Class-9-Learning-Hub/pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
