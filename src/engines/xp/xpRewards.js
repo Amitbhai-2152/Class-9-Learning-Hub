@@ -14,7 +14,7 @@ const readJson=(key,fallback)=>{try{const raw=storage()?.getItem(key);return raw
 const writeJson=(key,value)=>{try{storage()?.setItem(key,JSON.stringify(value));return true}catch{return false}};
 const int=v=>Number.isSafeInteger(Number(v))?Number(v):0;
 const dayFrom=value=>{const d=value?new Date(value):new Date();return Number.isNaN(d.getTime())?null:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
-const parseDay=s=>{const m(/^(\d{4})-(\d{2})-(\d{2})$/).exec(String(s||''));if(!m)return null;const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));return d.getFullYear()===Number(m[1])&&d.getMonth()===Number(m[2])-1&&d.getDate()===Number(m[3])?d:null};
+const parseDay=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||''));if(!m)return null;const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));return d.getFullYear()===Number(m[1])&&d.getMonth()===Number(m[2])-1&&d.getDate()===Number(m[3])?d:null};
 const diffDays=(from,to)=>{const a=parseDay(from),b=parseDay(to);if(!a||!b)return null;return Math.round((Date.UTC(b.getFullYear(),b.getMonth(),b.getDate())-Date.UTC(a.getFullYear(),a.getMonth(),a.getDate()))/86400000)};
 const validHistory=value=>Array.isArray(value)?Array.from(new Set(value.map(v=>parseDay(v)?String(v):null).filter(Boolean))).sort().slice(-XP_STREAK_HISTORY_DAYS):[];
 const defaultRoutine=()=>({schemaVersion:XP_REWARDS_SCHEMA_VERSION,currentStreak:0,bestStreak:0,lastActiveDay:null,activeDays:0,activeDayHistory:[],claimedLevelRewards:[],claimedStreakRewards:[],updatedAt:null});
