@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://amitbhai-2152.github.io/Class-9-Learning-Hub/sitemap.xml
