@@ -43,6 +43,8 @@ jobs:
 
       - name: SST chapter and answer-distribution QA
         run: npm run qa:sst:engines
+      - name: Daily planner alignment QA
+        run: npm run qa:daily-planner-alignment
 
       - name: Verify cross-device sync contracts
         run: |
