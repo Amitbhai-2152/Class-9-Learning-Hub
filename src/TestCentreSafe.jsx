@@ -191,6 +191,6 @@ export default function TestCentreSafe(){
    </div>
   </section>}
 
-  <footer style={{marginTop:18,color:'#718096',fontSize:12,lineHeight:1.7}}>Source of truth: Final SuperTest Planner 2026–27. First-pass chapter sequence runs through Test 07; Test 08 checks 100% first-pass completion; Tests 09–12 switch to full-syllabus revision/mock/readiness mode; Final Examination is 28 Feb 2027.</footer>
+  <footer style={{marginTop:18,color:'#718096',fontSize:12,lineHeight:1.7}}>Source of truth: TERM 1 planner document 2026–27. Tests 03–11 follow the assigned first-pass syllabus sequence; Test 04 is the cumulative Test 01–03 examination with no new chapters; Tests 12 and Final are the dedicated 100% full-syllabus examination phase.</footer>
  </div></div>;
 }
