@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
 import {SUBJECT_REGISTRY} from '../src/subjectProgressRegistry.js';
 import {testCatalog} from '../src/dailyExamPlanner.js';
+import fs from 'node:fs';
+
+const plannerSource=fs.readFileSync(new URL('../src/dailyExamPlanner.js',import.meta.url),'utf8');
+assert.match(plannerSource,/actionByStatus=\{todo:'Learn',learn:'Practice',practice:'Challenge',challenge:'Test',test:'Review'\}/,'Recommendation action mapping missing');
+assert.match(plannerSource,/highPriority=recommendations\.filter/,'Recommendation high-priority metadata missing');
+assert.match(plannerSource,/recommendationMode=recommendations\.length\?'adaptive':'none'/,'Recommendation mode metadata missing');
 
 const byId=Object.fromEntries(SUBJECT_REGISTRY.map(s=>[s.id,new Set(s.topics.map(t=>t.id))]));
 const test=n=>testCatalog.find(t=>String(t.number)===String(n));
