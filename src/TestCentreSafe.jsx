@@ -29,57 +29,89 @@ const TESTS=[
   english:['Reader • Saint Kabir','Reader • The eyes are not here','Panorama • Prose • Yayati','Panorama • Poetry • On His Blindness','Language & Skills • Tenses','Language & Skills • Modals'],
   reasoning:['Alphabet Series']
  }},
- {n:'03',date:'2026-10-11',stage:'Mid I',purpose:'मध्य syllabus',mode:'first-pass',subjects:{
+ {n:'03',date:'2026-10-11',stage:'October Unit Test',purpose:'Term Pre Half Yearly Phase 1',mode:'first-pass',subjects:{
   maths:['यूक्लिड की ज्यामिति का परिचय','रेखाएँ और कोण'],
-  science:['जीवन — की मौलिक इकाई कोशिका','ऊतक'],
-  hindi:['गोधूली — गद्य भारतीय चित्रपट : मूक फिल्मों से सवाक फिल्मों तक','गोधूली — गद्य अष्टावक्र','गोधूली — काव्य पलक पाँवड़े','गोधूली — काव्य मैं नीर भरी दुःख की बदली','वर्णिका — बिहार में नृत्यकला','व्याकरण एवं रचना — निबंध लेखन','व्याकरण एवं रचना — पत्र लेखन'],
-  sanskrit:['संस्कृतस्य महिमा','संस्कृतसाहित्ये पर्यावरणम्'],
-  sst:['इतिहास — नाजीवाद','इतिहास — वन्य समाज और उपनिवेशवाद','भूगोल — जलवायु','भूगोल — प्राकृतिक वनस्पति एवं वन्य प्राणी','भूगोल — जनसंख्या'],
-  english:['Reader • Ismat Chughtai: A woman with a difference','Reader • The accidental tourist','Panorama • Prose • A Silent Revolution','Panorama • Prose • Too Many People, Too Few Trees','Panorama • Poetry • Blow, Blow, Thou Winter Wind','Language & Skills • Voice','Language & Skills • Subject-Verb Agreement'],
+  science:['जीवन की मौलिक इकाई — कोशिका'],
+  hindi:['गोधूली — गद्य भारतीय चित्रपट : मूक फिल्मों से सवाक फिल्मों तक','गोधूली — काव्य पलक पाँवड़े','व्याकरण एवं रचना — निबंध लेखन'],
+  sanskrit:['संस्कृतस्य महिमा'],
+  sst:['इतिहास — नाजीवाद','भूगोल — जलवायु','भूगोल — प्राकृतिक वनस्पति एवं वन्य प्राणी'],
+  english:['Reader • Ismat Chughtai: A woman with a difference','Panorama • Prose • A Silent Revolution','Panorama • Poetry • Blow, Blow, Thou Winter Wind','Language & Skills • Voice','Language & Skills • Subject-Verb Agreement'],
   reasoning:['Analogy']
  }},
- {n:'04',date:'2026-10-25',stage:'Mid II',purpose:'मध्य coverage + balance',mode:'first-pass',subjects:{
+ {n:'04',date:'2026-10-25',stage:'October Term Half Yearly Examination',purpose:'Test 01–03 तक पढ़ाए गए सभी chapters का comprehensive mid-year baseline; कोई नया chapter नहीं',mode:'first-pass',description:'Covers all chapters taught from Test 01 to Test 03. No new chapters are introduced.',subjects:{
+  maths:['संख्या पद्धति','बहुपद','निर्देशांक ज्यामिति','दो चरों वाले रैखिक समीकरण','यूक्लिड की ज्यामिति का परिचय','रेखाएँ और कोण'],
+  science:['हमारे आसपास के पदार्थ','क्या हमारे आसपास के पदार्थ शुद्ध हैं?','परमाणु एवं अणु','परमाणु की संरचना','जीवन की मौलिक इकाई — कोशिका'],
+  hindi:['गोधूली — गद्य कहानी का प्लॉट','गोधूली — गद्य भारत का पुरातन विद्यापीठ : नालंदा','गोधूली — गद्य ग्राम-गीत का मर्म','गोधूली — गद्य लाल पान की बेगम','गोधूली — गद्य भारतीय चित्रपट : मूक फिल्मों से सवाक फिल्मों तक','गोधूली — काव्य रैदास के पद','गोधूली — काव्य मंझन के पद','गोधूली — काव्य गुरु गोविंद सिंह के पद','गोधूली — काव्य पलक पाँवड़े','वर्णिका — बिहार का लोकगायन','वर्णिका — बिहार की संगीत साधना','व्याकरण एवं रचना — अपठित गद्यांश','व्याकरण एवं रचना — निबंध लेखन'],
+  sanskrit:['ईशस्तुति:','लोभविष्टः चक्रधरः','यक्ष-युधिष्ठिर संवाद','चत्वारो वेदाः','संस्कृतस्य महिमा'],
+  sst:['इतिहास — भौगोलिक खोजें','इतिहास — अमेरिकी स्वतंत्रता संग्राम','इतिहास — फ्रांस की क्रांति','इतिहास — विश्व युद्धों का इतिहास','इतिहास — नाजीवाद','भूगोल — स्थिति एवं विस्तार','भूगोल — भौतिक स्वरूप : संरचना एवं उच्चावच','भूगोल — अपवाह स्वरूप','भूगोल — जलवायु','भूगोल — प्राकृतिक वनस्पति एवं वन्य प्राणी'],
+  english:['Reader • I’m going to dance again','Reader • Scaling Great Heights','Reader • Saint Kabir','Reader • The eyes are not here','Reader • Ismat Chughtai: A woman with a difference','Panorama • Prose • Dharam Juddha','Panorama • Prose • Yayati','Panorama • Prose • A Silent Revolution','Panorama • Poetry • The Grandmother','Panorama • Poetry • On His Blindness','Panorama • Poetry • Blow, Blow, Thou Winter Wind','Language & Skills • Tenses','Language & Skills • Modals','Language & Skills • Voice','Language & Skills • Subject-Verb Agreement'],
+  reasoning:['Number Series','Alphabet Series','Analogy']
+ }},
+ {n:'05',date:'2026-11-08',stage:'November Term Unit Test',purpose:'Term Onward Syllabus Phase 2',mode:'first-pass',subjects:{
   maths:['त्रिभुज','चतुर्भुज'],
-  science:['गति','बल तथा गति के नियम'],
-  hindi:['गोधूली — गद्य टॉलस्टाय के घर में','गोधूली — गद्य पधारो म्हारे देश','गोधूली — काव्य आ रही रवि के सवारी','गोधूली — काव्य पूरा हिन्दुस्तान मिलेगा','वर्णिका — बिहार की चित्रकला','व्याकरण एवं रचना — संवाद लेखन','व्याकरण एवं रचना — अनुच्छेद लेखन'],
-  sanskrit:['ज्ञानं भारः क्रियां विना','नीतिपधानिः'],
-  sst:['इतिहास — शांति के प्रयास','इतिहास — कृषि और खेतीहर और समाज','भूगोल — भारत के पड़ोसी देश','भूगोल — मानचित्र अध्ययन','नागरिक शास्त्र — लोकतंत्र का क्रमिक विकास'],
-  english:['Reader • Saint Ravidas','Reader • Bharathipura','Panorama • Prose • Echo and Narcissus','Panorama • Prose • The Shehnai of Bismillah Khan','Panorama • Poetry • To Daffodils','Panorama • Poetry • Sound','Language & Skills • Narration','Language & Skills • Clauses'],
+  science:['ऊतक','गति'],
+  hindi:['गोधूली — गद्य अष्टावक्र','गोधूली — काव्य मैं नीर भरी दुःख की बदली','वर्णिका — बिहार में नृत्यकला','व्याकरण एवं रचना — पत्र लेखन'],
+  sanskrit:['संस्कृतसाहित्ये पर्यावरणम्','ज्ञानं भारः क्रियां विना'],
+  sst:['इतिहास — वन्य समाज और उपनिवेशवाद','भूगोल — जनसंख्या','भूगोल — भारत के पड़ोसी देश'],
+  english:['Reader • The accidental tourist','Panorama • Prose • Too Many People Too Few Trees','Panorama • Prose • Echo and Narcissus','Language & Skills • Narration'],
   reasoning:['Classification']
  }},
- {n:'05',date:'2026-11-08',stage:'Late Syllabus',purpose:'late core support',mode:'first-pass',subjects:{
-  maths:['समान्तर चतुर्भुजों और त्रिभुजों का क्षेत्रफल','वृत्त'],
-  science:['गुरुत्वाकर्षण','कार्य तथा ऊर्जा'],
-  hindi:['गोधूली — गद्य रेल-यात्रा','गोधूली — गद्य निबंध','गोधूली — काव्य मेरा ईश्वर','गोधूली — काव्य रुको बच्चों','वर्णिका — मधुबनी की चित्रकला','व्याकरण एवं रचना — लिंग','व्याकरण एवं रचना — वचन'],
-  sanskrit:['बिहारस्य संस्कृतिकं वैभवम्','ईद-महोत्सवः'],
-  sst:['भूगोल — क्षेत्रीय अध्ययन','भूगोल — आपदा प्रबंधन : एक परिचय','भूगोल — मानवी गलतियों के कारण घटित आपदाएं : नाभिकीय, जैविक और रासायनिक','भूगोल — सामान्य आपदाएँ: निवारण एवं नियंत्रण','भूगोल — समुदाय आधारित आपदा प्रबंधन','नागरिक शास्त्र — लोकतंत्र क्या और क्यों?','नागरिक शास्त्र — संविधान निर्माण','नागरिक शास्त्र — चुनावी राजनीति'],
-  english:['Panorama • Prose • Kathmandu','Panorama • Prose • My Childhood','Panorama • Poetry • Self Introduction','Language & Skills • Determiners','Language & Skills • Prepositions','Language & Skills • Idioms','Language & Skills • Translation','Language & Skills • Paragraph / Essay'],
-  reasoning:['Coding-Decoding']
+ {n:'06',date:'2026-11-22',stage:'November Term Unit Test',purpose:'Term Onward Syllabus Phase 2',mode:'first-pass',subjects:{
+  maths:['समान्तर चतुर्भुजों और त्रिभुजों का क्षेत्रफल'],
+  science:['बल तथा गति के नियम','गुरुत्वाकर्षण'],
+  hindi:['गोधूली — गद्य टॉलस्टाय के घर में','गोधूली — काव्य आ रही रवि के सवारी','गोधूली — काव्य पूरा हिन्दुस्तान मिलेगा','वर्णिका — बिहार की चित्रकला','व्याकरण एवं रचना — संवाद लेखन'],
+  sanskrit:['नीतिपधानिः'],
+  sst:['इतिहास — शांति के प्रयास','इतिहास — कृषि और खेतीहर और समाज','भूगोल — मानचित्र अध्ययन'],
+  english:['Reader • Saint Ravidas','Reader • Bharathipura','Panorama • Prose • The Shehnai of Bismillah Khan','Panorama • Poetry • To Daffodils','Panorama • Poetry • Sound'],
+  reasoning:['Coding Decoding']
  }},
- {n:'06',date:'2026-11-22',stage:'Advanced Coverage',purpose:'advanced/core completion',mode:'first-pass',subjects:{
-  maths:['रचनाएँ','हीरोन का सूत्र'],
-  science:['ध्वनि','खाद्य संसाधनों में सुधार'],
-  hindi:['गोधूली — गद्य सूखी नदी का पुल','गोधूली — गद्य शिक्षा में हेर-फेर','गोधूली — काव्य निम्मो की मौत','गोधूली — काव्य समुद्र','वर्णिका — बिहार में नाट्यकला','व्याकरण एवं रचना — काल','व्याकरण एवं रचना — वाच्य','व्याकरण एवं रचना — संधि'],
-  sanskrit:['ग्राम्यजीवनम्','वीर कूँवर सिंहः'],
-  sst:['नागरिक शास्त्र — संसदीय लोकतंत्र की संस्थाएं','नागरिक शास्त्र — लोकतांत्रिक अधिकार','अर्थशास्त्र — बिहार के एक गाँव की कहानी','अर्थशास्त्र — मानव एक संसाधन','अर्थशास्त्र — गरीबी'],
-  english:['Panorama • Prose • The Gift of the Magi','Panorama • Poetry • I Am Like Grass','Language & Skills • Composition','Language & Skills • Formal Letter','Language & Skills • Informal Letter','Language & Skills • Notice Writing'],
+ {n:'07',date:'2026-12-06',stage:'December Term Unit Test',purpose:'Term Onward Syllabus Phase 2',mode:'first-pass',subjects:{
+  maths:['वृत्त'],
+  science:['कार्य तथा ऊर्जा'],
+  hindi:['गोधूली — गद्य पधारो म्हारे देश','गोधूली — गद्य रेल-यात्रा','गोधूली — काव्य मेरा ईश्वर','वर्णिका — मधुबनी की चित्रकला','व्याकरण एवं रचना — अनुच्छेद लेखन'],
+  sanskrit:['बिहारस्य संस्कृतिकं वैभवम्'],
+  sst:['भूगोल — क्षेत्रीय अध्ययन','भूगोल — आपदा प्रबंधन : एक परिचय','भूगोल — मानवी गलतियों के कारण घटित आपदाएं'],
+  english:['Language & Skills • Clauses','Language & Skills • Determiners','Language & Skills • Prepositions','Language & Skills • Idioms'],
   reasoning:['Direction & Blood Relations']
  }},
- {n:'07',date:'2026-12-06',stage:'Completion Push',purpose:'remaining chapters',mode:'first-pass',subjects:{
-  maths:['पृष्ठीय क्षेत्रफल एवं आयतन','सांख्यिकी','प्रायिकता'],
-  science:['हम बीमार क्यों होते हैं','प्राकृतिक संसाधन','हमारा पर्यावरण'],
-  hindi:['गोधूली — काव्य कुछ सवाल','वर्णिका — बिहार का सिनेमा संसार','व्याकरण एवं रचना — समास','व्याकरण एवं रचना — पर्यायवाची, विलोम और श्रुतिसमभिन्नार्थक','व्याकरण एवं रचना — मुहावरे और अनेक शब्दों के लिए एक शब्द'],
-  sanskrit:['किशोराणां मनोविज्ञानम्','राष्ट्रबोधः','विश्ववन्दिता वैशाली'],
-  sst:['अर्थशास्त्र — बेकारी','अर्थशास्त्र — कृषि, खाद्यान्न सुरक्षा एवं गुणवत्ता','अर्थशास्त्र — कृषक मजदूर'],
-  english:['Panorama • Poetry • Abraham Lincoln’s Letter to His Son’s Teacher','Language & Skills • Report Writing','Language & Skills • Speech Writing','Language & Skills • Message Writing','Language & Skills • Factual Reading','Language & Skills • Literary Reading','Language & Skills • Poetry Reading'],
-  reasoning:['Mixed revision • Number Series • Alphabet Series • Analogy • Classification • Coding-Decoding • Direction & Blood Relations']
+ {n:'08',date:'2026-12-20',stage:'December Term Unit Test',purpose:'Term Onward Syllabus Phase 2',mode:'first-pass',subjects:{
+  maths:['रचनाएँ'],
+  science:['ध्वनि'],
+  hindi:['गोधूली — गद्य निबंध','गोधूली — काव्य रुको बच्चों','व्याकरण एवं रचना — वचन','व्याकरण एवं रचना — लिंग','व्याकरण एवं रचना — काल'],
+  sanskrit:['ईद-महोत्सवः'],
+  sst:['भूगोल — सामान्य आपदाएँ','भूगोल — समुदाय आधारित आपदा प्रबंधन','नागरिक शास्त्र — लोकतंत्र क्या और क्यों?'],
+  english:['Panorama • Prose • Kathmandu','Panorama • Prose • My Childhood','Panorama • Poetry • Self Introduction','Language & Skills • Translation','Language & Skills • Paragraph / Essay'],
+  reasoning:['Mixed revision • Number Series • Alphabet Series • Analogy • Classification • Coding Decoding • Direction & Blood Relations']
  }},
- {n:'08',date:'2026-12-20',stage:'Full Syllabus',purpose:'100% first-pass check',mode:'full',description:'सभी 174 eligible components • इस बिंदु के बाद कोई नया chapter नहीं जोड़ा जाएगा।'},
- {n:'09',date:'2027-01-03',stage:'Revision I',purpose:'mixed full syllabus',mode:'full',description:'सभी 174 eligible components से balanced mixed questions.'},
- {n:'10',date:'2027-01-17',stage:'Weak Area',purpose:'performance weighted',mode:'full',description:'Previous performance chapter weighting तय करती है: weak > average > strong.'},
- {n:'11',date:'2027-01-31',stage:'BSEB Style Full Mock',purpose:'complete examination simulation',mode:'full',description:'Eligible website-built syllabus पर पूरा BSEB-style examination simulation.'},
- {n:'12',date:'2027-02-14',stage:'Final Readiness',purpose:'final readiness',mode:'full',description:'Full syllabus + difficult mixed questions + weak-area targeting.'},
- {n:'Final',date:'2027-02-28',stage:'Final Examination',purpose:'complete eligible website-built syllabus',mode:'full',description:'Complete eligible website-built syllabus.'}
+ {n:'09',date:'2027-01-03',stage:'January Term Unit Test',purpose:'Term Onward Syllabus Phase 2',mode:'first-pass',subjects:{
+  maths:['हीरोन का सूत्र'],
+  science:['खाद्य संसाधनों में सुधार','हम बीमार क्यों होते हैं'],
+  hindi:['गोधूली — गद्य सूखी नदी का पुल','गोधूली — काव्य निम्मो की मौत','वर्णिका — बिहार में नाट्यकला','व्याकरण एवं रचना — वाच्य'],
+  sanskrit:['ग्राम्यजीवनम्','वीर कूँवर सिंहः'],
+  sst:['नागरिक शास्त्र — संविधान निर्माण','नागरिक शास्त्र — चुनावी राजनीति','अर्थशास्त्र — बिहार के एक गाँव की कहानी'],
+  english:['Panorama • Prose • The Gift of the Magi','Panorama • Poetry • I Am Like Grass','Language & Skills • Composition','Language & Skills • Formal Letter'],
+  reasoning:[]
+ }},
+ {n:'10',date:'2027-01-17',stage:'January Term Unit Test',purpose:'Term Onward Syllabus Phase 2',mode:'first-pass',subjects:{
+  maths:['पृष्ठीय क्षेत्रफल एवं आयतन','सांख्यिकी'],
+  science:['प्राकृतिक संसाधन'],
+  hindi:['गोधूली — गद्य शिक्षा में हेर-फेर','गोधूली — काव्य समुद्र','वर्णिका — बिहार का सिनेमा संसार','व्याकरण एवं रचना — संधि'],
+  sanskrit:['किशोराणां मनोविज्ञानम्','राष्ट्रबोधः'],
+  sst:['नागरिक शास्त्र — संसदीय लोकतंत्र की संस्थाएं','अर्थशास्त्र — मानव एक संसाधन','अर्थशास्त्र — गरीबी'],
+  english:['Panorama • Poetry • Abraham Lincoln’s Letter to His Son’s Teacher','Language & Skills • Informal Letter','Language & Skills • Notice Writing','Language & Skills • Report Writing'],
+  reasoning:[]
+ }},
+ {n:'11',date:'2027-01-31',stage:'January Term Syllabus Completion Test',purpose:'Term Onward Syllabus Phase 2 • completion',mode:'first-pass',subjects:{
+  maths:['प्रायिकता'],
+  science:['हमारा पर्यावरण'],
+  hindi:['गोधूली — काव्य कुछ सवाल','व्याकरण एवं रचना — समास','व्याकरण एवं रचना — पर्यायवाची, विलोम और श्रुतिसमभिन्नार्थक','व्याकरण एवं रचना — मुहावरे और अनेक शब्दों के लिए एक शब्द'],
+  sanskrit:['विश्ववन्दिता वैशाली'],
+  sst:['नागरिक शास्त्र — लोकतांत्रिक अधिकार','अर्थशास्त्र — बेकारी','अर्थशास्त्र — कृषि, खाद्यान्न सुरक्षा एवं गुणवत्ता','अर्थशास्त्र — कृषक मजदूर'],
+  english:['Language & Skills • Speech Writing','Language & Skills • Message Writing','Language & Skills • Factual Reading','Language & Skills • Literary Reading','Language & Skills • Poetry Reading'],
+  reasoning:[]
+ }},
+ {n:'12',date:'2027-02-14',stage:'February Final Examination',purpose:'100% Eligible Components',mode:'full',description:'The first complete board simulation across all eligible components. Identifies final weak points in a full-pressure environment prior to the terminal exam.'},
+ {n:'Final',date:'2027-02-28',stage:'February Final Examination',purpose:'100% Eligible Components',mode:'full',description:'The ultimate final evaluation across the completely consolidated website-built eligible scope for the academic year.'}
 ];
 
 const formatDate=date=>new Intl.DateTimeFormat('en-IN',{day:'2-digit',month:'short',year:'numeric'}).format(new Date(`${date}T00:00:00`));
