@@ -6,17 +6,17 @@ const required=[
   "count:15","count:44","count:33","count:46","count:6",
   "n:'01',date:'2026-09-13',stage:'Foundation',purpose:'हल्का प्रारंभ'",
   "n:'02',date:'2026-09-27',stage:'Core Coverage',purpose:'मुख्य शुरुआती coverage'",
-  "n:'03',date:'2026-10-11',stage:'Mid I',purpose:'मध्य syllabus'",
-  "n:'04',date:'2026-10-25',stage:'Mid II',purpose:'मध्य coverage + balance'",
-  "n:'05',date:'2026-11-08',stage:'Late Syllabus',purpose:'late core support'",
-  "n:'06',date:'2026-11-22',stage:'Advanced Coverage',purpose:'advanced/core completion'",
-  "n:'07',date:'2026-12-06',stage:'Completion Push',purpose:'remaining chapters'",
-  "n:'08',date:'2026-12-20',stage:'Full Syllabus',purpose:'100% first-pass check'",
-  "n:'09',date:'2027-01-03',stage:'Revision I',purpose:'mixed full syllabus'",
-  "n:'10',date:'2027-01-17',stage:'Weak Area',purpose:'performance weighted'",
-  "n:'11',date:'2027-01-31',stage:'BSEB Style Full Mock',purpose:'complete examination simulation'",
-  "n:'12',date:'2027-02-14',stage:'Final Readiness',purpose:'final readiness'",
-  "n:'Final',date:'2027-02-28',stage:'Final Examination',purpose:'complete eligible website-built syllabus'",
+  "n:'03',date:'2026-10-11',stage:'October Unit Test',purpose:'Term Pre Half Yearly Phase 1'",
+  "n:'04',date:'2026-10-25',stage:'October Term Half Yearly Examination',purpose:'Test 01–03 तक पढ़ाए गए सभी chapters का comprehensive mid-year baseline; कोई नया chapter नहीं'",
+  "n:'05',date:'2026-11-08',stage:'November Term Unit Test',purpose:'Term Onward Syllabus Phase 2'",
+  "n:'06',date:'2026-11-22',stage:'November Term Unit Test',purpose:'Term Onward Syllabus Phase 2'",
+  "n:'07',date:'2026-12-06',stage:'December Term Unit Test',purpose:'Term Onward Syllabus Phase 2'",
+  "n:'08',date:'2026-12-20',stage:'December Term Unit Test',purpose:'Term Onward Syllabus Phase 2'",
+  "n:'09',date:'2027-01-03',stage:'January Term Unit Test',purpose:'Term Onward Syllabus Phase 2'",
+  "n:'10',date:'2027-01-17',stage:'January Term Unit Test',purpose:'Term Onward Syllabus Phase 2'",
+  "n:'11',date:'2027-01-31',stage:'January Term Syllabus Completion Test',purpose:'Term Onward Syllabus Phase 2 • completion'",
+  "n:'12',date:'2027-02-14',stage:'February Final Examination',purpose:'100% Eligible Components'",
+  "n:'Final',date:'2027-02-28',stage:'February Final Examination',purpose:'100% Eligible Components'",
   'सभी 174 eligible components',
   'Previous performance chapter weighting तय करती है: weak > average > strong.',
   'Full syllabus + difficult mixed questions + weak-area targeting.',
@@ -29,5 +29,5 @@ const testCount=(source.match(/\{n:'/g)||[]).length;
 assert.equal(testCount,13,'Test Centre must define exactly 13 scheduled assessments including Final');
 assert.match(source,/const SUBJECTS=\[/,'Subject scope registry missing');
 assert.match(source,/const TESTS=\[/,'Final SuperTest calendar missing');
-assert.match(source,/First-pass chapter sequence runs through Test 07/,'First-pass phase boundary missing');
+assert.match(source,/Tests 03–11 follow the assigned first-pass syllabus sequence/,'Current first-pass phase description missing');
 console.log('Test Centre planner QA passed.');
