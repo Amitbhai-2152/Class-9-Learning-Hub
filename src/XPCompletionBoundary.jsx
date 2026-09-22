@@ -3,7 +3,6 @@ import {awardSmartXP}from'./engines/xp/xpRules.js';
 import {getXPState}from'./engines/xp/xpStore.js';
 import {recordActivityAndRewards}from'./engines/xp/xpRewards.js';
 import {getCanonicalProgress}from'./engines/progress/progressStore.js';
-import {XPAchievementOverlay,ChapterCompletionOverlay}from'./XPBadges.jsx';
 import {cbtConfig}from'./cbtConfig';
 
 const STAGES=new Set(['learn','practice','challenge','test']);
@@ -37,5 +36,5 @@ export function XPCompletionBoundary({children}){
   window.addEventListener('message',onCbtMessage);
   return()=>{observer.disconnect();clearInterval(routePoll);window.removeEventListener('class9-progress-updated',onCanonicalProgress);window.removeEventListener('class9-progress-updated',onCanonicalCompletion);window.removeEventListener('message',onCbtMessage)};
  },[]);
- return <div ref={rootRef}>{children}<XPAchievementOverlay/><ChapterCompletionOverlay/></div>;
+ return <div ref={rootRef}>{children}</div>;
 }
