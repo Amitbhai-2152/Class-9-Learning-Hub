@@ -17,7 +17,7 @@ const required=[
   "n:'11',date:'2027-01-31',stage:'January Term Syllabus Completion Test',purpose:'Term Onward Syllabus Phase 2 • completion'",
   "n:'12',date:'2027-02-14',stage:'February Final Examination',purpose:'100% Eligible Components'",
   "n:'Final',date:'2027-02-28',stage:'February Final Examination',purpose:'100% Eligible Components'",
-  'सभी 174 eligible components',
+  '100% Eligible Components',
   'Previous performance chapter weighting तय करती है: weak > average > strong.',
   'Full syllabus + difficult mixed questions + weak-area targeting.',
   'Complete eligible website-built syllabus.'
