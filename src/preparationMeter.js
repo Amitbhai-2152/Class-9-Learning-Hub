@@ -23,7 +23,7 @@ const metricForTopics=(topics)=>{
   const correctAnswers=hasAttemptRecords?filteredRecords.reduce((sum,item)=>sum+(Number.isFinite(Number(item.correctAnswers))?Number(item.correctAnswers):0),0):aggregateCorrectAnswers;
   const performancePercent=questionsAnswered?Math.round((correctAnswers/questionsAnswered)*100):0;
   const coveragePercent=totalStages?Math.round((completedStages/totalStages)*100):0;
-  const readiness=clampPercent(Math.floor(coveragePercent*0.65+performancePercent*0.35));
+  const readiness=clampPercent(Math.floor((coveragePercent*65+performancePercent*35)/100));
   return {coveragePercent,performancePercent,readiness,completedStages,totalStages,topicsStarted:rows.filter(topic=>stageCount(topic?.stages)>0).length,totalTopics:rows.length,quizAttempts,questionsAnswered,questionsTotal,correctAnswers,hasPerformanceData:quizAttempts>0||questionsAnswered>0};
 };
 
