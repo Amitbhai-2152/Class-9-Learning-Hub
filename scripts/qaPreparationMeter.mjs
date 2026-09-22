@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {calculatePreparationMeter} from '../src/preparationMeter.js';
-import {STAGES} from '../src/subjectProgressRegistry.js';
+import {STAGES,SUBJECT_REGISTRY} from '../src/subjectProgressRegistry.js';
 
 const base={schemaVersion:1,topics:{}};
 const empty=calculatePreparationMeter(base);
@@ -54,7 +54,7 @@ assert.equal(missingAnalytics.hasPerformanceData,false);
 const subjectIds=['math','science','hindi','sanskrit','sst','english','reasoning'];
 const multiTopics={};
 subjectIds.forEach((subjectId,index)=>{
-  const topicId=`${subjectId}-01`;
+  const topicId=SUBJECT_REGISTRY.find(subject=>subject.id===subjectId).topics[0].id;
   multiTopics[`${subjectId}::${topicId}`] = {subjectId,topicId,title:subjectId,stages:{learn:true,practice:index%2===0,challenge:false,test:false},analytics:{quizAttempts:1,questionsAnswered:10,questionsTotal:10,correctAnswers:7,bestPercent:70}};
 });
 const multi=calculatePreparationMeter({...base,topics:multiTopics});
