@@ -54,7 +54,8 @@ assert.equal(missingAnalytics.hasPerformanceData,false);
 const subjectIds=['math','science','hindi','sanskrit','sst','english','reasoning'];
 const multiTopics={};
 subjectIds.forEach((subjectId,index)=>{
-  multiTopics[`${subjectId}::01`] = {subjectId,topicId:`${subjectId}-01`,title:subjectId,stages:{learn:true,practice:index%2===0,challenge:false,test:false},analytics:{quizAttempts:1,questionsAnswered:10,questionsTotal:10,correctAnswers:7,bestPercent:70}};
+  const topicId=`${subjectId}-01`;
+  multiTopics[`${subjectId}::${topicId}`] = {subjectId,topicId,title:subjectId,stages:{learn:true,practice:index%2===0,challenge:false,test:false},analytics:{quizAttempts:1,questionsAnswered:10,questionsTotal:10,correctAnswers:7,bestPercent:70}};
 });
 const multi=calculatePreparationMeter({...base,topics:multiTopics});
 assert.equal(multi.subjectBreakdown.length,7);
