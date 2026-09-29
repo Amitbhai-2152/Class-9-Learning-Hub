@@ -4,6 +4,7 @@ import {scienceChapter5Learning} from './scienceChapter5Learning';
 import {ScienceChapter5Visual} from './ScienceChapter5Visual';
 import {markStageComplete} from './engines/progress/progressStore';
 import './science-engine.css';
+import {prepareBalancedQuestions} from './scienceBalancedAnswers';
 
 const questions=[
 {question:'कोशिका किसे कहा जाता है?',options:['जीव की मूल संरचनात्मक और क्रियात्मक इकाई','केवल शरीर की बाहरी परत','केवल रक्त का भाग','केवल पौधे का तना'],answer:0,explain:'कोशिका जीव की मूल संरचनात्मक और क्रियात्मक इकाई है।'},
@@ -45,7 +46,7 @@ const challenge=[
 
 function Assessment({mode,chapter,bank,onBack,addXp,finishSession}){
  const [index,setIndex]=useState(0);const [selected,setSelected]=useState(null);const [score,setScore]=useState(0);const [done,setDone]=useState(false);const [history,setHistory]=useState([]);
- const items=useMemo(()=>{const source=mode==='challenge'?bank.challenge:bank.questions;const limit=mode==='challenge'?10:mode==='test'?20:15;return [...source].sort(()=>Math.random()-.5).slice(0,Math.min(limit,source.length));},[mode,bank?.questions,bank?.challenge]);
+ const items=useMemo(()=>{const source=mode==='challenge'?bank.challenge:bank.questions;const limit=mode==='challenge'?10:mode==='test'?20:15;return prepareBalancedQuestions(source,Math.min(limit,source.length));},[mode,bank?.questions,bank?.challenge]);
  const item=items[index];
  const choose=i=>{if(selected!==null)return;setSelected(i);const correct=i===item.answer;setScore(s=>s+(correct?1:0));addXp?.(correct?(mode==='challenge'?25:mode==='test'?10:5):0);setHistory(h=>[...h,{question:item.question,selected:i,answer:item.answer,options:item.options,explain:item.explain,correct}]);};
  const next=()=>{const finalScore=score+(selected===item.answer?1:0);if(index===items.length-1){setScore(finalScore);setDone(true);markStageComplete(`विज्ञान::${chapter}`,mode);finishSession?.({subject:'विज्ञान',chapter,mode,attempted:items.length,correct:finalScore,completed:true,at:Date.now()});return;}setIndex(i=>i+1);setSelected(null);};
