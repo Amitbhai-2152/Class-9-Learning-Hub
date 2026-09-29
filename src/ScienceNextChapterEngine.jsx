@@ -69,7 +69,7 @@ function prepareQuestion(question){const options=(question?.options||[]).map((te
 
 function Assessment({mode,chapter,bank,onBack,addXp,finishSession}){
  const [index,setIndex]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[responses,setResponses]=useState([]);
- const items=useMemo(()=>{const source=mode==='challenge'?(bank?.challenge||[]):(bank?.questions||[]);const limit=mode==='challenge'?Math.min(10,source.length):mode==='test'?Math.min(20,source.length):source.length;return shuffleArray(source).slice(0,limit).map(prepareQuestion);},[mode,bank]);
+ const items=useMemo(()=>{const source=mode==='challenge'?(bank?.challenge||[]):(bank?.questions||[]);const limit=mode==='challenge'?Math.min(10,source.length):mode==='test'?Math.min(20,source.length):source.length;return shuffleArray(source).slice(0,limit).map(prepareQuestion);},[mode,bank?.questions,bank?.challenge]);
  const item=items[index];
  const choose=i=>{if(selected!==null||!item)return;setSelected(i);if(i===item.answer)setScore(s=>s+1);setResponses(prev=>[...prev,{question:item,selected:i}]);addXp?.(i===item.answer?(mode==='challenge'?25:10):0);};
  const next=()=>{if(selected===null||!item)return;const final=score+(selected===item.answer?1:0);if(index===items.length-1){setScore(final);setDone(true);markStageComplete(`विज्ञान::${chapter}`,mode);finishSession?.({subject:'विज्ञान',chapter,mode,attempted:items.length,correct:final,completed:true,at:Date.now()});}else{setIndex(i=>i+1);setSelected(null);}};
