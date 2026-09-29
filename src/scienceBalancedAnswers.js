@@ -50,6 +50,11 @@ function buildPatternSafePlan(length,size){
   throw new Error('Unable to build a strict balanced answer-position plan.');
 }
 
+function readQuestionOptions(question){
+  const key=Array.isArray(question?.options)?'options':Array.isArray(question?.o)?'o':null;
+  return key?{key,options:question[key],answerKey:key==='options'?'answer':'a'}:{key:null,options:[],answerKey:null};
+}
+
 function placeCorrectOption(question,target){
   const meta=readQuestionOptions(question);
   const options=meta.options;
