@@ -59,17 +59,23 @@ function buildPatternSafePlan(length,size){
   return shuffleList(plan);
 }
 
+function readQuestionOptions(question){
+  const key=Array.isArray(question?.options)?'options':Array.isArray(question?.o)?'o':null;
+  return key?{key,options:question[key],answerKey:key==='options'?'answer':'a'}:{key:null,options:[],answerKey:null};
+}
+
 function placeCorrectOption(question,target){
-  const options=Array.isArray(question?.options)?question.options:[];
-  const correctIndex=Number(question?.answer);
-  if(options.length<2||correctIndex<0||correctIndex>=options.length)return question;
+  const meta=readQuestionOptions(question);
+  const options=meta.options;
+  const correctIndex=Number(question?.[meta.answerKey]);
+  if(!meta.key||options.length<2||correctIndex<0||correctIndex>=options.length)return question;
   const correct=options[correctIndex];
   const distractors=options.filter((_,i)=>i!==correctIndex);
   const shuffledDistractors=shuffleList(distractors);
   const output=[];
   let d=0;
   for(let i=0;i<options.length;i++)output.push(i===target?correct:shuffledDistractors[d++]);
-  return {...question,options:output,answer:target};
+  return {...question,[meta.key]:output,[meta.answerKey]:target};
 }
 
 export function prepareBalancedQuestions(source,limit){
@@ -77,7 +83,7 @@ export function prepareBalancedQuestions(source,limit){
   const selected=shuffleList(safeSource).slice(0,Math.max(0,limit));
   const groups=new Map();
   selected.forEach((question,index)=>{
-    const size=Array.isArray(question?.options)?question.options.length:0;
+    const size=readQuestionOptions(question).options.length;
     if(size>1){
       if(!groups.has(size))groups.set(size,[]);
       groups.get(size).push(index);
