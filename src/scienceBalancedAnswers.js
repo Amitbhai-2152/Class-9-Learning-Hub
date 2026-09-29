@@ -53,10 +53,7 @@ function buildPatternSafePlan(length,size){
     return false;
   };
   if(search())return plan;
-  // Extremely defensive fallback: balanced counts are still preserved.
-  plan.length=0;
-  for(let i=0;i<size;i++)for(let j=0;j<counts[i];j++)plan.push(i);
-  return shuffleList(plan);
+  throw new Error('Unable to build a strict balanced answer-position plan.');
 }
 
 function readQuestionOptions(question){
