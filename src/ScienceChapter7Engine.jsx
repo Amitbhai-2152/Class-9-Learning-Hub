@@ -2,6 +2,7 @@ import React,{useEffect,useMemo,useState} from 'react';
 import {markStageComplete} from './engines/progress/progressStore';
 import {scienceChapter7Learning} from './scienceChapter7Learning';
 import './scienceChapter7.css';
+import {prepareBalancedQuestions} from './scienceBalancedAnswers';
 
 const questions=[
  {q:'समय के साथ वस्तु की स्थिति बदलने को क्या कहते हैं?',o:['गति','द्रव्यमान','तापमान','घनत्व'],a:0,e:'समय के साथ स्थिति बदलना गति कहलाती है।'},
@@ -42,8 +43,7 @@ const challenge=[
  {q:'समान त्वरण में कौन-सा समीकरण t के बिना v और u को जोड़ता है?',o:['v² = u² + 2as','v = u + at','s = ut + ½at²','a = v/t'],a:0,e:'v² = u² + 2as में समय t सीधे उपस्थित नहीं है।'}
 ];
 
-function shuffle(list){const a=[...list];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function prepare(q){const mapped=q.o.map((text,index)=>({text,index}));const s=shuffle(mapped);return {...q,o:s.map(x=>x.text),a:s.findIndex(x=>x.index===q.a)};}
+
 
 function MotionVisual({visual}){
  const type=visual?.type||'motion';
@@ -74,7 +74,7 @@ function Lesson({lesson,index,total,onPrev,onNext,onBack}){
 function Assessment({mode,onBack,addXp,finishSession}){
  const source=mode==='challenge'?challenge:questions;
  const limit=mode==='challenge'?Math.min(10,challenge.length):mode==='test'?Math.min(20,questions.length):questions.length;
- const items=useMemo(()=>shuffle(source).slice(0,limit).map(prepare),[mode,limit]);
+ const items=useMemo(()=>prepareBalancedQuestions(source,limit),[mode,limit]);
  const [index,setIndex]=useState(0),[selected,setSelected]=useState(null),[score,setScore]=useState(0),[done,setDone]=useState(false),[responses,setResponses]=useState([]);
  const item=items[index];
  if(!item)return null;
