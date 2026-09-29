@@ -15,13 +15,7 @@ function isSafeNext(seq,candidate,size){
   const n=seq.length;
   if(n&&seq[n-1]===candidate)return false; // no AA
   if(n>=2&&seq[n-2]===candidate)return false; // no ABA/ABAB start
-  if(n>=3&&seq[n-3]===candidate&&seq[n-2]!==candidate&&seq[n-1]!==candidate)return false; // no ABC A
-  if(n>=4){
-    const recent=seq.slice(-3).concat(candidate).join(',');
-    for(let start=0;start<=seq.length-4;start++){
-      if(seq.slice(start,start+4).join(',')===recent)return false; // no repeated 4-position block
-    }
-  }
+  if(n>=3&&seq[n-3]===candidate)return false; // no ABC A / 3-step repeat
   if(n>=3){
     const a=seq[n-3],b=seq[n-2],c=seq[n-1];
     const step=((b-a)%size+size)%size;
