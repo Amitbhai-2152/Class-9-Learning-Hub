@@ -54,3 +54,65 @@
   .et-tense-example>strong{grid-column:2;padding-top:2px;border-top:1px dashed #e1e6eb}
   .et-tense-example-heading span{font-size:.61rem}
 }
+
+
+/* Readability + mobile refinement for the added tense structures/examples. */
+.et-tense-structures-head>span{font-size:.7rem}
+.et-tense-structures-head h3{font-size:1.14rem}
+.et-tense-structures-head p{font-size:.88rem;line-height:1.65}
+.et-tense-block-head strong{font-size:.98rem}
+.et-tense-block-head span{font-size:.74rem}
+.et-tense-block-head>b{width:34px;height:34px;font-size:.66rem}
+.et-tense-pattern-type{font-size:.69rem}
+.et-tense-pattern code{font-size:.74rem;line-height:1.55}
+.et-tense-pattern p{font-size:.76rem;line-height:1.55}
+.et-tense-note strong{font-size:.69rem}
+.et-tense-note span{font-size:.76rem;line-height:1.55}
+.et-wh-note{font-size:.78rem;line-height:1.65}
+.et-tense-example-heading strong{font-size:.72rem}
+.et-tense-example-heading span{font-size:.69rem}
+.et-tense-example{grid-template-columns:30px minmax(0,1fr) 20px minmax(0,1fr);gap:9px;padding:10px 11px}
+.et-tense-example>b{width:26px;height:26px;font-size:.61rem}
+.et-tense-example>span,.et-tense-example>strong{font-size:.76rem;line-height:1.5}
+.et-tense-example>em{font-size:.8rem}
+
+@media(max-width:760px){
+  .et-tense-structures{padding:15px}
+  .et-tense-block{padding:13px}
+  .et-tense-patterns{grid-template-columns:1fr 1fr}
+  .et-tense-example{grid-template-columns:28px minmax(0,1fr);align-items:start}
+  .et-tense-example>em{display:none}
+  .et-tense-example>strong{grid-column:2;margin-top:6px;padding-top:7px;border-top:1px dashed #e1e6eb}
+}
+
+@media(max-width:560px){
+  .et-tense-structures{padding:12px}
+  .et-tense-structures-head h3{font-size:1.06rem}
+  .et-tense-structures-head p{font-size:.82rem}
+  .et-tense-block{padding:11px}
+  .et-tense-block-head{gap:8px}
+  .et-tense-block-head strong{font-size:.91rem}
+  .et-tense-patterns{grid-template-columns:1fr;gap:7px}
+  .et-tense-pattern{padding:10px}
+  .et-tense-pattern code{font-size:.72rem}
+  .et-tense-pattern p{font-size:.74rem}
+  .et-tense-note{padding:9px}
+  .et-tense-note span{font-size:.74rem}
+  .et-wh-note{padding:10px;font-size:.74rem}
+  .et-tense-example-list{margin-top:9px;padding-top:9px}
+  .et-tense-example-heading{align-items:flex-start}
+  .et-tense-example-heading strong{font-size:.7rem}
+  .et-tense-example-heading span{font-size:.65rem}
+  .et-tense-example{grid-template-columns:26px 1fr;padding:9px 8px;gap:7px}
+  .et-tense-example>b{width:24px;height:24px}
+  .et-tense-example>span,.et-tense-example>strong{font-size:.74rem;line-height:1.5;overflow-wrap:anywhere}
+}
+
+@media(max-width:380px){
+  .et-tense-structures{padding:10px}
+  .et-tense-block{padding:10px}
+  .et-tense-pattern{padding:9px}
+  .et-tense-example{grid-template-columns:24px 1fr;gap:6px;padding:8px 7px}
+  .et-tense-example>b{width:22px;height:22px;font-size:.58rem}
+  .et-tense-example>span,.et-tense-example>strong{font-size:.71rem}
+}
