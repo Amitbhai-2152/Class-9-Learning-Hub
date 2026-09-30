@@ -35,3 +35,22 @@
   .et-tense-note{grid-template-columns:1fr;gap:4px}
   .et-tense-structures-head p{font-size:.77rem}
 }
+
+
+/* Five worked examples for each tense structure. */
+.et-tense-example-list{margin-top:10px;padding-top:10px;border-top:1px solid #edf1f5}
+.et-tense-example-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
+.et-tense-example-heading strong{font-size:.68rem;color:#405873;text-transform:uppercase;letter-spacing:.08em}
+.et-tense-example-heading span{font-size:.65rem;color:#7a8899}
+.et-tense-example{display:grid;grid-template-columns:28px minmax(0,1fr) 18px minmax(0,1fr);gap:8px;align-items:center;padding:9px 10px;margin-top:6px;border:1px solid #e7ebf0;border-radius:10px;background:#fbfcfe}
+.et-tense-example>b{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#eef2f6;color:#64748a;font-size:.58rem}
+.et-tense-example>span,.et-tense-example>strong{font-size:.72rem;line-height:1.45}
+.et-tense-example>span{color:#56677d}
+.et-tense-example>strong{color:#294761}
+.et-tense-example>em{text-align:center;font-style:normal;color:#8a9bad;font-weight:900}
+@media(max-width:620px){
+  .et-tense-example{grid-template-columns:28px 1fr}
+  .et-tense-example>em{display:none}
+  .et-tense-example>strong{grid-column:2;padding-top:2px;border-top:1px dashed #e1e6eb}
+  .et-tense-example-heading span{font-size:.61rem}
+}
