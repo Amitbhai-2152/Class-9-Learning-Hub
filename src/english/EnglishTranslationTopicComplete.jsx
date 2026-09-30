@@ -37,7 +37,7 @@ const TENSE_STRUCTURES={
 ['Negative (नकारात्मक)','S + am/is/are + not + V-ing + O','She is not playing cricket.'],
 ['Interrogative (प्रश्नवाचक)','Am/Is/Are + S + V-ing + O?','Is she playing cricket?'],
 ['WH-family (WH-प्रश्न)','Wh-word + am/is/are + S + V-ing + O?','What is she playing?']
-],note:'I → am, He/She/It → is, You/We/They → are.',examples:[["मैं अभी किताब पढ़ रहा हूँ।","I am reading a book now."],["वह इस समय टीवी नहीं देख रही है।","She is not watching TV at the moment."],["क्या वे मैदान में खेल रहे हैं?","Are they playing in the ground?"],["तुम अभी क्या कर रहे हो?","What are you doing now?"],["अध्यापक कक्षा में पढ़ा रहे हैं।","The teacher is teaching in the classroom."]]}],
+],note:'I → am, He/She/It → is, You/We/They → are.',examples:[["मैं अभी किताब पढ़ रहा हूँ।","I am reading a book now."],["वह इस समय टीवी नहीं देख रही है।","She is not watching TV at the moment."],["क्या वे मैदान में खेल रहे हैं?","Are they playing on the field?"],["तुम अभी क्या कर रहे हो?","What are you doing now?"],["अध्यापक कक्षा में पढ़ा रहे हैं।","The teacher is teaching in the classroom."]]}],
 '05':[{name:'Present Perfect',short:'Completed action with present connection',rows:[
 ['Affirmative (सकारात्मक)','S + has/have + V3 + O','She has finished her work.'],
 ['Negative (नकारात्मक)','S + has/have + not + V3 + O','She has not finished her work.'],
@@ -88,7 +88,7 @@ const TENSE_STRUCTURES={
 ['Negative (नकारात्मक)','S + will not be + V-ing + O','She will not be playing cricket at 5 p.m.'],
 ['Interrogative (प्रश्नवाचक)','Will + S + be + V-ing + O?','Will she be playing cricket at 5 p.m.?'],
 ['WH-family (WH-प्रश्न)','Wh-word + will + S + be + V-ing + O?','What will she be playing at 5 p.m.?']
-],note:'Use this when the action will be in progress at a particular future time.',examples:[["मैं कल इस समय पढ़ रहा होऊँगा।","I will be studying at this time tomorrow."],["वे शाम को क्रिकेट नहीं खेल रहे होंगे।","They will not be playing cricket in the evening."],["क्या तुम रात आठ बजे पढ़ रहे होगे?","Will you be studying at 8 p.m.?"],["कल शाम तुम क्या कर रहे होगे?","What will you be doing tomorrow evening?"],["अगले महीने वह नई कक्षा में पढ़ रही होगी।","She will be studying in a new class next month."]]},
+],note:'Use this when the action will be in progress at a particular future time.',examples:[["मैं कल इस समय पढ़ रहा होऊँगा।","I will be studying at this time tomorrow."],["वे शाम 7 बजे क्रिकेट नहीं खेल रहे होंगे।","They will not be playing cricket at 7 p.m."],["क्या तुम रात आठ बजे पढ़ रहे होगे?","Will you be studying at 8 p.m.?"],["कल शाम तुम क्या कर रहे होगे?","What will you be doing tomorrow evening?"],["अगले महीने वह नई कक्षा में पढ़ रही होगी।","She will be studying in a new class next month."]]},
 {name:'Future Perfect',short:'Action completed before a future time',rows:[
 ['Affirmative (सकारात्मक)','S + will have + V3 + O','She will have finished the work by 6 p.m.'],
 ['Negative (नकारात्मक)','S + will not have + V3 + O','She will not have finished the work by 6 p.m.'],
