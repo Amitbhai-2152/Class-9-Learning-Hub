@@ -170,6 +170,7 @@ const BANKS={practice:Q.slice(0,30),challenge:Q.slice(10,45),test:Q};
 const rotate=(questions,mode)=>{const shift=mode==='challenge'?1:mode==='test'?2:0;return questions.map((item,i)=>{const[q,opts,a,e]=item;const out=[...opts];const correct=out[a];const move=(a+shift+i)%out.length;out.splice(a,1);out.splice(move,0,correct);return[q,out,move,e]})};
 const readMode=()=>{if(typeof window==='undefined')return'learn';const m=new URLSearchParams(window.location.search).get('mode');return['practice','challenge','test'].includes(m)?m:'learn'};
 
+const GLOBAL_TRANSLATION_ANSWER_CONTROL=true;
 export default function EnglishTranslationTopicComplete({onBack=()=>{},addXp=()=>{},finishSession=()=>{}}){
  const[mode,setMode]=useState(readMode);const[lesson,setLesson]=useState(0);const[hideAllWorkedAnswers,setHideAllWorkedAnswers]=useState(false);
  useEffect(()=>{const sync=()=>setMode(readMode());window.addEventListener('popstate',sync);sync();return()=>window.removeEventListener('popstate',sync)},[]);
