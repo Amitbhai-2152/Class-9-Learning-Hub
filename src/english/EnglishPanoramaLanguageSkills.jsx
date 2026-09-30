@@ -62,7 +62,8 @@ export function EnglishPanoramaLanguageSkills({onBack,addXp=()=>{},finishSession
  useEffect(()=>{const sync=()=>{const p=new URLSearchParams(window.location.search);setTopicId(normalize(p.get('topic')));const m=p.get('mode');setMode(modeNames.includes(m)?m:'learn');};window.addEventListener('popstate',sync);return()=>window.removeEventListener('popstate',sync)},[]);
  const navigate=(nextTopic,nextMode='learn')=>{const p=new URLSearchParams(window.location.search);p.set('page','language-skills');p.set('subject','english');p.set('languageSkills','1');if(nextTopic)p.set('topic',nextTopic);else p.delete('topic');if(nextMode!=='learn')p.set('mode',nextMode);else p.delete('mode');window.history.pushState({},'',`${window.location.pathname}?${p}`);setTopicId(normalize(nextTopic));setMode(nextMode);setIndex(0);setScore(0);setSelected(null);setDone(false)};
  const chooseMode=(m)=>{setMode(m);setIndex(0);setScore(0);setSelected(null);setDone(false);navigate(topicId,m)};
- const questions=topic?.quiz||[];const q=questions[index];\n const isReadingTopic=['factual-reading','literary-reading','poetry-reading'].includes(topicId);
+ const questions=topic?.quiz||[];const q=questions[index];
+ const isReadingTopic=['factual-reading','literary-reading','poetry-reading'].includes(topicId);
  const answer=(i)=>{if(selected!==null)return;setSelected(i);if(i===q[3])setScore(s=>s+1)};
  const next=()=>{if(index+1<questions.length){setIndex(i=>i+1);setSelected(null)}else{setDone(true);const final=score+(selected===q[3]?1:0);addXp(Math.max(5,final*3));finishSession({kind:'language-skills',topic:topic.id,mode,score:final,total:questions.length,at:Date.now()})}};
  if(topicId==='tenses')return <EnglishTensesTopic onBack={onBack} addXp={addXp} finishSession={finishSession}/>;
