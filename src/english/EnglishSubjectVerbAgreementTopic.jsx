@@ -14,11 +14,11 @@ const HINDI_EXPLANATIONS={
 '09':'Either…or और neither…nor में mixed singular/plural subjects हों तो verb सामान्यतः उस subject के अनुसार आता है जो verb के सबसे पास है।',
 '10':'Distance, money या time की quantity जब एक total unit के रूप में मानी जाए, तो singular verb लिया जा सकता है।',
 '11':'Police और cattle जैसे कुछ nouns plural agreement लेते हैं, जबकि news और Mathematics जैसे शब्द school grammar में singular agreement लेते हैं।',
-'12':'Collective noun एक group को एक unit की तरह भी दिखा सकता है और members पर focus भी कर सकता है। Exam में sentence के intended meaning और taught variety को देखें।',
+'12':'Collective noun पूरे group को एक इकाई की तरह भी दिखा सकता है और उसके अलग-अलग members पर भी ध्यान दे सकता है। Exam में sentence का intended meaning और school में सिखाया गया grammar pattern देखें।',
 '13':'Who या that का verb उस noun/antecedent के number के अनुसार होता है जिसे relative pronoun refer करता है।',
 '14':'Book titles, names या quoted words भले plural दिखें, लेकिन अगर वे एक ही work या idea को represent करते हैं तो singular verb ले सकते हैं।',
 '15':'Along with, as well as, together with, with जैसी phrases main subject को plural नहीं बनातीं। मुख्य subject ही verb control करता है।',
-'16':'Difficult agreement question में पाँच steps रखें: subject खोजें, distractions हटाएँ, singular/plural तय करें, verb चुनें और फिर पूरा sentence दोबारा पढ़ें।'
+'16':'कठिन agreement प्रश्न में पाँच steps रखें: असली subject खोजें, बीच की extra information हटाएँ, singular/plural तय करें, सही verb चुनें और फिर पूरा sentence दोबारा पढ़ें।'
 };
 
 const LESSONS=[
