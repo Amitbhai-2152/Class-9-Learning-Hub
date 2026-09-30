@@ -38,8 +38,8 @@ self.addEventListener('fetch', event => {
   // Keep authenticated/API data out of the offline cache.
   if (url.pathname.includes('/rest/v1/') || url.pathname.includes('/auth/v1/')) return;
 
-  // Build version must always come from the network so the app can detect a newer deployment.
-  if (url.pathname.endsWith('/build-version.json')) {
+  // Service-worker script and build version must always come from the network so updates cannot get stuck in the old cache.
+  if (url.pathname.endsWith('/sw.js') || url.pathname.endsWith('/build-version.json')) {
     event.respondWith(fetch(request, { cache: 'no-store' }));
     return;
   }
