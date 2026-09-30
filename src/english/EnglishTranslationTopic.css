@@ -116,3 +116,16 @@
   .et-tense-example>b{width:22px;height:22px;font-size:.58rem}
   .et-tense-example>span,.et-tense-example>strong{font-size:.71rem}
 }
+
+
+/* Hide/show answer controls for the 40 worked translation examples. */
+.et-model-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
+.et-answer-toggle{border:1px solid #cfd8e3;background:#f7f9fc;color:#405873;border-radius:9px;padding:6px 9px;font:inherit;font-size:.68rem;font-weight:800;cursor:pointer;white-space:nowrap}
+.et-answer-toggle:hover{background:#edf2f7;border-color:#bcc8d6}
+.et-answer-toggle:focus-visible{outline:2px solid #657b9f;outline-offset:2px}
+.et-model-hidden{margin:6px 0;font-size:.82rem;line-height:1.55;font-weight:800;color:#6b7890;background:#f2f5f9;border:1px dashed #cfd8e3;border-radius:10px;padding:10px 11px}
+@media(max-width:560px){
+  .et-model-top{align-items:flex-start}
+  .et-answer-toggle{font-size:.66rem;padding:6px 8px}
+  .et-model-hidden{font-size:.78rem;padding:9px 10px}
+}
