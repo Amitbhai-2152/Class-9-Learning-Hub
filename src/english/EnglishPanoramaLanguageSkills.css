@@ -35,3 +35,83 @@
 
 @media(max-width:1000px){.english-ls-section:nth-child(1) .english-ls-topic-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.english-ls-content{grid-template-columns:1fr}.english-ls-dock{position:static}}
 @media(max-width:700px){.english-language-skills{padding:11px 12px 46px}.english-ls-hero{min-height:245px;padding:29px 19px 27px;border-radius:22px}.english-ls-hero h1{font-size:clamp(2.35rem,14vw,3.7rem)}.english-ls-hero p{font-size:.89rem}.english-ls-grid{grid-template-columns:1fr;margin-top:15px;gap:12px}.english-ls-section,.english-ls-section:nth-child(1){grid-column:auto;padding:15px;border-radius:17px}.english-ls-topic-grid,.english-ls-section:nth-child(1) .english-ls-topic-grid{grid-template-columns:1fr}.english-ls-topic-card{min-height:89px}.english-ls-topic-card strong{font-size:.86rem}.english-ls-topic-card small{font-size:.6rem}.english-ls-topic-hero{padding:22px 18px 18px;border-radius:19px}.english-ls-topic-hero h1{font-size:2.2rem}.english-ls-dock{grid-template-columns:repeat(2,minmax(0,1fr))}.english-ls-lesson-card{padding:19px 16px}.english-ls-example{grid-template-columns:1fr}.english-ls-example>span{display:none}.english-ls-bottom-nav{flex-direction:column}.english-ls-lesson-card h2{font-size:1.32rem}.english-ls-lesson-card p{font-size:.91rem;line-height:1.82}.english-ls-options button{font-size:.78rem;min-height:46px}}
+
+/* Reading topic redesign — clearer hierarchy, lesson sidebar and mobile-first behavior. */
+.english-ls-reading-topic .english-ls-topic-hero{padding:30px 32px 28px}
+.english-ls-reading-topic .english-ls-topic-hero-copy{position:relative;z-index:1;max-width:960px}
+.english-ls-reading-topic .english-ls-topic-hero h1{max-width:900px}
+.english-ls-reading-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.english-ls-reading-meta span{display:inline-flex;align-items:center;min-height:30px;padding:6px 10px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.07);color:#dce8f0;font-size:.68rem;font-weight:850}
+.english-ls-reading-layout{display:grid;grid-template-columns:278px minmax(0,1fr);gap:16px;align-items:start}
+.english-ls-reading-sidebar{position:sticky;top:83px;border:1px solid var(--ls-line);border-radius:18px;background:#fff;box-shadow:0 8px 22px rgba(15,38,59,.045);overflow:hidden}
+.english-ls-reading-sidebar-head{display:flex;align-items:end;justify-content:space-between;gap:8px;padding:16px 16px 13px;border-bottom:1px solid #e8eef3;background:linear-gradient(180deg,#fbfdfe,#f6f9fb)}
+.english-ls-reading-sidebar-head span{font-size:.62rem;font-weight:950;letter-spacing:.12em;color:#7b8da0}
+.english-ls-reading-sidebar-head strong{font-size:.72rem;color:#36566f}
+.english-ls-reading-lessons{display:grid;gap:5px;padding:8px;max-height:calc(100vh - 235px);overflow:auto;scrollbar-width:thin}
+.english-ls-reading-lessons button{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:9px;width:100%;min-height:45px;padding:7px 8px;border:1px solid transparent;border-radius:11px;background:#fff;color:#53697c;font:inherit;text-align:left;cursor:pointer;transition:.15s ease}
+.english-ls-reading-lessons button:hover{border-color:#d9e4ec;background:#f8fbfd;transform:translateX(1px)}
+.english-ls-reading-lessons button.active{border-color:#bad2e1;background:#eef6fb;color:#1f5574;box-shadow:inset 3px 0 0 #3b769b}
+.english-ls-reading-lessons button>span{display:grid;place-items:center;width:31px;height:31px;border-radius:9px;background:#f0f4f7;color:#72889b;font-size:.62rem;font-weight:950}
+.english-ls-reading-lessons button.active>span{background:#d8eaf5;color:#2c6588}
+.english-ls-reading-lessons button strong{font-size:.69rem;line-height:1.35;font-weight:800}
+.english-ls-reading-main{min-width:0}
+.english-ls-reading-status{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 9px;padding:0 3px;color:#75899b}
+.english-ls-reading-status span{font-size:.62rem;font-weight:950;letter-spacing:.1em}
+.english-ls-reading-status b{padding:5px 8px;border:1px solid #dde7ee;border-radius:999px;background:#fff;color:#49677e;font-size:.62rem}
+.english-ls-reading-topic .english-ls-lesson-card{padding:27px 28px 22px;box-shadow:0 10px 28px rgba(15,38,59,.055)}
+.english-ls-reading-topic .english-ls-lesson-card p{max-width:900px;font-size:.98rem;line-height:1.95;color:#566c7f}
+.english-ls-lesson-nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px;padding-top:17px;border-top:1px solid #edf1f4}
+.english-ls-lesson-nav button{min-height:40px;padding:8px 12px;border:1px solid #d5e0e8;border-radius:10px;background:#fff;color:#355972;font:inherit;font-size:.7rem;font-weight:850;cursor:pointer;transition:.15s ease}
+.english-ls-lesson-nav button:last-child{background:#153a54;border-color:#153a54;color:#fff;box-shadow:0 6px 15px rgba(21,58,84,.12)}
+.english-ls-lesson-nav button:hover:not(:disabled){transform:translateY(-1px);border-color:#a9c2d3}
+.english-ls-lesson-nav button:last-child:hover:not(:disabled){box-shadow:0 9px 20px rgba(21,58,84,.18)}
+.english-ls-lesson-nav button:disabled{opacity:.4;cursor:not-allowed}
+.english-ls-reading-support-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}
+.english-ls-reading-topic .english-ls-examples,
+.english-ls-reading-topic .english-ls-clinic{height:auto;padding:19px}
+.english-ls-section-label{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:12px}
+.english-ls-section-label span{font-size:.61rem;font-weight:950;letter-spacing:.12em;color:#73889a}
+.english-ls-section-label b{font-size:.73rem;color:#35546b}
+.english-ls-reading-topic .english-ls-example{grid-template-columns:minmax(0,.95fr) 18px minmax(0,1.05fr);margin-top:7px}
+.english-ls-reading-topic .english-ls-clinic>div{display:grid;grid-template-columns:29px 18px minmax(0,1fr);align-items:start;gap:7px;margin-top:7px;padding:9px 10px;background:#fffdf8}
+.english-ls-reading-topic .english-ls-clinic>div>strong{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#f2ead3;color:#806c39;font-size:.58rem}
+.english-ls-reading-topic .english-ls-clinic>div>span{font-size:.72rem;line-height:1.4}
+.english-ls-reading-topic .english-ls-clinic>div>p{margin:0;color:#6f613f;font-size:.72rem;line-height:1.5}
+.english-ls-reading-topic .english-ls-bottom-nav{margin-top:16px}
+
+@media(max-width:1040px){
+  .english-ls-reading-layout{grid-template-columns:240px minmax(0,1fr)}
+  .english-ls-reading-lessons{max-height:calc(100vh - 220px)}
+}
+@media(max-width:860px){
+  .english-ls-reading-layout{grid-template-columns:1fr}
+  .english-ls-reading-sidebar{position:static}
+  .english-ls-reading-sidebar-head{padding:13px 14px}
+  .english-ls-reading-lessons{display:flex;overflow-x:auto;overflow-y:hidden;max-height:none;padding:8px}
+  .english-ls-reading-lessons button{flex:0 0 190px;grid-template-columns:31px minmax(0,1fr);min-height:48px}
+  .english-ls-reading-support-grid{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .english-ls-reading-topic .english-ls-topic-hero{padding:21px 17px 18px;border-radius:18px}
+  .english-ls-reading-topic .english-ls-topic-hero h1{font-size:2.05rem}
+  .english-ls-reading-topic .english-ls-topic-hero p{font-size:.87rem;line-height:1.68}
+  .english-ls-reading-meta{gap:6px;margin-top:14px}
+  .english-ls-reading-meta span{font-size:.61rem}
+  .english-ls-reading-status{margin-top:3px}
+  .english-ls-reading-sidebar-head{padding:12px}
+  .english-ls-reading-lessons{gap:6px}
+  .english-ls-reading-lessons button{flex-basis:165px;padding:7px}
+  .english-ls-reading-lessons button strong{font-size:.65rem}
+  .english-ls-reading-topic .english-ls-lesson-card{padding:20px 16px 17px}
+  .english-ls-reading-topic .english-ls-lesson-card p{font-size:.9rem;line-height:1.82}
+  .english-ls-lesson-nav{margin-top:18px;padding-top:14px}
+  .english-ls-lesson-nav button{flex:1;font-size:.66rem}
+  .english-ls-reading-support-grid{gap:11px}
+  .english-ls-reading-topic .english-ls-examples,
+  .english-ls-reading-topic .english-ls-clinic{padding:15px}
+  .english-ls-reading-topic .english-ls-example{grid-template-columns:1fr;padding:10px}
+  .english-ls-reading-topic .english-ls-example>span{display:none}
+  .english-ls-reading-topic .english-ls-example strong{font-size:.72rem}
+  .english-ls-reading-topic .english-ls-example p{font-size:.7rem;line-height:1.5}
+  .english-ls-reading-topic .english-ls-clinic>div{grid-template-columns:27px 16px minmax(0,1fr);padding:8px}
+}
