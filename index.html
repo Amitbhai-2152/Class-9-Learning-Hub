@@ -61,7 +61,7 @@
       (function(){
         if(!('serviceWorker' in navigator))return;
         window.addEventListener('load',function(){
-          navigator.serviceWorker.register('/Class-9-Learning-Hub/sw.js',{scope:'/Class-9-Learning-Hub/'})
+          navigator.serviceWorker.register('/Class-9-Learning-Hub/sw.js?v=20260930',{scope:'/Class-9-Learning-Hub/'})
             .catch(function(){ /* PWA is optional; the web app remains fully functional. */ });
         });
       })();
