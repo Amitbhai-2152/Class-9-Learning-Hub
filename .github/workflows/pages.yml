@@ -54,3 +54,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+# Pages deployment refresh: keep the deployment workflow active on main pushes.
