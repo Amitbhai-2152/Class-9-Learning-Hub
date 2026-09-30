@@ -5,14 +5,14 @@ import EnglishTimedQuiz from './EnglishTimedQuiz.jsx';
 const HINDI_EXPLANATIONS={
 '01':'Modal एक helping verb है जो ability, permission, possibility, advice, obligation जैसी अतिरिक्त meaning देता है। Modal के बाद main verb का base form यानी V1 आता है।',
 '02':'Can ability या informal permission, could past ability या polite request, और may/might possibility या permission बता सकते हैं। सही modal context के अनुसार चुनें।',
-'03':'Must strong obligation, have to बाहरी requirement, जबकि should/ought to advice या duty बताते हैं।',
+'03':'Must मजबूत अनिवार्यता बताता है, have to बाहरी आवश्यकता या नियम को दिखाता है, जबकि should/ought to सामान्यतः सलाह या कर्तव्य बताते हैं।',
 '04':'Must not का अर्थ है काम करना मना है, जबकि need not का अर्थ है काम करना जरूरी नहीं है। दोनों को एक जैसा नहीं समझना चाहिए।',
 '05':'Central modal के बाद हमेशा base verb V1 आता है। इसलिए can go सही है, can goes और can to go गलत हैं।',
 '06':'Question में modal subject से पहले आता है और negative में modal के बाद not आता है। सामान्यतः do/does/did की जरूरत नहीं होती।',
 '07':'Hindi में एक ही शब्द कई अर्थ दे सकता है, इसलिए केवल translation देखकर modal न चुनें। पहले ability, permission, possibility, obligation या advice पहचानें।',
-'08':'Can/could, may/might और must/should के बीच strength, certainty और time-context का अंतर हो सकता है। इन्हें pair में compare करके समझें।',
+'08':'Can/could, may/might और must/should में शक्ति, निश्चितता और समय-संदर्भ का अंतर हो सकता है। इन्हें जोड़ी में तुलना करके समझना आसान होता है।',
 '09':'Hindi से English translation में पहले sentence का intended meaning पहचानें, फिर modal चुनें और उसके बाद V1 लगाएँ। Word-for-word translation से बचें।',
-'10':'Modal questions में सबसे common traps meaning का confusion, must not vs need not और modal के बाद गलत verb form हैं। Submit करने से पहले पाँच-second audit करें।'
+'10':'Modal से जुड़े प्रश्नों में सामान्य गलतियाँ अर्थ का भ्रम, must not और need not का अंतर भूलना तथा modal के बाद गलत verb form लगाना हैं। उत्तर देने से पहले पाँच सेकंड की जाँच करें।'
 };
 
 const LESSONS=[
