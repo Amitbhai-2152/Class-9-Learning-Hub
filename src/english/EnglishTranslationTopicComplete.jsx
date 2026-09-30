@@ -31,50 +31,50 @@ const TENSE_STRUCTURES={
 ['Negative (नकारात्मक)','S + do/does + not + V1 + O','She does not play cricket.'],
 ['Interrogative (प्रश्नवाचक)','Do/Does + S + V1 + O?','Does she play cricket?'],
 ['WH-family (WH-प्रश्न)','Wh-word + do/does + S + V1 + O?','Where does she play cricket?']
-],note:'He/She/It के साथ affirmative sentence में main verb पर s/es आता है; do/does/did के बाद हमेशा V1 आता है.'}],
+],note:'He/She/It के साथ affirmative sentence में main verb पर s/es आता है; do/does/did के बाद हमेशा V1 आता है.',examples:[["मैं रोज़ स्कूल जाता हूँ।","I go to school every day."],["वह सुबह चाय नहीं पीती है।","She does not drink tea in the morning."],["क्या तुम रोज़ क्रिकेट खेलते हो?","Do you play cricket every day?"],["तुम कहाँ रहते हो?","Where do you live?"],["सूरज पूर्व में उगता है।","The sun rises in the east."]]}],
 '04':[{name:'Present Continuous',short:'Action happening now / around now',rows:[
 ['Affirmative (सकारात्मक)','S + am/is/are + V-ing + O','She is playing cricket.'],
 ['Negative (नकारात्मक)','S + am/is/are + not + V-ing + O','She is not playing cricket.'],
 ['Interrogative (प्रश्नवाचक)','Am/Is/Are + S + V-ing + O?','Is she playing cricket?'],
 ['WH-family (WH-प्रश्न)','Wh-word + am/is/are + S + V-ing + O?','What is she playing?']
-],note:'I → am, He/She/It → is, You/We/They → are.'}],
+],note:'I → am, He/She/It → is, You/We/They → are.',examples:[["मैं अभी किताब पढ़ रहा हूँ।","I am reading a book now."],["वह इस समय टीवी नहीं देख रही है।","She is not watching TV at the moment."],["क्या वे मैदान में खेल रहे हैं?","Are they playing in the ground?"],["तुम अभी क्या कर रहे हो?","What are you doing now?"],["अध्यापक कक्षा में पढ़ा रहे हैं।","The teacher is teaching in the classroom."]]}],
 '05':[{name:'Present Perfect',short:'Completed action with present connection',rows:[
 ['Affirmative (सकारात्मक)','S + has/have + V3 + O','She has finished her work.'],
 ['Negative (नकारात्मक)','S + has/have + not + V3 + O','She has not finished her work.'],
 ['Interrogative (प्रश्नवाचक)','Has/Have + S + V3 + O?','Has she finished her work?'],
 ['WH-family (WH-प्रश्न)','Wh-word + has/have + S + V3 + O?','What has she finished?']
-],note:'He/She/It → has; I/You/We/They → have. V3 stays after has/have.'}],
+],note:'He/She/It → has; I/You/We/They → have. V3 stays after has/have.',examples:[["मैंने अपना गृहकार्य पूरा कर लिया है।","I have finished my homework."],["उसने अभी तक काम पूरा नहीं किया है।","She has not finished the work yet."],["क्या तुमने अपना कमरा साफ किया है?","Have you cleaned your room?"],["तुमने आज क्या सीखा है?","What have you learned today?"],["हमने इस फिल्म को पहले देखा है।","We have seen this film before."]]}],
 '06':[{name:'Present Perfect Continuous',short:'Action continuing up to now + duration',rows:[
 ['Affirmative (सकारात्मक)','S + has/have been + V-ing + since/for...','She has been studying for two hours.'],
 ['Negative (नकारात्मक)','S + has/have not been + V-ing + since/for...','She has not been studying for two hours.'],
 ['Interrogative (प्रश्नवाचक)','Has/Have + S + been + V-ing + since/for...?','Has she been studying for two hours?'],
 ['WH-family (WH-प्रश्न)','Wh-word + has/have + S + been + V-ing + since/for...?','How long has she been studying?']
-],note:'Since = starting point; for = duration. “How long” is especially common in WH-questions for duration.'}],
+],note:'Since = starting point; for = duration. “How long” is especially common in WH-questions for duration.',examples:[["मैं दो घंटे से पढ़ रहा हूँ।","I have been studying for two hours."],["वह सुबह से काम नहीं कर रही है।","She has not been working since morning."],["क्या वे सुबह से इंतज़ार कर रहे हैं?","Have they been waiting since morning?"],["तुम कितने समय से यहाँ रह रहे हो?","How long have you been living here?"],["बारिश दो घंटे से हो रही है।","It has been raining for two hours."]]}],
 '07':[{name:'Past Indefinite / Simple Past',short:'Completed past action',rows:[
 ['Affirmative (सकारात्मक)','S + V2 + O','She played cricket yesterday.'],
 ['Negative (नकारात्मक)','S + did not + V1 + O','She did not play cricket yesterday.'],
 ['Interrogative (प्रश्नवाचक)','Did + S + V1 + O?','Did she play cricket yesterday?'],
 ['WH-family (WH-प्रश्न)','Wh-word + did + S + V1 + O?','Where did she play cricket?']
-],note:'Affirmative uses V2, but did/did not के बाद V1 आता है.'}],
+],note:'Affirmative uses V2, but did/did not के बाद V1 आता है.',examples:[["मैंने उसे कल देखा।","I saw him yesterday."],["वह पिछले रविवार को स्कूल नहीं गया।","He did not go to school last Sunday."],["क्या तुमने कल उसे फोन किया?","Did you call him yesterday?"],["तुम कल कहाँ गए थे?","Where did you go yesterday?"],["हमने मैच जीत लिया।","We won the match."]]}],
 '08':[
 {name:'Past Continuous',short:'Action in progress at a past time',rows:[
 ['Affirmative (सकारात्मक)','S + was/were + V-ing + O','She was playing cricket.'],
 ['Negative (नकारात्मक)','S + was/were + not + V-ing + O','She was not playing cricket.'],
 ['Interrogative (प्रश्नवाचक)','Was/Were + S + V-ing + O?','Was she playing cricket?'],
 ['WH-family (WH-प्रश्न)','Wh-word + was/were + S + V-ing + O?','What was she playing?']
-],note:'I/He/She/It → was; You/We/They → were.'},
+],note:'I/He/She/It → was; You/We/They → were.',examples:[["मैं कल रात पढ़ रहा था।","I was studying last night."],["वे उस समय क्रिकेट नहीं खेल रहे थे।","They were not playing cricket at that time."],["क्या वह खाना बना रही थी?","Was she cooking?"],["तुम उस समय क्या कर रहे थे?","What were you doing at that time?"],["जब मैं पहुँचा, वे सो रहे थे।","When I arrived, they were sleeping."]]},
 {name:'Past Perfect',short:'Earlier of two related past actions',rows:[
 ['Affirmative (सकारात्मक)','S + had + V3 + O','She had finished her work.'],
 ['Negative (नकारात्मक)','S + had not + V3 + O','She had not finished her work.'],
 ['Interrogative (प्रश्नवाचक)','Had + S + V3 + O?','Had she finished her work?'],
 ['WH-family (WH-प्रश्न)','Wh-word + had + S + V3 + O?','What had she finished?']
-],note:'Had is used with all subjects. Use it to show the earlier past action when the context contains another past reference.'},
+],note:'Had is used with all subjects. Use it to show the earlier past action when the context contains another past reference.',examples:[["मेरे पहुँचने से पहले वह जा चुका था।","He had left before I arrived."],["हमारे आने से पहले ट्रेन नहीं गई थी।","The train had not left before we arrived."],["क्या तुमने उसके आने से पहले काम पूरा कर लिया था?","Had you finished the work before he arrived?"],["तुम मेरे आने से पहले क्या कर चुके थे?","What had you done before I arrived?"],["जब शिक्षक आए, छात्र काम शुरू कर चुके थे।","When the teacher arrived, the students had started their work."]]},
 {name:'Past Perfect Continuous',short:'Duration continuing up to a past reference point',rows:[
 ['Affirmative (सकारात्मक)','S + had been + V-ing + since/for...','She had been studying for two hours.'],
 ['Negative (नकारात्मक)','S + had not been + V-ing + since/for...','She had not been studying for two hours.'],
 ['Interrogative (प्रश्नवाचक)','Had + S + been + V-ing + since/for...?','Had she been studying for two hours?'],
 ['WH-family (WH-प्रश्न)','Wh-word + had + S + been + V-ing + since/for...?','How long had she been studying?']
-],note:'This tense connects duration to a past reference point: “She had been studying for two hours before the teacher arrived.”'}
+],note:'This tense connects duration to a past reference point: “She had been studying for two hours before the teacher arrived.”',examples:[["मैं दो घंटे से पढ़ रहा था जब वह आया।","I had been studying for two hours when he came."],["वह सुबह से काम नहीं कर रही थी।","She had not been working since morning."],["क्या वे बहुत देर से इंतज़ार कर रहे थे?","Had they been waiting for a long time?"],["तुम वहाँ कितने समय से रह रहे थे?","How long had you been living there?"],["बारिश तीन घंटे से हो रही थी जब हम घर पहुँचे।","It had been raining for three hours when we reached home."]]}
 ],
 '15':[
 {name:'Future Indefinite / Simple Future',short:'Prediction • promise • quick decision',rows:[
@@ -82,25 +82,25 @@ const TENSE_STRUCTURES={
 ['Negative (नकारात्मक)','S + will not + V1 + O','She will not play cricket tomorrow.'],
 ['Interrogative (प्रश्नवाचक)','Will + S + V1 + O?','Will she play cricket tomorrow?'],
 ['WH-family (WH-प्रश्न)','Wh-word + will + S + V1 + O?','When will she play cricket?']
-],note:'Will is followed by V1. In negative sentences, will not is commonly shortened to won’t.'},
+],note:'Will is followed by V1. In negative sentences, will not is commonly shortened to won’t.',examples:[["मैं कल तुम्हारी मदद करूँगा।","I will help you tomorrow."],["वह आज रात बाहर नहीं जाएगी।","She will not go out tonight."],["क्या तुम अगले सप्ताह हमारे साथ आओगे?","Will you come with us next week?"],["तुम यह काम कब करोगे?","When will you do this work?"],["मैं तुम्हें बाद में फोन करूँगा।","I will call you later."]]},
 {name:'Future Continuous',short:'Action in progress at a future time',rows:[
 ['Affirmative (सकारात्मक)','S + will be + V-ing + O','She will be playing cricket at 5 p.m.'],
 ['Negative (नकारात्मक)','S + will not be + V-ing + O','She will not be playing cricket at 5 p.m.'],
 ['Interrogative (प्रश्नवाचक)','Will + S + be + V-ing + O?','Will she be playing cricket at 5 p.m.?'],
 ['WH-family (WH-प्रश्न)','Wh-word + will + S + be + V-ing + O?','What will she be playing at 5 p.m.?']
-],note:'Use this when the action will be in progress at a particular future time.'},
+],note:'Use this when the action will be in progress at a particular future time.',examples:[["मैं कल इस समय पढ़ रहा होऊँगा।","I will be studying at this time tomorrow."],["वे शाम को क्रिकेट नहीं खेल रहे होंगे।","They will not be playing cricket in the evening."],["क्या तुम रात आठ बजे पढ़ रहे होगे?","Will you be studying at 8 p.m.?"],["कल शाम तुम क्या कर रहे होगे?","What will you be doing tomorrow evening?"],["अगले महीने वह नई कक्षा में पढ़ रही होगी।","She will be studying in a new class next month."]]},
 {name:'Future Perfect',short:'Action completed before a future time',rows:[
 ['Affirmative (सकारात्मक)','S + will have + V3 + O','She will have finished the work by 6 p.m.'],
 ['Negative (नकारात्मक)','S + will not have + V3 + O','She will not have finished the work by 6 p.m.'],
 ['Interrogative (प्रश्नवाचक)','Will + S + have + V3 + O?','Will she have finished the work by 6 p.m.?'],
 ['WH-family (WH-प्रश्न)','Wh-word + will + S + have + V3 + O?','What will she have finished by 6 p.m.?']
-],note:'“By + future time” is a common clue because the action is viewed as completed before that future point.'},
+],note:'“By + future time” is a common clue because the action is viewed as completed before that future point.',examples:[["मैं शाम तक अपना काम पूरा कर चुका होऊँगा।","I will have finished my work by evening."],["वे सोमवार तक परियोजना पूरी नहीं कर चुके होंगे।","They will not have completed the project by Monday."],["क्या तुम छह बजे तक काम पूरा कर चुके होगे?","Will you have finished the work by 6 p.m.?"],["तुम इस महीने के अंत तक क्या सीख चुके होगे?","What will you have learned by the end of this month?"],["अगले वर्ष तक वह परीक्षा पास कर चुका होगा।","He will have passed the examination by next year."]]},
 {name:'Future Perfect Continuous',short:'Duration continuing up to a future point',rows:[
 ['Affirmative (सकारात्मक)','S + will have been + V-ing + since/for...','She will have been studying for two hours by 6 p.m.'],
 ['Negative (नकारात्मक)','S + will not have been + V-ing + since/for...','She will not have been studying for two hours by 6 p.m.'],
 ['Interrogative (प्रश्नवाचक)','Will + S + have been + V-ing + since/for...?','Will she have been studying for two hours by 6 p.m.?'],
 ['WH-family (WH-प्रश्न)','Wh-word + will + S + have been + V-ing + since/for...?','How long will she have been studying by 6 p.m.?']
-],note:'This form focuses on how long an activity will have continued up to a future reference point.'}
+],note:'This form focuses on how long an activity will have continued up to a future reference point.',examples:[["अगले महीने तक मैं दो साल से यहाँ काम कर रहा होऊँगा।","By next month, I will have been working here for two years."],["वह शाम तक तीन घंटे से पढ़ाई नहीं कर रही होगी।","She will not have been studying for three hours by evening."],["क्या अगले जून तक तुम पाँच साल से इस स्कूल में पढ़ रहे होगे?","Will you have been studying at this school for five years by next June?"],["अगले महीने तक तुम कितने समय से यहाँ रह रहे होगे?","How long will you have been living here by next month?"],["अगले सप्ताह तक वे एक महीने से इस परियोजना पर काम कर रहे होंगे।","By next week, they will have been working on this project for a month."]]}
 ]
 };
 
@@ -182,7 +182,7 @@ export default function EnglishTranslationTopicComplete({onBack=()=>{},addXp=()=
  <nav className="et-modebar"><button className="active" type="button">Learn</button><button type="button" onClick={()=>go('practice')}>Practice</button><button type="button" onClick={()=>go('challenge')}>Challenge</button><button type="button" onClick={()=>go('test')}>Final Test</button></nav>
  <section className="et-progress"><div><span>Lesson {lesson+1} of {LESSONS.length}</span><b>{Math.round((lesson+1)*100/LESSONS.length)}%</b></div><div className="et-track"><i style={{width:`${((lesson+1)/LESSONS.length)*100}%`}}/></div></section>
  <div className="et-layout"><aside className="et-map"><div className="et-map-title">Lesson map</div>{LESSONS.map((x,i)=><button type="button" key={x.n} className={i===lesson?'selected':''} onClick={()=>setLesson(i)}><span>{x.n}</span><div><strong>{x.title}</strong><small>{x.group}</small></div></button>)}</aside>
- <section><article className="et-lesson"><span className="et-badge">{current.group}</span><h2>{current.title}</h2><p className="et-simple">{current.simple}</p><div className="et-inline-guide"><span>समझने का आसान तरीका</span><p>{current.hindi}</p></div><div className="et-grid"><section><h3>Core idea</h3><p>{current.meaning}</p></section><section><h3>Structure</h3><p>{current.structure}</p></section></div>{TENSE_STRUCTURES[current.n]&&<section className="et-tense-structures"><div className="et-tense-structures-head"><span>TENSE STRUCTURES</span><h3>Sentence structure: all four patterns</h3><p>Every tense below is shown as Affirmative, Negative, Interrogative and WH-family. The examples use the same basic idea so the pattern is easy to compare.</p></div>{TENSE_STRUCTURES[current.n].map((t,i)=><article className="et-tense-block" key={t.name}><div className="et-tense-block-head"><div><strong>{t.name}</strong><span>{t.short}</span></div><b>{String(i+1).padStart(2,"0")}</b></div><div className="et-tense-patterns">{t.rows.map((row,j)=><div className="et-tense-pattern" key={row[0]}><div className="et-tense-pattern-type">{row[0]}</div><code>{row[1]}</code><p>{row[2]}</p></div>)}</div><div className="et-tense-note"><strong>Key note</strong><span>{t.note}</span></div></article>)}<div className="et-wh-note"><strong>WH-family note:</strong><span>यहाँ WH pattern सामान्य information questions को दिखाता है। अगर <em>who/what</em> खुद subject हो, तो auxiliary pattern बदल सकता है—for example, <b>Who plays cricket?</b> — not <b>Who does play cricket?</b></span></div></section>}<section className="et-examples"><h3>Quick examples</h3>{current.examples.map((x,i)=><div key={i}>{x}</div>)}</section><div className="et-clue"><strong>Exam clue</strong><p>{current.clue}</p></div></article>
+ <section><article className="et-lesson"><span className="et-badge">{current.group}</span><h2>{current.title}</h2><p className="et-simple">{current.simple}</p><div className="et-inline-guide"><span>समझने का आसान तरीका</span><p>{current.hindi}</p></div><div className="et-grid"><section><h3>Core idea</h3><p>{current.meaning}</p></section><section><h3>Structure</h3><p>{current.structure}</p></section></div>{TENSE_STRUCTURES[current.n]&&<section className="et-tense-structures"><div className="et-tense-structures-head"><span>TENSE STRUCTURES</span><h3>Sentence structure: all four patterns</h3><p>Every tense below is shown as Affirmative, Negative, Interrogative and WH-family. The examples use the same basic idea so the pattern is easy to compare.</p></div>{TENSE_STRUCTURES[current.n].map((t,i)=><article className="et-tense-block" key={t.name}><div className="et-tense-block-head"><div><strong>{t.name}</strong><span>{t.short}</span></div><b>{String(i+1).padStart(2,"0")}</b></div><div className="et-tense-patterns">{t.rows.map((row,j)=><div className="et-tense-pattern" key={row[0]}><div className="et-tense-pattern-type">{row[0]}</div><code>{row[1]}</code><p>{row[2]}</p></div>)}</div><div className="et-tense-note"><strong>Key note</strong><span>{t.note}</span></div><div className="et-tense-example-list"><div className="et-tense-example-heading"><strong>5 examples</strong><span>Hindi → English</span></div>{t.examples.map((ex,j)=><div className="et-tense-example" key={j}><b>{String(j+1).padStart(2,'0')}</b><span>{ex[0]}</span><em>→</em><strong>{ex[1]}</strong></div>)}</div></article>)}<div className="et-wh-note"><strong>WH-family note:</strong><span>यहाँ WH pattern सामान्य information questions को दिखाता है। अगर <em>who/what</em> खुद subject हो, तो auxiliary pattern बदल सकता है—for example, <b>Who plays cricket?</b> — not <b>Who does play cricket?</b></span></div></section>}<section className="et-examples"><h3>Quick examples</h3>{current.examples.map((x,i)=><div key={i}>{x}</div>)}</section><div className="et-clue"><strong>Exam clue</strong><p>{current.clue}</p></div></article>
  <div className="et-lesson-nav"><button type="button" disabled={lesson===0} onClick={()=>setLesson(v=>Math.max(0,v-1))}>← Previous lesson</button><span>{lesson+1} / {LESSONS.length}</span><button type="button" onClick={()=>setLesson(v=>Math.min(LESSONS.length-1,v+1))}>{lesson===LESSONS.length-1?'Review audit':'Next lesson →'}</button></div>
  <section className="et-method"><h2>Translation workflow</h2><div className="et-method-grid">{['Understand the complete Hindi meaning','Identify time and action type','Choose the English pattern','Select auxiliary + verb form','Add articles and prepositions','Audit naturalness and correctness'].map((x,i)=><div key={i}><b>{String(i+1).padStart(2,'0')}</b><span>{x}</span></div>)}</div></section>
  <section className="et-models"><div className="et-models-head"><span>TRANSLATION LAB</span><h2>40+ worked translation examples</h2><p>Read the Hindi source, compare the English build, then identify the grammar decision.</p></div><div className="et-model-grid">{EXAMPLES.map(([hi,en],i)=><article key={i}><small>PAIR {String(i+1).padStart(2,'0')}</small><h3>{hi}</h3><div className="et-arrow">↓</div><p className="et-model-en">{en}</p><p className="et-model-why">Check: meaning • tense • order • small words • naturalness</p></article>)}</div></section>
