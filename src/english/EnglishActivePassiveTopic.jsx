@@ -21,8 +21,8 @@ const HINDI_EXPLANATIONS={
 '16':'अगर agent unknown, obvious, unimportant या general हो, तो by + agent हटाया जा सकता है। Sentence फिर भी complete रहता है।',
 '17':'जिस verb का direct object नहीं होता, उससे सामान्य passive नहीं बनता। इसलिए arrive, sleep और happen जैसे intransitive verbs पर सावधानी रखें।',
 '18':'कुछ verbs दो objects ले सकते हैं। ऐसे sentences में दोनों objects में से उपयुक्त object को passive subject बनाकर अलग-अलग correct passive forms बन सकते हैं।',
-'19':'Voice बदलने का मतलब sentence का मूल event बदलना नहीं है। Tense, meaning, polarity और doer-receiver relationship सुरक्षित रहना चाहिए।',
-'20':'Exam में पहले object, फिर tense, फिर be-form, फिर V3 और pronoun change जाँचें। अंत में पूरा sentence पढ़कर देखें कि original meaning वही है।'
+'19':'Voice बदलने से sentence की मुख्य घटना नहीं बदलनी चाहिए। Tense, meaning, positive/negative रूप और doer-receiver का संबंध वही रहना चाहिए।',
+'20':'Exam में पहले object पहचानें, फिर tense तय करें, उसके बाद सही be-form और V3 लगाएँ और जरूरत होने पर pronoun बदलें। अंत में पूरा sentence पढ़कर देखें कि मूल अर्थ वही है।'
 };
 
 const LESSONS=[
