@@ -1,4 +1,4 @@
-const CACHE_NAME = 'class9-learning-hub-v4';
+const CACHE_NAME = 'class9-learning-hub-v5';
 const APP_SCOPE = '/Class-9-Learning-Hub/';
 const APP_ICON = `${APP_SCOPE}app-icon.png?v=20260916`;
 const APP_MANIFEST = `${APP_SCOPE}manifest.webmanifest?v=20260916`;
@@ -37,6 +37,12 @@ self.addEventListener('fetch', event => {
 
   // Keep authenticated/API data out of the offline cache.
   if (url.pathname.includes('/rest/v1/') || url.pathname.includes('/auth/v1/')) return;
+
+  // Build version must always come from the network so the app can detect a newer deployment.
+  if (url.pathname.endsWith('/build-version.json')) {
+    event.respondWith(fetch(request, { cache: 'no-store' }));
+    return;
+  }
 
   // Navigation: prefer the network so the live app and its auth/routing state stay current.
   if (request.mode === 'navigate') {
